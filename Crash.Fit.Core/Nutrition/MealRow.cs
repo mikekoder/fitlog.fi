@@ -10,8 +10,8 @@ namespace Crash.Fit.Nutrition
     {
         public int Index { get; set; }
         public Guid FoodId { get; set; }
-        public Guid? PortionId { get; set; }
-        public decimal? PortionAmount { get; set; }
+        public decimal Quantity { get; set; }
+        public Guid? PortionId { get; set; }     
         public decimal Weight { get; set; }
     }
 }

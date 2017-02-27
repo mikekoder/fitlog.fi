@@ -8,7 +8,7 @@ namespace Crash.Fit.Nutrition
 {
     public class NutrientAmount
     {
-        public Guid NutrientId { get; set; }
+        public string NutrientId { get; set; }
         public decimal Amount { get; set; }
     }
 }

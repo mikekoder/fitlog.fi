@@ -11,10 +11,11 @@ namespace Crash.Fit.Nutrition
         public Guid? UserId { get; set; }
         public string Name { get; set; }
         public bool IsRecipe { get; set; }
+        public string FineliId { get; set; }
     }
     public class FoodDetails : FoodMinimal
     {
-        public FoodIngredient[] Ingredients { get; set; }
+        public RecipeIngredient[] Ingredients { get; set; }
         public Portion[] Portions { get; set; }
         public NutrientAmount[] Nutrients { get; set; }
     }
