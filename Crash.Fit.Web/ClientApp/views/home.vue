@@ -1,12 +1,23 @@
 <template>
-  <div>
-      Home
-  </div>
+    <div>
+        <section class="content-header">
+            <h1>Crash.Fit</h1>
+        </section>
+        <section class="content">
+            aaa
+        </section>
+        <section class="content">
+            bbb
+        </section>
+</div>
 </template>
 
 <script>
 module.exports = {
-    data () { return {}},
+    data () {
+        return {
+        }
+    },
     components: {},
     methods: { }
 }

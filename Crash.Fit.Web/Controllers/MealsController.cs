@@ -34,13 +34,17 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpPost]
         [Route("")]
-        public MealDetails Create(MealRequest request)
+        public IActionResult Create([FromBody]MealRequest request)
         {
             var meal = AutoMapper.Mapper.Map<MealDetails>(request);
             meal.UserId = CurrentUserId;
             CalculateNutrients(meal);
-            nutritionRepository.CreateMeal(meal);
-            return meal;
+            if(!nutritionRepository.CreateMeal(meal))
+            {
+                return BadRequest();
+            }
+            var result = AutoMapper.Mapper.Map<MealResponse>(meal);
+            return Ok(result);
         }
 
         [HttpPut]
@@ -54,8 +58,13 @@ namespace Crash.Fit.Web.Controllers
             }
             AutoMapper.Mapper.Map(request, meal);
             CalculateNutrients(meal);
-            nutritionRepository.UpdateMeal(meal);
-            return Ok(meal);
+            if(!nutritionRepository.UpdateMeal(meal))
+            {
+                return BadRequest();
+            }
+           
+            var result = AutoMapper.Mapper.Map<MealResponse>(meal);
+            return Ok(result);
         }
 
         [HttpDelete]
@@ -73,7 +82,36 @@ namespace Crash.Fit.Web.Controllers
 
         private void CalculateNutrients(MealDetails meal)
         {
-
+            var foodIds = meal.Rows.Select(r => r.FoodId);
+            var foods = nutritionRepository.GetFoods(foodIds);
+            var mealNutrients = new List<NutrientAmount>();
+            foreach(var row in meal.Rows)
+            {
+                var food = foods.Single(f => f.Id == row.FoodId);
+                if (row.PortionId.HasValue)
+                {
+                    var portion = food.Portions.Single(p => p.Id == row.PortionId);
+                    row.Weight = row.Quantity * portion.Weight;
+                }
+                else
+                {
+                    row.Weight = row.Quantity;
+                }
+                foreach (var foodNutrient in food.Nutrients)
+                {
+                    var mealNutrient = mealNutrients.SingleOrDefault(n => n.NutrientId == foodNutrient.NutrientId);
+                    if(mealNutrient == null)
+                    {
+                        mealNutrient = new NutrientAmount
+                        {
+                            NutrientId = foodNutrient.NutrientId
+                        };
+                        mealNutrients.Add(mealNutrient);
+                    }
+                    mealNutrient.Amount += (row.Weight * foodNutrient.Amount) / 100m;
+                }
+            }
+            meal.Nutrients = mealNutrients.ToArray();
         }
     }
 }

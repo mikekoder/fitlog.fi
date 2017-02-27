@@ -1,8 +1,17 @@
 ﻿let $ = require('jquery')
+$.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="X-CSRF-TOKEN"]').attr('content') } });
 const baseUrl = '/api/'
 
 const api = {
-    //baseUrl: '/api/',
+    baseUrl: baseUrl,
+
+    // Users
+    getUser: function(){
+        return $.get(baseUrl + 'users/me/');
+    },
+    logout: function(){
+        return $.post(baseUrl+'users/logout');
+    },
 
     // Meals
     listMeals: function (start, end) {
@@ -18,8 +27,20 @@ const api = {
     getMeal: function(id){
         return $.get(baseUrl + 'meals/' + id);
     },
-    saveMeal: function(meal){
+    saveMeal: function (meal) {
+        var url = baseUrl + 'meals/';
+        var method = 'POST';
+        if (meal.id) {
+            url += meal.id;
+            method = 'PUT';
+        }
 
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(meal)
+        });
     },
     deleteMeal: function(id){
 
@@ -27,10 +48,10 @@ const api = {
 
     // foods
     searchFoods: function(name){
-
+        return $.get(baseUrl + 'foods/search', { name });
     },
     listFoods: function(){
-
+        return $.get(baseUrl + 'foods/');
     },
     getFood: function(id){
         return $.get(baseUrl + 'foods/' + id);
@@ -44,7 +65,7 @@ const api = {
 
     // Nutrients
     listNutrients: function(){
-
+        return $.get(baseUrl + 'nutrients/');
     },
     listDailyIntakes: function(gender, dob){
 

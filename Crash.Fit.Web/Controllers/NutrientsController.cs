@@ -10,7 +10,7 @@ namespace Crash.Fit.Web.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    public class NutrientsController : Controller
+    public class NutrientsController : ApiControllerBase
     {
         private readonly INutritionRepository nutritionRepository;
         public NutrientsController(INutritionRepository nutritionRepository)
@@ -21,7 +21,7 @@ namespace Crash.Fit.Web.Controllers
         [Route("")]
         public IEnumerable<Nutrient> List()
         {
-            return nutritionRepository.GetNutrients();
+            return nutritionRepository.GetNutrients().OrderBy(n => n.UIOrder);
         }
         [HttpGet]
         [Route("daily-intakes")]

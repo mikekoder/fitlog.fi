@@ -1,0 +1,75 @@
+<template>
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="/"><b>Admin</b>LTE</a>
+        </div>
+        <div class="login-box-body">
+            <p class="login-box-msg">Sign in to start your session</p>
+            <form action="../../index2.html" method="post">
+                <div class="form-group has-feedback">
+                    <input type="email" class="form-control" placeholder="Email">
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                </div>
+                <div class="form-group has-feedback">
+                    <input type="password" class="form-control" placeholder="Password">
+                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4 col-xs-offset-8">
+                        <button class="btn btn-primary btn-block btn-flat">Kirjaudu</button>
+                    </div>
+                </div>
+            </form>
+            <div class="social-auth-links text-center">
+                <p>- TAI -</p>
+                <a class="btn btn-block btn-social btn-facebook btn-flat" @click="loginFacebook">
+                    <i class="fa fa-facebook"></i> Sign in using
+                    Facebook
+                </a>
+                <a class="btn btn-block btn-social btn-google btn-flat" @click="loginGoogle">
+                    <i class="fa fa-google-plus"></i> Sign in using
+                    Google+
+                </a>
+            </div>
+            <a href="#/luo-tunnus" class="text-center">Luo tili</a>
+        </div>
+    </div>
+</template>
+
+<script>
+    var api = require('../api');
+module.exports = {
+    data ()
+    {
+        return {
+            dialog: null
+        }
+    },
+    components: {},
+    methods: {
+
+        loginGoogle() {
+            //dialog = window.open(api.baseUrl+'users/external-login/?provider=Google','_blank','width=400,height=600');
+            window.location = api.baseUrl + 'users/external-login/?provider=Google';
+        },
+        loginFacebook() {
+            //this.dialog = window.open(api.baseUrl + 'users/external-login/?provider=Facebook', '_blank', 'width=400,height=600');
+            window.location = api.baseUrl + 'users/external-login/?provider=Facebook';
+        }
+    },
+    created(){
+
+    },
+    mounted() {
+        var self = this;
+        window.closeDialog = function () {
+            console.log(self.dialog);
+            self.dialog.close();
+            window.location = '/';
+        };
+    }
+}
+</script>
+
+<style scoped>
+</style>
