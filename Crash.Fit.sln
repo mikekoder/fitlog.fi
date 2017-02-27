@@ -7,6 +7,13 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Crash.Fit.Web", "Crash.Fit.
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Crash.Fit.Core", "Crash.Fit.Core\Crash.Fit.Core.xproj", "{68ED8245-80D4-4C99-A5AB-C02CEF3F4D8E}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FineliImport", "..\FineliImport\FineliImport.xproj", "{91AC4FC0-B7F5-424F-933B-F7B58E26B091}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2547AF9D-7FE2-4B6F-8378-F54E23B65037}"
+	ProjectSection(SolutionItems) = preProject
+		..\global.json = ..\global.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +28,10 @@ Global
 		{68ED8245-80D4-4C99-A5AB-C02CEF3F4D8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68ED8245-80D4-4C99-A5AB-C02CEF3F4D8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68ED8245-80D4-4C99-A5AB-C02CEF3F4D8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91AC4FC0-B7F5-424F-933B-F7B58E26B091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91AC4FC0-B7F5-424F-933B-F7B58E26B091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91AC4FC0-B7F5-424F-933B-F7B58E26B091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91AC4FC0-B7F5-424F-933B-F7B58E26B091}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

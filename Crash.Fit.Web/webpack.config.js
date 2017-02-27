@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
+//const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
 const bundleOutputDir = './wwwroot/dist';
 
 module.exports = (env) => {
@@ -15,7 +15,7 @@ module.exports = (env) => {
                 'src': path.resolve(__dirname, '../ClientApp'),
                 'assets': path.resolve(__dirname, '../ClientApp/assets'),
                 'components': path.resolve(__dirname, '../ClientApp/components'),
-                vue: 'vue/dist/vue.js',
+                'vue': 'vue/dist/vue.js',
                 'vue$': 'vue/dist/vue.common.js'
             }
         },
@@ -35,11 +35,13 @@ module.exports = (env) => {
             ]
         },
         plugins: [
+            /*
             new CheckerPlugin(),
             new webpack.DllReferencePlugin({
                 context: __dirname,
                 manifest: require('./wwwroot/dist/vendor-manifest.json')
-            })
+            })*/
+            new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery' })
         ].concat(isDevBuild ? [
             // Plugins that apply in development builds only
             new webpack.SourceMapDevToolPlugin({

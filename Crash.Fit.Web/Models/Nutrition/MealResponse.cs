@@ -7,5 +7,9 @@ namespace Crash.Fit.Web.Models.Nutrition
 {
     public class MealResponse
     {
+        public DateTimeOffset Time { get; set; }
+        public string Name { get; set; }
+        public MealRow[] Rows { get; set; }
+        public Dictionary<Guid,decimal> Nutrients { get; set; }
     }
 }

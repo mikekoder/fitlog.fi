@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 
-namespace CrashFitWeb
+namespace Crash.Fit.Web
 {
     public class Program
     {

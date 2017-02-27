@@ -8,8 +8,13 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Crash.Fit.Nutrition;
+using System.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Crash.Fit.Web.Models.Auth;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace CrashFitWeb
+namespace Crash.Fit.Web
 {
     public class Startup
     {
@@ -28,8 +33,34 @@ namespace CrashFitWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
+            services.AddDbContext<UserContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("Crash.Fit"));
+            });
+
+            services.AddIdentity<User, Role>()
+                .AddEntityFrameworkStores<UserContext, Guid>()
+                .AddDefaultTokenProviders();
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.User.RequireUniqueEmail = false;
+            });
+
+            services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
             services.AddMvc();
+            
+
+            services.AddTransient<INutritionRepository>(s => 
+            {
+                return new NutritionRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+            });
+
+            AutoMapper.Mapper.Initialize(m => {
+                m.CreateMap<MealDetails, Models.Nutrition.MealResponse>();
+                m.CreateMap<MealRow, Models.Nutrition.MealRow>();
+                m.CreateMap<Models.Nutrition.MealRequest, MealDetails>();
+                m.CreateMap<Models.Nutrition.MealRow, MealRow>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +83,17 @@ namespace CrashFitWeb
 
             app.UseStaticFiles();
 
+            app.UseIdentity();
+            app.UseGoogleAuthentication(new GoogleOptions()
+            {
+                ClientId = Configuration["Authentication:Google:ClientId"],
+                ClientSecret = Configuration["Authentication:Google:ClientSecret"]
+            });
+            app.UseFacebookAuthentication(new FacebookOptions()
+            {
+                AppId = Configuration["Authentication:Facebook:AppId"],
+                AppSecret = Configuration["Authentication:Facebook:AppSecret"]
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
