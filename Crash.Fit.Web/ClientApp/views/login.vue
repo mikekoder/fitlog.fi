@@ -5,21 +5,19 @@
         </div>
         <div class="login-box-body">
             <p class="login-box-msg">Sign in to start your session</p>
-            <form action="../../index2.html" method="post">
-                <div class="form-group has-feedback">
-                    <input type="email" class="form-control" placeholder="Email">
-                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            <div class="form-group has-feedback">
+                <label>Käyttäjätunnus/Sähköpostiosoite</label>
+                <input type="text" class="form-control" v-model="username">
+            </div>
+            <div class="form-group has-feedback">
+                <label>Salasana</label>
+                <input type="password" class="form-control" v-model="password">
+            </div>
+            <div class="row">
+                <div class="col-xs-4 col-xs-offset-8">
+                    <button class="btn btn-primary btn-block btn-flat" @click="login">Kirjaudu</button>
                 </div>
-                <div class="form-group has-feedback">
-                    <input type="password" class="form-control" placeholder="Password">
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
-                <div class="row">
-                    <div class="col-xs-4 col-xs-offset-8">
-                        <button class="btn btn-primary btn-block btn-flat">Kirjaudu</button>
-                    </div>
-                </div>
-            </form>
+            </div>
             <div class="social-auth-links text-center">
                 <p>- TAI -</p>
                 <a class="btn btn-block btn-social btn-facebook btn-flat" @click="loginFacebook">
@@ -47,7 +45,15 @@ module.exports = {
     },
     components: {},
     methods: {
-
+        login(){
+            var data = {
+                username: this.username,
+                password: this.password
+            };
+            api.login(data).then(function(){
+                window.location = '#login-success';
+            });
+        },
         loginGoogle() {
             //dialog = window.open(api.baseUrl+'users/external-login/?provider=Google','_blank','width=400,height=600');
             window.location = api.baseUrl + 'users/external-login/?provider=Google';

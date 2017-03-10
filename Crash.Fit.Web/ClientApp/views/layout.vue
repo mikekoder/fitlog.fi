@@ -6,11 +6,9 @@
                 <span class="logo-lg"><b>Crash</b>FIT</span>
             </a>
             <nav class="navbar navbar-static-top" role="navigation">
-                <!-- Sidebar toggle button-->
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
                     <span class="sr-only">Toggle navigation</span>
                 </a>
-                <!-- Navbar Right Menu -->
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
                         <!--
@@ -29,6 +27,9 @@
                                 </li>
                             </ul>
                         </li>-->
+                        <li v-if="!isLoggedIn">
+                            <a href="#/luo-tunnus">Rekisteröidy</a>
+                        </li>
                         <li v-if="!isLoggedIn">
                             <a href="#/kirjaudu">Kirjaudu</a>
                         </li>

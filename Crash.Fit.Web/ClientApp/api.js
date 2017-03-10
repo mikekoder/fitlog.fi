@@ -6,15 +6,31 @@ const api = {
     baseUrl: baseUrl,
 
     // Users
-    getUser: function(){
+    register(registration) {
+        return $.ajax({
+            url: baseUrl + 'users/register',
+            type: 'POST',
+            contentType: 'text/json',
+            data: JSON.stringify(registration)
+        });
+    },
+    login(login) {
+        return $.ajax({
+            url: baseUrl + 'users/login',
+            type: 'POST',
+            contentType: 'text/json',
+            data: JSON.stringify(login)
+        });
+    },
+    getUser(){
         return $.get(baseUrl + 'users/me/');
     },
-    logout: function(){
+    logout(){
         return $.post(baseUrl+'users/logout');
     },
 
     // Meals
-    listMeals: function (start, end) {
+    listMeals(start, end) {
         var query = {};
         if (start) {
             query.start = start.toISOString();

@@ -44,6 +44,11 @@ namespace Crash.Fit.Web
             services.Configure<IdentityOptions>(options =>
             {
                 options.User.RequireUniqueEmail = false;
+                options.User.AllowedUserNameCharacters += "åäöÅÄÖ";
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
             });
 
             services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");

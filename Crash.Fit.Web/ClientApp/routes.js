@@ -3,6 +3,7 @@ import Home from './views/home'
 import Meals from './views/meals/meals'
 import MealCalculator from './views/meals/meal-calculator'
 import Foods from './views/foods/foods'
+import Recipes from './views/recipes'
 import Nutrients from './views/nutrients'
 import Workouts from './views/workouts'
 import Exercises from './views/exercises'
@@ -40,7 +41,7 @@ const main = [
             {
                 path: '/reseptit',
                 name: 'recipes',
-                component: Foods
+                component: Recipes
             },
             {
                 path: '/ravintoaineet',
