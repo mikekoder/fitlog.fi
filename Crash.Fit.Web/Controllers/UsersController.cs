@@ -40,16 +40,42 @@ namespace Crash.Fit.Web.Controllers
         [HttpPost("login")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginRequest model)
+        public async Task<IActionResult> Login([FromBody]LoginRequest model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, lockoutOnFailure: false);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+            if (result.IsLockedOut)
+            {
+                return BadRequest();
+            }
             return Ok();
         }
 
         [HttpPost("register")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterRequest model)
+        public async Task<IActionResult> Register([FromBody]RegisterRequest model)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = new User { UserName = model.Email, Email = model.Email };
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+            await _signInManager.SignInAsync(user, isPersistent: false);
             return Ok();
         }
 
@@ -90,7 +116,6 @@ namespace Crash.Fit.Web.Controllers
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
             if (result.Succeeded)
             {
-                _logger.LogInformation(5, "User logged in with {Name} provider.", info.LoginProvider);
                 return RedirectToLocal("/#/login-success");
             }
             if (result.IsLockedOut)
@@ -100,7 +125,7 @@ namespace Crash.Fit.Web.Controllers
             else
             {
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                var user = new User { UserName = email, Email = email };
+                var user = new User { Email = email, UserName = info.LoginProvider + "_" + info.ProviderKey };
                 var result2 = await _userManager.CreateAsync(user);
                 if (result2.Succeeded)
                 {
