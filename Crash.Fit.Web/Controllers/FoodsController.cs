@@ -18,12 +18,18 @@ namespace Crash.Fit.Web.Controllers
         {
             this.nutritionRepository = nutritionRepository;
         }
-
+        [HttpGet]
+        [Route("")]
+        public IEnumerable<FoodMinimal> List()
+        {
+            var foods = nutritionRepository.SearchUserFoods(CurrentUserId);
+            return foods;
+        }
         [HttpGet]
         [Route("search")]
         public IEnumerable<FoodMinimal> Search(string name)
         {
-            var foods = nutritionRepository.SearchFoods(name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            var foods = nutritionRepository.SearchFoods(name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries), CurrentUserId);
             return foods;
         }
         [HttpGet]
@@ -35,20 +41,17 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpPost]
         [Route("")]
-        public FoodDetails Create(FoodRequest request)
+        public FoodDetails Create([FromBody]FoodRequest request)
         {
             var food = AutoMapper.Mapper.Map<FoodDetails>(request);
-            if (food.IsRecipe)
-            {
-                CalculateNutrients(food);
-            }
+            food.UserId = CurrentUserId;
             nutritionRepository.CreateFood(food);
             return food;
         }
 
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Update(Guid id, FoodRequest request)
+        public IActionResult Update(Guid id, [FromBody]FoodRequest request)
         {
             var food = nutritionRepository.GetFood(id);
             if (food.UserId != CurrentUserId)
@@ -71,11 +74,6 @@ namespace Crash.Fit.Web.Controllers
             }
             nutritionRepository.DeleteFood(food);
             return Ok();
-        }
-
-        private void CalculateNutrients(FoodDetails food)
-        {
-
         }
     }
 }

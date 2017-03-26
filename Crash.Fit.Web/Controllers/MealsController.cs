@@ -20,10 +20,11 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpGet]
         [Route("")]
-        public IEnumerable<MealDetails> List(DateTimeOffset start, DateTimeOffset? end)
+        public IEnumerable<MealResponse> List(DateTimeOffset start, DateTimeOffset? end)
         {
             var meals = nutritionRepository.SearchMeals(CurrentUserId, start, end ?? DateTimeOffset.Now);
-            return meals;
+            var response = AutoMapper.Mapper.Map<MealResponse[]>(meals.OrderByDescending(m => m.Time));
+            return response;
         }
         [HttpGet]
         [Route("{id}")]
@@ -38,6 +39,7 @@ namespace Crash.Fit.Web.Controllers
         {
             var meal = AutoMapper.Mapper.Map<MealDetails>(request);
             meal.UserId = CurrentUserId;
+            meal.Created = DateTimeOffset.Now;
             CalculateNutrients(meal);
             if(!nutritionRepository.CreateMeal(meal))
             {
@@ -49,7 +51,7 @@ namespace Crash.Fit.Web.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Update(Guid id, MealRequest request)
+        public IActionResult Update(Guid id, [FromBody]MealRequest request)
         {
             var meal = nutritionRepository.GetMeal(id);
             if(meal.UserId != CurrentUserId)

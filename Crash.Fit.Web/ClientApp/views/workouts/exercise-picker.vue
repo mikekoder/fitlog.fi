@@ -1,5 +1,5 @@
 <template>
-    <input type="text" class="form-control" v-model="name" />
+    <input type="text" class="form-control" v-model="name" @blur="blur" />
 </template>
 
 <script>
@@ -13,9 +13,13 @@ module.exports = {
         }
     },
     props:{
-        value: {}
+        value: {},
+        exercises: null
     },
     methods: {
+        blur: function () {
+            this.$emit('nameChange', this.name);
+        }
     },
     mounted: function () {
         if (this.value) {
@@ -24,9 +28,11 @@ module.exports = {
         var self = this;
         $(this.$el).typeahead({
             source: function (query, process) {
-                api.searchFoods(query).then(function (results) {
-                    process(results);
-                });
+                var results = self.exercises.filter(e => e.name.toLowerCase().indexOf(query.toLowerCase()) >= 0);
+                if (results.length == 0) {
+                    results = [{ id: undefined, name: query }];
+                }
+                process(results);
             },
             minLength: 2,
             items: 100,
@@ -34,10 +40,8 @@ module.exports = {
             matcher: function (item) {
                 return true;
             },
-            afterSelect: function (food) {
-                api.getFood(food.id).then(function (foodDetails) {
-                    self.$emit('change', foodDetails);
-                });
+            afterSelect: function (exercise) {
+                self.$emit('change', exercise);
             },
             templates: {
                 suggestion: function (data) {

@@ -30,7 +30,7 @@ module.exports = {
     mounted: function () {
         var element = $(this.$el).children();
         var format = this.format || 'DD.MM.YYYY HH:mm';
-        element.datetimepicker({ format: format });
+        element.datetimepicker({ format: format, locale: 'fi' });
         this.control = element.data("DateTimePicker");
 
         if (this.value) {

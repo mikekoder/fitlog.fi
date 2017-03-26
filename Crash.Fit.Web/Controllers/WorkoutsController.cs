@@ -20,7 +20,7 @@ namespace Crash.Fit.Web.Controllers
         }
 
         [HttpGet]
-        [Route("search")]
+        [Route("")]
         public IEnumerable<WorkoutMinimal> Search(DateTimeOffset start, DateTimeOffset? end)
         {
             var workouts = trainingRepository.SearchWorkouts(CurrentUserId, start, end ?? DateTimeOffset.Now);

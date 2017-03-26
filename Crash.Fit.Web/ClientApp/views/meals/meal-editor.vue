@@ -47,7 +47,7 @@
                                 <label class="hidden-sm hidden-md hidden-lg">Annos</label>
                                 <div v-if="row.food">
                                     <select class="form-control" v-model="row.portion">
-                                        <option v-bind:value="null">g</option>
+                                        <option v-bind:value="undefined">g</option>
                                         <option v-for="portion in row.food.portions" v-bind:value="portion">
                                             {{ portion.name }}
                                         </option>
@@ -171,7 +171,7 @@
                 <button class="btn" v-if="id && !copyMode" @click="startCopy">Kopioi</button>
                 <button class="btn btn-primary" v-if="copyMode" @click="confirmCopy">Vahvista kopiointi</button>
                 <button class="btn" v-if="copyMode" @click="cancelCopy">Peruuta kopiointi</button>
-                <button class="btn btn-link" v-if="id && !copyMode">Poista</button>
+                <button class="btn btn-link" v-if="id && !copyMode" @click="deleteMeal">Poista</button>
             </div>
         </div>
         <hr />
@@ -188,6 +188,7 @@
 <script>
     var api = require('../../api');
     var formatters = require('../../formatters');
+    var utils = require('../../utils');
 
 module.exports = {
     data () {
@@ -242,7 +243,7 @@ module.exports = {
             this.showNutrients = show;
         },
         addRow : function(){
-            this.rows.push({food: null, quantity: 1, portion: null});
+            this.rows.push({food: null, quantity: 1, portion: undefined});
         },
         removeRow: function (index) {
             this.rows.splice(index, 1);
@@ -265,14 +266,16 @@ module.exports = {
                 id: this.id,
                 time: this.time,
                 name: this.name,
-                rows: this.rows
+                rows: this.rows.filter(r => r.food && r.quantity).map(r => { return { foodId: r.food.id, quantity: utils.parseFloat(r.quantity), portionId: r.portion ? r.portion.id : undefined } })
             };
             this.saveCallback(meal);
         },
         cancel: function () {
             this.cancelCallback();
         },
-        delete: function(){ },
+        deleteMeal: function () {
+            this.deleteCallback(this.meal);
+        },
         startCopy: function () {
             this.copyMode = true;
             this.copyAllRows = true;
@@ -299,9 +302,21 @@ module.exports = {
     },
     created: function () {
         var self = this;
+        this.id = this.meal.id;
         this.time = this.meal.time;
         this.name = this.meal.name;
-        
+        if (this.meal.rows) {
+            var apiCalls = [];
+            for (var i in this.meal.rows) {
+                apiCalls.push(api.getFood(this.meal.rows[i].foodId));
+            }
+            Promise.all(apiCalls).then(function (foods) {
+                self.rows = self.meal.rows.map(r => {
+                    var food = foods.find(f => f.id == r.foodId);
+                    return { food: food, quantity: r.quantity, portion: food.portions.find(p => p.id === r.portionId) };
+                });
+            });
+        }
         api.listNutrients().then(function (allNutrients) {
             var nutrients = {};
             for (var i in allNutrients) {

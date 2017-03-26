@@ -22,7 +22,7 @@
                                 <li class="custom-date">
                                     <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="start=arguments[0]"></datetime-picker>
                                     <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="end=arguments[0]"></datetime-picker>
-                                    <button class="btn btn-sm" @click="fetchMeals">OK</button>
+                                    <button class="btn btn-sm" @click="fetchMeals()">OK</button>
                                 </li>
                             </ul>
                         </div>
@@ -46,21 +46,26 @@
                                     </thead>
                                     <tbody>
                                         <template v-for="day in days">
-                                            <tr @click="toggleDay(day)">
-                                                <td class="freeze"><span>{{ date(day.time) }}</span></td>
+                                            <tr class="day" @click="toggleDay(day)">
+                                                <td class="freeze"><span>{{ date(day.date) }}</span></td>
                                                 <td v-for="col in visibleColumns">
                                                     <div class="chart" v-if="col === energyDistributionColumn">
-                                                        <chart-pie-energy v-bind:protein="123" v-bind:carb="123" v-bind:fat="123"></chart-pie-energy>
+                                                        <chart-pie-energy v-bind:protein="day.nutrients[proteinId]" v-bind:carb="day.nutrients[carbId]" v-bind:fat="day.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
-                                                    <span v-else>{{ day[col.key] }} 1234.567</span>
+                                                    <span v-else>{{ decimal(day.nutrients[col.key], col.precision) }}</span>
                                                 </td>
                                                 <td></td>
                                             </tr>
-                                            <tr v-if="day.showDetails" v-for="meal in day.meals">
+                                            <tr class="meal" v-if="day.showDetails" v-for="meal in day.meals">
                                                 <td class="freeze">{{ time(meal.time) }}</td>
-                                                <td v-for="col in visibleColumns">{{ meal[col.key] }}</td>
-                                                <td>
-                                                    <button class="btn" @click="editMeal(meal)">Edit</button>
+                                                <td v-for="col in visibleColumns">
+                                                    <div class="chart" v-if="col === energyDistributionColumn">
+                                                        <chart-pie-energy v-bind:protein="meal.nutrients[proteinId]" v-bind:carb="meal.nutrients[carbId]" v-bind:fat="meal.nutrients[fatId]"></chart-pie-energy>
+                                                    </div>
+                                                    <span v-else>{{ decimal(meal.nutrients[col.key], col.precision) }}</span>
+                                                </td>
+                                                <td class="action">
+                                                    <button class="btn btn-sm" @click="editMeal(meal)">Tiedot</button>
                                                 </td>
                                             </tr>
                                         </template>
@@ -100,8 +105,11 @@ module.exports = {
             selectedGroup: 'MACROCMP',
             start: null,
             end: null,
-            days: [{ time: new Date(), meals: [{ time: new Date() }], showDetails: false }],
-            selectedMeal: null
+            days:[],
+            selectedMeal: null,
+            proteinId: '1ddca711-0dcc-4708-93c2-1ac3b0b3d281',
+            carbId: 'fa5f03f8-6aeb-4d5f-9100-f41cd606d36b',
+            fatId: '9fa87e51-46af-4ca9-8c7d-98176cfa8b78'
         }
     },
     computed:{
@@ -114,33 +122,55 @@ module.exports = {
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
-        'chart-pie-energy': require('./chart-pie-energy'),
+        'chart-pie-energy': require('./energy-distribution-bar'),
         'meal-editor': require('./meal-editor')
     },
     methods: {
         showDay() {
             this.end = moment().endOf('day').toDate();
             this.start = moment().startOf('day').toDate();
-            console.log(this.start, this.end);
+            this.fetchMeals();
         },
         showWeek(){
             this.end = moment().endOf('day').toDate();
             this.start = moment().startOf('isoWeek').toDate();
-            console.log(this.start, this.end);
+            this.fetchMeals();
         },
         showMonth(){
             this.end = moment().endOf('day').toDate();
             this.start = moment().startOf('month').toDate();
-            console.log(this.start, this.end);
+            this.fetchMeals();
         },
         showDays(days) {
             this.end = moment().endOf('day').toDate();
-            this.start = moment().subtract(days, 'days').startOf('day').toDate();
-            console.log(this.start, this.end);
+            this.start = moment().subtract(days - 1, 'days').startOf('day').toDate();
+            this.fetchMeals();
         },
-        fetchMeals: function () { 
+        fetchMeals: function () {
+            var self = this;
             api.listMeals(this.start, this.end).then(function (meals) {
+                var days = [];
+                for (var i in meals) {
+                    var meal = meals[i];
+                    meal.time = new Date(meal.time);
+                    var date = moment(meal.time).startOf('day');
 
+                    var day = days.find(d => moment(d.date).isSame(date, 'day'));
+                    if (!day) {
+                        day = { date: date.toDate(), meals: [], nutrients: {}, showDetails: false };
+                        days.push(day);
+                    }
+                    day.meals.push(meal);
+                    for (var nutrientId in meal.nutrients) {
+                        if (!day.nutrients[nutrientId]) {
+                            day.nutrients[nutrientId] = 0;
+                        }
+                        day.nutrients[nutrientId] += meal.nutrients[nutrientId];
+                    }
+                }
+                self.days = days.sort(function (a, b) {
+                    return a.date.getTime() < b.date.getTime() ? 1 : -1;
+                });
             });
         },
         showNutrients: function(group){
@@ -152,46 +182,62 @@ module.exports = {
         createMeal: function(){
             this.showMeal({ time: new Date()});
         },
-        editMeal: function(meal){
-            this.showMeal(meal);
+        editMeal: function (meal) {
+            var self = this;
+            api.getMeal(meal.id).then(function (mealDetails) {
+                self.showMeal(mealDetails);
+            });
+            
         },
         saveMeal: function (meal) {
-            var rows = [];
-            for (var i in meal.rows) {
-                var mealRow = meal.rows[i];
-                var row = {};
-                if (mealRow.quantity) {
-                    if (typeof (mealRow.quantity === 'number')) {
-                        row.quantity = mealRow.quantity;
-                    }
-                    else {
-                        row.quantity = parseFloat(mealRow.quantity.replace(',', '.'));
-                    }
-                }
-                if (mealRow.food) {
-                    row.foodId = mealRow.food.id;
-                }
-                if (mealRow.portion) {
-                    row.portionId = mealRow.portion.id;
-                }
-                rows.push(row);
-            }
-            var meal = {
-                id: meal.id,
-                name: meal.name,
-                time: moment(meal.time).format(),
-                rows: rows,
-                userId: null
-            };
+            var self = this;
             api.saveMeal(meal).then(function (savedMeal) {
+                // TODO: edit values instead of reload
+                // * reduce nutrients from meal day
+                // * remove meal from a day
+                // * add meal to a day (correct position by time)
+                // * add nutrients to meal day
+                /*
+                if (meal.id) {
+                    for (var i in days) {
+                        for (var j in days[i].meals) {
+                            if (days[i].meals[j].id === meal.id) {
+                                for (var nutrientId in days[i].meals[j].nutrients) {
+                                    days[i].nutrients[nutrientId] -= days[i].meals[j].nutrients[nutrientId];
+                                }
+                                days[i].meals.splice(j, 1);
+                            }
+                        }
+                    }
+                }
 
+                savedMeal.time = new Date(savedMeal.time);
+                var date = moment(savedMeal.time).startOf('day');
+                var day = self.days.find(d => moment(d.date).isSame(date, 'day'));
+                if (day) {
+                    if (!meal.id) {
+                        day.meals.push(meal);
+                    }
+                    for (var nutrientId in meal.nutrients) {
+                        if (!day.nutrients[nutrientId]) {
+                            day.nutrients[nutrientId] = 0;
+                        }
+                        day.nutrients[nutrientId] += meal.nutrients[nutrientId];
+                    }
+                }*/
+                self.fetchMeals();
+                self.showSummary();
             });
         },
         cancelMeal: function (meal) {
             this.showSummary();
         },
         deleteMeal: function (meal) {
-            this.showSummary();
+            var self = this;
+            api.deleteMeal(meal.id).then(function () {
+                self.fetchMeals();
+                self.showSummary();
+            });
         },
         showMeal: function (meal) {
             this.selectedMeal = meal;
@@ -201,7 +247,13 @@ module.exports = {
         },
         date: formatters.formatDate,
         time: formatters.formatTime,
-        unit: formatters.formatUnit
+        unit: formatters.formatUnit,
+        decimal: function (value, precision) {
+            if (!value) {
+                return value;
+            }
+            return value.toFixed(precision);
+        }
     },
     watch:{
         $route: function(){
@@ -214,7 +266,7 @@ module.exports = {
         api.listNutrients().then(function (nutrients) {
             for (var i in nutrients) {
                 if (nutrients[i].uiVisible) {
-                    self.columns.push({ title: nutrients[i].shortName, unit: nutrients[i].unit, key: nutrients[i].id, visible: true, group: nutrients[i].fineliGroup });
+                    self.columns.push({ title: nutrients[i].shortName, unit: nutrients[i].unit, precision: nutrients[i].precision, key: nutrients[i].id, visible: true, group: nutrients[i].fineliGroup });
                 }
             }
             self.columns.push(self.energyDistributionColumn);
@@ -226,62 +278,70 @@ module.exports = {
                 self.end = moment(meal.time).endOf('day');
             });
         } else {
-            self.showDay();
+            self.showWeek();
         }
-        
-        console.log(this.$route);
-    },
-    mounted: function () {
-        this.fetchMeals();
     }
 }
 </script>
 
 <style scoped>
-    li.custom-date{
+    li.custom-date
+    {
         padding: 3px 10px;
     }
-    li.custom-date button{
+    li.custom-date button
+    {
         margin-top: 3px;
     }
-    .outer {
+    .outer 
+    {
       position: relative;
     }
-    .inner {
+    .inner 
+    {
       overflow-x: auto;
       overflow-y: visible;
       margin-left: 100px;
     }
-    #meal-summary{
+    #meal-summary
+    {
         width: auto;
         table-layout: fixed; 
         /*width: 100%;*/
     }
-    #meal-summary td {
+    #meal-summary td 
+    {
         padding-bottom: 0px;
     }
-    #meal-summary td span{
+    #meal-summary td span
+    {
         margin: 5px;
     }
-    .freeze {
-      position: absolute;
-      margin-left: -100px;
-      width: 80px;
+    tr.day td
+    {
+        background-color:azure;
     }
-
-
-   
-    th.time{
+    .freeze 
+    {
+      position: absolute;
+      margin-left: -80px;
+      width: 80px;
+      text-align: right;
+    }
+    th.time
+    {
         width: 80px;
     }
-
-    th.nutrient{
+    th.nutrient
+    {
         width: 70px;
     }
-    td div.chart{
-        position: relative;
-        top: -10px;
+    td div.chart
+    {
+        width: 100px;
+        height: 20px;
     }
-    
-   
+    td.action {
+        padding: 0px;
+    }
 </style>

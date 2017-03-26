@@ -59,7 +59,10 @@ const api = {
         });
     },
     deleteMeal: function(id){
-
+        return $.ajax({
+            url: baseUrl + 'meals/' + id,
+            type: 'DELETE'
+        });
     },
 
     // foods
@@ -73,12 +76,52 @@ const api = {
         return $.get(baseUrl + 'foods/' + id);
     },
     saveFood: function(food){
+        var url = baseUrl + 'foods/';
+        var method = 'POST';
+        if (food.id) {
+            url += food.id;
+            method = 'PUT';
+        }
 
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(food)
+        });
     },
     deleteFood: function(id){
-
+        return $.ajax({
+            url: baseUrl + 'foods/' + id,
+            type: 'DELETE'
+        });
     },
 
+    // Recipes
+    listRecipes(s) {
+        return $.get(baseUrl + 'recipes');
+    },
+    getRecipe: function (id) {
+        return $.get(baseUrl + 'recipes/' + id);
+    },
+    saveRecipe: function (recipe) {
+        var url = baseUrl + 'recipes/';
+        var method = 'POST';
+        if (recipe.id) {
+            url += recipe.id;
+            method = 'PUT';
+        }
+
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(recipe)
+        });
+    },
+    deleteRecipe: function (id) {
+
+    },
     // Nutrients
     listNutrients: function(){
         return $.get(baseUrl + 'nutrients/');
@@ -88,8 +131,15 @@ const api = {
     },
 
     // Workouts
-    listWorkous: function(start, end){
-
+    listWorkouts: function(start, end){
+        var query = {};
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(baseUrl + 'workouts', query);
     },
     getWorkout: function(id){
         return $.get(baseUrl + 'workouts/' + id);
@@ -101,15 +151,32 @@ const api = {
 
     },
 
+    // Muscles
+    listMuscleGroups: function(){
+        return $.get(baseUrl + 'muscles/groups');
+    },
+
     // Exercises
     listExercises: function(){
-
+        return $.get(baseUrl + 'exercises/');
     },
     getExercise: function(id){
         return $.get(baseUrl + 'exercises/' + id);
     },
     saveExercise: function(exercise){
+        var url = baseUrl + 'exercises/';
+        var method = 'POST';
+        if (exercise.id) {
+            url += exercise.id;
+            method = 'PUT';
+        }
 
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(exercise)
+        });
     },
     deleteExercise: function(id){
 

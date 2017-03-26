@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Crash.Fit.Web.Models.Auth;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Crash.Fit.Training;
 
 namespace Crash.Fit.Web
 {
@@ -59,12 +60,29 @@ namespace Crash.Fit.Web
             {
                 return new NutritionRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
             });
+            services.AddTransient<ITrainingRepository>(s =>
+            {
+                return new TrainingRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+            });
 
             AutoMapper.Mapper.Initialize(m => {
+                m.CreateMap<ICollection<NutrientAmount>, Dictionary<Guid, decimal>>()
+                    .ConvertUsing(na => na.ToDictionary(n=> n.NutrientId,n => n.Amount));
+
                 m.CreateMap<MealDetails, Models.Nutrition.MealResponse>();
                 m.CreateMap<MealRow, Models.Nutrition.MealRow>();
                 m.CreateMap<Models.Nutrition.MealRequest, MealDetails>();
                 m.CreateMap<Models.Nutrition.MealRow, MealRow>();
+
+                m.CreateMap<FoodDetails, Models.Nutrition.RecipeResponse>();
+                m.CreateMap<RecipeIngredient, Models.Nutrition.RecipeIngredient>();
+                m.CreateMap<Portion, Models.Nutrition.Portion>();
+                m.CreateMap<Models.Nutrition.FoodRequest, FoodDetails>();
+                m.CreateMap<Models.Nutrition.RecipeRequest, FoodDetails>();
+                m.CreateMap<Models.Nutrition.RecipeIngredient, RecipeIngredient>();
+                m.CreateMap<Models.Nutrition.Portion, Portion>();
+
+                m.CreateMap<Models.Training.ExerciseRequest, ExerciseDetails>();
             });
         }
 

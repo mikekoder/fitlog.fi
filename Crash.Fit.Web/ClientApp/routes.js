@@ -3,15 +3,16 @@ import Home from './views/home'
 import Meals from './views/meals/meals'
 import MealCalculator from './views/meals/meal-calculator'
 import Foods from './views/foods/foods'
-import Recipes from './views/recipes'
-import Nutrients from './views/nutrients'
-import Workouts from './views/workouts'
-import Exercises from './views/exercises'
-import Routines from './views/routines'
+import Recipes from './views/recipes/recipes'
+import Nutrients from './views/nutrients/nutrients'
+import Workouts from './views/workouts/workouts'
+import Exercises from './views/exercises/exercises'
+import Routines from './views/routines/routines'
 import Login from './views/login'
 import LoginSuccess from './views/login-success'
 import Register from './views/register'
 import NotFound from './views/notfound'
+import RepCalculator from './views/rep-calculator/rep-calculator'
 
 const main = [
     {
@@ -66,7 +67,7 @@ const main = [
             {
                 path: '/sarjapainolaskuri',
                 name: 'rep-calculator',
-                component: Routines,
+                component: RepCalculator,
                 meta: { anon: true }
             }
         ]

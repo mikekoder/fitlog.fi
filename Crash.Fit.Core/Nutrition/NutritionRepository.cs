@@ -24,7 +24,7 @@ namespace Crash.Fit.Nutrition
         }
         public bool CreateNutrient(Nutrient nutrient)
         {
-            nutrient.Id = Guid.NewGuid().ToString();
+            nutrient.Id = Guid.NewGuid();
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
@@ -36,7 +36,7 @@ namespace Crash.Fit.Nutrition
                 }
                 catch
                 {
-                    nutrient.Id = null;
+                    nutrient.Id = Guid.Empty;
                     return false;
                 }
             }
@@ -76,10 +76,10 @@ WHERE Gender = @gender AND StartAge <= @age AND EndAge >= @age";
         public IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids)
         {
             var sql = @"
-SELECT * FROM Food WHERE Id IN(@ids);
-SELECT * FROM FoodPortion WHERE FoodId IN(@ids);
-SELECT * FROM FoodNutrient WHERE FoodId IN(@ids);
-SELECT * FROM RecipeIngredient WHERE RecipeId IN(@ids) ORDER BY [Index]";
+SELECT * FROM Food WHERE Id IN @ids;
+SELECT * FROM FoodPortion WHERE FoodId IN @ids;
+SELECT * FROM FoodNutrient WHERE FoodId IN @ids;
+SELECT * FROM RecipeIngredient WHERE RecipeId IN @ids ORDER BY [Index]";
             var parameters = new { ids };
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, parameters))
@@ -92,7 +92,7 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN(@ids) ORDER BY [Index]";
                 {
                     food.Portions = portions.Where(p => p.FoodId == food.Id).ToArray();
                     food.Nutrients = nutrients.Where(p => p.FoodId == food.Id).ToArray();
-                    food.Ingredients = ingredients.Where(p => p.FoodId == food.Id).ToArray();
+                    food.Ingredients = ingredients.Where(p => p.RecipeId == food.Id).ToArray();
                 }
                 return foods;
             }
@@ -101,10 +101,13 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN(@ids) ORDER BY [Index]";
         {
             var parameters = new DynamicParameters();
             var sql = "";
-            for (int i = 0; i < nameTokens.Length; i++)
+            if (nameTokens != null)
             {
-                parameters.Add("p" + i, nameTokens[i]);
-                sql += " AND Name LIKE CONCAT('%',@p" + i + ",'%')";
+                for (int i = 0; i < nameTokens.Length; i++)
+                {
+                    parameters.Add("p" + i, nameTokens[i]);
+                    sql += " AND Name LIKE CONCAT('%',@p" + i + ",'%')";
+                }
             }
             if (userId.HasValue)
             {
@@ -121,27 +124,50 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN(@ids) ORDER BY [Index]";
                 return conn.Query<FoodMinimal>(sql, parameters);
             }
         }
+        public IEnumerable<FoodMinimal> SearchUserFoods(Guid userId)
+        {
+            var sql = @"
+SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=0 AND Deleted IS NULL;";
+            using (var conn = CreateConnection())
+            using (var multi = conn.QueryMultiple(sql, new { userId }))
+            {
+                var recipes = multi.Read<FoodMinimal>().ToList();
+                return recipes;
+            }
+        }
+        public IEnumerable<FoodMinimal> SearchRecipes(Guid userId)
+        {
+            var sql = @"
+SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=1 AND Deleted IS NULL;";
+            using (var conn = CreateConnection())
+            using (var multi = conn.QueryMultiple(sql,new { userId }))
+            {
+                var recipes = multi.Read<FoodMinimal>().ToList();
+                return recipes;
+            }
+        }
         public bool CreateFood(FoodDetails food)
         {
             food.Id = Guid.NewGuid();
+            food.Created = DateTimeOffset.Now;
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Food(Id,UserId,Name,IsRecipe,FineliId) VALUES(@Id,@UserId,@Name,@IsRecipe,@FineliId)", food, tran);
+                    conn.Execute("INSERT INTO Food(Id,UserId,Name,IsRecipe,FineliId,Created) VALUES(@Id,@UserId,@Name,@IsRecipe,@FineliId,@Created)", food, tran);
                     conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount) VALUES(@FoodId,@NutrientId,@Amount)",
                         food.Nutrients.Select(n => new { FoodId = food.Id, n.NutrientId, n.Amount }), tran);
                     conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Weight) VALUES(@Id,@FoodId,@Name,@Weight)", food.Portions.Select(p => new { Id = Guid.NewGuid(), FoodId = food.Id, p.Name, p.Weight }), tran);
                     if(food.Ingredients != null)
                     {
-                        conn.Execute("INSERT INTO RecipeIngredient(RecipeId,[Index],IngredientId,PortionId,PortionAmount,Weight) VALUES(@FoodId,@Index,@IngredientId,@PortionId,@PortionAmount,@Weight)", food.Ingredients.Select(i => new
+                        conn.Execute("INSERT INTO RecipeIngredient(RecipeId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@RecipeId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", food.Ingredients.Select((i,index) => new
                         {
-                            FoodId = food.Id,
-                            i.Index,
-                            i.IngredientId,
+                            RecipeId = food.Id,
+                            Index = index,
+                            i.FoodId,
+                            i.Quantity,
                             i.PortionId,
-                            i.PortionAmount,
                             i.Weight
                         }), tran);
                     }
@@ -164,29 +190,38 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN(@ids) ORDER BY [Index]";
                 try
                 {
                     conn.Execute("DELETE FROM FoodNutrient WHERE FoodId=@Id", new { Id = food.Id }, tran);
-                    conn.Execute("DELETE FROM FoodPortion WHERE FoodId=@Id", new { Id = food.Id }, tran);
-                    conn.Execute("DELETE FROM RecipeIngredient WHERE FoodId=@Id", new { Id = food.Id }, tran);
+                    conn.Execute("DELETE FROM RecipeIngredient WHERE RecipeId=@Id", new { Id = food.Id }, tran);
 
                     conn.Execute("UPDATE Food SET Name=@Name WHERE Id=@Id", food, tran);
                     conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount) VALUES(@FoodId,@NutrientId,@Amount)",
                         food.Nutrients.Select(n => new { FoodId = food.Id, n.NutrientId, n.Amount }), tran);
-                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Weight) VALUES(@FoodId,@Name,@Weight)", food.Portions.Select(p => new {p.Id, FoodId = food.Id, p.Name, p.Weight }), tran);
+
+                    if(food.Portions.Any(p => p.Id != Guid.Empty))
+                    {
+                        conn.Execute("UPDATE FoodPortion SET Name=@Name, Weight=@Weight WHERE Id=@Id", food.Portions.Where(p => p.Id != Guid.Empty)
+                            .Select(p => new { p.Id, p.Name, p.Weight }), tran);
+                    }
+                    if (food.Portions.Any(p => p.Id == Guid.Empty))
+                    {
+                        conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Weight) VALUES(@Id,@FoodId,@Name,@Weight)", food.Portions.Where(p => p.Id == Guid.Empty)
+                            .Select(p => new { Id = Guid.NewGuid(), FoodId = food.Id, p.Name, p.Weight }), tran);
+                    }
                     if (food.Ingredients != null)
                     {
-                        conn.Execute("INSERT INTO RecipeIngredient(RecipeId,[Index],IngredientId,PortionId,PortionAmount,Weight) VALUES(@FoodId,@Index,@IngredientId,@PortionId,@PortionAmount,@Weight)", food.Ingredients.Select(i => new
+                        conn.Execute("INSERT INTO RecipeIngredient(RecipeId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@RecipeId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", food.Ingredients.Select((i,index) => new
                         {
-                            FoodId = food.Id,
-                            i.Index,
-                            i.IngredientId,
+                            RecipeId = food.Id,
+                            Index = index,
+                            i.FoodId,
+                            i.Quantity,
                             i.PortionId,
-                            i.PortionAmount,
                             i.Weight
                         }), tran);
                     }
                     tran.Commit();
                     return true;
                 }
-                catch
+                catch(Exception ex)
                 {
                     tran.Rollback();
                     return false;
@@ -231,6 +266,7 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN(@ids) ORDER BY [Index]";
                 }
             }
         }
+
         public MealDetails GetMeal(Guid id)
         {
             var sql = @"
@@ -252,9 +288,10 @@ SELECT * FROM MealRow WHERE MealId=@id ORDER BY [Index];";
         }
         public IEnumerable<MealDetails> SearchMeals(Guid userId, DateTimeOffset start, DateTimeOffset end)
         {
-            var sql = @"
-SELECT * FROM Meal WHERE UserId=@userId AND Time >= @start AND Time <= @end AND Deleted IS NULL;
-SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE UserId=@userId AND Time >= @start AND Time <= @end AND Deleted IS NULL);";
+            var filter = "UserId=@userId AND Time >= @start AND Time <= @end AND Deleted IS NULL";
+            var sql = $@"
+SELECT * FROM Meal WHERE {filter};
+SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});";
             var parameters = new { userId, start, end };
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, parameters))
@@ -279,10 +316,10 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE UserId=@us
                     conn.Execute("INSERT INTO Meal(Id,UserId,Time,Name) VALUES(@Id,@UserId,@Time,@Name)", meal, tran);
                     conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
                         meal.Nutrients.Select(n => new { MealId = meal.Id, n.NutrientId, n.Amount }), tran);
-                    conn.Execute("INSERT INTO MealRow(MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select(r => new
+                    conn.Execute("INSERT INTO MealRow(MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select((r, i) => new
                     {
                         MealId = meal.Id,
-                        r.Index,
+                        Index = i,
                         r.FoodId,
                         r.Quantity,
                         r.PortionId,
@@ -290,7 +327,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE UserId=@us
                     tran.Commit();
                     return true;
                 }
-                catch
+                catch(Exception ex)
                 {
                     meal.Id = Guid.Empty;
                     tran.Rollback();
@@ -311,10 +348,10 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE UserId=@us
                     conn.Execute("UPDATE Meal SET Time=@Time, Name=@Name WHERE Id=@Id", meal, tran);
                     conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
                                             meal.Nutrients.Select(n => new { MealId = meal.Id, n.NutrientId, n.Amount }), tran);
-                    conn.Execute("INSERT INTO MealRow(MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select(r => new
+                    conn.Execute("INSERT INTO MealRow(MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select((r,i) => new
                     {
                         MealId = meal.Id,
-                        r.Index,
+                        Index = i,
                         r.FoodId,
                         r.Quantity,
                         r.PortionId,
@@ -322,7 +359,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE UserId=@us
                     tran.Commit();
                     return true;
                 }
-                catch
+                catch(Exception ex)
                 {
                     tran.Rollback();
                     return false;
@@ -367,7 +404,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE UserId=@us
                 }
             }
         }
-
+ 
         private class PortionRaw : Portion
         {
             public Guid FoodId { get; set; }
@@ -378,7 +415,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE UserId=@us
         }
         private class RecipeIngredientRaw : RecipeIngredient
         {
-            public Guid FoodId { get; set; }
+            public Guid RecipeId { get; set; }
         }
     }
 }

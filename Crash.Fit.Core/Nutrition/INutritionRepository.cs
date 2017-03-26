@@ -15,6 +15,8 @@ namespace Crash.Fit.Nutrition
 
 
         IEnumerable<FoodMinimal> SearchFoods(string[] nameTokens, Guid? userId = null);
+        IEnumerable<FoodMinimal> SearchUserFoods(Guid userId);
+        IEnumerable<FoodMinimal> SearchRecipes(Guid userId);
         FoodDetails GetFood(Guid id);
         IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids);
         //IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids);

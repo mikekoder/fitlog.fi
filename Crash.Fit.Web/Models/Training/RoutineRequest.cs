@@ -7,5 +7,6 @@ namespace Crash.Fit.Web.Models.Training
 {
     public class RoutineRequest
     {
+        public string Name { get; set; }
     }
 }
