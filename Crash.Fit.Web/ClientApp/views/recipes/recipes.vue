@@ -17,7 +17,9 @@
                             <tbody>
                                 <tr v-for="recipe in recipes">
                                     <td><span>{{ recipe.name }}</span></td>
-                                    <td></td>
+                                    <td>
+                                        <button @click="editRecipe(recipe)">Muokkaa</button>
+                                    </td>
                                     <td></td>
                                 </tr>   
                             </tbody>
@@ -58,6 +60,7 @@ module.exports = {
     methods: {
         fetchRecipes: function () {
             var self = this;
+            self.recipes = [];
             api.listRecipes().then(function (recipes) {
                 for (var i in recipes) {
                     self.recipes.push(recipes[i]);
@@ -71,51 +74,76 @@ module.exports = {
         createRecipe: function(){
             this.showRecipe({});
         },
-        editRecipe: function(recipe){
-            this.showRecipe(recipe);
+        editRecipe: function (recipe) {
+            var self = this;
+            api.getRecipe(recipe.id).then(function (recipeDetails) {
+                self.showRecipe(recipeDetails);
+            });
+            
         },
         saveRecipe: function (recipe) {
-            var rows = [];
-            for (var i in recipe.rows) {
-                var recipeRow = recipe.rows[i];
-                var row = {};
-                if (recipeRow.quantity) {
-                    if (typeof (recipeRow.quantity === 'number')) {
-                        row.quantity = recipeRow.quantity;
+            var ingredients = [];
+            var portions = [];
+            for (var i in recipe.ingredients) {
+                var recipeIngredient = recipe.ingredients[i];
+                var ingredient = {};
+                if (recipeIngredient.quantity) {
+                    if (typeof (recipeIngredient.quantity === 'number')) {
+                        ingredient.quantity = recipeIngredient.quantity;
                     }
                     else {
-                        row.quantity = parseFloat(recipeRow.quantity.replace(',', '.'));
+                        ingredient.quantity = parseFloat(recipeIngredient.quantity.replace(',', '.'));
                     }
                 }
-                if (recipeRow.food) {
-                    row.foodId = recipeRow.food.id;
+                if (recipeIngredient.food) {
+                    ingredient.foodId = recipeIngredient.food.id;
                 }
-                if (recipeRow.portion) {
-                    row.portionId = recipeRow.portion.id;
+                if (recipeIngredient.portion) {
+                    ingredient.portionId = recipeIngredient.portion.id;
                 }
-                rows.push(row);
+                ingredients.push(ingredient);
+            }
+            for (var i in recipe.portions) {
+                var recipePortion = recipe.portions[i];
+                var portion = { id: recipePortion.id, name: recipePortion.name };
+                if (recipePortion.weight) {
+                    if (typeof (recipePortion.weight === 'number')) {
+                        portion.weight = recipePortion.weight;
+                    }
+                    else {
+                        portion.weight = parseFloat(recipePortion.weight.replace(',', '.'));
+                    }
+                }
+                portions.push(portion);
             }
             var recipe = {
                 id: recipe.id,
                 name: recipe.name,
-                time: moment(recipe.time).format(),
-                rows: rows,
-                userId: null
+                ingredients: ingredients,
+                portions: portions
             };
+            var self = this;
             api.saveRecipe(recipe).then(function (savedRecipe) {
-
+                self.fetchRecipes();
+                self.showSummary();
             });
         },
         cancelRecipe: function (recipe) {
             this.showSummary();
         },
         deleteRecipe: function (recipe) {
-            this.showSummary();
+            var self = this;
+            api.deleteRecipe(recipe.id).then(function () {
+                self.showSummary();
+            });
+           
         },
         showRecipe: function (recipe) {
             this.selectedRecipe = recipe;
         },
-
+        showSummary: function(){
+            this.selectedRecipe = undefined;
+        },
         date: formatters.formatDate,
         time: formatters.formatTime,
         unit: formatters.formatUnit
@@ -126,9 +154,6 @@ module.exports = {
         }
     },
     created: function () {
-
-    },
-    mounted: function () {
         this.fetchRecipes();
     }
 }

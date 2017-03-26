@@ -7,5 +7,6 @@ namespace Crash.Fit.Web.Models.Training
 {
     public class ExerciseResponse
     {
+        public string Name { get; set; }
     }
 }

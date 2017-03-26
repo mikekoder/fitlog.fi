@@ -1,7 +1,7 @@
 ﻿<template>
     <div>
         <div class="row" v-if="!anon">
-            <div class="col-sm-5 col-md-3 col-lg-2">
+            <div class="col-sm-6 col-md-5 col-lg-4">
                 <div class="form-group">
                     <label>Nimi</label>
                     <input class="form-control" v-model="name" />
@@ -39,7 +39,7 @@
                                 <label class="hidden-sm hidden-md hidden-lg">Annos</label>
                                 <div v-if="row.food">
                                     <select class="form-control" v-model="row.portion">
-                                        <option v-bind:value="null">g</option>
+                                        <option v-bind:value="undefined">g</option>
                                         <option v-for="portion in row.food.portions" v-bind:value="portion">
                                             {{ portion.name }}
                                         </option>
@@ -86,7 +86,7 @@
                             </div>
                             <div class="portion col-sm-3 col-xs-7">
                                 <label class="hidden-sm hidden-md hidden-lg">Annoksia/resepti</label>
-                                <span></span>
+                                <span>{{ decimal(recipeWeight / portion.weight, 1) }}</span>
                             </div>
                             <div class="actions col-sm-1 col-xs-12">
                                 <div>
@@ -108,6 +108,7 @@
                             <tr>
                                 <th></th>
                                 <th>Resepti</th>
+                                <th>100g</th>
                                 <template v-for="portion in portions">
                                     <th>{{ portion.name }}</th>
                                 </template>
@@ -119,6 +120,7 @@
                             <tr v-for="nutrient in allNutrients['MACROCMP']">
                                 <td>{{ nutrient.name }}</td>
                                 <td>{{ decimal(recipeNutrients[nutrient.id], nutrient.precision) }}</td>
+                                <td>{{ decimal(recipeNutrients[nutrient.id] * 100 / recipeWeight, nutrient.precision) }}</td>
                                 <template v-for="portion in portions">
                                     <td><span v-if="portion.weight">{{ decimal(recipeNutrients[nutrient.id] / recipeWeight * portion.weight, nutrient.precision) }}</span></td>
                                 </template>
@@ -130,6 +132,7 @@
                             <tr v-for="nutrient in allNutrients['VITAM']">
                                 <td>{{ nutrient.name }}</td>
                                 <td>{{ decimal(recipeNutrients[nutrient.id], nutrient.precision) }}</td>
+                                <td>{{ decimal(recipeNutrients[nutrient.id] * 100 / recipeWeight, nutrient.precision) }}</td>
                                 <template v-for="portion in portions">
                                     <td><span v-if="portion.weight">{{ decimal(recipeNutrients[nutrient.id] / recipeWeight * portion.weight, nutrient.precision) }}</span></td>
                                 </template>
@@ -141,6 +144,7 @@
                             <tr v-for="nutrient in allNutrients['MINERAL']">
                                 <td>{{ nutrient.name }}</td>
                                 <td>{{ decimal(recipeNutrients[nutrient.id], nutrient.precision) }}</td>
+                                <td>{{ decimal(recipeNutrients[nutrient.id] * 100 / recipeWeight, nutrient.precision) }}</td>
                                 <template v-for="portion in portions">
                                     <td><span v-if="portion.weight">{{ decimal(recipeNutrients[nutrient.id] / recipeWeight * portion.weight, nutrient.precision) }}</span></td>
                                 </template>
@@ -152,6 +156,7 @@
                             <tr v-for="nutrient in allNutrients['CARBOCMP']">
                                 <td>{{ nutrient.name }}</td>
                                 <td>{{ decimal(recipeNutrients[nutrient.id], nutrient.precision) }}</td>
+                                <td>{{ decimal(recipeNutrients[nutrient.id] * 100 / recipeWeight, nutrient.precision) }}</td>
                                 <template v-for="portion in portions">
                                     <td><span v-if="portion.weight">{{ decimal(recipeNutrients[nutrient.id] / recipeWeight * portion.weight, nutrient.precision) }}</span></td>
                                 </template>
@@ -163,6 +168,7 @@
                             <tr v-for="nutrient in allNutrients['FAT']">
                                 <td>{{ nutrient.name }}</td>
                                 <td>{{ decimal(recipeNutrients[nutrient.id], nutrient.precision) }}</td>
+                                <td>{{ decimal(recipeNutrients[nutrient.id] * 100 / recipeWeight, nutrient.precision) }}</td>
                                 <template v-for="portion in portions">
                                     <td><span v-if="portion.weight">{{ decimal(recipeNutrients[nutrient.id] / recipeWeight * portion.weight, nutrient.precision) }}</span></td>
                                 </template>
@@ -178,7 +184,7 @@
             <div class="col-sm-12">
                 <button class="btn btn-primary" @click="save">Tallenna</button>
                 <button class="btn" @click="cancel">Peruuta</button>
-                <button class="btn btn-link" v-if="id">Poista</button>
+                <button class="btn btn-link" @click="deleteMeal" v-if="id">Poista</button>
             </div>
         </div>
         <hr />
@@ -245,7 +251,6 @@ module.exports = {
     },
     props: {
         recipe: null,
-        user: null,
         saveCallback: null,
         cancelCallback: null,
         deleteCallback: null,
@@ -257,7 +262,7 @@ module.exports = {
     },
     methods: {
         addIngredient: function () {
-            this.ingredients.push({ food: null, quantity: null, portion:null });
+            this.ingredients.push({ food: null, quantity: null, portion: undefined });
         },
         addPortion : function(){
             this.portions.push({ name: null, weight: null});
@@ -281,16 +286,18 @@ module.exports = {
         save: function () {
             var recipe = {
                 id: this.id,
-                time: this.time,
                 name: this.name,
-                ingredients: this.ingredients
+                ingredients: this.ingredients,
+                portions: this.portions
             };
             this.saveCallback(recipe);
         },
         cancel: function () {
             this.cancelCallback();
         },
-        delete: function(){ },
+        deleteMeal: function () {
+            this.deleteCallback(this.recipe);
+        },
         unit: formatters.formatUnit,
         decimal: function (value, precision) {
             if (!value) {
@@ -308,9 +315,24 @@ module.exports = {
     },
     created: function () {
         var self = this;
-        this.time = this.recipe.time;
+        this.id = this.recipe.id;
         this.name = this.recipe.name;
-        
+        this.portions = this.recipe.portions || [];
+        if (this.recipe.ingredients) {
+            var apiCalls = [];
+            for (var i in this.recipe.ingredients) {
+                apiCalls.push(api.getFood(this.recipe.ingredients[i].foodId));
+            }
+            Promise.all(apiCalls).then(function (foods) {
+                self.ingredients = self.recipe.ingredients.map(i => {
+                    var food = foods.find(f => f.id == i.foodId);
+                    return { food: food, quantity: i.quantity, portion: food.portions.find(p => p.id === i.portionId) };
+                });
+            });
+        }
+        else {
+            this.ingredients = [];
+        }
         api.listNutrients().then(function (allNutrients) {
             var nutrients = {};
             for (var i in allNutrients) {
@@ -325,8 +347,6 @@ module.exports = {
             }
             self.allNutrients = nutrients;
         });
-    },
-    mounted: function () {
     }
 }
 </script>

@@ -1,65 +1,116 @@
 ﻿<template>
     <div>
-        <div class="row">
+        <div class="row" v-if="!anon">
             <div class="col-sm-5 col-md-3 col-lg-2">
                 <div class="form-group">
                     <label>Nimi</label>
                     <input class="form-control" v-model="name" />
                 </div>
-                
+
             </div>
         </div>
         <div class="row">&nbsp;</div>
         <div class="row">
             <div class="col-sm-12">
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="food">Ruoka</th>
-                            <th class="quantity">Määrä</th>
-                            <th class="portion">Annos</th>
-                            <th class="weight">Paino</th>
-                            <th class="actions"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(row,index) in rows">
-                            <td><div v-if="copyMode"><input type="checkbox" v-model="row.copy" /></div></td>
-                            <td class="food"><food-picker v-bind:value="row.food" v-on:change="row.food=arguments[0]" /></td>
-                            <td class="quantity"><input type="text" class="form-control" v-model="row.quantity" /></td>
-                            <td class="portion">
-                                <select class="form-control" v-if="row.food" v-model="row.portion">
-                                    <option v-bind:value="null">g</option>
-                                    <option v-for="portion in row.food.portions" v-bind:value="portion">
-                                        {{ portion.name }}
-                                    </option>
-                                </select>
-                            </td>
-                            <td class="weight">
-                                <div v-if="row.food">
-                                    <span v-if="row.food">{{ weight(row.quantity, row.portion) }}</span>
+                <ul class="nav nav-tabs">
+                    <li v-bind:class="{ active: tab === 'nutrients' }"><a @click="tab = 'nutrients'">Ravinto-aineet</a></li>
+                    <li v-bind:class="{ active: tab === 'portions' }"><a @click="tab = 'portions'">Annokset</a></li>
+                </ul>
+                <div v-if="tab === 'portions'">
+                    <div class="row hidden-xs">
+                        <div class="col-sm-4"><label>Nimi</label></div>
+                        <div class="col-sm-2"><label>Paino</label></div>
+                        <div class="col-sm-1">&nbsp;</div>
+                    </div>
+                    <template v-for="(portion,index) in portions">
+                        <div class="recipe-row row">
+                            <div class="col-sm-4">
+                                <label class="hidden-sm hidden-md hidden-lg">Nimi</label>
+                                <input type="text" class="form-control" v-model="portion.name" />
+                            </div>
+                            <div class="quantity col-sm-2 col-xs-3">
+                                <label class="hidden-sm hidden-md hidden-lg">Paino</label>
+                                <input type="number" class="form-control" v-model="portion.weight" />
+                            </div>
+                            <div class="actions col-sm-1 col-xs-12">
+                                <div>
+                                    <button class="btn btn-danger" @click="removePortion(index)">Poista</button>
                                 </div>
-                            </td>
-                            <td class="actions"><button class="btn btn-link" @click="removeRow(index)">Poista</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+                        <div class="recipe-row-separator row hidden-sm hidden-md hidden-lg">
+                            <div class="col-sm-12"><hr /></div>
+                        </div>
+                    </template>
+                    <div class="row">
+                        <div class="col-sm-12"><button class="btn" @click="addPortion"><i class="fa fa-plus"></i> Lisää</button></div>
+                    </div>
+                </div>
+                <div v-if="tab === 'nutrients'">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ravinto-aine</th>
+                                <th>Määrä/100g</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><th colspan="2">Makrot</th></tr>
+                            <tr v-for="nutrient in nutrients['MACROCMP']">
+                                <td>{{ nutrient.name }}</td>
+                                <td><input v-model="nutrient.amount" /></td>
+                                <td>{{ unit(nutrient.unit)}}</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr><th colspan="2">Vitamiinit</th></tr>
+                            <tr v-for="nutrient in nutrients['VITAM']">
+                                <td>{{ nutrient.name }}</td>
+                                <td><input v-model="nutrient.amount" /></td>
+                                <td>{{ unit(nutrient.unit)}}</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr><th colspan="2">Mineraalit</th></tr>
+                            <tr v-for="nutrient in nutrients['MINERAL']">
+                                <td>{{ nutrient.name }}</td>
+                                <td><input v-model="nutrient.amount" /></td>
+                                <td>{{ unit(nutrient.unit)}}</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr><th colspan="2">Hiilihydraatit</th></tr>
+                            <tr v-for="nutrient in nutrients['CARBOCMP']">
+                                <td>{{ nutrient.name }}</td>
+                                <td><input v-model="nutrient.amount" /></td>
+                                <td>{{ unit(nutrient.unit)}}</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr><th colspan="2">Rasvat</th></tr>
+                            <tr v-for="nutrient in nutrients['FAT']">
+                                <td>{{ nutrient.name }}</td>
+                                <td><input v-model="nutrient.amount" /></td>
+                                <td>{{ unit(nutrient.unit)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <hr />
-        <div class="row">
+        <div class="row" v-if="!anon">
             <div class="col-sm-12">
                 <button class="btn btn-primary" @click="save">Tallenna</button>
                 <button class="btn" @click="cancel">Peruuta</button>
-                <button class="btn btn-link" v-if="id">Poista</button>
+                <button class="btn btn-link" v-if="id" @click="deleteFood">Poista</button>
             </div>
         </div>
         <hr />
         <div class="row">
             <table>
-                <tbody>
-
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
@@ -67,86 +118,143 @@
 
 <script>
     var api = require('../../api');
+    var formatters = require('../../formatters');
+    var utils = require('../../utils');
 
 module.exports = {
     data () {
         return {
             id: null,
             name: null,
+            portions: [],
             nutrients: {},
-            allNutrients: []
+            tab: 'nutrients'
         }
     },
     computed: {
     },
     props: {
         food: null,
-        user: null,
         saveCallback: null,
         cancelCallback: null,
-        deleteCallback: null
+        deleteCallback: null,
+        anon: false
+    },
+    components: {
     },
     methods: {
+        addPortion : function(){
+            this.portions.push({ name: null, weight: null});
+        },
+        removePortion: function (index) {
+            this.portions.splice(index, 1);
+        },
+        weight: function (quantity, portion) {
+            if (!quantity) {
+                return '';
+            }
+            if (typeof (quantity) !== 'number') {
+                quantity = parseFloat(quantity.replace(',', '.'));
+            }
+
+            if (portion) {
+                return quantity * portion.weight;
+            }
+            return quantity;
+        },
         save: function () {
             var food = {
                 id: this.id,
                 name: this.name,
-                rows: this.rows
+                nutrients: [],
+                portions: this.portions.map(p => { return { id: p.id, name: p.name, weight: utils.parseFloat(p.weight) }})
             };
+            for (var i in this.nutrients) {
+                for (var j in this.nutrients[i]) {
+                    if (this.nutrients[i][j].amount) {
+                        food.nutrients.push({ nutrientId: this.nutrients[i][j].id, amount: utils.parseFloat(this.nutrients[i][j].amount) });
+                    }
+                }
+            }
+
             this.saveCallback(food);
         },
         cancel: function () {
             this.cancelCallback();
         },
-        delete: function(){ },
-        startCopy: function () {
-            this.copyMode = true;
-            this.copyAllRows = true;
+        deleteFood: function () {
+            this.deleteCallback(this.food);
         },
-        confirmCopy: function () { },
-        cancelCopy: function () {
-            this.copyMode = false;
-            this.copyAllRows = true;
-        },
-        unit: function (unit) {
-            switch (unit) {
-                case 'G':
-                    return 'g';
-                case 'MG':
-                    return 'mg';
-                case 'UG':
-                    return '\u03BCg';
-                default:
-                    return unit;
+        unit: formatters.formatUnit,
+        decimal: function (value, precision) {
+            if (!value) {
+                return value;
             }
-        }
-    },
-    watch: {
-        copyAllRows: function (newVal) {
-            for (var i in this.rows) {
-                this.rows[i].copy = newVal;
-            }
+            return value.toFixed(precision);
         }
     },
     created: function () {
         var self = this;
+        this.id = this.food.id;
         this.name = this.food.name;
-        var nutrients = {};
-        for (var i in this.food.nutrients) {
-            nutrients[i] = this.food.nutrients[i];
-        }
+        this.portions = this.food.portions || [];
         api.listNutrients().then(function (allNutrients) {
-            self.allNutrients = allNutrients;
+            var nutrients = {};
+            for (var i in allNutrients) {
+                var nutrient = allNutrients[i];
+                nutrient.amount = undefined;
+                if (self.food.nutrients) {
+                    var foodNutrient = self.food.nutrients.find(fn => fn.nutrientId == nutrient.id);
+                    if (foodNutrient) {
+                        nutrient.amount = foodNutrient.amount;
+                    }
+                }
+                if (nutrients[nutrient.fineliGroup]) {
+                    nutrients[nutrient.fineliGroup].push(nutrient);
+                }
+                else {
+                    nutrients[nutrient.fineliGroup] = [nutrient];
+                }
+
+            }
+            self.nutrients = nutrients;           
         });
-        this.nutrients = nutrients;
-    },
-    mounted: function () {
     }
 }
 </script>
 <style scoped>
-    th.food { width: 200px; }
-    th.quantity { width: 80px; }
-    th.portion { width: 120px; }
-    th.weight { width: 80px; }
+    div.recipe-row {
+        margin-bottom: 5px;
+    }
+
+    div.recipe-row-separator {
+        padding: 0px;
+    }
+
+        div.recipe-row-separator hr {
+            border: 1px solid #00c0ef;
+        }
+
+    div.food, div.quantity, div.portion, div.weight, div.actions {
+        padding-right: 2px;
+    }
+
+    div.weight {
+        padding-top: 5px;
+    }
+
+    @media (max-width: 767px) {
+        div.food, div.quantity, div.portion, div.weight, div.actions {
+            padding-right: 15px;
+        }
+
+        div.actions {
+            text-align: right;
+        }
+
+            div.actions button {
+                margin-top: 10px;
+                margin-right: 0px;
+            }
+    }
 </style>

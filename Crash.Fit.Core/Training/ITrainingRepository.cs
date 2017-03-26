@@ -7,7 +7,10 @@ namespace Crash.Fit.Training
 {
     public interface ITrainingRepository
     {
-        IEnumerable<ExerciseMinimal> SearchExercises(string name);
+        IEnumerable<MuscleGroup> GetMuscleGroups();
+
+        IEnumerable<ExerciseMinimal> SearchExercises(string[] nameTokens, Guid? userId);
+        IEnumerable<ExerciseMinimal> SearchUserExercises(Guid userId);
         ExerciseDetails GetExercise(Guid id);
         bool CreateExercise(ExerciseDetails exercise);
         bool UpdateExercise(ExerciseDetails exercise);

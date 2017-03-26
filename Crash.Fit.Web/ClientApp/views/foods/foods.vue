@@ -17,7 +17,7 @@
                             <tbody>
                                 <tr v-for="food in foods">
                                     <td>{{ food.name }}</td>
-                                    <td><button class="btn">Tiedot</button></td>
+                                    <td><button class="btn" @click="editFood(food)">Tiedot</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -52,24 +52,41 @@ module.exports = {
         'food-editor': require('./food-editor')
     },
     methods: {
-        fetchFoods: function () {
+        fetchFoods: function(){
             var self = this;
+            self.foods = [];
             api.listFoods().then(function (foods) {
+                for (var i in foods) {
+                    self.foods.push(foods[i]);
+                }
             });
         },
         createFood: function(){
-            this.showFood({});
+            this.showFood({id: null, name: null});
         },
-        editFood: function(food){
-            this.showFood(food);
+        editFood: function (food) {
+            var self = this;
+            api.getFood(food.id).then(function (foodDetails) {
+                self.showFood(foodDetails);
+            });
         },
         saveFood: function (food) {
+            var self = this;
+            api.saveFood(food).then(function (savedFood) {
+                self.fetchFoods();
+                self.showSummary();
+            });
         },
         cancelFood: function (food) {
-            this.showList();
+            this.showSummary();
         },
         deleteFood: function (food) {
-            this.showList();
+            var self = this;
+            api.deleteFood(food.id).then(function () {
+                self.fetchFoods();
+                self.showSummary();
+            });
+            
         },
         showFood: function (food) {
             this.selectedFood = food;
@@ -79,12 +96,7 @@ module.exports = {
         },
         
     },
-    watch:{
-        $route: function(){
-            console.log(this.$route);
-        }
-    },
-    mounted: function () {
+    created: function () {
         this.fetchFoods();
     }
 }

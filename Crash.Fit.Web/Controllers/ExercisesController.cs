@@ -18,12 +18,18 @@ namespace Crash.Fit.Web.Controllers
         {
             this.trainingRepository = trainingRepository;
         }
-
+        [HttpGet]
+        [Route("")]
+        public IEnumerable<ExerciseMinimal> List()
+        {
+            var exercises = trainingRepository.SearchUserExercises(CurrentUserId);
+            return exercises;
+        }
         [HttpGet]
         [Route("search")]
         public IEnumerable<ExerciseMinimal> Search(string name)
         {
-            var exercises = trainingRepository.SearchExercises(name);
+            var exercises = trainingRepository.SearchExercises(name.Split(' '), CurrentUserId);
             return exercises;
         }
         [HttpGet]
@@ -35,16 +41,19 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpPost]
         [Route("")]
-        public ExerciseDetails Create(ExerciseRequest request)
+        public IActionResult Create([FromBody]ExerciseRequest request)
         {
             var exercise = AutoMapper.Mapper.Map<ExerciseDetails>(request);
-            trainingRepository.CreateExercise(exercise);
-            return exercise;
+            if (!trainingRepository.CreateExercise(exercise))
+            {
+                return BadRequest();
+            }
+            return Ok(exercise);
         }
 
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Update(Guid id, ExerciseRequest request)
+        public IActionResult Update(Guid id, [FromBody]ExerciseRequest request)
         {
             var exercise = trainingRepository.GetExercise(id);
             if (exercise.UserId != CurrentUserId)
@@ -52,7 +61,10 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             AutoMapper.Mapper.Map(request, exercise);
-            trainingRepository.UpdateExercise(exercise);
+           if(!trainingRepository.UpdateExercise(exercise))
+            {
+                return BadRequest();
+            }
             return Ok(exercise);
         }
 
