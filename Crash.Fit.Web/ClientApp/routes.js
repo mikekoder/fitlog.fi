@@ -13,6 +13,7 @@ import LoginSuccess from './views/login-success'
 import Register from './views/register'
 import NotFound from './views/notfound'
 import RepCalculator from './views/rep-calculator/rep-calculator'
+import Measurements from './views/measurements/measurements'
 
 const main = [
     {
@@ -55,7 +56,7 @@ const main = [
                 component: Workouts
             },
             {
-                path: '/harjoitukset',
+                path: '/harjoitteet',
                 name: 'exercises',
                 component: Exercises
             },
@@ -69,6 +70,11 @@ const main = [
                 name: 'rep-calculator',
                 component: RepCalculator,
                 meta: { anon: true }
+            },
+            {
+                path: '/mitat',
+                name: 'measurements',
+                component: Measurements
             }
         ]
     },

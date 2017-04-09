@@ -145,7 +145,19 @@ const api = {
         return $.get(baseUrl + 'workouts/' + id);
     },
     saveWorkout: function(workout){
+        var url = baseUrl + 'workouts/';
+        var method = 'POST';
+        if (workout.id) {
+            url += workout.id;
+            method = 'PUT';
+        }
 
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(workout)
+        });
     },
     deleteWorkout: function(id){
 

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="!selectedExercise">
-            <section class="content-header"><h1>Harjoitukset</h1></section>
+            <section class="content-header"><h1>Harjoitteet</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
@@ -17,7 +17,10 @@
                             <tbody>
                                 <tr v-for="exercise in exercises">
                                     <td>{{ exercise.name }}</td>
-                                    <td><button class="btn" @click="editExercise(exercise)">Tiedot</button></td>
+                                    <td>
+                                        <button class="btn" @click="editExercise(exercise)">Tiedot</button>
+                                        <button class="btn btn-link" @click="deleteExercise(exercise)">Poista</button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -45,6 +48,7 @@ module.exports = {
     data () {
         return {
             exercises: [],
+            muscleGroups: [],
             selectedExercise: null
         }
     },
@@ -52,6 +56,12 @@ module.exports = {
         'exercise-editor': require('./exercise-editor')
     },
     methods: {
+        loadExercises: function () {
+            var self = this;
+            api.listExercises().then(function (exercises) {
+                self.exercises = exercises;
+            });
+        },
         createExercise: function(){
             this.showExercise({id: null, name: null});
         },
@@ -64,35 +74,30 @@ module.exports = {
         saveExercise: function (exercise) {
             var self = this;
             api.saveExercise(exercise).then(function (savedExercise) {
-                self.showSummary();
+                self.loadExercises();
+                self.showList();
             });
         },
         cancelExercise: function (exercise) {
             this.showList();
         },
         deleteExercise: function (exercise) {
-            this.showList();
+            var self = this;
+            api.deleteExercise(exercise.id).then(function () {
+                self.loadExercises();
+                self.showList();
+            });
         },
         showExercise: function (exercise) {
             this.selectedExercise = exercise;
         },
-        showSummary() {
+        showList() {
             this.selectedExercise = null;
         },
 
     },
-    watch:{
-        $route: function(){
-            console.log(this.$route);
-        }
-    },
     created: function () {
-        var self = this;
-        api.listExercises().then(function (exercises) {
-            for (var i in exercises) {
-                self.exercises.push(exercises[i]);
-            }
-        });
+        this.loadExercises();
     }
 }
 </script>

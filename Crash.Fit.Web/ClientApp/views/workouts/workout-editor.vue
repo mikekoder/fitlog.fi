@@ -8,51 +8,49 @@
                 </div>
                 
             </div>
-            <div class="col-sm-5 col-md-3 col-lg-2">
-                <div class="form-group">
-                    <label>Nimi</label>
-                    <input class="form-control" v-model="name" />
-                </div>
-                
-            </div>
         </div>
         <div class="row">&nbsp;</div>
         <div class="row">
             <div class="col-sm-12">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4"><label>Harjoitus</label></div>
-                        <div class="col-sm-2"><label>Toistot</label></div>
-                        <div class="col-sm-3"><label>Painot</label></div>
-                        <div class="col-sm-1">&nbsp;</div>
+                        <div class="col-sm-4 col-md-4 col-lg-3"><label>Harjoitus</label></div>
+                        <div class="col-sm-2 col-md-2"><label>Toistot</label></div>
+                        <div class="col-sm-3 col-md-2"><label>Painot</label></div>
+                        <div class="col-sm-3">&nbsp;</div>
                     </div>
-                    <template v-for="(row,index) in rows">
-                        <div class="workout-row row">
-                            <div class="food col-sm-4">
+                    <template v-for="(set,index) in sets">
+                        <div class="row">
+                            <div class="col-sm-4 col-md-4 col-lg-3">
                                 <label class="hidden-sm hidden-md hidden-lg">Harjoitus</label>
-                                <exercise-picker v-bind:exercises="exercises" v-bind:value="row.exercise" v-on:change="row.exercise=arguments[0]" v-on:nameChange="processNewExercise(row, arguments[0])" />
+                                <exercise-picker v-bind:exercises="exercises" v-bind:value="set.exercise" v-on:change="set.exercise=arguments[0]" v-on:nameChange="processNewExercise(set, arguments[0])" />
                             </div>
-                            <div class="quantity col-sm-2 col-xs-4">
+                            <div class="quantity col-sm-2 col-xs-4 col-md-2">
                                 <label class="hidden-sm hidden-md hidden-lg">Toistot</label>
-                                <input type="number" class="form-control" v-model="row.reps" />
+                                <input type="number" min="0" class="form-control" v-model="set.reps" />
                             </div>
-                            <div class="portion col-sm-3 col-xs-4">
+                            <div class="portion col-sm-3 col-xs-4 col-md-2">
                                 <label class="hidden-sm hidden-md hidden-lg">Painot</label>
-                                <input type="number" class="form-control" v-model="row.weights" />
+                                <input type="number" min="0" step="2.5" class="form-control" v-model="set.weights" />
                             </div>
-                            <div class="actions col-sm-1 col-xs-4">
+                            <div class="actions col-sm-3 col-xs-4">
                                 <div>
-                                    <button class="btn btn-danger" @click="removeRow(index)">Poista</button>
+                                    <button class="btn btn-sm" @click="moveSetUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
+                                    <button class="btn btn-sm" @click="moveSetDown(index)" :disabled="index === (sets.length - 1)"><i class="fa fa-arrow-down"></i></button>
+                                    <button class="btn btn-primary" @click="copySet(index)">Kopioi</button>
+                                    <button class="btn btn-danger" @click="removeSet(index)">Poista</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="workout-row-separator row hidden-sm hidden-md hidden-lg">
+                        <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
                             <div class="col-sm-12"><hr /></div>
                         </div>
                     </template>
-                    <div class="row">
-                        <div class="col-sm-12"><button class="btn" @click="addRow"><i class="fa fa-plus"></i> Lisää</button></div>
-                    </div>
+                    
             </div>
+        </div>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+            <div class="col-sm-12"><button class="btn" @click="addSet"><i class="fa fa-plus"></i> Lisää</button></div>
         </div>
         <hr />
         <div class="row">
@@ -83,14 +81,12 @@ module.exports = {
         return {
             id: null,
             time: null,
-            name: null,
-            rows: [],
-            exercises: []
+            sets: [],
+            exercises: [],
         }
     },
     props: {
         workout: null,
-        user: null,
         saveCallback: null,
         cancelCallback: null,
         deleteCallback: null
@@ -100,25 +96,40 @@ module.exports = {
         'exercise-picker': require('./exercise-picker')
     },
     methods: {
-        addRow : function(){
-            this.rows.push({exercise: null, reps: null, weights: null});
+        addSet : function(){
+            this.sets.push({exercise: null, reps: null, weights: null});
         },
-        removeRow: function (index) {
-            this.rows.splice(index, 1);
+        copySet: function (index) {
+            var original = this.sets[index];
+            var copy = { exercise: original.exercise, reps: original.reps, weights: original.weights};
+            this.sets.splice(index, 0, copy);
         },
-        processNewExercise: function (row, exerciseName) {
+        moveSetUp: function(index){
+            var set = this.sets[index];
+            this.sets.splice(index, 1);
+            this.sets.splice(index - 1, 0, set);
+        },
+        moveSetDown: function (index) {
+            var set = this.sets[index];
+            this.sets.splice(index, 1);
+            this.sets.splice(index + 1, 0, set);
+        },
+        removeSet: function (index) {
+            this.sets.splice(index, 1);
+        },
+        processNewExercise: function (set, exerciseName) {
             if (!exerciseName) {
-                row.exercise = undefined;
+                set.exercise = undefined;
             }
             else {
                 var found = this.exercises.filter(e => e.name.toLowerCase().indexOf(exerciseName.toLowerCase()) >= 0);
                 if (found.length == 0) {
                     var exercise = { id: undefined, name: exerciseName };
                     this.exercises.push(exercise);
-                    row.exercise = exercise;
+                    set.exercise = exercise;
                 }
                 else {
-                    row.exercise = found[0];
+                    set.exercise = found[0];
                 }
             }
         },
@@ -126,8 +137,7 @@ module.exports = {
             var workout = {
                 id: this.id,
                 time: this.time,
-                name: this.name,
-                rows: this.rows.filter(r => r.exercise && r.reps).map(r => { return { exerciseId: r.exercise.id, reps: utils.parseFloat(r.reps), weights: utils.parseFloat(r.weights) } })
+                sets: this.sets.filter(r => r.exercise && r.reps).map(r => { return { exerciseId: r.exercise.id, exerciseName: r.exercise.name, reps: utils.parseFloat(r.reps), weights: utils.parseFloat(r.weights) } })
             };
             this.saveCallback(workout);
         },
@@ -149,9 +159,11 @@ module.exports = {
         var self = this;
         this.id = this.workout.id;
         this.time = this.workout.time;
-        this.name = this.workout.name;
         api.listExercises().then(function (exercises) {
-            //self.exercises = exercises;
+            self.exercises = exercises;
+            if (self.workout.sets) {
+                self.sets = self.workout.sets.map(s => { return { exercise: exercises.filter(e => e.id === s.exerciseId)[0], reps: s.reps, weights: s.weights } });
+            }
         });
     },
     mounted: function () {
@@ -159,15 +171,15 @@ module.exports = {
 }
 </script>
 <style scoped>
-    div.workout-row
+    div.workout-set
     {
         margin-bottom:5px;
     }
-    div.workout-row-separator
+    div.workout-set-separator
     {
         padding: 0px;
     }
-    div.workout-row-separator hr
+    div.workout-set-separator hr
     {
         border: 1px solid #00c0ef;
     }

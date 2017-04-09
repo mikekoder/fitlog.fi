@@ -82,7 +82,13 @@ namespace Crash.Fit.Web
                 m.CreateMap<Models.Nutrition.RecipeIngredient, RecipeIngredient>();
                 m.CreateMap<Models.Nutrition.Portion, Portion>();
 
+                m.CreateMap<WorkoutSummary, Models.Training.WorkoutSummaryResponse>();
+                m.CreateMap<WorkoutDetails, Models.Training.WorkoutResponse>();
+                m.CreateMap<WorkoutSet, Models.Training.WorkoutSetResponse>();
+                m.CreateMap<Models.Training.WorkoutRequest, WorkoutDetails>();
+                m.CreateMap<Models.Training.WorkoutSetRequest, WorkoutSet>();
                 m.CreateMap<Models.Training.ExerciseRequest, ExerciseDetails>();
+
             });
         }
 

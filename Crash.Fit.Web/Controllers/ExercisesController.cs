@@ -22,14 +22,14 @@ namespace Crash.Fit.Web.Controllers
         [Route("")]
         public IEnumerable<ExerciseMinimal> List()
         {
-            var exercises = trainingRepository.SearchUserExercises(CurrentUserId);
+            var exercises = trainingRepository.SearchUserExercises(CurrentUserId).OrderBy(e => e.Name);
             return exercises;
         }
         [HttpGet]
         [Route("search")]
         public IEnumerable<ExerciseMinimal> Search(string name)
         {
-            var exercises = trainingRepository.SearchExercises(name.Split(' '), CurrentUserId);
+            var exercises = trainingRepository.SearchExercises(name.Split(' '), CurrentUserId).OrderBy(e => e.Name);
             return exercises;
         }
         [HttpGet]
@@ -44,6 +44,7 @@ namespace Crash.Fit.Web.Controllers
         public IActionResult Create([FromBody]ExerciseRequest request)
         {
             var exercise = AutoMapper.Mapper.Map<ExerciseDetails>(request);
+            exercise.UserId = CurrentUserId;
             if (!trainingRepository.CreateExercise(exercise))
             {
                 return BadRequest();
@@ -61,7 +62,7 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             AutoMapper.Mapper.Map(request, exercise);
-           if(!trainingRepository.UpdateExercise(exercise))
+            if(!trainingRepository.UpdateExercise(exercise))
             {
                 return BadRequest();
             }
