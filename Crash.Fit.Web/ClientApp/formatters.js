@@ -8,8 +8,9 @@ function formatTime(value) {
     var m = new moment(value);
     return m.format('HH:mm');
 }
-function formatDatetime(value, format) {
+function formatDateTime(value, format) {
     var m = new moment(value);
+    format = format || 'DD.MM.YYYY HH:mm';
     return m.format(format);
 }
 function formatUnit(unit){
@@ -28,4 +29,4 @@ function formatUnit(unit){
             return unit;
     }
 }
-export { formatDate, formatTime, formatDatetime, formatUnit }
+export { formatDate, formatTime, formatDateTime, formatUnit }

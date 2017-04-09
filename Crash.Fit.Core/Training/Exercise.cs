@@ -13,6 +13,6 @@ namespace Crash.Fit.Training
     }
     public class ExerciseDetails : ExerciseMinimal
     {
-        public ExerciseTarget[] Targets { get; set; }
+        public Guid[] Targets { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="!selectedWorkout">
-            <section class="content-header"><h1>Ateriat</h1></section>
+            <section class="content-header"><h1>Treenit</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
@@ -32,12 +32,18 @@
                                     <thead>
                                         <tr>
                                             <th class="time"></th>
+                                            <template v-for="muscleGroup in muscleGroups">
+                                                <th class="muscle-group"><div><span>{{ muscleGroup.name}}</span></div></th>
+                                            </template>
                                             <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr class="workout" v-for="workout in workouts">
-                                            <td class="freeze">{{ time(workout.time) }}</td>
+                                            <td class="freeze">{{ datetime(workout.time) }}</td>
+                                            <template v-for="muscleGroup in muscleGroups">
+                                                <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
+                                            </template>
                                             <td class="action">
                                                 <button class="btn btn-sm" @click="editWorkout(workout)">Tiedot</button>
                                             </td>
@@ -55,7 +61,7 @@
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <workout-editor v-bind:workout="selectedWorkout" v-bind:saveCallback="saveWorkout" v-bind:cancelCallback="cancelWorkout" v-bind:deleteCallback="deleteWorkout" />
+                        <workout-editor v-bind:workout="selectedWorkout" v-bind:exercises="exercises" v-bind:saveCallback="saveWorkout" v-bind:cancelCallback="cancelWorkout" v-bind:deleteCallback="deleteWorkout" />
                     </div>
                 </div>
             </section>
@@ -76,6 +82,7 @@ module.exports = {
             end: null,
             muscleGroups: [],
             workouts: [],
+            exercises: [],
             selectedWorkout: null
         }
     },
@@ -139,7 +146,7 @@ module.exports = {
             this.selectedWorkout = null;
         },
         date: formatters.formatDate,
-        time: formatters.formatTime,
+        datetime: formatters.formatDateTime,
         unit: formatters.formatUnit,
         decimal: function (value, precision) {
             if (!value) {
@@ -153,6 +160,9 @@ module.exports = {
         var self = this;
         api.listMuscleGroups().then(function (groups) {
             self.muscleGroups = groups;
+        });
+        api.listExercises().then(function (exercises) {
+            self.exercises = exercises;
         });
         var id = this.$route.params.id;
         if (id) {
@@ -168,5 +178,28 @@ module.exports = {
 </script>
 
 <style scoped>
-    
+    #workout-summary
+    {
+        width: auto;
+    }
+    th.muscle-group
+    {
+        height: 100px;
+        white-space: nowrap;
+    }
+    th.muscle-group > div
+    {
+       transform: translate(15px, 3px) rotate(-45deg);
+       width: 20px;
+    }
+    th.muscle-group > div > span 
+    {
+      border-bottom: 1px solid #ccc;
+      padding: 5px 10px;
+    }
+    td.muscle-group
+    {
+        border-right:1px solid #ccc;
+        text-align:center;
+    }
 </style>

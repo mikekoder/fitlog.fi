@@ -10,7 +10,10 @@ namespace Crash.Fit.Training
     {
         public Guid UserId { get; set; }
         public DateTimeOffset Time { get; set; }
-        public string Name { get; set; }
+    }
+    public class WorkoutSummary : WorkoutMinimal
+    {
+        public Dictionary<Guid, int> MuscleGroupSets { get; set; }
     }
     public class WorkoutDetails : WorkoutMinimal
     {

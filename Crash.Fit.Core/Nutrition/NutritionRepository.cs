@@ -129,10 +129,8 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN @ids ORDER BY [Index]";
             var sql = @"
 SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=0 AND Deleted IS NULL;";
             using (var conn = CreateConnection())
-            using (var multi = conn.QueryMultiple(sql, new { userId }))
             {
-                var recipes = multi.Read<FoodMinimal>().ToList();
-                return recipes;
+                return conn.Query<FoodMinimal>(sql, new { userId });
             }
         }
         public IEnumerable<FoodMinimal> SearchRecipes(Guid userId)
@@ -140,10 +138,8 @@ SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=0 AND Deleted IS NULL;";
             var sql = @"
 SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=1 AND Deleted IS NULL;";
             using (var conn = CreateConnection())
-            using (var multi = conn.QueryMultiple(sql,new { userId }))
             {
-                var recipes = multi.Read<FoodMinimal>().ToList();
-                return recipes;
+                return conn.Query<FoodMinimal>(sql, new { userId }).ToList();
             }
         }
         public bool CreateFood(FoodDetails food)

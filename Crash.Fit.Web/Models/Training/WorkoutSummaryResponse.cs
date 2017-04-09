@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Web.Models.Training
 {
-    public class WorkoutRequest
+    public class WorkoutSummaryResponse
     {
+        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public DateTimeOffset Time { get; set; }
         public string Name { get; set; }
-        public WorkoutSetRequest[] Sets { get; set; }
+        public Dictionary<Guid, int> MuscleGroupSets { get; set; }
     }
-    
 }

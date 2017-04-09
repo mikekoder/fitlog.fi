@@ -23,7 +23,7 @@ namespace Crash.Fit.Web.Controllers
         [Route("groups")]
         public IEnumerable<MuscleGroup> ListGroups()
         {
-            var muscleGroups = trainingRepository.GetMuscleGroups();
+            var muscleGroups = trainingRepository.GetMuscleGroups().OrderBy(g => g.Name);
             return muscleGroups;
         }
     }

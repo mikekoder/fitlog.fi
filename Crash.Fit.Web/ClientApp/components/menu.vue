@@ -8,13 +8,13 @@
             <router-link tag="li" :to="{ name: 'meal-calculator'}" exact v-if="!isLoggedIn">
                 <a><i class="fa fa-cutlery"></i> <span>Aterialaskuri</span></a>
             </router-link>
-            <router-link tag="li" :to="{ name: 'foods'}">
+            <router-link tag="li" :to="{ name: 'foods'}" v-if="isLoggedIn">
                 <a><i class="fa fa-apple"></i> <span>Ruoka-aineet</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'recipes'}" v-if="isLoggedIn">
                 <a><i class="fa fa-book"></i> <span>Reseptit</span></a>
             </router-link>
-            <router-link tag="li" :to="{ name: 'nutrients'}">
+            <router-link tag="li" :to="{ name: 'nutrients'}" v-if="isLoggedIn">
                 <a><i class="fa fa-flask"></i> <span>Ravintoaineet</span></a>
             </router-link>
             <li class="header">TREENAUS</li>
@@ -22,13 +22,17 @@
                 <a><i class="fa fa-trophy"></i> <span>Treenit</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'exercises'}" v-if="isLoggedIn">
-                <a><i class="fa fa-universal-access"></i> <span>Liikkeet</span></a>
+                <a><i class="fa fa-universal-access"></i> <span>Harjoitteet</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'routines'}" v-if="isLoggedIn">
                 <a><i class="fa fa-calendar"></i> <span>Ohjelmat</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'rep-calculator'}">
                 <a><i class="fa fa-calculator"></i> <span>Sarjapainolaskuri</span></a>
+            </router-link>
+            <li class="header" v-if="isLoggedIn">MITAT</li>
+            <router-link tag="li" :to="{ name: 'measurements'}" v-if="isLoggedIn">
+                <a><i class="fa fa-balance-scale"></i> <span>Mitat</span></a>
             </router-link>
             <!--
             <li class="treeview">
