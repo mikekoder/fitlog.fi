@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Nutrition;
+using Crash.Fit.Web.Models.Nutrition;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -19,10 +20,14 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpGet]
         [Route("")]
-        public IEnumerable<Nutrient> List()
+        public IActionResult List()
         {
-            return nutritionRepository.GetNutrients().OrderBy(n => n.UIOrder);
+            var nutrients = nutritionRepository.GetNutrients().OrderBy(n => n.UIOrder);
+
+            var response = AutoMapper.Mapper.Map<NutrientResponse[]>(nutrients);
+            return Ok(response);
         }
+        /*
         [HttpGet]
         [Route("daily-intakes")]
         public IEnumerable<DailyIntake> DailyIntakes(Gender gender, DateTime dateOfBirth)
@@ -30,5 +35,6 @@ namespace Crash.Fit.Web.Controllers
             var age = DateTime.Now - dateOfBirth;
             return nutritionRepository.GetDailyIntakes(gender, age);
         }
+        */
     }
 }

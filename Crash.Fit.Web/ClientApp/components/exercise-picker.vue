@@ -3,7 +3,7 @@
 </template>
 
 <script>
-    var api = require('../../api');
+    var api = require('../api');
     require('bootstrap-3-typeahead');
 
 module.exports = {

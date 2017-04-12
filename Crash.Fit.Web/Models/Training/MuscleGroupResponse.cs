@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Crash.Fit.Training
+namespace Crash.Fit.Web.Models.Training
 {
-    public class RoutineWorkout : Entity
+    public class MuscleGroupResponse
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
-        public RoutineExercise[] Exercises { get; set; }
     }
 }

@@ -97,7 +97,7 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN @ids ORDER BY [Index]";
                 return foods;
             }
         }
-        public IEnumerable<FoodMinimal> SearchFoods(string[] nameTokens, Guid? userId = null)
+        public IEnumerable<Food> SearchFoods(string[] nameTokens, Guid? userId = null)
         {
             var parameters = new DynamicParameters();
             var sql = "";
@@ -121,25 +121,45 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN @ids ORDER BY [Index]";
             sql = "SELECT * FROM Food WHERE " + sql.Substring(5) + " ORDER BY Name";
             using (var conn = CreateConnection())
             {
-                return conn.Query<FoodMinimal>(sql, parameters);
+                return conn.Query<Food>(sql, parameters);
             }
         }
-        public IEnumerable<FoodMinimal> SearchUserFoods(Guid userId)
+        public IEnumerable<FoodSummary> SearchUserFoods(Guid userId)
         {
             var sql = @"
-SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=0 AND Deleted IS NULL;";
+SELECT *, (SELECT COUNT(*) FROM FoodNutrient WHERE FoodId=Food.Id) AS NutrientCount FROM Food WHERE UserId=@userId AND IsRecipe=0 AND Deleted IS NULL;
+SELECT R.FoodId, COUNT(*) AS [Count] FROM MealRow R JOIN Meal M ON M.Id=R.MealId
+WHERE M.UserId=@userId AND M.Deleted IS NULL
+GROUP BY R.FoodId;";
             using (var conn = CreateConnection())
+            using(var multi = conn.QueryMultiple(sql, new { userId }))
             {
-                return conn.Query<FoodMinimal>(sql, new { userId });
+                var foods = multi.Read<FoodSummary>().ToList();
+                var counts = multi.Read<FoodUsageRaw>().ToList();
+                foreach(var food in foods)
+                {
+                    food.UsageCount = counts.FirstOrDefault(c => c.FoodId == food.Id)?.Count ?? 0;
+                }
+                return foods;
             }
         }
-        public IEnumerable<FoodMinimal> SearchRecipes(Guid userId)
+        public IEnumerable<FoodSummary> SearchRecipes(Guid userId)
         {
             var sql = @"
-SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=1 AND Deleted IS NULL;";
+SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=1 AND Deleted IS NULL;
+SELECT R.FoodId, COUNT(*) AS [Count] FROM MealRow R JOIN Meal M ON M.Id=R.MealId
+WHERE M.UserId=@userId AND M.Deleted IS NULL
+GROUP BY R.FoodId;";
             using (var conn = CreateConnection())
+            using (var multi = conn.QueryMultiple(sql, new { userId }))
             {
-                return conn.Query<FoodMinimal>(sql, new { userId }).ToList();
+                var foods = multi.Read<FoodSummary>().ToList();
+                var counts = multi.Read<FoodUsageRaw>().ToList();
+                foreach (var food in foods)
+                {
+                    food.UsageCount = counts.FirstOrDefault(c => c.FoodId == food.Id)?.Count ?? 0;
+                }
+                return foods;
             }
         }
         public bool CreateFood(FoodDetails food)
@@ -224,7 +244,7 @@ SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=1 AND Deleted IS NULL;";
                 }
             }
         }
-        public bool DeleteFood(FoodMinimal food)
+        public bool DeleteFood(Food food)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -362,7 +382,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
                 }
             }
         }
-        public bool DeleteMeal(MealMinimal meal)
+        public bool DeleteMeal(Meal meal)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -412,6 +432,11 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
         private class RecipeIngredientRaw : RecipeIngredient
         {
             public Guid RecipeId { get; set; }
+        }
+        private class FoodUsageRaw
+        {
+            public Guid FoodId { get; set; }
+            public int Count { get; set; }
         }
     }
 }

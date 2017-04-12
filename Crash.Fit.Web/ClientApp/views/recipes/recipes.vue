@@ -6,21 +6,25 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <button class="btn btn-primary" @click="createRecipe"><i class="glyphicon glyphicon-plus"></i> Uusi resepti</button>
-                        <table class="table" id="recipe-summary">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table" id="recipe-list">
                             <thead>
                                 <tr>
                                     <th>Nimi</th>
-                                    <th></th>
+                                    <th>K&auml;ytt&ouml;kerrat</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="recipe in recipes">
                                     <td><span>{{ recipe.name }}</span></td>
+                                    <td>{{ recipe.usageCount }}</td>
                                     <td>
                                         <button @click="editRecipe(recipe)">Muokkaa</button>
                                     </td>
-                                    <td></td>
                                 </tr>   
                             </tbody>
                         </table>
@@ -160,50 +164,17 @@ module.exports = {
 </script>
 
 <style scoped>
-    li.custom-date{
-        padding: 3px 10px;
-    }
-    li.custom-date button{
-        margin-top: 3px;
-    }
-    .outer {
-      position: relative;
-    }
-    .inner {
-      overflow-x: auto;
-      overflow-y: visible;
-      margin-left: 100px;
-    }
-    #recipe-summary{
+    #recipe-list
+    {
         width: auto;
         table-layout: fixed; 
         /*width: 100%;*/
     }
-    #recipe-summary td {
+    #recipe-list td {
         padding-bottom: 0px;
     }
-    #recipe-summary td span{
+    #recipe-list td span{
         margin: 5px;
     }
-    .freeze {
-      position: absolute;
-      margin-left: -100px;
-      width: 80px;
-    }
-
-
-   
-    th.time{
-        width: 80px;
-    }
-
-    th.nutrient{
-        width: 70px;
-    }
-    td div.chart{
-        position: relative;
-        top: -10px;
-    }
-    
    
 </style>

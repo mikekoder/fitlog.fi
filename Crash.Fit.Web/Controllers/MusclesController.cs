@@ -21,10 +21,12 @@ namespace Crash.Fit.Web.Controllers
 
         [HttpGet]
         [Route("groups")]
-        public IEnumerable<MuscleGroup> ListGroups()
+        public IActionResult ListGroups()
         {
             var muscleGroups = trainingRepository.GetMuscleGroups().OrderBy(g => g.Name);
-            return muscleGroups;
+
+            var response = AutoMapper.Mapper.Map<MuscleGroupResponse[]>(muscleGroups);
+            return Ok(response);
         }
     }
 }

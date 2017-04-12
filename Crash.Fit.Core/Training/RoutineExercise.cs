@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Training
 {
-    public class RoutineSet
+    public class RoutineExercise
     {
-        public int Index { get; set; }
+        //public int Index { get; set; }
         public Guid ExerciseId { get; set; }
+        public int Sets { get; set; }
         public int Reps { get; set; }
     }
 }

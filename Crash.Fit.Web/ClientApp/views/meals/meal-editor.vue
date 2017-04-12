@@ -1,5 +1,5 @@
 ﻿<template>
-    <div>
+    <div class="meal-details">
         <div class="row" v-if="!anon">
             <div class="col-sm-5 col-md-3 col-lg-2">
                 <div class="form-group">
@@ -27,7 +27,7 @@
                     <div class="row hidden-xs">
                         <div class="col-sm-4"><label>Ruoka</label></div>
                         <div class="col-sm-2"><label>Määrä</label></div>
-                        <div class="col-sm-3"><label>Annos</label></div>
+                        <div class="col-sm-3 col-lg-2"><label>Annos</label></div>
                         <div class="col-sm-1"><label>Paino</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
@@ -37,16 +37,20 @@
                                 <label class="hidden-sm hidden-md hidden-lg">Ruoka</label>
                                 <div v-if="copyMode">
                                     <input type="checkbox" v-model="row.copy" />
-                                </div><food-picker v-bind:value="row.food" v-on:change="row.food=arguments[0]" />
+                                    <span>{{ row.food ? row.food.name : '' }}</span>
+                                </div>
+                                <food-picker v-else v-bind:value="row.food" v-on:change="row.food=arguments[0]" />
                             </div>
-                            <div class="quantity col-sm-2 col-xs-3">
+                            <div class="quantity col-xs-3 col-sm-2">
                                 <label class="hidden-sm hidden-md hidden-lg">Määrä</label>
-                                <input type="number" class="form-control" v-model="row.quantity" />
+                                <span v-if="copyMode">{{ row.quantity }}</span>
+                                <input v-else type="number" class="form-control" v-model="row.quantity" />
                             </div>
-                            <div class="portion col-sm-3 col-xs-7">
+                            <div class="portion col-xs-7 col-sm-3 col-lg-2">
                                 <label class="hidden-sm hidden-md hidden-lg">Annos</label>
                                 <div v-if="row.food">
-                                    <select class="form-control" v-model="row.portion">
+                                    <span v-if="copyMode">{{ row.portion ? row.portion.name : '' }}</span>
+                                    <select v-else class="form-control" v-model="row.portion">
                                         <option v-bind:value="undefined">g</option>
                                         <option v-for="portion in row.food.portions" v-bind:value="portion">
                                             {{ portion.name }}
@@ -62,7 +66,7 @@
                             </div>
                             <div class="actions col-sm-1 col-xs-12">
                                 <div>
-                                    <button class="btn btn-danger" @click="removeRow(index)">Poista</button>
+                                    <button v-if="!copyMode" class="btn btn-danger" @click="removeRow(index)">Poista</button>
                                 </div>
                             </div>
                         </div>
@@ -71,48 +75,12 @@
                         </div>
                     </template>
                     <div class="row">
-                        <div class="col-sm-12"><div v-if="copyMode"><input type="checkbox" v-model="copyAllRows" /> Kaikki</div><button class="btn" @click="addRow"><i class="fa fa-plus"></i> Lisää</button></div>
+                        <div class="col-sm-12">
+                        <div v-if="copyMode"><input type="checkbox" v-model="copyAllRows" /> <strong>Kaikki</strong></div>
+                        <button v-else class="btn" @click="addRow"><i class="fa fa-plus"></i> Lisää</button>
+                        </div>
                     </div>
-                    <!--
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><div v-if="copyMode">Kopioi</div></th>
-                                <th class="food col-sm-6">Ruoka</th>
-                                <th class="quantity">Määrä</th>
-                                <th class="portion">Annos</th>
-                                <th class="weight">Paino</th>
-                                <th class="actions"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(row,index) in rows">
-                                <td><div v-if="copyMode"><input type="checkbox" v-model="row.copy" /></div></td>
-                                <td class="food"><food-picker v-bind:value="row.food" v-on:change="row.food=arguments[0]" /></td>
-                                <td class="quantity"><input type="number" class="form-control" v-model="row.quantity" /></td>
-                                <td class="portion">
-                                    <select class="form-control" v-if="row.food" v-model="row.portion">
-                                        <option v-bind:value="null">g</option>
-                                        <option v-for="portion in row.food.portions" v-bind:value="portion">
-                                            {{ portion.name }}
-                                        </option>
-                                    </select>
-                                </td>
-                                <td class="weight">
-                                    <div v-if="row.food">
-                                        <span v-if="row.food">{{ weight(row.quantity, row.portion) }}</span>
-                                    </div>
-                                </td>
-                                <td class="actions"><button class="btn btn-link" @click="removeRow(index)">Poista</button></td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td><div v-if="copyMode"><input type="checkbox" v-model="copyAllRows" /> Kaikki</div></td>
-                                <td colspan="5"><button class="btn" @click="addRow"><i class="glyphicon glyphicon-plus"></i> Lisää</button></td>
-                            </tr>
-                        </tfoot>
-                    </table>-->
+                   
                 </div>
                 <div v-if="showNutrients">
                     <table>
@@ -232,6 +200,7 @@ module.exports = {
         saveCallback: null,
         cancelCallback: null,
         deleteCallback: null,
+        copyCallback: null,
         anon: false
     },
     components: {
@@ -280,7 +249,12 @@ module.exports = {
             this.copyMode = true;
             this.copyAllRows = true;
         },
-        confirmCopy: function () { },
+        confirmCopy: function (){
+            var meal = {
+                rows: this.rows.filter(r => r.copy).map(r => { return { foodId: r.food ? r.food.id : undefined, quantity: utils.parseFloat(r.quantity), portionId: r.portion ? r.portion.id : undefined } })
+            };
+            this.copyCallback(meal);
+        },
         cancelCopy: function () {
             this.copyMode = false;
             this.copyAllRows = true;
@@ -337,6 +311,10 @@ module.exports = {
 }
 </script>
 <style scoped>
+    .meal-details 
+    {
+        max-width:1200px;
+    }
     div.meal-row
     {
         margin-bottom:5px;

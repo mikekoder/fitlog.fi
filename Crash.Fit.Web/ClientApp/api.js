@@ -120,7 +120,10 @@ const api = {
         });
     },
     deleteRecipe: function (id) {
-
+        return $.ajax({
+            url: baseUrl + 'recipes/' + id,
+            type: 'DELETE'
+        });
     },
     // Nutrients
     listNutrients: function(){
@@ -160,7 +163,10 @@ const api = {
         });
     },
     deleteWorkout: function(id){
-
+        return $.ajax({
+            url: baseUrl + 'workouts/' + id,
+            type: 'DELETE'
+        });
     },
 
     // Muscles
@@ -191,21 +197,39 @@ const api = {
         });
     },
     deleteExercise: function(id){
-
+        return $.ajax({
+            url: baseUrl + 'exercises/' + id,
+            type: 'DELETE'
+        });
     },
 
     // Routines
-    listRoutines: function(){
-
+    listRoutines: function () {
+        return $.get(baseUrl + 'routines/');
     },
     getRoutine: function(id){
         return $.get(baseUrl + 'routines/' + id);
     },
-    saveRoutine: function(routine){
+    saveRoutine: function (routine) {
+        var url = baseUrl + 'routines/';
+        var method = 'POST';
+        if (routine.id) {
+            url += routine.id;
+            method = 'PUT';
+        }
 
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(routine)
+        });
     },
     deleteRoutine: function(id){
-
+        return $.ajax({
+            url: baseUrl + 'routines/' + id,
+            type: 'DELETE'
+        });
     }
 };
 module.exports = api

@@ -6,17 +6,24 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <button class="btn btn-primary" @click="createFood"><i class="glyphicon glyphicon-plus"></i> Uusi ruoka-aine</button>
-                    
-                        <table class="table" id="meal-summary">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table" id="food-list">
                             <thead>
                                 <tr>
                                     <th>Nimi</th>
+                                    <th>K&auml;ytt&ouml;kerrat</th>
+                                    <th>Ravintoarvoja</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="food in foods">
                                     <td>{{ food.name }}</td>
+                                    <td>{{ food.usageCount }}</td>
+                                    <td>{{ food.nutrientCount }}</td>
                                     <td><button class="btn" @click="editFood(food)">Tiedot</button></td>
                                 </tr>
                             </tbody>
@@ -103,4 +110,17 @@ module.exports = {
 </script>
 
 <style scoped>
+   #food-list
+   {
+        width: auto;
+        table-layout: fixed; 
+        /*width: 100%;*/
+    }
+    #food-list td {
+        padding-bottom: 0px;
+    }
+    #food-list td span{
+        margin: 5px;
+    }
+   
 </style>

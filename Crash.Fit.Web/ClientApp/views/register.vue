@@ -4,7 +4,6 @@
             <a href="/"><b>Crash</b>FIT</a>
         </div>
         <div class="register-box-body">
-            <p class="login-box-msg">Luo tunnukset</p>
                 <div class="form-group has-feedback">
                     <label>Sähköpostiosoite</label> <span class="error">{{ emailError}}</span>
                     <input type="email" class="form-control" v-model="email" @blur="checkEmail">
@@ -28,12 +27,10 @@
             <div class="social-auth-links text-center">
                 <p>- TAI -</p>
                 <a href="#" class="btn btn-block btn-social btn-facebook btn-flat">
-                    <i class="fa fa-facebook"></i> Sign up using
-                    Facebook
+                    <i class="fa fa-facebook"></i> Kirjaudu Facebook-tunnuksilla
                 </a>
                 <a href="#" class="btn btn-block btn-social btn-google btn-flat">
-                    <i class="fa fa-google-plus"></i> Sign up using
-                    Google+
+                    <i class="fa fa-google-plus"></i> Kirjaudu Google-tunnuksilla
                 </a>
             </div>
             <a href="#/kirjaudu" class="text-center">Minulla on jo tunnukset</a>

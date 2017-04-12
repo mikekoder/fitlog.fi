@@ -10,6 +10,7 @@ import 'admin-lte/dist/css/skins/skin-blue.css'
 import 'font-awesome/css/font-awesome.css'
 import './css/site.css'
 var auth = require('./auth');
+var $ = require('jquery');
 
 Vue.use(VueRouter)
 Vue.mixin({
@@ -36,6 +37,11 @@ router.beforeEach((to, from, next) =>{
         next();
     }
 });
+router.afterEach((to, from) => {
+    if (window.matchMedia('(max-width: 767px)').matches) {
+        $('body').addClass('sidebar-collapse').removeClass('sidebar-open');
+    }
+})
 
 
 import app from './app'

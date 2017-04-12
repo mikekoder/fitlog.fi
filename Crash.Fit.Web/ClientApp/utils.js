@@ -3,7 +3,7 @@
         if (typeof (value) === 'number') {
             return value;
         }
-        return parseFloat(value.replace(',', '.'));
+        return parseFloat((value || '0').replace(',', '.'));
     }
 }
 module.exports = utils

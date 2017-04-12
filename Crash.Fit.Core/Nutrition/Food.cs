@@ -6,14 +6,19 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Nutrition
 {
-    public class FoodMinimal : Entity
+    public class Food : Entity
     {
         public Guid? UserId { get; set; }
         public string Name { get; set; }
         public bool IsRecipe { get; set; }
         public string FineliId { get; set; }
     }
-    public class FoodDetails : FoodMinimal
+    public class FoodSummary : Food
+    {
+        public int UsageCount { get; set; }
+        public int NutrientCount { get; set; }
+    }
+    public class FoodDetails : Food
     {
         public RecipeIngredient[] Ingredients { get; set; }
         public Portion[] Portions { get; set; }

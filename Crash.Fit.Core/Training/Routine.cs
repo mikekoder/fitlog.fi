@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Training
 {
-    public class RoutineMinimal : Entity
+    public class Routine : Entity
     {
         public Guid UserId { get; set; }
         public string Name { get; set; }     
     }
-    public class RoutineDetails : RoutineMinimal
+    public class RoutineSummary : Routine
+    {
+        public int WorkoutCount { get; set; }
+    }
+    public class RoutineDetails : Routine
     {
         public RoutineWorkout[] Workouts { get; set; }
     }

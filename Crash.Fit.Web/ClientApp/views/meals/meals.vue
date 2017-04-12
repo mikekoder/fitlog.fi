@@ -26,20 +26,29 @@
                                 </li>
                             </ul>
                         </div>
+                        
                         <div class="btn-group" role="group" aria-label="...">
                             <button class="btn btn-default" v-bind:class="{ active: selectedGroup==='MACROCMP' }" @click="showNutrients('MACROCMP')">Makrot</button>
                             <button class="btn btn-default" v-bind:class="{ active: selectedGroup==='MINERAL' }" @click="showNutrients('MINERAL')">Mineraalit</button>
                             <button class="btn btn-default" v-bind:class="{ active: selectedGroup==='VITAM' }" @click="showNutrients('VITAM')">Vitamiinit</button>
                         </div>
+                       
                         <button class="btn btn-primary" @click="createMeal"><i class="glyphicon glyphicon-plus"></i> Uusi ateria</button>
                         <div class="outer">
                             <div class="inner">
-                                <table class="table" id="meal-summary">
+                                <table class="table" id="meal-list">
                                     <thead>
                                         <tr>
                                             <th class="time freeze">&nbsp;<br />Aika</th>
                                             <template v-for="col in visibleColumns">
-                                                <th class="nutrient" v-if="col.visible">{{ col.title }}<br /> {{ unit(col.unit) }}</th>
+                                                <th class="nutrient" v-if="col.visible"><div><div>{{ col.title }}</div></div></th>
+                                            </template>
+                                            <th></th>
+                                        </tr>
+                                        <tr>
+                                            <th></th>
+                                            <template v-for="col in visibleColumns">
+                                                <th class="unit" v-if="col.visible">{{ unit(col.unit) }}</th>
                                             </template>
                                             <th></th>
                                         </tr>
@@ -47,8 +56,11 @@
                                     <tbody>
                                         <template v-for="day in days">
                                             <tr class="day" @click="toggleDay(day)">
-                                                <td class="freeze"><span>{{ date(day.date) }}</span></td>
-                                                <td v-for="col in visibleColumns">
+                                                <td class="freeze">
+                                                    <i v-if="!day.showDetails" class="fa fa-arrow-down"></i>
+                                                    <i v-if="day.showDetails" class="fa fa-arrow-up"></i>
+                                                    {{ date(day.date) }}</td>
+                                                <td class="nutrient" v-for="col in visibleColumns">
                                                     <div class="chart" v-if="col === energyDistributionColumn">
                                                         <chart-pie-energy v-bind:protein="day.nutrients[proteinId]" v-bind:carb="day.nutrients[carbId]" v-bind:fat="day.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
@@ -57,8 +69,8 @@
                                                 <td></td>
                                             </tr>
                                             <tr class="meal" v-if="day.showDetails" v-for="meal in day.meals">
-                                                <td class="freeze">{{ time(meal.time) }}</td>
-                                                <td v-for="col in visibleColumns">
+                                                <td class="freeze"><a @click="editMeal(meal)">{{ time(meal.time) }}</a></td>
+                                                <td class="nutrient" v-for="col in visibleColumns">
                                                     <div class="chart" v-if="col === energyDistributionColumn">
                                                         <chart-pie-energy v-bind:protein="meal.nutrients[proteinId]" v-bind:carb="meal.nutrients[carbId]" v-bind:fat="meal.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
@@ -83,7 +95,7 @@
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <meal-editor v-bind:meal="selectedMeal" v-bind:saveCallback="saveMeal" v-bind:cancelCallback="cancelMeal" v-bind:deleteCallback="deleteMeal" />
+                        <meal-editor v-bind:meal="selectedMeal" v-bind:saveCallback="saveMeal" v-bind:cancelCallback="cancelMeal" v-bind:deleteCallback="deleteMeal" v-bind:copyCallback="copyMeal" />
                     </div>
                 </div>
             </section>
@@ -116,7 +128,7 @@ module.exports = {
         visibleColumns: function () {
             var self = this;
             return this.columns.filter(function (c) {
-                return !c.group || c.group == self.selectedGroup;
+                return true || !c.group || c.group == self.selectedGroup;
             });
         }
     },
@@ -239,6 +251,16 @@ module.exports = {
                 self.showSummary();
             });
         },
+        copyMeal: function (meal) {
+            var self = this;
+            self.cancelMeal();
+            meal.id = undefined;
+            meal.time = new Date();
+            setTimeout(function () {
+                self.showMeal(meal);
+            }, 100);
+            
+        },
         showMeal: function (meal) {
             this.selectedMeal = meal;
         },
@@ -264,12 +286,13 @@ module.exports = {
         
         var self = this;
         api.listNutrients().then(function (nutrients) {
+            self.columns.push(self.energyDistributionColumn);
             for (var i in nutrients) {
                 if (nutrients[i].uiVisible) {
-                    self.columns.push({ title: nutrients[i].shortName, unit: nutrients[i].unit, precision: nutrients[i].precision, key: nutrients[i].id, visible: true, group: nutrients[i].fineliGroup });
+                    self.columns.push({ title: nutrients[i].name, unit: nutrients[i].unit, precision: nutrients[i].precision, key: nutrients[i].id, visible: true, group: nutrients[i].fineliGroup });
                 }
             }
-            self.columns.push(self.energyDistributionColumn);
+            
         });
         var id = this.$route.params.id;
         if (id) {
@@ -303,45 +326,71 @@ module.exports = {
       overflow-y: visible;
       margin-left: 100px;
     }
-    #meal-summary
+    #meal-list
     {
         width: auto;
         table-layout: fixed; 
         /*width: 100%;*/
     }
-    #meal-summary td 
+    #meal-list td 
     {
         padding-bottom: 0px;
     }
-    #meal-summary td span
+    #meal-list td span
     {
         margin: 5px;
-    }
-    tr.day td
-    {
-        background-color:azure;
     }
     .freeze 
     {
       position: absolute;
-      margin-left: -80px;
-      width: 80px;
+      margin-left: -100px;
+      width: 100px;
       text-align: right;
     }
     th.time
     {
-        width: 80px;
+        top: 38px;
+        border-width:0px;
+        width: 100px;
+    }
+    #meal-list a
+    {
+        cursor: pointer;
     }
     th.nutrient
     {
-        width: 70px;
-    }
-    td div.chart
+        height: 120px;
+        white-space: nowrap;
+    }   
+    th.nutrient > div
     {
-        width: 100px;
-        height: 20px;
+       transform: translate(32px, 0px) rotate(-45deg);
+       width: 40px;
     }
-    td.action {
-        padding: 0px;
+    th.nutrient > div > div 
+    {
+      border-bottom: 1px solid #ccc;
+      padding: 5px 10px;
+      width: 100px;
+    }
+    th.nutrient:nth-child(2) > div
+    {
+        transform: translate(50px, -5px) rotate(-45deg);
+        width: 60px;
+    }
+    th.unit
+    {
+        padding:0px;
+        text-align:center;
+        border-right:1px solid #ccc;
+    }
+    td.nutrient
+    {
+        padding-left: 1px;
+        padding-right: 1px;
+        border-right:1px solid #ccc;
+        text-align:center;
+        width:40px;
+        overflow: visible;
     }
 </style>

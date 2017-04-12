@@ -1,5 +1,5 @@
 ﻿<template>
-    <div>
+    <div class="recipe-details">
         <div class="row" v-if="!anon">
             <div class="col-sm-6 col-md-5 col-lg-4">
                 <div class="form-group">
@@ -21,7 +21,7 @@
                     <div class="row hidden-xs">
                         <div class="col-sm-4"><label>Ruoka</label></div>
                         <div class="col-sm-2"><label>Määrä</label></div>
-                        <div class="col-sm-3"><label>Annos</label></div>
+                        <div class="col-sm-3 col-lg-2"><label>Annos</label></div>
                         <div class="col-sm-1"><label>Paino</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
@@ -35,7 +35,7 @@
                                 <label class="hidden-sm hidden-md hidden-lg">Määrä</label>
                                 <input type="number" class="form-control" v-model="row.quantity" />
                             </div>
-                            <div class="portion col-sm-3 col-xs-7">
+                            <div class="portion col-xs-7 col-sm-3 col-lg-2 ">
                                 <label class="hidden-sm hidden-md hidden-lg">Annos</label>
                                 <div v-if="row.food">
                                     <select class="form-control" v-model="row.portion">
@@ -69,24 +69,24 @@
                 </div>
                 <div v-if="tab === 'portions'">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4"><label>Nimi</label></div>
-                        <div class="col-sm-2"><label>Paino</label></div>
-                        <div class="col-sm-3"><label>Annoksia/resepti</label></div>
+                        <div class="col-sm-4 col-lg-2"><label>Nimi</label></div>
+                        <div class="col-sm-2 col-lg-1"><label>Paino</label></div>
+                        <div class="col-sm-3 col-lg-1"><label>Annoksia</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
                     <template v-for="(portion,index) in portions">
                         <div class="recipe-row row">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 col-lg-2">
                                 <label class="hidden-sm hidden-md hidden-lg">Nimi</label>
                                 <input type="text" class="form-control" v-model="portion.name" />
                             </div>
-                            <div class="quantity col-sm-2 col-xs-3">
+                            <div class="quantity col-sm-2 col-xs-3 col-lg-1">
                                 <label class="hidden-sm hidden-md hidden-lg">Paino</label>
-                                <input type="number" class="form-control" v-model="portion.weight" />
+                                <input type="number" class="form-control" v-model="portion.weight" @blur="portionWeightChanged(portion)" />
                             </div>
-                            <div class="portion col-sm-3 col-xs-7">
+                            <div class="portion col-sm-3 col-xs-7 col-lg-1">
                                 <label class="hidden-sm hidden-md hidden-lg">Annoksia/resepti</label>
-                                <span>{{ decimal(recipeWeight / portion.weight, 1) }}</span>
+                                <input type="number" class="form-control" v-model="portion.number" @blur="portionNumberChanged(portion)" />
                             </div>
                             <div class="actions col-sm-1 col-xs-12">
                                 <div>
@@ -265,7 +265,7 @@ module.exports = {
             this.ingredients.push({ food: null, quantity: null, portion: undefined });
         },
         addPortion : function(){
-            this.portions.push({ name: null, weight: null});
+            this.portions.push({ name: null, weight: null, number: null});
         },
         removePortion: function (index) {
             this.portions.splice(index, 1);
@@ -304,6 +304,23 @@ module.exports = {
                 return value;
             }
             return value.toFixed(precision);
+        },
+        portionWeightChanged: function (portion) {
+            if (portion.weight) {
+                if (typeof (portion.weight) !== 'number') {
+                    portion.weight = parseFloat(portion.weight.replace(',', '.'));
+                }
+                portion.number = this.decimal(this.recipeWeight / portion.weight,1);
+            }
+            
+        },
+        portionNumberChanged: function (portion) {
+            if (portion.number) {
+                if (typeof (portion.number) !== 'number') {
+                    portion.number = parseFloat(portion.number.replace(',', '.'));
+                }
+                portion.weight = this.decimal(this.recipeWeight / portion.number, 0);
+            }
         }
     },
     watch: {
@@ -351,6 +368,10 @@ module.exports = {
 }
 </script>
 <style scoped>
+    .recipe-details 
+    {
+        max-width:1200px;
+    }
     div.recipe-row
     {
         margin-bottom:5px;
