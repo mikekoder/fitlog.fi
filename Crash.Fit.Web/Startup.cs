@@ -66,29 +66,56 @@ namespace Crash.Fit.Web
             });
 
             AutoMapper.Mapper.Initialize(m => {
-                m.CreateMap<ICollection<NutrientAmount>, Dictionary<Guid, decimal>>()
-                    .ConvertUsing(na => na.ToDictionary(n=> n.NutrientId,n => n.Amount));
 
-                m.CreateMap<MealDetails, Models.Nutrition.MealResponse>();
+                // Nutrients
+                m.CreateMap<Nutrient, Models.Nutrition.NutrientResponse>();
+                m.CreateMap<IEnumerable<NutrientAmount>, Dictionary<Guid, decimal>>().ConvertUsing(na => na.ToDictionary(n=> n.NutrientId,n => n.Amount));
+                m.CreateMap<NutrientAmount, Models.Nutrition.NutrientAmountResponse>();
+                // Foods
+                m.CreateMap<Food, Models.Nutrition.FoodSummaryResponse>();
+                m.CreateMap<FoodSummary, Models.Nutrition.FoodSummaryResponse>();
+                m.CreateMap<FoodDetails, Models.Nutrition.FoodDetailsResponse>();      
+                m.CreateMap<Models.Nutrition.FoodRequest, FoodDetails>();
+
+                // Meals
+                m.CreateMap<MealDetails, Models.Nutrition.MealDetailsResponse>();
                 m.CreateMap<MealRow, Models.Nutrition.MealRow>();
                 m.CreateMap<Models.Nutrition.MealRequest, MealDetails>();
                 m.CreateMap<Models.Nutrition.MealRow, MealRow>();
 
-                m.CreateMap<FoodDetails, Models.Nutrition.RecipeResponse>();
+                // Recipes
+                m.CreateMap<FoodSummary, Models.Nutrition.RecipeSummaryResponse>();
+                m.CreateMap<FoodDetails, Models.Nutrition.RecipeDetailsResponse>();
                 m.CreateMap<RecipeIngredient, Models.Nutrition.RecipeIngredient>();
-                m.CreateMap<Portion, Models.Nutrition.Portion>();
-                m.CreateMap<Models.Nutrition.FoodRequest, FoodDetails>();
                 m.CreateMap<Models.Nutrition.RecipeRequest, FoodDetails>();
                 m.CreateMap<Models.Nutrition.RecipeIngredient, RecipeIngredient>();
+
+                // Portions
+                m.CreateMap<Portion, Models.Nutrition.Portion>();
                 m.CreateMap<Models.Nutrition.Portion, Portion>();
 
+                // Workouts
                 m.CreateMap<WorkoutSummary, Models.Training.WorkoutSummaryResponse>();
                 m.CreateMap<WorkoutDetails, Models.Training.WorkoutResponse>();
                 m.CreateMap<WorkoutSet, Models.Training.WorkoutSetResponse>();
                 m.CreateMap<Models.Training.WorkoutRequest, WorkoutDetails>();
                 m.CreateMap<Models.Training.WorkoutSetRequest, WorkoutSet>();
+
+                // Exercises
+                m.CreateMap<Exercise, Models.Training.ExerciseResponse>();
                 m.CreateMap<Models.Training.ExerciseRequest, ExerciseDetails>();
 
+                // Routines
+                m.CreateMap<RoutineSummary, Models.Training.RoutineSummaryResponse>();
+                m.CreateMap<RoutineDetails, Models.Training.RoutineDetailsResponse>();
+                m.CreateMap<RoutineWorkout, Models.Training.RoutineWorkoutResponse>();
+                m.CreateMap<RoutineExercise, Models.Training.RoutineExerciseResponse>();
+                m.CreateMap<Models.Training.RoutineRequest, RoutineDetails>();
+                m.CreateMap<Models.Training.RoutineWorkoutRequest, RoutineWorkout>();
+                m.CreateMap<Models.Training.RoutineExerciseRequest, RoutineExercise>();
+
+                // MuscleGroups
+                m.CreateMap<MuscleGroup, Models.Training.MuscleGroupResponse>();
             });
         }
 

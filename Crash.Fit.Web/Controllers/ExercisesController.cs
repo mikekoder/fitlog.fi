@@ -20,24 +20,34 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpGet]
         [Route("")]
-        public IEnumerable<ExerciseMinimal> List()
+        public IActionResult List()
         {
             var exercises = trainingRepository.SearchUserExercises(CurrentUserId).OrderBy(e => e.Name);
-            return exercises;
+
+            var response = AutoMapper.Mapper.Map<ExerciseResponse[]>(exercises);
+            return Ok(response);
         }
         [HttpGet]
         [Route("search")]
-        public IEnumerable<ExerciseMinimal> Search(string name)
+        public IActionResult Search(string name)
         {
             var exercises = trainingRepository.SearchExercises(name.Split(' '), CurrentUserId).OrderBy(e => e.Name);
-            return exercises;
+
+            var response = AutoMapper.Mapper.Map<ExerciseResponse[]>(exercises);
+            return Ok(response);
         }
         [HttpGet]
         [Route("{id}")]
-        public ExerciseDetails Details(Guid id)
+        public IActionResult Details(Guid id)
         {
             var exercise = trainingRepository.GetExercise(id);
-            return exercise;
+            if(exercise == null || exercise.UserId != CurrentUserId)
+            {
+                return NotFound();
+            }
+
+            var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);
+            return Ok(response);
         }
         [HttpPost]
         [Route("")]
@@ -49,7 +59,9 @@ namespace Crash.Fit.Web.Controllers
             {
                 return BadRequest();
             }
-            return Ok(exercise);
+
+            var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);
+            return Ok(response);
         }
 
         [HttpPut]
@@ -66,7 +78,9 @@ namespace Crash.Fit.Web.Controllers
             {
                 return BadRequest();
             }
-            return Ok(exercise);
+
+            var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);
+            return Ok(response);
         }
 
         [HttpDelete]
@@ -79,6 +93,7 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             trainingRepository.DeleteExercise(exercise);
+
             return Ok();
         }
     }

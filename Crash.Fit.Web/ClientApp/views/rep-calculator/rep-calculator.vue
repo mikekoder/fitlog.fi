@@ -14,7 +14,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <table>
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>Toistot</th>
@@ -184,4 +184,18 @@
 </script>
 
 <style scoped>
+    table
+    {
+        width: auto;
+        table-layout: fixed; 
+        /*width: 100%;*/
+    }
+    table td 
+    {
+        padding-bottom: 0px;
+    }
+    table td span
+    {
+        margin: 5px;
+    }
 </style>

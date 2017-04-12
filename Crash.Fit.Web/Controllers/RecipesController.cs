@@ -20,10 +20,12 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpGet]
         [Route("")]
-        public IEnumerable<FoodMinimal> List()
+        public IActionResult List()
         {
             var recipes = nutritionRepository.SearchRecipes(CurrentUserId);
-            return recipes;
+
+            var response = AutoMapper.Mapper.Map<RecipeSummaryResponse[]>(recipes);
+            return Ok(response);
         }
         [HttpGet]
         [Route("{id}")]
@@ -34,7 +36,7 @@ namespace Crash.Fit.Web.Controllers
             {
                 return NotFound();
             }
-            var result = AutoMapper.Mapper.Map<RecipeResponse>(food);
+            var result = AutoMapper.Mapper.Map<RecipeDetailsResponse>(food);
             return Ok(food);
         }
         [HttpPost]
@@ -50,7 +52,8 @@ namespace Crash.Fit.Web.Controllers
             {
                 return BadRequest();
             }
-            var result = AutoMapper.Mapper.Map<RecipeResponse>(recipe);
+
+            var result = AutoMapper.Mapper.Map<RecipeDetailsResponse>(recipe);
             return Ok(result);
         }
 
@@ -75,7 +78,7 @@ namespace Crash.Fit.Web.Controllers
                 return BadRequest();
             }
            
-            var result = AutoMapper.Mapper.Map<RecipeResponse>(recipe);
+            var result = AutoMapper.Mapper.Map<RecipeDetailsResponse>(recipe);
             return Ok(result);
         }
 
@@ -89,6 +92,7 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             nutritionRepository.DeleteFood(recipe);
+
             return Ok();
         }
 

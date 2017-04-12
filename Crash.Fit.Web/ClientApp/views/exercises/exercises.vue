@@ -1,13 +1,16 @@
 <template>
     <div>
         <div v-if="!selectedExercise">
-            <section class="content-header"><h1>Harjoitteet</h1></section>
+            <section class="content-header"><h1>Liikkeet</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn btn-primary" @click="createExercise"><i class="glyphicon glyphicon-plus"></i> Uusi harjoitus</button>
-
-                        <table class="table" id="meal-summary">
+                        <button class="btn btn-primary" @click="createExercise"><i class="glyphicon glyphicon-plus"></i> Uusi liike</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table" id="exercise-list">
                             <thead>
                                 <tr>
                                     <th>Nimi</th>
@@ -29,7 +32,7 @@
             </section>
         </div>
         <div v-if="selectedExercise">
-            <section class="content-header"><h1>Harjoituksen tiedot</h1></section>
+            <section class="content-header"><h1>Liikkeen tiedot</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
@@ -103,4 +106,15 @@ module.exports = {
 </script>
 
 <style scoped>
+    #exercise-list{
+        width: auto;
+        table-layout: fixed; 
+        /*width: 100%;*/
+    }
+    #exercise-list td {
+        padding-bottom: 0px;
+    }
+    #exercise-list td span{
+        margin: 5px;
+    }
 </style>

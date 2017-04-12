@@ -14,15 +14,15 @@ namespace Crash.Fit.Nutrition
         IEnumerable<DailyIntake> GetDailyIntakes(Gender gender, TimeSpan age);
 
 
-        IEnumerable<FoodMinimal> SearchFoods(string[] nameTokens, Guid? userId = null);
-        IEnumerable<FoodMinimal> SearchUserFoods(Guid userId);
-        IEnumerable<FoodMinimal> SearchRecipes(Guid userId);
+        IEnumerable<Food> SearchFoods(string[] nameTokens, Guid? userId = null);
+        IEnumerable<FoodSummary> SearchUserFoods(Guid userId);
+        IEnumerable<FoodSummary> SearchRecipes(Guid userId);
         FoodDetails GetFood(Guid id);
         IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids);
         //IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids);
         bool CreateFood(FoodDetails food);
         bool UpdateFood(FoodDetails food);
-        bool DeleteFood(FoodMinimal food);
+        bool DeleteFood(Food food);
         bool RestoreFood(Guid id, out FoodDetails food);
 
         //IEnumerable<Portion> GetPortions(IEnumerable<Guid> ids);
@@ -31,7 +31,7 @@ namespace Crash.Fit.Nutrition
         MealDetails GetMeal(Guid id);
         bool CreateMeal(MealDetails meal);
         bool UpdateMeal(MealDetails meal);
-        bool DeleteMeal(MealMinimal meal);
+        bool DeleteMeal(Meal meal);
         bool RestoreMeal(Guid id, out MealDetails meal);
     }
 }

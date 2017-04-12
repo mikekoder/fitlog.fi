@@ -56,7 +56,7 @@ const main = [
                 component: Workouts
             },
             {
-                path: '/harjoitteet',
+                path: '/liikkeet',
                 name: 'exercises',
                 component: Exercises
             },

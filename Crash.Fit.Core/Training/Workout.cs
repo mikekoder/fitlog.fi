@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Training
 {
-    public class WorkoutMinimal : Entity
+    public class Workout : Entity
     {
         public Guid UserId { get; set; }
         public DateTimeOffset Time { get; set; }
     }
-    public class WorkoutSummary : WorkoutMinimal
+    public class WorkoutSummary : Workout
     {
         public Dictionary<Guid, int> MuscleGroupSets { get; set; }
     }
-    public class WorkoutDetails : WorkoutMinimal
+    public class WorkoutDetails : Workout
     {
-       
         public WorkoutSet[] Sets { get; set; }
     }
 }

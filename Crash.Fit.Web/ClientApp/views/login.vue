@@ -4,9 +4,8 @@
             <a href="/"><b>Admin</b>LTE</a>
         </div>
         <div class="login-box-body">
-            <p class="login-box-msg">Sign in to start your session</p>
             <div class="form-group has-feedback">
-                <label>Käyttäjätunnus/Sähköpostiosoite</label>
+                <label>K&auml;ytt&auml;j&auml;tunnus/S&auml;hk&ouml;postiosoite</label>
                 <input type="text" class="form-control" v-model="username">
             </div>
             <div class="form-group has-feedback">
@@ -21,12 +20,10 @@
             <div class="social-auth-links text-center">
                 <p>- TAI -</p>
                 <a class="btn btn-block btn-social btn-facebook btn-flat" @click="loginFacebook">
-                    <i class="fa fa-facebook"></i> Sign in using
-                    Facebook
+                    <i class="fa fa-facebook"></i> Kirjaudu Facebook-tunnuksilla
                 </a>
                 <a class="btn btn-block btn-social btn-google btn-flat" @click="loginGoogle">
-                    <i class="fa fa-google-plus"></i> Sign in using
-                    Google+
+                    <i class="fa fa-google-plus"></i> Kirjaudu Google-tunnuksilla
                 </a>
             </div>
             <a href="#/luo-tunnus" class="text-center">Luo tili</a>

@@ -23,7 +23,7 @@ namespace Crash.Fit.Web.Controllers
         [Route("")]
         public IActionResult Search(DateTimeOffset start, DateTimeOffset? end)
         {
-            var workouts = trainingRepository.SearchWorkouts(CurrentUserId, start, end ?? DateTimeOffset.Now);
+            var workouts = trainingRepository.SearchWorkouts(CurrentUserId, start, end ?? DateTimeOffset.Now).OrderByDescending(w => w.Time);
 
             var response = AutoMapper.Mapper.Map<WorkoutSummaryResponse[]>(workouts);
             return Ok(response);
@@ -81,25 +81,32 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             trainingRepository.DeleteWorkout(workout);
+
             return Ok();
         }
 
         private void CreateExercises(IEnumerable<WorkoutSetRequest> sets)
         {
-            var newExercises = sets.Where(s => s.ExerciseId == null && !string.IsNullOrWhiteSpace(s.ExerciseName))
-                .Select(s => char.ToUpper(s.ExerciseName[0]) + s.ExerciseName.Substring(1).ToLower()).Distinct()
-                .Select(s => new ExerciseDetails
-                {
-                    UserId = CurrentUserId,
-                    Name = s
-                });
-            foreach(var exercise in newExercises)
+            if(!sets.Any(s => s.ExerciseId == null))
             {
-                trainingRepository.CreateExercise(exercise);
-                foreach(var set in sets.Where(s => s.ExerciseId == null && exercise.Name.Equals(s.ExerciseName,StringComparison.CurrentCultureIgnoreCase)))
+                return;
+            }
+
+            var exercises = trainingRepository.SearchUserExercises(CurrentUserId).ToList();
+            foreach(var set in sets.Where(s => s.ExerciseId == null && !string.IsNullOrWhiteSpace(s.ExerciseName)))
+            {
+                var exercise = exercises.FirstOrDefault(e => e.Name.Equals(set.ExerciseName, StringComparison.CurrentCultureIgnoreCase));
+                if(exercise == null)
                 {
-                    set.ExerciseId = exercise.Id;
+                    exercise = new ExerciseDetails
+                    {
+                        UserId = CurrentUserId,
+                        Name = char.ToUpper(set.ExerciseName[0]) + set.ExerciseName.Substring(1).ToLower()
+                    };
+                    trainingRepository.CreateExercise((ExerciseDetails)exercise);
+                    exercises.Add(exercise);
                 }
+                set.ExerciseId = exercise.Id;
             }
         }
     }

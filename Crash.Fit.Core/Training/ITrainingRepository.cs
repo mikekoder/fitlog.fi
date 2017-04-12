@@ -9,26 +9,26 @@ namespace Crash.Fit.Training
     {
         IEnumerable<MuscleGroup> GetMuscleGroups();
 
-        IEnumerable<ExerciseMinimal> SearchExercises(string[] nameTokens, Guid? userId);
-        IEnumerable<ExerciseMinimal> SearchUserExercises(Guid userId);
+        IEnumerable<Exercise> SearchExercises(string[] nameTokens, Guid? userId);
+        IEnumerable<Exercise> SearchUserExercises(Guid userId);
         ExerciseDetails GetExercise(Guid id);
         bool CreateExercise(ExerciseDetails exercise);
         bool UpdateExercise(ExerciseDetails exercise);
-        bool DeleteExercise(ExerciseMinimal exercise);
+        bool DeleteExercise(Exercise exercise);
         bool RestoreExercise(Guid id, out ExerciseDetails exercise);
 
         IEnumerable<WorkoutSummary> SearchWorkouts(Guid userId, DateTimeOffset start, DateTimeOffset end);
         WorkoutDetails GetWorkout(Guid id);
         bool CreateWorkout(WorkoutDetails workout);
         bool UpdateWorkout(WorkoutDetails workout);
-        bool DeleteWorkout(WorkoutMinimal workout);
+        bool DeleteWorkout(Workout workout);
         bool RestoreWorkout(Guid id, out WorkoutDetails workout);
 
-        IEnumerable<RoutineMinimal> SearchRoutines(Guid userId);
+        IEnumerable<RoutineSummary> SearchRoutines(Guid userId);
         RoutineDetails GetRoutine(Guid id);
         bool CreateRoutine(RoutineDetails routine);
         bool UpdateRoutine(RoutineDetails routine);
-        bool DeleteRoutine(RoutineMinimal routine);
+        bool DeleteRoutine(Routine routine);
         bool RestoreRoutine(Guid id, out RoutineDetails routine);
     }
 }

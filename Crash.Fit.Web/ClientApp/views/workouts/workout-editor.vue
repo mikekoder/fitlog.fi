@@ -13,32 +13,30 @@
         <div class="row">
             <div class="col-sm-12">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4 col-md-4 col-lg-3"><label>Harjoitus</label></div>
-                        <div class="col-sm-2 col-md-2"><label>Toistot</label></div>
-                        <div class="col-sm-3 col-md-2"><label>Painot</label></div>
+                        <div class="col-sm-4 col-md-4 col-lg-2"><label>Liike</label></div>
+                        <div class="col-sm-2 col-md-2 col-lg-1"><label>Toistot</label></div>
+                        <div class="col-sm-3 col-md-2 col-lg-1"><label>Painot</label></div>
                         <div class="col-sm-3">&nbsp;</div>
                     </div>
                     <template v-for="(set,index) in sets">
                         <div class="row">
-                            <div class="col-sm-4 col-md-4 col-lg-3">
-                                <label class="hidden-sm hidden-md hidden-lg">Harjoitus</label>
+                            <div class="col-sm-4 col-md-4 col-lg-2">
+                                <label class="hidden-sm hidden-md hidden-lg">Liike</label>
                                 <exercise-picker v-bind:exercises="exercises" v-bind:value="set.exercise" v-on:change="set.exercise=arguments[0]" v-on:nameChange="processNewExercise(set, arguments[0])" />
                             </div>
-                            <div class="quantity col-sm-2 col-xs-4 col-md-2">
+                            <div class="quantity col-sm-2 col-xs-4 col-md-2 col-lg-1">
                                 <label class="hidden-sm hidden-md hidden-lg">Toistot</label>
                                 <input type="number" min="0" class="form-control" v-model="set.reps" />
                             </div>
-                            <div class="portion col-sm-3 col-xs-4 col-md-2">
+                            <div class="portion col-sm-3 col-xs-4 col-md-2 col-lg-1">
                                 <label class="hidden-sm hidden-md hidden-lg">Painot</label>
                                 <input type="number" min="0" step="2.5" class="form-control" v-model="set.weights" />
                             </div>
                             <div class="actions col-sm-3 col-xs-4">
-                                <div>
-                                    <button class="btn btn-sm" @click="moveSetUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
-                                    <button class="btn btn-sm" @click="moveSetDown(index)" :disabled="index === (sets.length - 1)"><i class="fa fa-arrow-down"></i></button>
-                                    <button class="btn btn-primary" @click="copySet(index)">Kopioi</button>
-                                    <button class="btn btn-danger" @click="removeSet(index)">Poista</button>
-                                </div>
+                                <button class="btn btn-sm" @click="moveSetUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
+                                <button class="btn btn-sm" @click="moveSetDown(index)" :disabled="index === (sets.length - 1)"><i class="fa fa-arrow-down"></i></button>
+                                <button class="btn btn-primary" @click="copySet(index)">Kopioi</button>
+                                <button class="btn btn-danger" @click="removeSet(index)">Poista</button>
                             </div>
                         </div>
                         <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
@@ -93,7 +91,7 @@ module.exports = {
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
-        'exercise-picker': require('./exercise-picker')
+        'exercise-picker': require('../../components/exercise-picker')
     },
     methods: {
         addSet : function(){
@@ -137,7 +135,7 @@ module.exports = {
             var workout = {
                 id: this.id,
                 time: this.time,
-                sets: this.sets.filter(r => r.exercise && r.reps).map(r => { return { exerciseId: r.exercise.id, exerciseName: r.exercise.name, reps: utils.parseFloat(r.reps), weights: utils.parseFloat(r.weights) } })
+                sets: this.sets.filter(s => s.exercise && s.reps).map(s => { return { exerciseId: s.exercise.id, exerciseName: s.exercise.name, reps: utils.parseFloat(s.reps), weights: utils.parseFloat(s.weights) } })
             };
             this.saveCallback(workout);
         },

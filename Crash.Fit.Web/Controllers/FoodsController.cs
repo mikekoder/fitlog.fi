@@ -20,33 +20,45 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpGet]
         [Route("")]
-        public IEnumerable<FoodMinimal> List()
+        public IActionResult List()
         {
             var foods = nutritionRepository.SearchUserFoods(CurrentUserId);
-            return foods;
+
+            var response = AutoMapper.Mapper.Map<FoodSummaryResponse[]>(foods);
+            return Ok(response);
         }
         [HttpGet]
         [Route("search")]
-        public IEnumerable<FoodMinimal> Search(string name)
+        public IActionResult Search(string name)
         {
             var foods = nutritionRepository.SearchFoods(name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries), CurrentUserId);
-            return foods;
+
+            var response = AutoMapper.Mapper.Map<FoodSummaryResponse[]>(foods);
+            return Ok(response);
         }
         [HttpGet]
         [Route("{id}")]
-        public FoodDetails Details(Guid id)
+        public IActionResult Details(Guid id)
         {
             var food = nutritionRepository.GetFood(id);
-            return food;
+            if(food == null || (food.UserId != null && food.UserId != CurrentUserId))
+            {
+                return NotFound();
+            }
+
+            var response = AutoMapper.Mapper.Map<FoodDetailsResponse>(food);
+            return Ok(response);
         }
         [HttpPost]
         [Route("")]
-        public FoodDetails Create([FromBody]FoodRequest request)
+        public IActionResult Create([FromBody]FoodRequest request)
         {
             var food = AutoMapper.Mapper.Map<FoodDetails>(request);
             food.UserId = CurrentUserId;
             nutritionRepository.CreateFood(food);
-            return food;
+
+            var response = AutoMapper.Mapper.Map<FoodDetailsResponse>(food);
+            return Ok(food);
         }
 
         [HttpPut]
@@ -60,6 +72,8 @@ namespace Crash.Fit.Web.Controllers
             }
             AutoMapper.Mapper.Map(request, food);
             nutritionRepository.UpdateFood(food);
+
+            var response = AutoMapper.Mapper.Map<FoodDetailsResponse>(food);
             return Ok(food);
         }
 
@@ -73,6 +87,7 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             nutritionRepository.DeleteFood(food);
+
             return Ok();
         }
     }

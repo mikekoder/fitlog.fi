@@ -20,18 +20,21 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpGet]
         [Route("")]
-        public IEnumerable<MealResponse> List(DateTimeOffset start, DateTimeOffset? end)
+        public IActionResult List(DateTimeOffset start, DateTimeOffset? end)
         {
             var meals = nutritionRepository.SearchMeals(CurrentUserId, start, end ?? DateTimeOffset.Now);
-            var response = AutoMapper.Mapper.Map<MealResponse[]>(meals.OrderByDescending(m => m.Time));
-            return response;
+
+            var response = AutoMapper.Mapper.Map<MealDetailsResponse[]>(meals.OrderByDescending(m => m.Time));
+            return Ok(response);
         }
         [HttpGet]
         [Route("{id}")]
-        public MealDetails Details(Guid id)
+        public IActionResult Details(Guid id)
         {
             var meal = nutritionRepository.GetMeal(id);
-            return meal;
+
+            var response = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
+            return Ok(response);
         }
         [HttpPost]
         [Route("")]
@@ -45,7 +48,8 @@ namespace Crash.Fit.Web.Controllers
             {
                 return BadRequest();
             }
-            var result = AutoMapper.Mapper.Map<MealResponse>(meal);
+
+            var result = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
             return Ok(result);
         }
 
@@ -65,7 +69,7 @@ namespace Crash.Fit.Web.Controllers
                 return BadRequest();
             }
            
-            var result = AutoMapper.Mapper.Map<MealResponse>(meal);
+            var result = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
             return Ok(result);
         }
 
@@ -79,6 +83,7 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             nutritionRepository.DeleteMeal(meal);
+
             return Ok();
         }
 

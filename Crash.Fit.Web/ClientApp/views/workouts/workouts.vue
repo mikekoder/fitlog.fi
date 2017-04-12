@@ -26,31 +26,29 @@
                             </ul>
                         </div>
                         <button class="btn btn-primary" @click="createWorkout"><i class="glyphicon glyphicon-plus"></i> Uusi treeni</button>
-                        <div class="outer">
-                            <div class="inner">
-                                <table class="table" id="workout-summary">
-                                    <thead>
-                                        <tr>
-                                            <th class="time"></th>
-                                            <template v-for="muscleGroup in muscleGroups">
-                                                <th class="muscle-group"><div><span>{{ muscleGroup.name}}</span></div></th>
-                                            </template>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="workout" v-for="workout in workouts">
-                                            <td class="freeze">{{ datetime(workout.time) }}</td>
-                                            <template v-for="muscleGroup in muscleGroups">
-                                                <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
-                                            </template>
-                                            <td class="action">
-                                                <button class="btn btn-sm" @click="editWorkout(workout)">Tiedot</button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="scroll-x">
+                            <table class="table" id="workout-list">
+                                <thead>
+                                    <tr>
+                                        <th class="time"><div><div>&nbsp;</div></div></th>
+                                        <template v-for="muscleGroup in muscleGroups">
+                                            <th class="muscle-group"><div><div>{{ muscleGroup.name}}</div></div></th>
+                                        </template>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="workout" v-for="workout in workouts">
+                                        <td>{{ datetime(workout.time) }}</td>
+                                        <template v-for="muscleGroup in muscleGroups">
+                                            <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
+                                        </template>
+                                        <td class="action">
+                                            <button class="btn btn-sm" @click="editWorkout(workout)">Tiedot</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -171,16 +169,39 @@ module.exports = {
                 self.end = moment(workout.time).endOf('day');
             });
         } else {
-            self.showWeek();
+            self.showDays(7);
         }
     }
 }
 </script>
 
 <style scoped>
-    #workout-summary
+    div.scroll-x 
+    {
+        overflow-x:auto;
+    }
+    #workout-list
     {
         width: auto;
+    }
+    th.time
+    {
+        width: 120px;
+        white-space: nowrap;
+    }
+    th.time > div
+    {
+        transform: translate(86px, -22px) rotate(-45deg);
+    }
+    th.time > div > div
+    {
+      border-bottom: 1px solid #ccc;
+      padding: 5px 10px;
+      width:100px;
+    }
+    #workout-list  td:nth-child(1)
+    {
+        border-right: 1px solid #ccc;
     }
     th.muscle-group
     {
@@ -189,13 +210,14 @@ module.exports = {
     }
     th.muscle-group > div
     {
-       transform: translate(15px, 3px) rotate(-45deg);
+       transform: translate(15px, 8px) rotate(-45deg);
        width: 20px;
     }
-    th.muscle-group > div > span 
+    th.muscle-group > div > div 
     {
       border-bottom: 1px solid #ccc;
       padding: 5px 10px;
+      width:100px;
     }
     td.muscle-group
     {

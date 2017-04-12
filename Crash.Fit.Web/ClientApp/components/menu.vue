@@ -14,15 +14,17 @@
             <router-link tag="li" :to="{ name: 'recipes'}" v-if="isLoggedIn">
                 <a><i class="fa fa-book"></i> <span>Reseptit</span></a>
             </router-link>
+            <!--
             <router-link tag="li" :to="{ name: 'nutrients'}" v-if="isLoggedIn">
                 <a><i class="fa fa-flask"></i> <span>Ravintoaineet</span></a>
             </router-link>
+            -->
             <li class="header">TREENAUS</li>
             <router-link tag="li" :to="{ name: 'workouts'}" v-if="isLoggedIn">
                 <a><i class="fa fa-trophy"></i> <span>Treenit</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'exercises'}" v-if="isLoggedIn">
-                <a><i class="fa fa-universal-access"></i> <span>Harjoitteet</span></a>
+                <a><i class="fa fa-universal-access"></i> <span>Liikkeet</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'routines'}" v-if="isLoggedIn">
                 <a><i class="fa fa-calendar"></i> <span>Ohjelmat</span></a>

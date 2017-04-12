@@ -28,7 +28,7 @@
                             </ul>
                         </li>-->
                         <li v-if="!isLoggedIn">
-                            <a href="#/luo-tunnus">Rekisteröidy</a>
+                            <a href="#/luo-tunnus">Rekister&ouml;idy</a>
                         </li>
                         <li v-if="!isLoggedIn">
                             <a href="#/kirjaudu">Kirjaudu</a>
