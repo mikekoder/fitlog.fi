@@ -34,19 +34,19 @@
                         </div>
                        
                         <button class="btn btn-primary" @click="createMeal"><i class="glyphicon glyphicon-plus"></i> Uusi ateria</button>
-                        <div class="outer">
+                        <div class="outer" v-if="days.length > 0">
                             <div class="inner">
                                 <table class="table" id="meal-list">
                                     <thead>
                                         <tr>
-                                            <th class="time freeze">&nbsp;<br />Aika</th>
+                                            <th></th>
                                             <template v-for="col in visibleColumns">
                                                 <th class="nutrient" v-if="col.visible"><div><div>{{ col.title }}</div></div></th>
                                             </template>
                                             <th></th>
                                         </tr>
                                         <tr>
-                                            <th></th>
+                                            <th class="time freeze">Aika</th>
                                             <template v-for="col in visibleColumns">
                                                 <th class="unit" v-if="col.visible">{{ unit(col.unit) }}</th>
                                             </template>
@@ -69,23 +69,29 @@
                                                 <td></td>
                                             </tr>
                                             <tr class="meal" v-if="day.showDetails" v-for="meal in day.meals">
-                                                <td class="freeze"><a @click="editMeal(meal)">{{ time(meal.time) }}</a></td>
+                                                <td class="freeze"><router-link :to="{ name: 'meals', params: { id: meal.id } }">{{ time(meal.time) }}</router-link></td>
                                                 <td class="nutrient" v-for="col in visibleColumns">
                                                     <div class="chart" v-if="col === energyDistributionColumn">
                                                         <chart-pie-energy v-bind:protein="meal.nutrients[proteinId]" v-bind:carb="meal.nutrients[carbId]" v-bind:fat="meal.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
                                                     <span v-else>{{ decimal(meal.nutrients[col.key], col.precision) }}</span>
                                                 </td>
-                                                <td class="action">
-                                                    <button class="btn btn-sm" @click="editMeal(meal)">Tiedot</button>
-                                                </td>
+                                                <td><button class="btn btn-danger btn-xs" @click="deleteMeal(meal)">Poista</button></td>
                                             </tr>
                                         </template>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-
+                        <div v-if="days.length == 0">
+                            <br />
+                            Ei aterioita
+                        </div>
+                       
+                        <div v-for="meal in meals">
+                            <div class="alert alert-info" role="alert" v-if="meal.deleted">Ateria {{ datetime(meal.time) }} poistettu. <button class="btn btn-link" @click="restoreMeal(meal)">Palauta</button></div>
+                        </div>
+                        
                     </div>
                 </div>
             </section>
@@ -106,18 +112,19 @@
 <script>
     var api = require('../../api');
     var formatters = require('../../formatters')
-    var c3 = require('c3');
     var moment = require('moment');
+    var toaster = require('../../toaster');
 
 module.exports = {
     data () {
         return {
             columns: [],
-            energyDistributionColumn: { title: 'Energiajakauma', visible: true, group: 'MACROCMP'},
+            energyDistributionColumn: { title: 'Energiajakauma', unit: 'P/HH/R', visible: true, group: 'MACROCMP'},
             selectedGroup: 'MACROCMP',
             start: null,
             end: null,
-            days:[],
+            meals:[],
+            days: [],
             selectedMeal: null,
             proteinId: '1ddca711-0dcc-4708-93c2-1ac3b0b3d281',
             carbId: 'fa5f03f8-6aeb-4d5f-9100-f41cd606d36b',
@@ -128,7 +135,7 @@ module.exports = {
         visibleColumns: function () {
             var self = this;
             return this.columns.filter(function (c) {
-                return true || !c.group || c.group == self.selectedGroup;
+                return !c.group || c.group == self.selectedGroup;
             });
         }
     },
@@ -161,28 +168,10 @@ module.exports = {
         fetchMeals: function () {
             var self = this;
             api.listMeals(this.start, this.end).then(function (meals) {
-                var days = [];
-                for (var i in meals) {
-                    var meal = meals[i];
-                    meal.time = new Date(meal.time);
-                    var date = moment(meal.time).startOf('day');
-
-                    var day = days.find(d => moment(d.date).isSame(date, 'day'));
-                    if (!day) {
-                        day = { date: date.toDate(), meals: [], nutrients: {}, showDetails: false };
-                        days.push(day);
-                    }
-                    day.meals.push(meal);
-                    for (var nutrientId in meal.nutrients) {
-                        if (!day.nutrients[nutrientId]) {
-                            day.nutrients[nutrientId] = 0;
-                        }
-                        day.nutrients[nutrientId] += meal.nutrients[nutrientId];
-                    }
-                }
-                self.days = days.sort(function (a, b) {
-                    return a.date.getTime() < b.date.getTime() ? 1 : -1;
-                });
+                self.meals = meals;
+                self.buildDays();
+            }).fail(function () {
+                toaster.error('Aterioiden haku epäonnistui');
             });
         },
         showNutrients: function(group){
@@ -194,61 +183,48 @@ module.exports = {
         createMeal: function(){
             this.showMeal({ time: new Date()});
         },
-        editMeal: function (meal) {
+        editMeal: function (id) {
             var self = this;
-            api.getMeal(meal.id).then(function (mealDetails) {
+            api.getMeal(id).then(function (mealDetails) {
                 self.showMeal(mealDetails);
+            }).fail(function () {
+                toaster.error('Aterian haku epäonnistui');
             });
-            
         },
         saveMeal: function (meal) {
             var self = this;
             api.saveMeal(meal).then(function (savedMeal) {
-                // TODO: edit values instead of reload
-                // * reduce nutrients from meal day
-                // * remove meal from a day
-                // * add meal to a day (correct position by time)
-                // * add nutrients to meal day
-                /*
-                if (meal.id) {
-                    for (var i in days) {
-                        for (var j in days[i].meals) {
-                            if (days[i].meals[j].id === meal.id) {
-                                for (var nutrientId in days[i].meals[j].nutrients) {
-                                    days[i].nutrients[nutrientId] -= days[i].meals[j].nutrients[nutrientId];
-                                }
-                                days[i].meals.splice(j, 1);
-                            }
-                        }
-                    }
-                }
-
-                savedMeal.time = new Date(savedMeal.time);
-                var date = moment(savedMeal.time).startOf('day');
-                var day = self.days.find(d => moment(d.date).isSame(date, 'day'));
-                if (day) {
-                    if (!meal.id) {
-                        day.meals.push(meal);
-                    }
-                    for (var nutrientId in meal.nutrients) {
-                        if (!day.nutrients[nutrientId]) {
-                            day.nutrients[nutrientId] = 0;
-                        }
-                        day.nutrients[nutrientId] += meal.nutrients[nutrientId];
-                    }
-                }*/
                 self.fetchMeals();
+                self.$router.push({ name: 'meals' });
                 self.showSummary();
+            }).fail(function () {
+                toaster.error('Aterian tallennus epäonnistui');
             });
         },
         cancelMeal: function (meal) {
+            this.$router.push({ name: 'meals' });
             this.showSummary();
         },
         deleteMeal: function (meal) {
             var self = this;
             api.deleteMeal(meal.id).then(function () {
-                self.fetchMeals();
+                meal.deleted = true;
+                self.buildDays();
+                self.$router.push({ name: 'meals' });
                 self.showSummary();
+            }).fail(function () {
+                toaster.error('Aterian poistaminen epäonnistui');
+            });
+        },
+        restoreMeal: function (meal) {
+            var self = this;
+            api.restoreMeal(meal.id).then(function () {
+                meal.deleted = false;
+                self.buildDays();
+                self.$router.push({ name: 'meals' });
+                self.showSummary();
+            }).fail(function () {
+                toaster.error('Aterian palauttaminen epäonnistui');
             });
         },
         copyMeal: function (meal) {
@@ -267,19 +243,48 @@ module.exports = {
         showSummary() {
             this.selectedMeal = null;
         },
+        buildDays: function () {
+
+            var dayStates = this.days.map(d => { return { date: d.date, showDetails: d.showDetails } });
+
+            var days = [];
+            for (var i in this.meals) {
+                var meal = this.meals[i];
+                if (meal.deleted) {
+                    continue;
+                }
+
+                meal.time = new Date(meal.time);
+                var date = moment(meal.time).startOf('day');
+
+                var day = days.find(d => moment(d.date).isSame(date, 'day'));
+                if (!day) {
+                    state = dayStates.find(d => moment(d.date).isSame(date, 'day'));
+                    day = { date: date.toDate(), meals: [], nutrients: {}, showDetails: state && state.showDetails };
+                    days.push(day);
+                }
+                day.meals.push(meal);
+                
+                for (var nutrientId in meal.nutrients) {
+                    if (!day.nutrients[nutrientId]) {
+                        day.nutrients[nutrientId] = 0;
+                    }
+                    day.nutrients[nutrientId] += meal.nutrients[nutrientId];
+                }
+            }
+            this.days = days.sort(function (a, b) {
+                return a.date.getTime() < b.date.getTime() ? 1 : -1;
+            });
+        },
         date: formatters.formatDate,
         time: formatters.formatTime,
+        datetime: formatters.formatDateTime,
         unit: formatters.formatUnit,
         decimal: function (value, precision) {
             if (!value) {
                 return value;
             }
             return value.toFixed(precision);
-        }
-    },
-    watch:{
-        $route: function(){
-            console.log(this.$route);
         }
     },
     created: function () {
@@ -292,17 +297,32 @@ module.exports = {
                     self.columns.push({ title: nutrients[i].name, unit: nutrients[i].unit, precision: nutrients[i].precision, key: nutrients[i].id, visible: true, group: nutrients[i].fineliGroup });
                 }
             }
-            
+        }).fail(function () {
+            toaster.error('Ravintoaineiden haku epäonnistui');
         });
+
         var id = this.$route.params.id;
         if (id) {
             api.getMeal(id).then(function (meal) {
                 self.start = moment(meal.time).startOf('day');
                 self.end = moment(meal.time).endOf('day');
+                self.fetchMeals();
+                self.showMeal(meal);
+            }).fail(function () {
+                toaster.error('Aterian haku epäonnistui');
             });
         } else {
             self.showWeek();
         }
+    },
+    beforeRouteUpdate (to, from, next) {
+        if (to.params.id) {
+            this.editMeal(to.params.id);
+        }
+        else {
+            this.showSummary();
+        }
+        next();
     }
 }
 </script>
@@ -349,7 +369,7 @@ module.exports = {
     }
     th.time
     {
-        top: 38px;
+        top: 112px;
         border-width:0px;
         width: 100px;
     }

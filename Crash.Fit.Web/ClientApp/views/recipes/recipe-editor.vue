@@ -19,16 +19,16 @@
                 </ul>
                 <div v-if="tab === 'ingredients'">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4"><label>Ruoka</label></div>
+                        <div class="col-sm-4"><label>Ruoka <router-link :to="{ name: 'foods', params: { mode: 'uusi' } }" target="_blank">Luo uusi</router-link></label></div>
                         <div class="col-sm-2"><label>Määrä</label></div>
                         <div class="col-sm-3 col-lg-2"><label>Annos</label></div>
-                        <div class="col-sm-1"><label>Paino</label></div>
+                        <div class="col-sm-1"><label>Paino (g)</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
                     <template v-for="(row,index) in ingredients">
                         <div class="recipe-row row">
                             <div class="food col-sm-4">
-                                <label class="hidden-sm hidden-md hidden-lg">Ruoka</label>
+                                <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'foods', params: { mode: 'uusi' } }" target="_blank">Luo uusi</router-link></label>
                                 <food-picker v-bind:value="row.food" v-on:change="row.food=arguments[0]" />
                             </div>
                             <div class="quantity col-sm-2 col-xs-3">
@@ -54,7 +54,7 @@
                             </div>
                             <div class="actions col-sm-1 col-xs-12">
                                 <div>
-                                    <button class="btn btn-danger" @click="removeRow(index)">Poista</button>
+                                    <button class="btn btn-danger btn-sm" @click="removeRow(index)">Poista</button>
                                 </div>
                             </div>
                         </div>
@@ -70,7 +70,7 @@
                 <div v-if="tab === 'portions'">
                     <div class="row hidden-xs">
                         <div class="col-sm-4 col-lg-2"><label>Nimi</label></div>
-                        <div class="col-sm-2 col-lg-1"><label>Paino</label></div>
+                        <div class="col-sm-2 col-lg-1"><label>Paino (g)</label></div>
                         <div class="col-sm-3 col-lg-1"><label>Annoksia</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
@@ -81,7 +81,7 @@
                                 <input type="text" class="form-control" v-model="portion.name" />
                             </div>
                             <div class="quantity col-sm-2 col-xs-3 col-lg-1">
-                                <label class="hidden-sm hidden-md hidden-lg">Paino</label>
+                                <label class="hidden-sm hidden-md hidden-lg">Paino (g)</label>
                                 <input type="number" class="form-control" v-model="portion.weight" @blur="portionWeightChanged(portion)" />
                             </div>
                             <div class="portion col-sm-3 col-xs-7 col-lg-1">
@@ -90,7 +90,7 @@
                             </div>
                             <div class="actions col-sm-1 col-xs-12">
                                 <div>
-                                    <button class="btn btn-danger" @click="removePortion(index)">Poista</button>
+                                    <button class="btn btn-danger btn-sm" @click="removePortion(index)">Poista</button>
                                 </div>
                             </div>
                         </div>
@@ -180,11 +180,11 @@
             </div>
         </div>
         <hr />
-        <div class="row" v-if="!anon">
+        <div class="row main-actions" v-if="!anon">
             <div class="col-sm-12">
                 <button class="btn btn-primary" @click="save">Tallenna</button>
                 <button class="btn" @click="cancel">Peruuta</button>
-                <button class="btn btn-link" @click="deleteMeal" v-if="id">Poista</button>
+                <button class="btn btn-danger" @click="deleteMeal" v-if="id">Poista</button>
             </div>
         </div>
         <hr />

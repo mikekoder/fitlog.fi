@@ -6,14 +6,6 @@
                     <label>Aika</label>
                     <datetime-picker class="vue-picker1" name="picker1" v-bind:value="time" v-on:change="time=arguments[0]"></datetime-picker>
                 </div>
-                
-            </div>
-            <div class="col-sm-5 col-md-3 col-lg-2">
-                <div class="form-group">
-                    <label>Nimi</label>
-                    <input class="form-control" v-model="name" />
-                </div>
-                
             </div>
         </div>
         <div class="row">&nbsp;</div>
@@ -25,21 +17,21 @@
                 </ul>
                 <div v-if="!showNutrients">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4"><label>Ruoka</label></div>
+                        <div class="col-sm-4"><label>Ruoka <router-link :to="{ name: 'foods', params: { id: 'uusi' } }" target="_blank" v-if="!copyMode">Luo uusi</router-link></label></div>
                         <div class="col-sm-2"><label>Määrä</label></div>
                         <div class="col-sm-3 col-lg-2"><label>Annos</label></div>
-                        <div class="col-sm-1"><label>Paino</label></div>
+                        <div class="col-sm-1"><label>Paino (g)</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
                     <template v-for="(row,index) in rows">
                         <div class="meal-row row">
                             <div class="food col-sm-4">
-                                <label class="hidden-sm hidden-md hidden-lg">Ruoka</label>
+                                <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'foods', params: { id: 'uusi' } }" target="_blank" v-if="!copyMode">Luo uusi</router-link></label>
                                 <div v-if="copyMode">
                                     <input type="checkbox" v-model="row.copy" />
                                     <span>{{ row.food ? row.food.name : '' }}</span>
                                 </div>
-                                <food-picker v-else v-bind:value="row.food" v-on:change="row.food=arguments[0]" />
+                                <food-picker v-else v-bind:value="row.food" v-on:change="setRowFood(row, arguments[0])" />
                             </div>
                             <div class="quantity col-xs-3 col-sm-2">
                                 <label class="hidden-sm hidden-md hidden-lg">Määrä</label>
@@ -57,7 +49,9 @@
                                         </option>
                                     </select>
                                 </div>
+                                <!--
                                 <div v-if="!row.food"><select class="form-control" disabled></select></div>
+                                    -->
                             </div>
                             <div class="weight col-sm-1 col-xs-2">
                                 <label class="hidden-sm hidden-md hidden-lg">Paino</label>
@@ -66,7 +60,7 @@
                             </div>
                             <div class="actions col-sm-1 col-xs-12">
                                 <div>
-                                    <button v-if="!copyMode" class="btn btn-danger" @click="removeRow(index)">Poista</button>
+                                    <button v-if="!copyMode" class="btn btn-danger btn-sm" @click="removeRow(index)">Poista</button>
                                 </div>
                             </div>
                         </div>
@@ -132,14 +126,14 @@
             </div>
         </div>
         <hr />
-        <div class="row" v-if="!anon">
+        <div class="row main-actions" v-if="!anon">
             <div class="col-sm-12">
                 <button class="btn btn-primary" v-if="!copyMode" @click="save">Tallenna</button>
                 <button class="btn" v-if="!copyMode" @click="cancel">Peruuta</button>
                 <button class="btn" v-if="id && !copyMode" @click="startCopy">Kopioi</button>
                 <button class="btn btn-primary" v-if="copyMode" @click="confirmCopy">Vahvista kopiointi</button>
                 <button class="btn" v-if="copyMode" @click="cancelCopy">Peruuta kopiointi</button>
-                <button class="btn btn-link" v-if="id && !copyMode" @click="deleteMeal">Poista</button>
+                <button class="btn btn-danger" v-if="id && !copyMode" @click="deleteMeal">Poista</button>
             </div>
         </div>
         <hr />
@@ -213,6 +207,9 @@ module.exports = {
         },
         addRow : function(){
             this.rows.push({food: null, quantity: 1, portion: undefined});
+        },
+        setRowFood: function(row, food){
+            row.food = food;
         },
         removeRow: function (index) {
             this.rows.splice(index, 1);
@@ -291,6 +288,9 @@ module.exports = {
                 });
             });
         }
+        else {
+            this.rows = [{food: undefined, quantity: undefined, portion: undefined }];
+        }
         api.listNutrients().then(function (allNutrients) {
             var nutrients = {};
             for (var i in allNutrients) {
@@ -335,6 +335,7 @@ module.exports = {
     {
         padding-top:5px;
     }
+    
     @media (max-width: 767px) {
         div.food, div.quantity, div.portion, div.weight, div.actions
         {

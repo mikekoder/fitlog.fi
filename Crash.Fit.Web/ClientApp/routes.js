@@ -36,12 +36,12 @@ const main = [
                 component: MealCalculator
             },
             {
-                path: '/ruoka-aineet',
+                path: '/ruoka-aineet/:id?',
                 name: 'foods',
                 component: Foods
             },
             {
-                path: '/reseptit',
+                path: '/reseptit/:id?',
                 name: 'recipes',
                 component: Recipes
             },
@@ -51,17 +51,17 @@ const main = [
                 component: Nutrients
             },
             {
-                path: '/treenit',
+                path: '/treenit/:id?',
                 name: 'workouts',
                 component: Workouts
             },
             {
-                path: '/liikkeet',
+                path: '/liikkeet/:id?',
                 name: 'exercises',
                 component: Exercises
             },
             {
-                path: '/ohjelmat',
+                path: '/ohjelmat/:id?',
                 name: 'routines',
                 component: Routines
             },

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Training;
 using Crash.Fit.Web.Models.Training;
+using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -14,7 +15,7 @@ namespace Crash.Fit.Web.Controllers
     public class MusclesController : ApiControllerBase
     {
         private readonly ITrainingRepository trainingRepository;
-        public MusclesController(ITrainingRepository trainingRepository)
+        public MusclesController(ITrainingRepository trainingRepository, ILogRepository logger) : base(logger)
         {
             this.trainingRepository = trainingRepository;
         }

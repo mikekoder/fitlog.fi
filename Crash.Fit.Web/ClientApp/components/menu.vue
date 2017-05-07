@@ -2,7 +2,7 @@
     <section class="sidebar">
         <ul class="sidebar-menu">
             <li class="header">RAVINTO</li>
-            <router-link tag="li" :to="{ name: 'meals'}" exact v-if="isLoggedIn">
+            <router-link tag="li" :to="{ name: 'meals'}" v-if="isLoggedIn">
                 <a><i class="fa fa-cutlery"></i> <span>Ateriat</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'meal-calculator'}" exact v-if="!isLoggedIn">

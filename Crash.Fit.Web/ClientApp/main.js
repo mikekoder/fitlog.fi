@@ -9,8 +9,10 @@ import 'admin-lte/dist/css/adminLTE.css'
 import 'admin-lte/dist/css/skins/skin-blue.css'
 import 'font-awesome/css/font-awesome.css'
 import './css/site.css'
+import 'bootstrap-notify'
 var auth = require('./auth');
 var $ = require('jquery');
+Vue.config.productionTip = false
 
 Vue.use(VueRouter)
 Vue.mixin({
@@ -23,7 +25,6 @@ Vue.mixin({
         console.log(document.cookie)
     }
 });
-//Vue.use(require('./components/datetime'));
 
 let router = new VueRouter({
     routes: routes,

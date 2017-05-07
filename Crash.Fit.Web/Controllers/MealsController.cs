@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Nutrition;
 using Crash.Fit.Web.Models.Nutrition;
+using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -14,7 +15,7 @@ namespace Crash.Fit.Web.Controllers
     public class MealsController : ApiControllerBase
     {
         private readonly INutritionRepository nutritionRepository;
-        public MealsController(INutritionRepository nutritionRepository)
+        public MealsController(INutritionRepository nutritionRepository, ILogRepository logger) : base(logger)
         {
             this.nutritionRepository = nutritionRepository;
         }
@@ -85,6 +86,26 @@ namespace Crash.Fit.Web.Controllers
             nutritionRepository.DeleteMeal(meal);
 
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("{id}/restore")]
+        public IActionResult Restore(Guid id)
+        {
+            var meal = nutritionRepository.GetMeal(id);
+            if(meal == null)
+            {
+                return NotFound();
+            }
+            if (meal.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+            MealDetails restoredMeal;
+            nutritionRepository.RestoreMeal(meal.Id, out restoredMeal);
+
+            var result = AutoMapper.Mapper.Map<MealDetailsResponse>(restoredMeal);
+            return Ok(result);
         }
 
         private void CalculateNutrients(MealDetails meal)

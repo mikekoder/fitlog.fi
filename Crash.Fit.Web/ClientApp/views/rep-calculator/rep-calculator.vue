@@ -7,9 +7,9 @@
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <input type="text" v-model="reps" />
-                        <input type="text" v-model="weights" />
-                        <button @click="calculate">Laske</button>
+                        <input type="text" v-model="reps" placeholder="Toistot" /> x
+                        <input type="text" v-model="weights" placeholder="Painot" />
+                        <button class="btn btn-primary" @click="calculate">Laske</button>
                     </div>
                 </div>
                 <div class="row">
@@ -54,8 +54,8 @@
     module.exports = {
         data () {
             return {
-                reps: 10,
-                weights: 100,
+                reps: undefined,
+                weights: undefined,
                 results: []
             }
         },

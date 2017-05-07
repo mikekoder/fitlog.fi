@@ -10,7 +10,6 @@ namespace Crash.Fit.Web.Models.Nutrition
     {
         public Guid Id { get; set; }
         public DateTimeOffset Time { get; set; }
-        public string Name { get; set; }
         public MealRow[] Rows { get; set; }
         public Dictionary<Guid,decimal> Nutrients { get; set; }
     }

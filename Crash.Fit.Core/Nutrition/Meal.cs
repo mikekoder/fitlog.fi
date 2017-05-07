@@ -10,7 +10,6 @@ namespace Crash.Fit.Nutrition
     {
         public Guid UserId { get; set; }
         public DateTimeOffset Time { get; set; }
-        public string Name { get; set; }
     }
     public class MealDetails : Meal
     {

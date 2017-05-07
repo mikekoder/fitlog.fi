@@ -12,6 +12,7 @@ namespace Crash.Fit.Web.Models.Training
     }
     public class RoutineWorkoutRequest
     {
+        public Guid? Id { get; set; }
         public string Name { get; set; }
         public RoutineExerciseRequest[] Exercises { get; set; }
     }

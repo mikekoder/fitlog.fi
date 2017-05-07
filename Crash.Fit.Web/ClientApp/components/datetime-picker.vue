@@ -40,7 +40,7 @@ module.exports = {
         var self = this;
         element.on("dp.change", function () {
             var m = moment(self.control.date(), format);
-            self.$emit('change', m.toDate())
+            self.$emit('change', m.toDate());
             //self.model = m.toDate();
         });
     }

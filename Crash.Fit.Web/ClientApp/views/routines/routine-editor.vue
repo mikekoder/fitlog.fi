@@ -16,14 +16,14 @@
         <div class="row">
             <div class="col-sm-12 col-md-10">
                 <template v-for="(workout,index) in workouts">
-                    <div class="box box-default">
+                    <div class="box box-info box-solid">
                         <div class="box-header with-border">
                             <div class="row">
                                 <div class="col-xs-6"><input type="text" class="form-control" v-model="workout.name" /></div>
                                 <div class="col-xs-6">
                                     <button class="btn btn-sm" @click="moveWorkoutUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
                                     <button class="btn btn-sm" @click="moveWorkoutDown(index)" :disabled="index === (workouts.length - 1)"><i class="fa fa-arrow-down"></i></button>
-                                    <button class="btn btn-danger" @click="removeWorkout(index)">Poista</button>
+                                    <button class="btn btn-danger pull-right btn-sm" @click="removeWorkout(index)">Poista</button>
                                 </div>
                             </div>
                         </div>
@@ -56,7 +56,7 @@
                                                 <!--
                                                 <button class="btn btn-primary" @click="copyExercise(workout,index)">Kopioi</button>
                                                 -->
-                                                <button class="btn btn-danger" @click="removeExercise(workout,index)">Poista</button>
+                                                <button class="btn btn-danger pull-right btn-sm" @click="removeExercise(workout,index)">Poista</button>
                                             </div>
                                         </div>
                                     </div>
@@ -74,18 +74,18 @@
                 </template>
                 <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn" @click="addWorkout"><a><i class="fa fa-plus"></i> Lisää treenikerta</a></button>
+                        <button class="btn" @click="addWorkout"><i class="fa fa-plus"></i> Lisää treenikerta</button>
                     </div>
                 </div>
             </div>
         </div>
         
         <hr />
-        <div class="row">
+        <div class="row main-actions">
             <div class="col-sm-12">
                 <button class="btn btn-primary" @click="save">Tallenna</button>
                 <button class="btn" @click="cancel">Peruuta</button>
-                <button class="btn btn-link" v-if="id" @click="deleteWorkout">Poista</button>
+                <button class="btn btn-danger btn-sm" v-if="id" @click="deleteWorkout">Poista</button>
             </div>
         </div>
         <hr />
@@ -185,7 +185,7 @@ module.exports = {
             var routine = {
                 id: this.id,
                 name: this.name,
-                workouts: this.workouts.map(w => { return { name: w.name, exercises: w.exercises.map(e => { return { exerciseId: e.exercise.id, exerciseName: e.exercise.name, sets: utils.parseFloat(e.sets), reps: utils.parseFloat(e.reps) } }) } })
+                workouts: this.workouts.map(w => { return { id: w.id, name: w.name, exercises: w.exercises.map(e => { return { exerciseId: e.exercise.id, exerciseName: e.exercise.name, sets: utils.parseFloat(e.sets), reps: utils.parseFloat(e.reps) } }) } })
             };
             this.saveCallback(routine);
         },
@@ -219,9 +219,8 @@ module.exports = {
                 });
             }
             else {
-                self.workouts = [{name: 'Päivä 1', exercises:[]}]
+                self.workouts = [{ name: 'Päivä 1', exercises: [{}]}]
             }
-            self.selectedWorkout = self.workouts[0];
         });
     },
     mounted: function () {

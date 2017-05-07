@@ -50,14 +50,14 @@ namespace Crash.Fit.Training
                 return conn.Query<Exercise>(sql, parameters);
             }
         }
-        public IEnumerable<Exercise> SearchUserExercises(Guid userId)
+        public IEnumerable<ExerciseSummary> SearchUserExercises(Guid userId)
         {
             var sql = @"
-SELECT * FROM Exercise WHERE UserId=@userId AND Deleted IS NULL;";
+SELECT Exercise.*,(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount FROM Exercise WHERE UserId=@userId AND Deleted IS NULL;";
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, new { userId }))
             {
-                var exercises = multi.Read<Exercise>().ToList();
+                var exercises = multi.Read<ExerciseSummary>().ToList();
                 return exercises;
             }
         }
@@ -96,7 +96,7 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId=@id;";
                 catch(Exception ex)
                 {
                     exercise.Id = Guid.Empty;
-                    return false;
+                    throw;
                 }
             }
         }
@@ -118,13 +118,28 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId=@id;";
                 }
                 catch
                 {
-                    return false;
+                    tran.Rollback();
+                    throw;
                 }
             }
         }
         public bool DeleteExercise(Exercise exercise)
         {
-            throw new NotImplementedException();
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE Exercise SET Deleted=@Deleted WHERE Id=@Id", new { exercise.Id, Deleted = DateTimeOffset.Now }, tran);
+                    tran.Commit();
+                    return true;
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
         }
         public bool RestoreExercise(Guid id, out ExerciseDetails exercise)
         {
@@ -207,26 +222,27 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                     {
                         workout.Id = Guid.Empty;
                     }
-                    return false;
+                    tran.Rollback();
+                    throw;
                 }
             }
         }
         public bool UpdateRoutine(RoutineDetails routine)
         {
             var workoutIds = routine.Workouts.Select(w => w.Id).ToArray();
-
+            
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
                 try
                 {
-                    conn.Execute("DELETE FROM RoutineExercise WHERE RoutineWorkoutId IN @ids", new { ids = routine.Workouts.Where(w => w.Id != Guid.Empty).Select(w => w.Id) }, tran);
+                    conn.Execute("DELETE FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineWorkout WHERE RoutineId=@Id)", new { routine.Id }, tran);               
+                    conn.Execute("DELETE FROM RoutineWorkout WHERE Id NOT IN @ids", new { ids = routine.Workouts.Where(w => w.Id != Guid.Empty).Select(w => w.Id) }, tran);
 
-                    conn.Execute("UPDATE Routine SET Name=@Name WHERE Id=@Id", routine, tran);
-                    for(var i=0;i< routine.Workouts.Length; i++)
+                    for(var i = 0; i< routine.Workouts.Length; i++)
                     {
                         var workout = routine.Workouts[i];
-                        if (workout.Id == Guid.Empty)
+                        if(workout.Id == Guid.Empty)
                         {
                             workout.Id = Guid.NewGuid();
                             conn.Execute("INSERT INTO RoutineWorkout(Id,RoutineId,[Index],Name) VALUES(@Id,@RoutineId,@Index,@Name)", new
@@ -247,6 +263,8 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                             }, tran);
                         }
                     }
+
+                    conn.Execute("UPDATE Routine SET Name=@Name WHERE Id=@Id", routine, tran);
                     
                     conn.Execute("INSERT INTO RoutineExercise(RoutineWorkoutId,[Index],ExerciseId,Sets,Reps) VALUES(@RoutineWorkoutId,@Index,@ExerciseId,@Sets,@Reps)", routine.Workouts.SelectMany(w => w.Exercises.Select((e, i) => new
                     {
@@ -266,7 +284,8 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                     {
                         routine.Workouts[i].Id = workoutIds[i];
                     }
-                    return false;
+                    tran.Rollback();
+                    throw;
                 }
             }
         }
@@ -342,7 +361,8 @@ SELECT * FROM WorkoutSet WHERE WorkoutId=@id ORDER BY [Index];";
                 catch (Exception ex)
                 {
                     workout.Id = Guid.Empty;
-                    return false;
+                    tran.Rollback();
+                    throw;
                 }
             }
         }
@@ -369,7 +389,8 @@ SELECT * FROM WorkoutSet WHERE WorkoutId=@id ORDER BY [Index];";
                 }
                 catch (Exception ex)
                 {
-                    return false;
+                    tran.Rollback();
+                    throw;
                 }
             }
         }

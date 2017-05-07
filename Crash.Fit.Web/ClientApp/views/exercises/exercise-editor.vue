@@ -27,7 +27,7 @@
                         </div>
                         <div class="col-xs-4 col-sm-2">
                             <div>
-                                <button class="btn btn-danger" @click="removeTarget(index)">Poista</button>
+                                <button class="btn btn-danger btn-sm" @click="removeTarget(index)">Poista</button>
                             </div>
                         </div>
                     </div>
@@ -41,11 +41,11 @@
             </div>
         </div>
         <hr />
-        <div class="row">
+        <div class="row main-actions">
             <div class="col-sm-12">
                 <button class="btn btn-primary" @click="save">Tallenna</button>
                 <button class="btn" @click="cancel">Peruuta</button>
-                <button class="btn btn-link" v-if="id">Poista</button>
+                <button class="btn btn-danger" v-if="id" @click="deleteExercise">Poista</button>
             </div>
         </div>
         <hr />
@@ -99,7 +99,9 @@ module.exports = {
         cancel: function () {
             this.cancelCallback();
         },
-        delete: function(){ }
+        deleteExercise: function () {
+            this.deleteCallback(this.exercise);
+        }
     },
     created: function () {
         var self = this;

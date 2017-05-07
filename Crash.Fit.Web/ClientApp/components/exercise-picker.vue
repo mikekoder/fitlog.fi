@@ -23,7 +23,8 @@ module.exports = {
     },
     mounted: function () {
         if (this.value) {
-            $(this.$el).val(this.value.name);
+            this.name = this.value.name;
+            //$(this.$el).val(this.value.name);
         }
         var self = this;
         $(this.$el).typeahead({
@@ -41,6 +42,7 @@ module.exports = {
                 return true;
             },
             afterSelect: function (exercise) {
+                self.name = exercise.name;
                 self.$emit('change', exercise);
             },
             templates: {
@@ -53,9 +55,11 @@ module.exports = {
     watch: {
         value: function (newValue) {
             if (newValue) {
-                $(this.$el).val(newValue.name);
+                this.name = newValue.name;
+                //$(this.$el).val(newValue.name);
             } else {
-                $(this.$el).val('');
+                this.name = '';
+                //$(this.$el).val('');
             }
         }
     }
