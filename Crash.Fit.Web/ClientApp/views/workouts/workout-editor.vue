@@ -36,7 +36,7 @@
                                 <button class="btn btn-sm" @click="moveSetUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
                                 <button class="btn btn-sm" @click="moveSetDown(index)" :disabled="index === (sets.length - 1)"><i class="fa fa-arrow-down"></i></button>
                                 <button class="btn btn-primary" @click="copySet(index)">Kopioi</button>
-                                <button class="btn btn-danger" @click="removeSet(index)">Poista</button>
+                                <button class="btn btn-danger btn-sm" @click="removeSet(index)">Poista</button>
                             </div>
                         </div>
                         <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
@@ -51,11 +51,11 @@
             <div class="col-sm-12"><button class="btn" @click="addSet"><i class="fa fa-plus"></i> Lisää</button></div>
         </div>
         <hr />
-        <div class="row">
+        <div class="row main-actions">
             <div class="col-sm-12">
                 <button class="btn btn-primary" @click="save">Tallenna</button>
                 <button class="btn" @click="cancel">Peruuta</button>
-                <button class="btn btn-link" v-if="id" @click="deleteWorkout">Poista</button>
+                <button class="btn btn-danger" v-if="id" @click="deleteWorkout">Poista</button>
             </div>
         </div>
         <hr />
@@ -79,7 +79,7 @@ module.exports = {
         return {
             id: null,
             time: null,
-            sets: [],
+            sets: [{ exercise: null, reps: null, weights: null }],
             exercises: [],
         }
     },
@@ -161,6 +161,9 @@ module.exports = {
             self.exercises = exercises;
             if (self.workout.sets) {
                 self.sets = self.workout.sets.map(s => { return { exercise: exercises.filter(e => e.id === s.exerciseId)[0], reps: s.reps, weights: s.weights } });
+            }
+            else {
+                self.sets = [{ exercise: null, reps: null, weights: null }];
             }
         });
     },

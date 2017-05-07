@@ -45,6 +45,15 @@ module.exports = {
                 }
             }
         });
+    },
+    watch: {
+        value: function (newValue) {
+            if (newValue) {
+                this.name = newValue.name;
+            } else {
+                this.name = '';
+            }
+        }
     }
 }
 </script>

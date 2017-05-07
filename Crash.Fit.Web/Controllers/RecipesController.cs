@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Nutrition;
 using Crash.Fit.Web.Models.Nutrition;
+using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -14,7 +15,7 @@ namespace Crash.Fit.Web.Controllers
     public class RecipesController : ApiControllerBase
     {
         private readonly INutritionRepository nutritionRepository;
-        public RecipesController(INutritionRepository nutritionRepository)
+        public RecipesController(INutritionRepository nutritionRepository, ILogRepository logger) : base(logger)
         {
             this.nutritionRepository = nutritionRepository;
         }

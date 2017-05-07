@@ -8,7 +8,7 @@
                         <button class="btn btn-primary" @click="createFood"><i class="glyphicon glyphicon-plus"></i> Uusi ruoka-aine</button>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" v-if="foods.length > 0">
                     <div class="col-sm-12">
                         <table class="table" id="food-list">
                             <thead>
@@ -21,13 +21,18 @@
                             </thead>
                             <tbody>
                                 <tr v-for="food in foods">
-                                    <td>{{ food.name }}</td>
+                                    <td><router-link :to="{ name: 'foods', params: { id: food.id } }">{{ food.name }}</router-link></td>
                                     <td>{{ food.usageCount }}</td>
                                     <td>{{ food.nutrientCount }}</td>
-                                    <td><button class="btn" @click="editFood(food)">Tiedot</button></td>
+                                    <td><button class="btn btn-danger btn-xs" @click="deleteFood(food)">Poista</button></td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                <div class="row" v-if="foods.length == 0">
+                    <div class="col-sm-12">
+                        Ei ruoka-aineita
                     </div>
                 </div>
             </section>
@@ -47,6 +52,7 @@
 
 <script>
     var api = require('../../api');
+    var toaster = require('../../toaster');
 
 module.exports = {
     data () {
@@ -66,32 +72,43 @@ module.exports = {
                 for (var i in foods) {
                     self.foods.push(foods[i]);
                 }
+            }).fail(function () {
+                toaster.error('Ruoka-aineiden haku epäonnistui');
             });
         },
         createFood: function(){
             this.showFood({id: null, name: null});
         },
-        editFood: function (food) {
+        editFood: function (id) {
             var self = this;
-            api.getFood(food.id).then(function (foodDetails) {
+            api.getFood(id).then(function (foodDetails) {
                 self.showFood(foodDetails);
+            }).fail(function () {
+                toaster.error('Ruoka-aineen haku epäonnistui');
             });
         },
         saveFood: function (food) {
             var self = this;
             api.saveFood(food).then(function (savedFood) {
                 self.fetchFoods();
+                self.$router.push({ name: 'foods' });
                 self.showSummary();
+            }).fail(function () {
+                toaster.error('Ruoka-aineen tallennus epäonnistui');
             });
         },
         cancelFood: function (food) {
+            this.$router.push({ name: 'foods' });
             this.showSummary();
         },
         deleteFood: function (food) {
             var self = this;
             api.deleteFood(food.id).then(function () {
                 self.fetchFoods();
+                self.$router.push({ name: 'foods' });
                 self.showSummary();
+            }).fail(function () {
+                toaster.error('Ruoka-aineen poistaminen epäonnistui');
             });
             
         },
@@ -105,6 +122,19 @@ module.exports = {
     },
     created: function () {
         this.fetchFoods();
+        var id = this.$route.params.id;
+        if (id) {
+            this.editFood(id);
+        }
+    },
+    beforeRouteUpdate (to, from, next) {
+        if (to.params.id) {
+            this.editFood(to.params.id);
+        }
+        else {
+            this.showSummary();
+        }
+        next();
     }
 }
 </script>

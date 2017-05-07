@@ -10,9 +10,25 @@
 module.exports = {
     data: function() {
         return {
+           
+            /* energy: 0
             proteinWidth: null,
             carbWidth: null,
-            fatWidth: null
+            fatWidth: null*/
+        }
+    },
+    computed: {
+        energy: function(){
+            return 4 * this.protein + 4 * this.carb + 9 * this.fat;
+        },
+        proteinWidth: function () {
+            return (4 * this.protein / this.energy) * 100;
+        },
+        carbWidth: function () {
+            return (4 * this.carb / this.energy) * 100;
+        },
+        fatWidth: function () {
+            return (9 * this.fat / this.energy) * 100;
         }
     },
     props: {
@@ -22,11 +38,6 @@ module.exports = {
         fat: 0
     },
     mounted: function () {
-        var self = this;
-        var energy = 4 * this.protein + 4 * this.carb + 9 * this.fat;
-        this.proteinWidth = (4 * this.protein / energy) * 100;
-        this.carbWidth = (4 * this.carb / energy) * 100;
-        this.fatWidth = (9 * this.fat / energy) * 100;
     },
     methods: {
         decimal: function (value, precision) {
@@ -53,14 +64,14 @@ module.exports = {
     }
     .protein 
     {
-        background-color: red;
+        background-color: #4F81BD;
     }
     .carb
     {
-        background-color: green;
+        background-color: #C0504D;
     }
    .fat 
    {
-       background-color: blue;
+       background-color: #9BBB59;
    }
 </style>

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Training;
 using Crash.Fit.Web.Models.Training;
+using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -14,7 +15,7 @@ namespace Crash.Fit.Web.Controllers
     public class WorkoutsController : ApiControllerBase
     {
         private readonly ITrainingRepository trainingRepository;
-        public WorkoutsController(ITrainingRepository trainingRepository)
+        public WorkoutsController(ITrainingRepository trainingRepository, ILogRepository logger) : base(logger)
         {
             this.trainingRepository = trainingRepository;
         }
@@ -92,21 +93,26 @@ namespace Crash.Fit.Web.Controllers
                 return;
             }
 
-            var exercises = trainingRepository.SearchUserExercises(CurrentUserId).ToList();
-            foreach(var set in sets.Where(s => s.ExerciseId == null && !string.IsNullOrWhiteSpace(s.ExerciseName)))
+            var exercises = new List<Exercise>();
+            exercises.AddRange(trainingRepository.SearchUserExercises(CurrentUserId));
+            foreach (var set in sets.Where(s => s.ExerciseId == null && !string.IsNullOrWhiteSpace(s.ExerciseName)))
             {
                 var exercise = exercises.FirstOrDefault(e => e.Name.Equals(set.ExerciseName, StringComparison.CurrentCultureIgnoreCase));
-                if(exercise == null)
+                if (exercise != null)
                 {
-                    exercise = new ExerciseDetails
+                    set.ExerciseId = exercise.Id;
+                }
+                else
+                {
+                    var newExercise = new ExerciseDetails
                     {
                         UserId = CurrentUserId,
                         Name = char.ToUpper(set.ExerciseName[0]) + set.ExerciseName.Substring(1).ToLower()
                     };
-                    trainingRepository.CreateExercise((ExerciseDetails)exercise);
-                    exercises.Add(exercise);
+                    trainingRepository.CreateExercise(newExercise);
+                    exercises.Add(newExercise);
+                    set.ExerciseId = newExercise.Id;
                 }
-                set.ExerciseId = exercise.Id;
             }
         }
     }

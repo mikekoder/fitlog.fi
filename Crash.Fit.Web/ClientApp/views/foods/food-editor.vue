@@ -19,7 +19,7 @@
                 <div v-if="tab === 'portions'">
                     <div class="row hidden-xs">
                         <div class="col-sm-4"><label>Nimi</label></div>
-                        <div class="col-sm-2"><label>Paino</label></div>
+                        <div class="col-sm-2"><label>Paino (g)</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
                     <template v-for="(portion,index) in portions">
@@ -29,12 +29,12 @@
                                 <input type="text" class="form-control" v-model="portion.name" />
                             </div>
                             <div class="quantity col-sm-2 col-xs-3">
-                                <label class="hidden-sm hidden-md hidden-lg">Paino</label>
+                                <label class="hidden-sm hidden-md hidden-lg">Paino (g)</label>
                                 <input type="number" class="form-control" v-model="portion.weight" />
                             </div>
                             <div class="actions col-sm-1 col-xs-12">
                                 <div>
-                                    <button class="btn btn-danger" @click="removePortion(index)">Poista</button>
+                                    <button class="btn btn-danger btn-sm" @click="removePortion(index)">Poista</button>
                                 </div>
                             </div>
                         </div>
@@ -100,11 +100,11 @@
             </div>
         </div>
         <hr />
-        <div class="row" v-if="!anon">
+        <div class="row main-actions" v-if="!anon">
             <div class="col-sm-12">
                 <button class="btn btn-primary" @click="save">Tallenna</button>
                 <button class="btn" @click="cancel">Peruuta</button>
-                <button class="btn btn-link" v-if="id" @click="deleteFood">Poista</button>
+                <button class="btn btn-danger" v-if="id" @click="deleteFood">Poista</button>
             </div>
         </div>
         <hr />
@@ -199,6 +199,13 @@ module.exports = {
         this.name = this.food.name;
         this.portions = this.food.portions || [];
         api.listNutrients().then(function (allNutrients) {
+            allNutrients = allNutrients.sort(function (a, b) {
+                if (a.name < b.name)
+                    return -1;
+                if (a.name > b.name)
+                    return 1;
+                return 0;
+            });
             var nutrients = {};
             for (var i in allNutrients) {
                 var nutrient = allNutrients[i];

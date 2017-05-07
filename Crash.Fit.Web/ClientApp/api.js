@@ -64,7 +64,12 @@ const api = {
             type: 'DELETE'
         });
     },
-
+    restoreMeal: function (id) {
+        return $.ajax({
+            url: baseUrl + 'meals/' + id + '/restore/',
+            type: 'POST'
+        });
+    },
     // foods
     searchFoods: function(name){
         return $.get(baseUrl + 'foods/search', { name });

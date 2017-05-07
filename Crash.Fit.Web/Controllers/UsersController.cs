@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Crash.Fit.Web.Models.Users;
 using Crash.Fit.Web.Models.Auth;
 using Microsoft.AspNetCore.Antiforgery;
+using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -20,16 +21,11 @@ namespace Crash.Fit.Web.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly ILogger _logger;
 
-        public UsersController(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            ILoggerFactory loggerFactory)
+        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager, ILogRepository logger) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _logger = loggerFactory.CreateLogger<UsersController>();
         }
 
         [HttpGet("me")]

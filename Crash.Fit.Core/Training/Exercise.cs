@@ -11,6 +11,10 @@ namespace Crash.Fit.Training
         public Guid? UserId { get; set; }
         public string Name { get; set; }
     }
+    public class ExerciseSummary : Exercise
+    {
+        public int UsageCount { get; set; }
+    }
     public class ExerciseDetails : Exercise
     {
         public Guid[] Targets { get; set; }

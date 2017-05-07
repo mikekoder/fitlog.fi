@@ -8,7 +8,7 @@
                         <button class="btn btn-primary" @click="createRecipe"><i class="glyphicon glyphicon-plus"></i> Uusi resepti</button>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" v-if="recipes.length > 0">
                     <div class="col-sm-12">
                         <table class="table" id="recipe-list">
                             <thead>
@@ -20,14 +20,17 @@
                             </thead>
                             <tbody>
                                 <tr v-for="recipe in recipes">
-                                    <td><span>{{ recipe.name }}</span></td>
+                                    <td><router-link :to="{ name: 'recipes', params: { id: recipe.id } }">{{ recipe.name }}</router-link></td>
                                     <td>{{ recipe.usageCount }}</td>
-                                    <td>
-                                        <button @click="editRecipe(recipe)">Muokkaa</button>
-                                    </td>
+                                    <td><button class="btn btn-danger btn-xs" @click="deleteRecipe(recipe)">Poista</button></td>
                                 </tr>   
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                <div class="row" v-if="recipes.length == 0">
+                    <div class="col-sm-12">
+                        Ei reseptejä
                     </div>
                 </div>
             </section>
@@ -50,6 +53,7 @@
     var formatters = require('../../formatters')
     var c3 = require('c3');
     var moment = require('moment');
+    var toaster = require('../../toaster');
 
 module.exports = {
     data () {
@@ -69,6 +73,8 @@ module.exports = {
                 for (var i in recipes) {
                     self.recipes.push(recipes[i]);
                 }
+            }).fail(function () {
+                toaster.error('Reseptien haku epäonnistui');
             });
         },
         showNutrients: function(group){
@@ -78,10 +84,12 @@ module.exports = {
         createRecipe: function(){
             this.showRecipe({});
         },
-        editRecipe: function (recipe) {
+        editRecipe: function (id) {
             var self = this;
-            api.getRecipe(recipe.id).then(function (recipeDetails) {
+            api.getRecipe(id).then(function (recipeDetails) {
                 self.showRecipe(recipeDetails);
+            }).fail(function () {
+                toaster.error('Reseptin haku epäonnistui');
             });
             
         },
@@ -129,16 +137,24 @@ module.exports = {
             var self = this;
             api.saveRecipe(recipe).then(function (savedRecipe) {
                 self.fetchRecipes();
+                self.$router.push({ name: 'recipes' });
                 self.showSummary();
+            }).fail(function () {
+                toaster.error('Reseptin tallennus epäonnistui');
             });
         },
         cancelRecipe: function (recipe) {
+            this.$router.push({ name: 'recipes' });
             this.showSummary();
         },
         deleteRecipe: function (recipe) {
             var self = this;
             api.deleteRecipe(recipe.id).then(function () {
+                self.fetchRecipes();
+                self.$router.push({ name: 'recipes' });
                 self.showSummary();
+            }).fail(function () {
+                toaster.error('Reseptin poistaminen epäonnistui');
             });
            
         },
@@ -159,6 +175,19 @@ module.exports = {
     },
     created: function () {
         this.fetchRecipes();
+        var id = this.$route.params.id;
+        if (id) {
+            this.editRecipe(id);
+        }
+    },
+    beforeRouteUpdate (to, from, next) {
+        if (to.params.id) {
+            this.editRecipe(to.params.id);
+        }
+        else {
+            this.showSummary();
+        }
+        next();
     }
 }
 </script>

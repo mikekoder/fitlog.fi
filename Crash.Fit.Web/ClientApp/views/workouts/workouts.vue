@@ -26,29 +26,35 @@
                             </ul>
                         </div>
                         <button class="btn btn-primary" @click="createWorkout"><i class="glyphicon glyphicon-plus"></i> Uusi treeni</button>
-                        <div class="scroll-x">
-                            <table class="table" id="workout-list">
-                                <thead>
-                                    <tr>
-                                        <th class="time"><div><div>&nbsp;</div></div></th>
-                                        <template v-for="muscleGroup in muscleGroups">
-                                            <th class="muscle-group"><div><div>{{ muscleGroup.name}}</div></div></th>
-                                        </template>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="workout" v-for="workout in workouts">
-                                        <td>{{ datetime(workout.time) }}</td>
-                                        <template v-for="muscleGroup in muscleGroups">
-                                            <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
-                                        </template>
-                                        <td class="action">
-                                            <button class="btn btn-sm" @click="editWorkout(workout)">Tiedot</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="outer" v-if="workouts.length > 0">
+                            <div class="inner">
+                                <table class="table" id="workout-list">
+                                    <thead>
+                                        <tr>
+                                            <th class="time freeze"><div><div>&nbsp;</div></div></th>
+                                            <template v-for="muscleGroup in muscleGroups">
+                                                <th class="muscle-group"><div><div>{{ muscleGroup.name}}</div></div></th>
+                                            </template>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="workout" v-for="workout in workouts">
+                                            <td class="freeze"><router-link :to="{ name: 'workouts', params: { id: workout.id } }">{{ datetime(workout.time) }}</router-link></td>
+                                            <template v-for="muscleGroup in muscleGroups">
+                                                <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
+                                            </template>
+                                            <td><button class="btn btn-danger btn-xs" @click="deleteWorkout(workout)">Poista</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row" v-if="workouts.length == 0">
+                            <div class="col-sm-12">
+                                <br />
+                                Ei treenej&auml;
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,6 +78,7 @@
     var formatters = require('../../formatters')
     var c3 = require('c3');
     var moment = require('moment');
+    var toaster = require('../../toaster');
 
 module.exports = {
     data () {
@@ -108,15 +115,19 @@ module.exports = {
             var self = this;
             api.listWorkouts(this.start, this.end).then(function (workouts) {
                 self.workouts = workouts;
+            }).fail(function () {
+                toaster.error('Treenien haku epäonnistui');
             });
         },
         createWorkout: function(){
             this.showWorkout({ time: new Date()});
         },
-        editWorkout: function (workout) {
+        editWorkout: function (id) {
             var self = this;
-            api.getWorkout(workout.id).then(function (workoutDetails) {
+            api.getWorkout(id).then(function (workoutDetails) {
                 self.showWorkout(workoutDetails);
+            }).fail(function () {
+                toaster.error('Treenin haku epäonnistui');
             });
 
         },
@@ -124,17 +135,24 @@ module.exports = {
             var self = this;
             api.saveWorkout(workout).then(function (savedWorkout) {
                 self.fetchWorkouts();
+                self.$router.push({ name: 'workouts' });
                 self.showSummary();
+            }).fail(function () {
+                toaster.error('Treenin tallennus epäonnistui');
             });
         },
         cancelWorkout: function (workout) {
+            this.$router.push({ name: 'workouts' });
             this.showSummary();
         },
         deleteWorkout: function (workout) {
             var self = this;
             api.deleteWorkout(workout.id).then(function () {
                 self.fetchWorkouts();
+                self.$router.push({ name: 'workouts' });
                 self.showSummary();
+            }).fail(function () {
+                toaster.error('Treenin poistaminen epäonnistui');
             });
         },
         showWorkout: function (workout) {
@@ -158,40 +176,66 @@ module.exports = {
         var self = this;
         api.listMuscleGroups().then(function (groups) {
             self.muscleGroups = groups;
+        }).fail(function () {
+            toaster.error('Lihasryhmien haku epäonnistui');
         });
         api.listExercises().then(function (exercises) {
             self.exercises = exercises;
+        }).fail(function () {
+            toaster.error('Liikkeiden haku epäonnistui');
         });
         var id = this.$route.params.id;
         if (id) {
             api.getWorkout(id).then(function (workout) {
                 self.start = moment(workout.time).startOf('day');
                 self.end = moment(workout.time).endOf('day');
+                self.fetchWorkouts();
+                self.showWorkout(workout);
+            }).fail(function () {
+                toaster.error('Treenin haku epäonnistui');
             });
         } else {
             self.showDays(7);
         }
+    },
+    beforeRouteUpdate (to, from, next) {
+        if (to.params.id) {
+            this.editWorkout(to.params.id);
+        }
+        else {
+            this.showSummary();
+        }
+        next();
     }
 }
 </script>
 
 <style scoped>
-    div.scroll-x 
+    .outer 
     {
-        overflow-x:auto;
+      position: relative;
     }
+    .inner 
+    {
+      overflow-x: auto;
+      overflow-y: visible;
+      margin-left: 100px;
+    } 
     #workout-list
     {
         width: auto;
+        table-layout: fixed; 
     }
     th.time
     {
         width: 120px;
         white-space: nowrap;
+        border-width:0px;
     }
+    
     th.time > div
     {
-        transform: translate(86px, -22px) rotate(-45deg);
+        transform: translate(86px, 29px) rotate(-45deg);
     }
     th.time > div > div
     {
@@ -199,6 +243,18 @@ module.exports = {
       padding: 5px 10px;
       width:100px;
     }
+    .freeze 
+    {
+      position: absolute;
+      margin-left: -120px;
+      width: 120px;
+      text-align: right;
+    }
+    th.time
+    {
+        
+    }
+   
     #workout-list  td:nth-child(1)
     {
         border-right: 1px solid #ccc;
@@ -223,5 +279,8 @@ module.exports = {
     {
         border-right:1px solid #ccc;
         text-align:center;
+    }
+     td.freeze, td.muscle-group {
+        padding-top: 12px;
     }
 </style>

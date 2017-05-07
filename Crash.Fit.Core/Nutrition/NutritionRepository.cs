@@ -16,7 +16,7 @@ namespace Crash.Fit.Nutrition
 
         public IEnumerable<Nutrient> GetNutrients()
         {
-            var sql = @"SELECT * FROM Nutrient";
+            var sql = @"SELECT * FROM Nutrient ORDER BY Name";
             using (var conn = CreateConnection())
             {
                 return conn.Query<Nutrient>(sql);
@@ -37,7 +37,7 @@ namespace Crash.Fit.Nutrition
                 catch
                 {
                     nutrient.Id = Guid.Empty;
-                    return false;
+                    throw;
                 }
             }
         }
@@ -54,7 +54,7 @@ namespace Crash.Fit.Nutrition
                 }
                 catch
                 {
-                    return false;
+                    throw;
                 }
             }
         }
@@ -194,7 +194,7 @@ GROUP BY R.FoodId;";
                 {
                     food.Id = Guid.Empty;
                     tran.Rollback();
-                    return false;
+                    throw;
                 }
             }
         }
@@ -240,7 +240,7 @@ GROUP BY R.FoodId;";
                 catch(Exception ex)
                 {
                     tran.Rollback();
-                    return false;
+                    throw;
                 }
             }
         }
@@ -258,7 +258,7 @@ GROUP BY R.FoodId;";
                 catch
                 {
                     tran.Rollback();
-                    return false;
+                    throw;
                 }
             }
         }
@@ -278,7 +278,7 @@ GROUP BY R.FoodId;";
                 {
                     tran.Rollback();
                     food = null;
-                    return false;
+                    throw;
                 }
             }
         }
@@ -329,7 +329,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Meal(Id,UserId,Time,Name) VALUES(@Id,@UserId,@Time,@Name)", meal, tran);
+                    conn.Execute("INSERT INTO Meal(Id,UserId,Time) VALUES(@Id,@UserId,@Time)", meal, tran);
                     conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
                         meal.Nutrients.Select(n => new { MealId = meal.Id, n.NutrientId, n.Amount }), tran);
                     conn.Execute("INSERT INTO MealRow(MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select((r, i) => new
@@ -347,7 +347,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
                 {
                     meal.Id = Guid.Empty;
                     tran.Rollback();
-                    return false;
+                    throw;
                 }
             }
         }
@@ -361,7 +361,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
                     conn.Execute("DELETE FROM MealNutrient WHERE MealId=@Id", new { Id = meal.Id }, tran);
                     conn.Execute("DELETE FROM MealRow WHERE MealId=@Id", new { Id = meal.Id }, tran);
 
-                    conn.Execute("UPDATE Meal SET Time=@Time, Name=@Name WHERE Id=@Id", meal, tran);
+                    conn.Execute("UPDATE Meal SET Time=@Time WHERE Id=@Id", meal, tran);
                     conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
                                             meal.Nutrients.Select(n => new { MealId = meal.Id, n.NutrientId, n.Amount }), tran);
                     conn.Execute("INSERT INTO MealRow(MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select((r,i) => new
@@ -378,7 +378,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
                 catch(Exception ex)
                 {
                     tran.Rollback();
-                    return false;
+                    throw;
                 }
             }
         }
@@ -396,7 +396,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
                 catch
                 {
                     tran.Rollback();
-                    return false;
+                    throw;
                 }
             }
         }
@@ -416,7 +416,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
                 {
                     tran.Rollback();
                     meal = null;
-                    return false;
+                    throw;
                 }
             }
         }

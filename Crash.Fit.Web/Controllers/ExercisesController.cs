@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Training;
 using Crash.Fit.Web.Models.Training;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -14,7 +16,7 @@ namespace Crash.Fit.Web.Controllers
     public class ExercisesController : ApiControllerBase
     {
         private readonly ITrainingRepository trainingRepository;
-        public ExercisesController(ITrainingRepository trainingRepository)
+        public ExercisesController(ITrainingRepository trainingRepository, ILogRepository logger) : base(logger)
         {
             this.trainingRepository = trainingRepository;
         }
@@ -24,7 +26,7 @@ namespace Crash.Fit.Web.Controllers
         {
             var exercises = trainingRepository.SearchUserExercises(CurrentUserId).OrderBy(e => e.Name);
 
-            var response = AutoMapper.Mapper.Map<ExerciseResponse[]>(exercises);
+            var response = AutoMapper.Mapper.Map<ExerciseSummaryResponse[]>(exercises);
             return Ok(response);
         }
         [HttpGet]

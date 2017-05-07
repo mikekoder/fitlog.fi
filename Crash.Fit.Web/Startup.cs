@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using Crash.Fit.Web.Models.Auth;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Crash.Fit.Training;
+using Microsoft.AspNetCore.Http.Internal;
+using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web
 {
@@ -56,6 +58,7 @@ namespace Crash.Fit.Web
             services.AddMvc();
             
 
+
             services.AddTransient<INutritionRepository>(s => 
             {
                 return new NutritionRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
@@ -63,6 +66,10 @@ namespace Crash.Fit.Web
             services.AddTransient<ITrainingRepository>(s =>
             {
                 return new TrainingRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+            });
+            services.AddTransient<ILogRepository>(s =>
+            {
+                return new LogRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
             });
 
             AutoMapper.Mapper.Initialize(m => {
@@ -103,6 +110,8 @@ namespace Crash.Fit.Web
 
                 // Exercises
                 m.CreateMap<Exercise, Models.Training.ExerciseResponse>();
+                m.CreateMap<ExerciseDetails, Models.Training.ExerciseDetailsResponse>();
+                m.CreateMap<ExerciseSummary, Models.Training.ExerciseSummaryResponse>();
                 m.CreateMap<Models.Training.ExerciseRequest, ExerciseDetails>();
 
                 // Routines
@@ -150,6 +159,14 @@ namespace Crash.Fit.Web
                 AppId = Configuration["Authentication:Facebook:AppId"],
                 AppSecret = Configuration["Authentication:Facebook:AppSecret"]
             });
+            
+            app.Use(async (context, next) =>
+            {
+                context.Request.EnableRewind();
+                // Do work that doesn't write to the Response.
+                await next.Invoke();
+                // Do logging or other work that doesn't write to the Response.
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -160,6 +177,7 @@ namespace Crash.Fit.Web
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
+            
         }
     }
 }

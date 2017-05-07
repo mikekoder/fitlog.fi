@@ -8,25 +8,32 @@
                         <button class="btn btn-primary" @click="createExercise"><i class="glyphicon glyphicon-plus"></i> Uusi liike</button>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" v-if="exercises.length > 0">
                     <div class="col-sm-12">
                         <table class="table" id="exercise-list">
                             <thead>
                                 <tr>
                                     <th>Nimi</th>
+                                    <th>Sarjoja</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="exercise in exercises">
-                                    <td>{{ exercise.name }}</td>
+                                    <td><router-link :to="{ name: 'exercises', params: { id: exercise.id } }">{{ exercise.name }}</router-link></td>
+                                    <td>{{ exercise.usageCount }}</td>
                                     <td>
-                                        <button class="btn" @click="editExercise(exercise)">Tiedot</button>
-                                        <button class="btn btn-link" @click="deleteExercise(exercise)">Poista</button>
+                                        <button class="btn btn-danger btn-xs" @click="deleteExercise(exercise)">Poista</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                <div class="row" v-if="exercises.length == 0">
+                    <div class="col-sm-12">
+                        <br />
+                        Ei liikkeit&auml;
                     </div>
                 </div>
             </section>
@@ -46,6 +53,7 @@
 
 <script>
     var api = require('../../api');
+    var toaster = require('../../toaster');
 
 module.exports = {
     data () {
@@ -68,9 +76,9 @@ module.exports = {
         createExercise: function(){
             this.showExercise({id: null, name: null});
         },
-        editExercise: function (exercise) {
+        editExercise: function (id) {
             var self = this;
-            api.getExercise(exercise.id).then(function (exerciseDetails) {
+            api.getExercise(id).then(function (exerciseDetails) {
                 self.showExercise(exerciseDetails);
             });
         },
@@ -78,29 +86,45 @@ module.exports = {
             var self = this;
             api.saveExercise(exercise).then(function (savedExercise) {
                 self.loadExercises();
-                self.showList();
+                self.$router.push({ name: 'exercises' });
+                self.showSummary();
             });
         },
         cancelExercise: function (exercise) {
-            this.showList();
+            this.$router.push({ name: 'exercises' });
+            this.showSummary();
         },
         deleteExercise: function (exercise) {
             var self = this;
             api.deleteExercise(exercise.id).then(function () {
                 self.loadExercises();
-                self.showList();
+                self.$router.push({ name: 'exercises' });
+                self.showSummary();
             });
         },
         showExercise: function (exercise) {
             this.selectedExercise = exercise;
         },
-        showList() {
+        showSummary() {
             this.selectedExercise = null;
         },
 
     },
     created: function () {
         this.loadExercises();
+        var id = this.$route.params.id;
+        if (id) {
+            this.editExercise(id);
+        }
+    },
+    beforeRouteUpdate (to, from, next) {
+        if (to.params.id) {
+            this.editExercise(to.params.id);
+        }
+        else {
+            this.showSummary();
+        }
+        next();
     }
 }
 </script>

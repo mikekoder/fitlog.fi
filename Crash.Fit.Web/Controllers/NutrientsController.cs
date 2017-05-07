@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Nutrition;
 using Crash.Fit.Web.Models.Nutrition;
+using Microsoft.Extensions.Logging;
+using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -14,7 +16,7 @@ namespace Crash.Fit.Web.Controllers
     public class NutrientsController : ApiControllerBase
     {
         private readonly INutritionRepository nutritionRepository;
-        public NutrientsController(INutritionRepository nutritionRepository)
+        public NutrientsController(INutritionRepository nutritionRepository, ILogRepository logger) : base(logger)
         {
             this.nutritionRepository = nutritionRepository;
         }
@@ -23,7 +25,6 @@ namespace Crash.Fit.Web.Controllers
         public IActionResult List()
         {
             var nutrients = nutritionRepository.GetNutrients().OrderBy(n => n.UIOrder);
-
             var response = AutoMapper.Mapper.Map<NutrientResponse[]>(nutrients);
             return Ok(response);
         }

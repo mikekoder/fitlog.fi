@@ -8,7 +8,6 @@ namespace Crash.Fit.Web.Models.Nutrition
     public class MealRequest
     {
         public DateTimeOffset Time { get; set; }
-        public string Name { get; set; }
         public MealRow[] Rows { get; set; }
     }
 }
