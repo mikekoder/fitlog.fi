@@ -22,7 +22,7 @@ const api = {
             data: JSON.stringify(login)
         });
     },
-    getUser(){
+    getProfile(){
         return $.get(baseUrl + 'users/me/');
     },
     logout(){
@@ -134,6 +134,9 @@ const api = {
     listNutrients: function(){
         return $.get(baseUrl + 'nutrients/');
     },
+    getNutrientTargets: function () {
+        return $.get(baseUrl + 'nutrients/targets');
+    },
     listDailyIntakes: function(gender, dob){
 
     },
@@ -234,6 +237,19 @@ const api = {
         return $.ajax({
             url: baseUrl + 'routines/' + id,
             type: 'DELETE'
+        });
+    },
+
+    // Measurements
+    listMeasures: function(){
+        return $.get(baseUrl + 'measurements/measures');
+    },
+    saveMeasurements: function (measurements) {
+        return $.ajax({
+            url: baseUrl + 'measurements/',
+            type: 'POST',
+            contentType: 'text/json',
+            data: JSON.stringify(measurements)
         });
     }
 };

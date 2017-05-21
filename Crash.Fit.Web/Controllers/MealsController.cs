@@ -19,8 +19,7 @@ namespace Crash.Fit.Web.Controllers
         {
             this.nutritionRepository = nutritionRepository;
         }
-        [HttpGet]
-        [Route("")]
+        [HttpGet("")]
         public IActionResult List(DateTimeOffset start, DateTimeOffset? end)
         {
             var meals = nutritionRepository.SearchMeals(CurrentUserId, start, end ?? DateTimeOffset.Now);
@@ -28,8 +27,7 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<MealDetailsResponse[]>(meals.OrderByDescending(m => m.Time));
             return Ok(response);
         }
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         public IActionResult Details(Guid id)
         {
             var meal = nutritionRepository.GetMeal(id);
@@ -37,8 +35,7 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
             return Ok(response);
         }
-        [HttpPost]
-        [Route("")]
+        [HttpPost("")]
         public IActionResult Create([FromBody]MealRequest request)
         {
             var meal = AutoMapper.Mapper.Map<MealDetails>(request);
@@ -54,8 +51,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(result);
         }
 
-        [HttpPut]
-        [Route("{id}")]
+        [HttpPut("{id}")]
         public IActionResult Update(Guid id, [FromBody]MealRequest request)
         {
             var meal = nutritionRepository.GetMeal(id);
@@ -74,8 +70,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(result);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
             var meal = nutritionRepository.GetMeal(id);
@@ -88,8 +83,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [Route("{id}/restore")]
+        [HttpPost("{id}/restore")]
         public IActionResult Restore(Guid id)
         {
             var meal = nutritionRepository.GetMeal(id);

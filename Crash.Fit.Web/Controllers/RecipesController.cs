@@ -19,8 +19,7 @@ namespace Crash.Fit.Web.Controllers
         {
             this.nutritionRepository = nutritionRepository;
         }
-        [HttpGet]
-        [Route("")]
+        [HttpGet("")]
         public IActionResult List()
         {
             var recipes = nutritionRepository.SearchRecipes(CurrentUserId);
@@ -28,8 +27,7 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<RecipeSummaryResponse[]>(recipes);
             return Ok(response);
         }
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         public IActionResult Details(Guid id)
         {
             var food = nutritionRepository.GetFood(id);
@@ -40,8 +38,7 @@ namespace Crash.Fit.Web.Controllers
             var result = AutoMapper.Mapper.Map<RecipeDetailsResponse>(food);
             return Ok(food);
         }
-        [HttpPost]
-        [Route("")]
+        [HttpPost("")]
         public IActionResult Create([FromBody]RecipeRequest request)
         {
             var recipe = AutoMapper.Mapper.Map<FoodDetails>(request);
@@ -58,8 +55,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(result);
         }
 
-        [HttpPut]
-        [Route("{id}")]
+        [HttpPut("{id}")]
         public IActionResult Update(Guid id, [FromBody]RecipeRequest request)
         {
             var recipe = nutritionRepository.GetFood(id);
@@ -83,8 +79,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(result);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
             var recipe = nutritionRepository.GetFood(id);

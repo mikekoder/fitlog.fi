@@ -20,17 +20,15 @@ namespace Crash.Fit.Web.Controllers
             this.trainingRepository = trainingRepository;
         }
 
-        [HttpGet]
-        [Route("")]
+        [HttpGet("")]
         public IActionResult List()
         {
             var routines = trainingRepository.SearchRoutines(CurrentUserId);
 
-            var response = AutoMapper.Mapper.Map<RoutineSummaryResponse[]>(routines);
+            var response = AutoMapper.Mapper.Map<RoutineResponse[]>(routines);
             return Ok(response);
         }
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         public IActionResult Details(Guid id)
         {
             var routine = trainingRepository.GetRoutine(id);
@@ -42,8 +40,7 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<RoutineDetailsResponse>(routine);
             return Ok(response);
         }
-        [HttpPost]
-        [Route("")]
+        [HttpPost("")]
         public IActionResult Create([FromBody]RoutineRequest request)
         {
             CreateExercises(request.Workouts.SelectMany(w => w.Exercises));
@@ -55,8 +52,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(response);
         }
 
-        [HttpPut]
-        [Route("{id}")]
+        [HttpPut("{id}")]
         public IActionResult Update(Guid id, [FromBody]RoutineRequest request)
         {
             var routine = trainingRepository.GetRoutine(id);
@@ -72,8 +68,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(response);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
             var routine = trainingRepository.GetRoutine(id);

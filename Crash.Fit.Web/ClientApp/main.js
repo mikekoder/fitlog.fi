@@ -1,12 +1,13 @@
 var Vue = require('vue')
 import VueRouter from 'vue-router'
+import store from './store/store'
 import routes from './routes'
 import 'jquery'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'admin-lte'
 import 'admin-lte/dist/css/adminLTE.css'
-import 'admin-lte/dist/css/skins/skin-blue.css'
+import 'admin-lte/dist/css/skins/skin-blue-light.css'
 import 'font-awesome/css/font-awesome.css'
 import './css/site.css'
 import 'bootstrap-notify'
@@ -52,5 +53,6 @@ let App = Vue.component('app', app)
 /* eslint-disable no-unused-vars */
 const vm = new App({
     el: '#app',
-    router
+    router,
+    store
 })

@@ -10,7 +10,7 @@
         </div>
         <div class="row">
             <div class="col-sm-12">
-                <h4>Treenikerrat</h4>
+                <h4>Treenit</h4>
             </div>
         </div>
         <div class="row">
@@ -74,7 +74,7 @@
                 </template>
                 <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn" @click="addWorkout"><i class="fa fa-plus"></i> Lisää treenikerta</button>
+                        <button class="btn" @click="addWorkout"><i class="fa fa-plus"></i> Lisää treeni</button>
                     </div>
                 </div>
             </div>

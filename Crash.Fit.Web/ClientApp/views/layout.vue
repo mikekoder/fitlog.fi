@@ -10,12 +10,10 @@
                     <span class="sr-only">Toggle navigation</span>
                 </a>
                 <div class="navbar-custom-menu">
-                    <ul class="nav navbar-nav">
-                        <!--
+                    <ul class="nav navbar-nav"> <!--
                         <li class="dropdown user user-menu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear"></i>
-                            </a>
+                            
+ 
                             <ul class="dropdown-menu">
                                 <li class="user-footer">
                                     <div class="pull-left">
@@ -27,6 +25,9 @@
                                 </li>
                             </ul>
                         </li>-->
+                        <router-link tag="li" :to="{ name: 'profile'}" v-if="isLoggedIn">
+                            <a><i class="fa fa-gear"></i> <span>Profiili</span></a>
+                        </router-link>
                         <li v-if="!isLoggedIn">
                             <a href="#/luo-tunnus">Rekister&ouml;idy</a>
                         </li>

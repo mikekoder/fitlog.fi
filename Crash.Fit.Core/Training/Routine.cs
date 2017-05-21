@@ -9,7 +9,8 @@ namespace Crash.Fit.Training
     public class Routine : Entity
     {
         public Guid UserId { get; set; }
-        public string Name { get; set; }     
+        public string Name { get; set; }
+        public bool Active { get; set; }
     }
     public class RoutineSummary : Routine
     {

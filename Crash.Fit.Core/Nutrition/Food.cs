@@ -13,6 +13,10 @@ namespace Crash.Fit.Nutrition
         public bool IsRecipe { get; set; }
         public string FineliId { get; set; }
     }
+    public class FoodSearchResult : Food
+    {
+        public int UsageCount { get; set; }
+    }
     public class FoodSummary : Food
     {
         public int UsageCount { get; set; }

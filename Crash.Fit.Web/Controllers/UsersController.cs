@@ -12,6 +12,8 @@ using Crash.Fit.Web.Models.Users;
 using Crash.Fit.Web.Models.Auth;
 using Microsoft.AspNetCore.Antiforgery;
 using Crash.Fit.Logging;
+using Crash.Fit.Profile;
+using Crash.Fit.Web.Models.Profile;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -21,17 +23,44 @@ namespace Crash.Fit.Web.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IProfileRepository _profileRepository;
 
-        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager, ILogRepository logger) : base(logger)
+        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager, IProfileRepository profileRepository, ILogRepository logger) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _profileRepository = profileRepository;
         }
 
         [HttpGet("me")]
-        public IActionResult Me()
+        public IActionResult GetProfile()
         {
-            return Ok(new { Id = CurrentUserId });
+            var profile = _profileRepository.GetProfile(CurrentUserId);
+            if(profile == null)
+            {
+                profile = new Profile.Profile
+                {
+                    UserId = CurrentUserId
+                };
+            }
+            var result = AutoMapper.Mapper.Map<ProfileResponse>(profile);
+
+            return Ok(result);
+        }
+        [HttpPost("me")]
+        public IActionResult SaveProfile()
+        {
+            var profile = _profileRepository.GetProfile(CurrentUserId);
+            if (profile == null)
+            {
+                profile = new Profile.Profile
+                {
+                    UserId = CurrentUserId
+                };
+            }
+            var result = AutoMapper.Mapper.Map<ProfileResponse>(profile);
+
+            return Ok(result);
         }
         [HttpPost("login")]
         [AllowAnonymous]

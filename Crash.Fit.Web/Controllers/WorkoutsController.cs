@@ -20,8 +20,7 @@ namespace Crash.Fit.Web.Controllers
             this.trainingRepository = trainingRepository;
         }
 
-        [HttpGet]
-        [Route("")]
+        [HttpGet("")]
         public IActionResult Search(DateTimeOffset start, DateTimeOffset? end)
         {
             var workouts = trainingRepository.SearchWorkouts(CurrentUserId, start, end ?? DateTimeOffset.Now).OrderByDescending(w => w.Time);
@@ -29,8 +28,7 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<WorkoutSummaryResponse[]>(workouts);
             return Ok(response);
         }
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         public IActionResult Details(Guid id)
         {
             var workout = trainingRepository.GetWorkout(id);
@@ -39,11 +37,10 @@ namespace Crash.Fit.Web.Controllers
                 return NotFound();
             }
 
-            var response = AutoMapper.Mapper.Map<WorkoutResponse>(workout);
+            var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
-        [HttpPost]
-        [Route("")]
+        [HttpPost("")]
         public IActionResult Create([FromBody]WorkoutRequest request)
         {
             CreateExercises(request.Sets);
@@ -51,12 +48,11 @@ namespace Crash.Fit.Web.Controllers
             workout.UserId = CurrentUserId;     
             trainingRepository.CreateWorkout(workout);
 
-            var response = AutoMapper.Mapper.Map<WorkoutResponse>(workout);
+            var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
 
-        [HttpPut]
-        [Route("{id}")]
+        [HttpPut("{id}")]
         public IActionResult Update(Guid id, [FromBody]WorkoutRequest request)
         {
             var workout = trainingRepository.GetWorkout(id);
@@ -68,12 +64,11 @@ namespace Crash.Fit.Web.Controllers
             AutoMapper.Mapper.Map(request, workout);
             trainingRepository.UpdateWorkout(workout);
 
-            var response = AutoMapper.Mapper.Map<WorkoutResponse>(workout);
+            var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
             var workout = trainingRepository.GetWorkout(id);

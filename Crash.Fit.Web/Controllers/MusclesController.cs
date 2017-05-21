@@ -20,8 +20,7 @@ namespace Crash.Fit.Web.Controllers
             this.trainingRepository = trainingRepository;
         }
 
-        [HttpGet]
-        [Route("groups")]
+        [HttpGet("groups")]
         public IActionResult ListGroups()
         {
             var muscleGroups = trainingRepository.GetMuscleGroups().OrderBy(g => g.Name);

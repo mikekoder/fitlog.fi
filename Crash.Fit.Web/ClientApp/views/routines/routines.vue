@@ -15,11 +15,16 @@
                                 <tr>
                                     <th class="name">Nimi</th>
                                     <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="routine" v-for="routine in routines">
                                     <td><router-link :to="{ name: 'routines', params: { id: routine.id } }">{{ routine.name }}</router-link></td>
+                                    <td>
+                                        <span v-if="routine.active">Aktiivinen</span>
+                                        <button class="btn btn-primary" v-if="!routine.active">Aktiiviseksi</button>
+                                    </td>
                                     <td><button class="btn btn-danger btn-xs" @click="deleteRoutine(routine)">Poista</button></td>
                                 </tr>
                             </tbody>

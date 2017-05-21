@@ -25,7 +25,17 @@
                                 </li>
                             </ul>
                         </div>
-                        <button class="btn btn-primary" @click="createWorkout"><i class="glyphicon glyphicon-plus"></i> Uusi treeni</button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Uusi treeni <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li v-for="workout in workoutOptions">
+                                    <a @click="createWorkout(workout.id)">{{ workout.name }}</a>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <a @click="createWorkout(undefined)">Vapaa treeni</a>
+                                </li></ul>
+                        </div>
                         <div class="outer" v-if="workouts.length > 0">
                             <div class="inner">
                                 <table class="table" id="workout-list">
@@ -74,11 +84,12 @@
 </template>
 
 <script>
+    var constants = require('../../store/constants')
     var api = require('../../api');
     var formatters = require('../../formatters')
-    var c3 = require('c3');
     var moment = require('moment');
     var toaster = require('../../toaster');
+    var utils = require('../../utils');
 
 module.exports = {
     data () {
@@ -88,7 +99,16 @@ module.exports = {
             muscleGroups: [],
             workouts: [],
             exercises: [],
-            selectedWorkout: null
+            selectedWorkout: null,
+            //workoutOptions: []
+        }
+    },
+    computed:{
+        workoutOptions: function () {
+            if (this.$store.state.training.activeRoutine) {
+                return this.$store.state.training.activeRoutine.workouts;
+            }
+            return [];
         }
     },
     components: {
@@ -119,8 +139,11 @@ module.exports = {
                 toaster.error('Treenien haku epäonnistui');
             });
         },
-        createWorkout: function(){
-            this.showWorkout({ time: new Date()});
+        createWorkout: function (routineWorkoutId) {
+            if (routineWorkoutId) {
+
+            }
+            this.showWorkout({ time: utils.previousHalfHour() });
         },
         editWorkout: function (id) {
             var self = this;
@@ -183,6 +206,11 @@ module.exports = {
             self.exercises = exercises;
         }).fail(function () {
             toaster.error('Liikkeiden haku epäonnistui');
+        });
+        this.$store.dispatch(constants.FETCH_ROUTINES, {
+            success: function (routines) {
+                //var activeRoutine = this.$store.state.training
+            }, failure: function () { }
         });
         var id = this.$route.params.id;
         if (id) {

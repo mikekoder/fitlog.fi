@@ -9,12 +9,13 @@ namespace Crash.Fit.Nutrition
     public interface INutritionRepository
     {
         IEnumerable<Nutrient> GetNutrients();
+        IEnumerable<UserNutrient> GetUserNutrients(Guid userId);
         bool CreateNutrient(Nutrient nutrient);
         bool UpdateNutrient(Nutrient nutrient);
         IEnumerable<DailyIntake> GetDailyIntakes(Gender gender, TimeSpan age);
 
 
-        IEnumerable<Food> SearchFoods(string[] nameTokens, Guid? userId = null);
+        IEnumerable<FoodSearchResult> SearchFoods(string[] nameTokens, Guid? userId = null);
         IEnumerable<FoodSummary> SearchUserFoods(Guid userId);
         IEnumerable<FoodSummary> SearchRecipes(Guid userId);
         FoodDetails GetFood(Guid id);
@@ -33,5 +34,9 @@ namespace Crash.Fit.Nutrition
         bool UpdateMeal(MealDetails meal);
         bool DeleteMeal(Meal meal);
         bool RestoreMeal(Guid id, out MealDetails meal);
+
+        bool SaveNutrientSettings(IEnumerable<NutrientSetting> settings);
+        IEnumerable<NutrientTarget> GetNutrientTargets(Guid userId);
+        bool SaveNutrientTargets(IEnumerable<NutrientTarget> targets);
     }
 }

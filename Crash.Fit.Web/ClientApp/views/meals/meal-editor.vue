@@ -81,41 +81,15 @@
                         <thead>
                             <tr><th></th><th></th><th></th></tr>
                         </thead>
-                        <tbody>
-                            <tr><th colspan="2">Makrot</th></tr>
-                            <tr v-for="nutrient in allNutrients['MACROCMP']">
-                                <td>{{ nutrient.name }}</td>
-                                <td>{{ decimal(mealNutrients[nutrient.id], nutrient.precision) }}</td>
-                                <td>{{ unit(nutrient.unit)}}</td>
+                        <tbody v-for="group in groups">
+                            <tr>
+                                <th colspan="2" @click="toggleGroup(group.id)">
+                                    <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
+                                    <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
+                                    {{ group.name }}
+                                </th>
                             </tr>
-                        </tbody>
-                        <tbody>
-                            <tr><th colspan="2">Vitamiinit</th></tr>
-                            <tr v-for="nutrient in allNutrients['VITAM']">
-                                <td>{{ nutrient.name }}</td>
-                                <td>{{ decimal(mealNutrients[nutrient.id], nutrient.precision) }}</td>
-                                <td>{{ unit(nutrient.unit)}}</td>
-                            </tr>
-                        </tbody>
-                        <tbody>
-                            <tr><th colspan="2">Mineraalit</th></tr>
-                            <tr v-for="nutrient in allNutrients['MINERAL']">
-                                <td>{{ nutrient.name }}</td>
-                                <td>{{ decimal(mealNutrients[nutrient.id], nutrient.precision) }}</td>
-                                <td>{{ unit(nutrient.unit)}}</td>
-                            </tr>
-                        </tbody>
-                        <tbody>
-                            <tr><th colspan="2">Hiilihydraatit</th></tr>
-                            <tr v-for="nutrient in allNutrients['CARBOCMP']">
-                                <td>{{ nutrient.name }}</td>
-                                <td>{{ decimal(mealNutrients[nutrient.id], nutrient.precision) }}</td>
-                                <td>{{ unit(nutrient.unit)}}</td>
-                            </tr>
-                        </tbody>
-                        <tbody>
-                            <tr><th colspan="2">Rasvat</th></tr>
-                            <tr v-for="nutrient in allNutrients['FAT']">
+                            <tr v-for="nutrient in allNutrients[group.id]" v-if="groupOpenStates[group.id]">
                                 <td>{{ nutrient.name }}</td>
                                 <td>{{ decimal(mealNutrients[nutrient.id], nutrient.precision) }}</td>
                                 <td>{{ unit(nutrient.unit)}}</td>
@@ -148,6 +122,7 @@
 </template>
 
 <script>
+    var constants = require('../../store/constants')
     var api = require('../../api');
     var formatters = require('../../formatters');
     var utils = require('../../utils');
@@ -161,11 +136,17 @@ module.exports = {
             rows: [],
             copyMode: false,
             copyAllRows: false,
-            allNutrients: {},
-            showNutrients: false
+            showNutrients: false,
+            groupOpenStates: {},
         }
     },
     computed: {
+        groups: function(){
+            return this.$store.state.nutrition.nutrientGroups;
+        },
+        allNutrients: function () {
+            return this.$store.state.nutrition.nutrientsGrouped;
+        },
         mealNutrients: function () {
             var self = this;
             var nutrients = {};
@@ -262,6 +243,12 @@ module.exports = {
                 return value;
             }
             return value.toFixed(precision);
+        },
+        toggleGroup: function (group) {
+            this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
+        },
+        groupIsExpanded(group) {
+            return this.groupOpenStates[group] && true;
         }
     },
     watch: {
@@ -291,20 +278,11 @@ module.exports = {
         else {
             this.rows = [{food: undefined, quantity: undefined, portion: undefined }];
         }
-        api.listNutrients().then(function (allNutrients) {
-            var nutrients = {};
-            for (var i in allNutrients) {
-                var nutrient = allNutrients[i];
-                if (nutrients[nutrient.fineliGroup]) {
-                    nutrients[nutrient.fineliGroup].push(nutrient);
-                }
-                else {
-                    nutrients[nutrient.fineliGroup] = [nutrient];
-                }
-                
-            }
-            self.allNutrients = nutrients;
+        this.$store.dispatch(constants.FETCH_NUTRIENTS, {
+            success: function () { },
+            failure: function () { }
         });
+        this.toggleGroup(this.groups[0].id);
     },
     mounted: function () {
     }
@@ -351,4 +329,5 @@ module.exports = {
             margin-right:0px;
         }
     }
+    
 </style>
