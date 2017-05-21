@@ -16,10 +16,20 @@ namespace Crash.Fit.Nutrition
 
         public IEnumerable<Nutrient> GetNutrients()
         {
-            var sql = @"SELECT * FROM Nutrient ORDER BY Name";
+            var sql = @"SELECT * FROM Nutrient WHERE DELETED IS NULL";
             using (var conn = CreateConnection())
             {
                 return conn.Query<Nutrient>(sql);
+            }
+        }
+        public IEnumerable<UserNutrient> GetUserNutrients(Guid userId)
+        {
+            var sql = @"SELECT * FROM Nutrient
+LEFT JOIN NutrientSettings ON NutrientSettings.NutrientId = Nutrient.Id AND NutrientSettings.UserId=@userId
+WHERE DELETED IS NULL";
+            using (var conn = CreateConnection())
+            {
+                return conn.Query<UserNutrient>(sql,new { userId });
             }
         }
         public bool CreateNutrient(Nutrient nutrient)
@@ -30,7 +40,7 @@ namespace Crash.Fit.Nutrition
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Nutrient(Id,Name,ShortName,Unit,FineliId,FineliClass,FineliGroup,UIOrder,UIVisible) VALUES(@Id,@Name,@ShortName,@Unit,@FineliId,@FineliClass,@FineliGroup,@UIOrder,@UIVisible)", nutrient, tran);
+                    conn.Execute("INSERT INTO Nutrient(Id,Name,ShortName,Unit,FineliId,FineliClass,FineliGroup,DefaultOrder,DefaultHideSummary,DefaultHideDetails) VALUES(@Id,@Name,@ShortName,@Unit,@FineliId,@FineliClass,@FineliGroup,@DefaultOrder,@DefaultHideSummary,@DefaultHideDetails)", nutrient, tran);
                     tran.Commit();
                     return true;
                 }
@@ -48,7 +58,7 @@ namespace Crash.Fit.Nutrition
             {
                 try
                 {
-                    conn.Execute("UPDATE Nutrient SET Name=@Name, ShortName=@ShortName, Unit=@Unit, FineliId=@FineliId, FineliClass=@FineliClass, FineliGroup=@FineliGroup, UIOrder=@UIOrder, UIVisible=@UIVisible WHERE Id=@Id", nutrient, tran);
+                    conn.Execute("UPDATE Nutrient SET Name=@Name, ShortName=@ShortName, Unit=@Unit, FineliId=@FineliId, FineliClass=@FineliClass, FineliGroup=@FineliGroup, DefaultOrder=@DefaultOrder,DefaultHideSummary=@DefaultHideSummary,DefaultHideDetails=@DefaultHideDetails WHERE Id=@Id", nutrient, tran);
                     tran.Commit();
                     return true;
                 }
@@ -97,31 +107,35 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN @ids ORDER BY [Index]";
                 return foods;
             }
         }
-        public IEnumerable<Food> SearchFoods(string[] nameTokens, Guid? userId = null)
+        public IEnumerable<FoodSearchResult> SearchFoods(string[] nameTokens, Guid? userId = null)
         {
             var parameters = new DynamicParameters();
+            parameters.Add("UserId", userId.Value);
+
             var sql = "";
             if (nameTokens != null)
             {
                 for (int i = 0; i < nameTokens.Length; i++)
                 {
                     parameters.Add("p" + i, nameTokens[i]);
-                    sql += " AND Name LIKE CONCAT('%',@p" + i + ",'%')";
+                    sql += " AND Food.Name LIKE CONCAT('%',@p" + i + ",'%')";
                 }
             }
             if (userId.HasValue)
             {
-                sql += " AND (UserId IS NULL OR UserId=@UserId)";
-                parameters.Add("UserId", userId.Value);
+                sql += " AND (Food.UserId IS NULL OR Food.UserId=@UserId)";
             }
             else
             {
-                sql += " AND UserId IS NULL";
+                sql += " AND Food.UserId IS NULL";
             }
-            sql = "SELECT * FROM Food WHERE " + sql.Substring(5) + " ORDER BY Name";
+            sql = @"SELECT Food.*, FoodUsage.UsageCount
+FROM Food 
+LEFT JOIN FoodUsage ON FoodUsage.FoodId=Food.Id AND FoodUsage.UserId=@UserId
+WHERE " + sql.Substring(5) + " ORDER BY Name";
             using (var conn = CreateConnection())
             {
-                return conn.Query<Food>(sql, parameters);
+                return conn.Query<FoodSearchResult>(sql, parameters);
             }
         }
         public IEnumerable<FoodSummary> SearchUserFoods(Guid userId)
@@ -420,7 +434,63 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
                 }
             }
         }
- 
+        public bool SaveNutrientSettings(IEnumerable<NutrientSetting> settings)
+        {
+            var sql = @"MERGE INTO NutrientSettings
+USING (select @UserId AS UserId, @NutrientId AS NutrientId) AS Source
+ON (NutrientSettings.UserId=Source.UserId AND NutrientSettings.NutrientId=Source.NutrientId)
+WHEN MATCHED THEN
+	UPDATE SET [Order]=@Order, HideSummary=@HideSummary, HideDetails=@HideDetails
+WHEN NOT MATCHED THEN
+	INSERT(UserId,NutrientId,[Order],HideSummary,HideDetails) VALUES(@UserId,@NutrientId,@Order,@HideSummary,@HideDetails);";
+
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute(sql, settings, tran);
+
+                    tran.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+        public IEnumerable<NutrientTarget> GetNutrientTargets(Guid userId)
+        {
+            var sql = @"SELECT * FROM NutrientTargets WHERE UserId=@userId";
+            using (var conn = CreateConnection())
+            {
+                return conn.Query<NutrientTarget>(sql,new { userId }).ToList();
+            }
+        }
+        public bool SaveNutrientTargets(IEnumerable<NutrientTarget> targets)
+        {
+            var sql = @"INSERT(UserId,NutrientId,Days,Min,Max) VALUES(@UserId,@NutrientId,@Days,@Min,@Max)";
+
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute(@"DELETE FROM NutrientTargets WHERE UserId=@UserId", targets, tran);
+                    conn.Execute(@"INSERT(UserId,NutrientId,Days,Min,Max) VALUES(@UserId,@NutrientId,@Days,@Min,@Max)", targets, tran);
+                    tran.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+
         private class PortionRaw : Portion
         {
             public Guid FoodId { get; set; }

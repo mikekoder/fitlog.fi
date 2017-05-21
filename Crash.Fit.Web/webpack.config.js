@@ -15,7 +15,7 @@ module.exports = (env) => {
                 'src': path.resolve(__dirname, '../ClientApp'),
                 'assets': path.resolve(__dirname, '../ClientApp/assets'),
                 'components': path.resolve(__dirname, '../ClientApp/components'),
-                'vue': 'vue/dist/vue.js',
+                'vue': 'vue/dist/vue.common.js',
                 'vue$': 'vue/dist/vue.common.js'
             }
         },
@@ -28,7 +28,7 @@ module.exports = (env) => {
             rules: [
                 { test: /\.ts$/, include: /ClientApp/, use: 'awesome-typescript-loader?silent=true' },
                 { test: /\.html$/, use: 'raw-loader' },
-                { test: /\.css$/, use: isDevBuild ? ['style-loader', 'css-loader'] : ExtractTextPlugin.extract({ use: 'css-loader' }) },
+                { test: /\.css$/, use:  ['style-loader', 'css-loader'] },
                 { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' },
                 { test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/, use: 'url-loader?limit=25000' },
                 { test: /\.vue$/, use: 'vue-loader' },
@@ -50,8 +50,17 @@ module.exports = (env) => {
             })
         ] : [
             // Plugins that apply in production builds only
-            new webpack.optimize.UglifyJsPlugin(),
-            new ExtractTextPlugin('site.css')
+            new webpack.optimize.UglifyJsPlugin({
+                compressor: {
+                    warnings: false
+                }
+            }),
+            new ExtractTextPlugin('site.css'),
+            new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': JSON.stringify('production')
+                }
+            })
         ])
     }];
 };

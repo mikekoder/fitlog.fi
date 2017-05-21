@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Web.Models.Training
 {
-    public class RoutineDetailsResponse
+    public class RoutineDetailsResponse : RoutineResponse
     {
-        public Guid Id { get; set; }
-        public Guid UserId { get; set; }
-        public string Name { get; set; }
         public RoutineWorkoutResponse[] Workouts { get; set; }
     }
     public class RoutineWorkoutResponse

@@ -34,15 +34,19 @@ module.exports = {
             matcher: function (item) {
                 return true;
             },
+            sorter: function(items){
+                return items;
+            },
             afterSelect: function (food) {
                 api.getFood(food.id).then(function (foodDetails) {
                     self.$emit('change', foodDetails);
                 });
             },
-            templates: {
-                suggestion: function (data) {
-                    return '<p><strong>' + data.name + '</strong> - ' + data.userId + '</p>';
+            displayText: function (data) {
+                if (data.usageCount > 0) {
+                    return '<strong>' + data.name + '</strong>';
                 }
+                return data.name;
             }
         });
     },

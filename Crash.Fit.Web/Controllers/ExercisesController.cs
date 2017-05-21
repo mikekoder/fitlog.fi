@@ -20,8 +20,7 @@ namespace Crash.Fit.Web.Controllers
         {
             this.trainingRepository = trainingRepository;
         }
-        [HttpGet]
-        [Route("")]
+        [HttpGet("")]
         public IActionResult List()
         {
             var exercises = trainingRepository.SearchUserExercises(CurrentUserId).OrderBy(e => e.Name);
@@ -29,8 +28,7 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<ExerciseSummaryResponse[]>(exercises);
             return Ok(response);
         }
-        [HttpGet]
-        [Route("search")]
+        [HttpGet("search")]
         public IActionResult Search(string name)
         {
             var exercises = trainingRepository.SearchExercises(name.Split(' '), CurrentUserId).OrderBy(e => e.Name);
@@ -38,8 +36,7 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<ExerciseResponse[]>(exercises);
             return Ok(response);
         }
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         public IActionResult Details(Guid id)
         {
             var exercise = trainingRepository.GetExercise(id);
@@ -51,8 +48,7 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);
             return Ok(response);
         }
-        [HttpPost]
-        [Route("")]
+        [HttpPost("")]
         public IActionResult Create([FromBody]ExerciseRequest request)
         {
             var exercise = AutoMapper.Mapper.Map<ExerciseDetails>(request);
@@ -66,8 +62,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(response);
         }
 
-        [HttpPut]
-        [Route("{id}")]
+        [HttpPut("{id}")]
         public IActionResult Update(Guid id, [FromBody]ExerciseRequest request)
         {
             var exercise = trainingRepository.GetExercise(id);
@@ -85,8 +80,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(response);
         }
 
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
             var exercise = trainingRepository.GetExercise(id);

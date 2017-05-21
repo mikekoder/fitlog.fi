@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Web.Models.Nutrition
 {
-    public class RecipeDetailsResponse
+    public class RecipeDetailsResponse : RecipeResponse
     {
-        public Guid? UserId { get; set; }
-        public string Name { get; set; }
         public bool IsRecipe { get; set; }
         public RecipeIngredient[] Ingredients { get; set; }
         public Portion[] Portions { get; set; }

@@ -41,14 +41,14 @@
                                         <tr>
                                             <th></th>
                                             <template v-for="col in visibleColumns">
-                                                <th class="nutrient" v-if="col.visible"><div><div>{{ col.title }}</div></div></th>
+                                                <th class="nutrient" v-if="!col.hideSummary"><div><div>{{ col.title }}</div></div></th>
                                             </template>
                                             <th></th>
                                         </tr>
                                         <tr>
                                             <th class="time freeze">Aika</th>
                                             <template v-for="col in visibleColumns">
-                                                <th class="unit" v-if="col.visible">{{ unit(col.unit) }}</th>
+                                                <th class="unit" v-if="!col.hideSummary">{{ unit(col.unit) }}</th>
                                             </template>
                                             <th></th>
                                         </tr>
@@ -56,26 +56,30 @@
                                     <tbody>
                                         <template v-for="day in days">
                                             <tr class="day" @click="toggleDay(day)">
-                                                <td class="freeze">
-                                                    <i v-if="!day.showDetails" class="fa fa-arrow-down"></i>
-                                                    <i v-if="day.showDetails" class="fa fa-arrow-up"></i>
+                                                <td class="freeze clickable">
+                                                    <i v-if="!dayStates[day.date.getTime()]" class="fa fa-chevron-down"></i>
+                                                    <i v-if="dayStates[day.date.getTime()]" class="fa fa-chevron-up"></i>
                                                     {{ date(day.date) }}</td>
-                                                <td class="nutrient" v-for="col in visibleColumns">
-                                                    <div class="chart" v-if="col === energyDistributionColumn">
-                                                        <chart-pie-energy v-bind:protein="day.nutrients[proteinId]" v-bind:carb="day.nutrients[carbId]" v-bind:fat="day.nutrients[fatId]"></chart-pie-energy>
-                                                    </div>
-                                                    <span v-else>{{ decimal(day.nutrients[col.key], col.precision) }}</span>
-                                                </td>
+                                                <template v-for="col in visibleColumns">
+                                                    <td class="nutrient" v-if="!col.hideSummary">
+                                                        <div class="chart" v-if="col === energyDistributionColumn">
+                                                            <chart-pie-energy v-bind:protein="day.nutrients[proteinId]" v-bind:carb="day.nutrients[carbId]" v-bind:fat="day.nutrients[fatId]"></chart-pie-energy>
+                                                        </div>
+                                                        <span v-else>{{ decimal(day.nutrients[col.key], col.precision) }}</span>
+                                                    </td>
+                                                </template>
                                                 <td></td>
                                             </tr>
-                                            <tr class="meal" v-if="day.showDetails" v-for="meal in day.meals">
+                                            <tr class="meal" v-if="dayStates[day.date.getTime()]" v-for="meal in day.meals">
                                                 <td class="freeze"><router-link :to="{ name: 'meals', params: { id: meal.id } }">{{ time(meal.time) }}</router-link></td>
-                                                <td class="nutrient" v-for="col in visibleColumns">
-                                                    <div class="chart" v-if="col === energyDistributionColumn">
-                                                        <chart-pie-energy v-bind:protein="meal.nutrients[proteinId]" v-bind:carb="meal.nutrients[carbId]" v-bind:fat="meal.nutrients[fatId]"></chart-pie-energy>
-                                                    </div>
-                                                    <span v-else>{{ decimal(meal.nutrients[col.key], col.precision) }}</span>
-                                                </td>
+                                                <template v-for="col in visibleColumns">
+                                                    <td class="nutrient" v-if="!col.hideSummary">
+                                                        <div class="chart" v-if="col === energyDistributionColumn">
+                                                            <chart-pie-energy v-bind:protein="meal.nutrients[proteinId]" v-bind:carb="meal.nutrients[carbId]" v-bind:fat="meal.nutrients[fatId]"></chart-pie-energy>
+                                                        </div>
+                                                        <span v-else>{{ decimal(meal.nutrients[col.key], col.precision) }}</span>
+                                                    </td>
+                                                </template>
                                                 <td><button class="btn btn-danger btn-xs" @click="deleteMeal(meal)">Poista</button></td>
                                             </tr>
                                         </template>
@@ -110,28 +114,46 @@
 </template>
 
 <script>
+
     var api = require('../../api');
     var formatters = require('../../formatters')
     var moment = require('moment');
     var toaster = require('../../toaster');
+    var utils = require('../../utils');
+    var constants = require('../../store/constants')
 
 module.exports = {
     data () {
         return {
-            columns: [],
-            energyDistributionColumn: { title: 'Energiajakauma', unit: 'P/HH/R', visible: true, group: 'MACROCMP'},
+            energyDistributionColumn: { title: 'Energiajakauma', unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
             selectedGroup: 'MACROCMP',
             start: null,
             end: null,
-            meals:[],
-            days: [],
+            dayStates: {},
             selectedMeal: null,
-            proteinId: '1ddca711-0dcc-4708-93c2-1ac3b0b3d281',
-            carbId: 'fa5f03f8-6aeb-4d5f-9100-f41cd606d36b',
-            fatId: '9fa87e51-46af-4ca9-8c7d-98176cfa8b78'
+            proteinId: constants.PROTEIN_ID,
+            carbId: constants.CARB_ID,
+            fatId: constants.FAT_ID
         }
     },
     computed:{
+        columns: function(){
+            var columns = [];
+            columns.push(this.energyDistributionColumn);
+            for(var i in this.$store.state.nutrition.nutrients){
+                var nutrient = this.$store.state.nutrition.nutrients[i];
+                columns.push({ title: nutrient.name, unit: nutrient.unit, precision: nutrient.precision, key: nutrient.id, hideSummary: nutrient.hideSummary, hideDetails: nutrient.hideDetails, group: nutrient.fineliGroup });
+            }
+            return columns;
+        },
+        meals: function(){
+            var self = this;
+            return this.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(self.start, self.end));
+        },
+        days: function(){
+            var self = this;
+            return this.$store.state.nutrition.mealDays.filter(md => moment(md.date).isBetween(self.start, self.end));
+        },
         visibleColumns: function () {
             var self = this;
             return this.columns.filter(function (c) {
@@ -167,21 +189,16 @@ module.exports = {
         },
         fetchMeals: function () {
             var self = this;
-            api.listMeals(this.start, this.end).then(function (meals) {
-                self.meals = meals;
-                self.buildDays();
-            }).fail(function () {
-                toaster.error('Aterioiden haku epäonnistui');
-            });
+            this.$store.dispatch(constants.FETCH_MEALS, {start: self.start, end:self.end});
         },
         showNutrients: function(group){
             this.selectedGroup = group;
         },
-        toggleDay: function(day){
-            day.showDetails = !day.showDetails;
+        toggleDay: function (day) {
+            this.$set(this.dayStates,day.date.getTime(), !(this.dayStates[day.date.getTime()] && true))
         },
         createMeal: function(){
-            this.showMeal({ time: new Date()});
+            this.showMeal({ time: utils.previousHalfHour()});
         },
         editMeal: function (id) {
             var self = this;
@@ -193,12 +210,15 @@ module.exports = {
         },
         saveMeal: function (meal) {
             var self = this;
-            api.saveMeal(meal).then(function (savedMeal) {
-                self.fetchMeals();
-                self.$router.push({ name: 'meals' });
-                self.showSummary();
-            }).fail(function () {
-                toaster.error('Aterian tallennus epäonnistui');
+            this.$store.dispatch(constants.SAVE_MEAL, {
+                meal,
+                success: function () {
+                    self.$router.push({ name: 'meals' });
+                    self.showSummary();
+                },
+                failure: function () {
+                    toaster.error('Aterian tallentaminen epäonnistui');
+                }
             });
         },
         cancelMeal: function (meal) {
@@ -207,14 +227,17 @@ module.exports = {
         },
         deleteMeal: function (meal) {
             var self = this;
-            api.deleteMeal(meal.id).then(function () {
-                meal.deleted = true;
-                self.buildDays();
-                self.$router.push({ name: 'meals' });
-                self.showSummary();
-            }).fail(function () {
-                toaster.error('Aterian poistaminen epäonnistui');
+            this.$store.dispatch(constants.DELETE_MEAL, {
+                meal,
+                success: function () {
+                    self.$router.push({ name: 'meals' });
+                    this.showSummary();
+                },
+                failure: function () {
+                    toaster.error('Aterian poistaminen epäonnistui');
+                }
             });
+            this.showSummary();
         },
         restoreMeal: function (meal) {
             var self = this;
@@ -243,38 +266,8 @@ module.exports = {
         showSummary() {
             this.selectedMeal = null;
         },
-        buildDays: function () {
-
-            var dayStates = this.days.map(d => { return { date: d.date, showDetails: d.showDetails } });
-
-            var days = [];
-            for (var i in this.meals) {
-                var meal = this.meals[i];
-                if (meal.deleted) {
-                    continue;
-                }
-
-                meal.time = new Date(meal.time);
-                var date = moment(meal.time).startOf('day');
-
-                var day = days.find(d => moment(d.date).isSame(date, 'day'));
-                if (!day) {
-                    state = dayStates.find(d => moment(d.date).isSame(date, 'day'));
-                    day = { date: date.toDate(), meals: [], nutrients: {}, showDetails: state && state.showDetails };
-                    days.push(day);
-                }
-                day.meals.push(meal);
-                
-                for (var nutrientId in meal.nutrients) {
-                    if (!day.nutrients[nutrientId]) {
-                        day.nutrients[nutrientId] = 0;
-                    }
-                    day.nutrients[nutrientId] += meal.nutrients[nutrientId];
-                }
-            }
-            this.days = days.sort(function (a, b) {
-                return a.date.getTime() < b.date.getTime() ? 1 : -1;
-            });
+        dayIsExpanded(day){
+            return this.dayStates[day.date.getTime()] && true;
         },
         date: formatters.formatDate,
         time: formatters.formatTime,
@@ -288,19 +281,8 @@ module.exports = {
         }
     },
     created: function () {
-        
         var self = this;
-        api.listNutrients().then(function (nutrients) {
-            self.columns.push(self.energyDistributionColumn);
-            for (var i in nutrients) {
-                if (nutrients[i].uiVisible) {
-                    self.columns.push({ title: nutrients[i].name, unit: nutrients[i].unit, precision: nutrients[i].precision, key: nutrients[i].id, visible: true, group: nutrients[i].fineliGroup });
-                }
-            }
-        }).fail(function () {
-            toaster.error('Ravintoaineiden haku epäonnistui');
-        });
-
+        this.$store.dispatch(constants.FETCH_NUTRIENTS, {});
         var id = this.$route.params.id;
         if (id) {
             api.getMeal(id).then(function (meal) {

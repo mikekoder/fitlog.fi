@@ -16,9 +16,17 @@ namespace Crash.Fit.Nutrition
         public string FineliId { get; set; }
         public string FineliClass { get; set; }
         public string FineliGroup { get; set; }
-
-        public int? UIOrder { get; set; }
-        public bool UIVisible { get; set; }
+        
         public int Precision { get; set; }
+        public int? DefaultOrder { get; set; }
+        public bool DefaultHideSummary { get; set; }
+        public bool DefaultHideDetails { get; set; }
+    }
+    public class UserNutrient : Nutrient
+    {
+        public int? Order { get; set; }
+        public bool? HideSummary { get; set; }
+        public bool? HideDetails { get; set; }
+
     }
 }

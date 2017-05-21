@@ -7,8 +7,8 @@
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <input type="text" v-model="reps" placeholder="Toistot" /> x
-                        <input type="text" v-model="weights" placeholder="Painot" />
+                        <input type="number" min="1" step="1" v-model="reps" placeholder="Toistot" /> x
+                        <input type="number" min="0" step="2.5" v-model="weights" placeholder="Painot" />
                         <button class="btn btn-primary" @click="calculate">Laske</button>
                     </div>
                 </div>
@@ -19,13 +19,13 @@
                                 <tr>
                                     <th>Toistot</th>
                                     <th>Keskiarvo</th>
-                                    <th>Epley</th>
-                                    <th>Brzycki</th>
-                                    <th>Lander</th>
-                                    <th>Lombardi</th>
-                                    <th>Mayhew</th>
-                                    <th>OConner</th>
-                                    <th>Wathan</th>
+                                    <th>Epley<sub>*</sub></th>
+                                    <th>Brzycki<sub>*</sub></th>
+                                    <th>Lander<sub>*</sub></th>
+                                    <th>Lombardi<sub>*</sub></th>
+                                    <th>Mayhew<sub>*</sub></th>
+                                    <th>OConner<sub>*</sub></th>
+                                    <th>Wathan<sub>*</sub></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -42,6 +42,11 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        * K&auml;ytetyt kaavat wikipediasta <a href="https://en.wikipedia.org/wiki/One-repetition_maximum">"One-repetition maximum"</a>
                     </div>
                 </div>
             </section>
@@ -88,17 +93,32 @@
                     var max = (e + b + la + lo + m + o + wa) / 7;
 
                     this.results = [];
-                    this.results.push({
-                        reps: 1,
-                        avg: max,
-                        Epley: e,
-                        Brzycki: b,
-                        Lander: la,
-                        Lombardi: lo,
-                        Mayhew: m,
-                        OConner: o,
-                        Wathan: wa
-                    });
+                    if (r === 1) {
+                        this.results.push({
+                            reps: 1,
+                            avg: w,
+                            Epley: w,
+                            Brzycki: w,
+                            Lander: w,
+                            Lombardi: w,
+                            Mayhew: w,
+                            OConner: w,
+                            Wathan: w
+                        });
+                    }
+                    else {
+                        this.results.push({
+                            reps: 1,
+                            avg: max,
+                            Epley: e,
+                            Brzycki: b,
+                            Lander: la,
+                            Lombardi: lo,
+                            Mayhew: m,
+                            OConner: o,
+                            Wathan: wa
+                        });
+                    }
                     for (var reps = 2; reps <= 10; reps++) {
                         if (reps == r) {
                             this.results.push({

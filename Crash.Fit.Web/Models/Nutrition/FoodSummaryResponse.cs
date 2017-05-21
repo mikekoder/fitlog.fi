@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Web.Models.Nutrition
 {
-    public class FoodSummaryResponse
+    public class FoodSummaryResponse : FoodResponse
     {
-        public Guid Id { get; set; }
-        public Guid? UserId { get; set; }
-        public string Name { get; set; }
         public int UsageCount { get; set; }
         public int NutrientCount { get; set; }
     }

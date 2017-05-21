@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Crash.Fit.Training;
 using Microsoft.AspNetCore.Http.Internal;
 using Crash.Fit.Logging;
+using Crash.Fit.Measurements;
+using Crash.Fit.Profile;
 
 namespace Crash.Fit.Web
 {
@@ -67,6 +69,14 @@ namespace Crash.Fit.Web
             {
                 return new TrainingRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
             });
+            services.AddTransient<IMeasurementRepository>(s =>
+            {
+                return new MeasurementRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+            });
+            services.AddTransient<IProfileRepository>(s =>
+            {
+                return new ProfileRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+            });
             services.AddTransient<ILogRepository>(s =>
             {
                 return new LogRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
@@ -76,12 +86,14 @@ namespace Crash.Fit.Web
 
                 // Nutrients
                 m.CreateMap<Nutrient, Models.Nutrition.NutrientResponse>();
-                m.CreateMap<IEnumerable<NutrientAmount>, Dictionary<Guid, decimal>>().ConvertUsing(na => na.ToDictionary(n=> n.NutrientId,n => n.Amount));
+                m.CreateMap<UserNutrient, Models.Nutrition.NutrientResponse>();
+                m.CreateMap<IEnumerable<NutrientAmount>, Dictionary<Guid, decimal>>().ConvertUsing(na => na.ToDictionary(n => n.NutrientId, n => n.Amount));
                 m.CreateMap<NutrientAmount, Models.Nutrition.NutrientAmountResponse>();
+
                 // Foods
-                m.CreateMap<Food, Models.Nutrition.FoodSummaryResponse>();
+                m.CreateMap<FoodSearchResult, Models.Nutrition.FoodSearchResultResponse>();
                 m.CreateMap<FoodSummary, Models.Nutrition.FoodSummaryResponse>();
-                m.CreateMap<FoodDetails, Models.Nutrition.FoodDetailsResponse>();      
+                m.CreateMap<FoodDetails, Models.Nutrition.FoodDetailsResponse>();
                 m.CreateMap<Models.Nutrition.FoodRequest, FoodDetails>();
 
                 // Meals
@@ -103,7 +115,7 @@ namespace Crash.Fit.Web
 
                 // Workouts
                 m.CreateMap<WorkoutSummary, Models.Training.WorkoutSummaryResponse>();
-                m.CreateMap<WorkoutDetails, Models.Training.WorkoutResponse>();
+                m.CreateMap<WorkoutDetails, Models.Training.WorkoutDetailsResponse>();
                 m.CreateMap<WorkoutSet, Models.Training.WorkoutSetResponse>();
                 m.CreateMap<Models.Training.WorkoutRequest, WorkoutDetails>();
                 m.CreateMap<Models.Training.WorkoutSetRequest, WorkoutSet>();
@@ -115,7 +127,7 @@ namespace Crash.Fit.Web
                 m.CreateMap<Models.Training.ExerciseRequest, ExerciseDetails>();
 
                 // Routines
-                m.CreateMap<RoutineSummary, Models.Training.RoutineSummaryResponse>();
+                m.CreateMap<RoutineSummary, Models.Training.RoutineResponse>();
                 m.CreateMap<RoutineDetails, Models.Training.RoutineDetailsResponse>();
                 m.CreateMap<RoutineWorkout, Models.Training.RoutineWorkoutResponse>();
                 m.CreateMap<RoutineExercise, Models.Training.RoutineExerciseResponse>();
@@ -125,7 +137,14 @@ namespace Crash.Fit.Web
 
                 // MuscleGroups
                 m.CreateMap<MuscleGroup, Models.Training.MuscleGroupResponse>();
+
+                // Measurements
+                m.CreateMap<MeasureSummary, Models.Measurements.MeasureSummaryResponse>();
+
+                m.CreateMap<Profile.Profile, Models.Profile.ProfileResponse>();
             });
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
