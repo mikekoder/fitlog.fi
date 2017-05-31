@@ -22,9 +22,12 @@ namespace Crash.Fit.Web.Models.Nutrition
         public bool DefaultHideSummary { get; set; }
         public bool DefaultHideDetails { get; set; }
 
-        public int? Order { get; set; }
-        public bool? HideSummary { get; set; }
-        public bool? HideDetails { get; set; }
+        public int? UserOrder { get; set; }
+        public bool? UserHideSummary { get; set; }
+        public bool? UserHideDetails { get; set; }
+
+        public bool HideSummary { get; set; }
+        public bool HideDetails { get; set; }
 
         public NutrientTargets Targets { get; set; }
 

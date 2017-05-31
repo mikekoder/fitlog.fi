@@ -1,11 +1,11 @@
 <template>
     <div>
         <div v-if="!selectedExercise">
-            <section class="content-header"><h1>Liikkeet</h1></section>
+            <section class="content-header"><h1>{{ $t("exercises.title") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn btn-primary" @click="createExercise"><i class="glyphicon glyphicon-plus"></i> Uusi liike</button>
+                        <button class="btn btn-primary" @click="createExercise">{{ $t("exercises.create") }}</button>
                     </div>
                 </div>
                 <div class="row" v-if="exercises.length > 0">
@@ -13,8 +13,8 @@
                         <table class="table" id="exercise-list">
                             <thead>
                                 <tr>
-                                    <th>Nimi</th>
-                                    <th>Sarjoja</th>
+                                    <th>{{ $t("exercises.columns.name") }}</th>
+                                    <th>{{ $t("exercises.columns.sets") }}</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -23,7 +23,7 @@
                                     <td><router-link :to="{ name: 'exercises', params: { id: exercise.id } }">{{ exercise.name }}</router-link></td>
                                     <td>{{ exercise.usageCount }}</td>
                                     <td>
-                                        <button class="btn btn-danger btn-xs" @click="deleteExercise(exercise)">Poista</button>
+                                        <button class="btn btn-danger btn-xs" @click="deleteExercise(exercise)">{{ $t("delete") }}</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -33,13 +33,13 @@
                 <div class="row" v-if="exercises.length == 0">
                     <div class="col-sm-12">
                         <br />
-                        Ei liikkeit&auml;
+                        {{ $t("exercises.noExercises") }}
                     </div>
                 </div>
             </section>
         </div>
         <div v-if="selectedExercise">
-            <section class="content-header"><h1>Liikkeen tiedot</h1></section>
+            <section class="content-header"><h1>{{ $t("exercises.exerciseDetails") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
@@ -52,27 +52,28 @@
 </template>
 
 <script>
+    var constants = require('../../store/constants')
     var api = require('../../api');
     var toaster = require('../../toaster');
 
 module.exports = {
     data () {
         return {
-            exercises: [],
-            muscleGroups: [],
             selectedExercise: null
+        }
+    },
+    computed: {
+        muscleGroups: function () {
+            return this.$store.state.training.muscleGroups;
+        },
+        exercises: function () {
+            return this.$store.state.training.exercises;
         }
     },
     components: {
         'exercise-editor': require('./exercise-editor')
     },
     methods: {
-        loadExercises: function () {
-            var self = this;
-            api.listExercises().then(function (exercises) {
-                self.exercises = exercises;
-            });
-        },
         createExercise: function(){
             this.showExercise({id: null, name: null});
         },
@@ -84,10 +85,15 @@ module.exports = {
         },
         saveExercise: function (exercise) {
             var self = this;
-            api.saveExercise(exercise).then(function (savedExercise) {
-                self.loadExercises();
-                self.$router.push({ name: 'exercises' });
-                self.showSummary();
+            this.$store.dispatch(constants.SAVE_EXERCISE, {
+                exercise,
+                success: function () {
+                    self.$router.push({ name: 'exercises' });
+                    self.showSummary();
+                },
+                failure: function () {
+                    toaster(this.$t('exercises.saveFailed'));
+                }
             });
         },
         cancelExercise: function (exercise) {
@@ -96,10 +102,15 @@ module.exports = {
         },
         deleteExercise: function (exercise) {
             var self = this;
-            api.deleteExercise(exercise.id).then(function () {
-                self.loadExercises();
-                self.$router.push({ name: 'exercises' });
-                self.showSummary();
+            this.$store.dispatch(constants.DELETE_EXERCISE, {
+                exercise,
+                success: function () {
+                    self.$router.push({ name: 'exercises' });
+                    self.showSummary();
+                },
+                failure: function () {
+                    toaster(this.$t('exercises.deleteFailed'));
+                }
             });
         },
         showExercise: function (exercise) {
@@ -107,11 +118,20 @@ module.exports = {
         },
         showSummary() {
             this.selectedExercise = null;
-        },
-
+        }
     },
     created: function () {
-        this.loadExercises();
+
+        var self = this;
+        this.$store.dispatch(constants.FETCH_MUSCLEGROUPS, {
+            success: function () { },
+            failure: function () { }
+        });
+        this.$store.dispatch(constants.FETCH_EXERCISES, {
+            success: function () { },
+            failure: function () { }
+        });
+
         var id = this.$route.params.id;
         if (id) {
             this.editExercise(id);

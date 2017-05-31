@@ -1,41 +1,41 @@
 <template>
     <section class="sidebar">
         <ul class="sidebar-menu">
-            <li class="header">RAVINTO</li>
+            <li class="header">{{ $t("menu.nutritionHeader") }}</li>
             <router-link tag="li" :to="{ name: 'meals'}" v-if="isLoggedIn">
-                <a><i class="fa fa-cutlery"></i> <span>Ateriat</span></a>
+                <a><i class="fa fa-cutlery"></i> <span>{{ $t("menu.meals") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'meal-calculator'}" exact v-if="!isLoggedIn">
-                <a><i class="fa fa-cutlery"></i> <span>Aterialaskuri</span></a>
+                <a><i class="fa fa-cutlery"></i> <span>{{ $t("menu.mealCalculator") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'foods'}" v-if="isLoggedIn">
-                <a><i class="fa fa-apple"></i> <span>Ruoka-aineet</span></a>
+                <a><i class="fa fa-apple"></i> <span>{{ $t("menu.foods") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'recipes'}" v-if="isLoggedIn">
-                <a><i class="fa fa-book"></i> <span>Reseptit</span></a>
+                <a><i class="fa fa-book"></i> <span>{{ $t("menu.recipes") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'nutrients'}" v-if="isLoggedIn">
-                <a><i class="fa fa-flask"></i> <span>Ravintoaineet</span></a>
+                <a><i class="fa fa-flask"></i> <span>{{ $t("menu.nutrients") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'nutrition-targets'}" v-if="isLoggedIn">
-                <a><i class="fa fa-flask"></i> <span>Tavoitteet</span></a>
+                <a><i class="fa fa-crosshairs"></i> <span>{{ $t("menu.targets") }}</span></a>
             </router-link>
-            <li class="header">TREENAUS</li>
+            <li class="header">{{ $t("menu.trainingHeader") }}</li>
             <router-link tag="li" :to="{ name: 'workouts'}" v-if="isLoggedIn">
-                <a><i class="fa fa-trophy"></i> <span>Treenit</span></a>
+                <a><i class="fa fa-trophy"></i> <span>{{ $t("menu.workouts") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'exercises'}" v-if="isLoggedIn">
-                <a><i class="fa fa-universal-access"></i> <span>Liikkeet</span></a>
+                <a><i class="fa fa-universal-access"></i> <span>{{ $t("menu.exercises") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'routines'}" v-if="isLoggedIn">
-                <a><i class="fa fa-calendar"></i> <span>Ohjelmat</span></a>
+                <a><i class="fa fa-calendar"></i> <span>{{ $t("menu.routines") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'rep-calculator'}">
-                <a><i class="fa fa-calculator"></i> <span>Sarjapainolaskuri</span></a>
+                <a><i class="fa fa-calculator"></i> <span>{{ $t("menu.repCalculator") }}</span></a>
             </router-link>
-            <li class="header" v-if="isLoggedIn">MITAT</li>
+            <li class="header" v-if="isLoggedIn">{{ $t("menu.measurementsHeader") }}</li>
             <router-link tag="li" :to="{ name: 'measurements'}" v-if="isLoggedIn">
-                <a><i class="fa fa-balance-scale"></i> <span>Mitat</span></a>
+                <a><i class="fa fa-balance-scale"></i> <span>{{ $t("menu.measurements") }}</span></a>
             </router-link>
             <!--
             <li class="treeview">

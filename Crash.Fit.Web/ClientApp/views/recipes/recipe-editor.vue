@@ -3,7 +3,7 @@
         <div class="row" v-if="!anon">
             <div class="col-sm-6 col-md-5 col-lg-4">
                 <div class="form-group">
-                    <label>Nimi</label>
+                    <label>{{ $t("name") }}</label>
                     <input class="form-control" v-model="name" />
                 </div>
                 
@@ -19,24 +19,24 @@
                 </ul>
                 <div v-if="tab === 'ingredients'">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4"><label>Ruoka <router-link :to="{ name: 'foods', params: { mode: 'uusi' } }" target="_blank">Luo uusi</router-link></label></div>
-                        <div class="col-sm-2"><label>Määrä</label></div>
-                        <div class="col-sm-3 col-lg-2"><label>Annos</label></div>
-                        <div class="col-sm-1"><label>Paino (g)</label></div>
+                        <div class="col-sm-4"><label>{{ $t("recipes.label.food") }} <router-link :to="{ name: 'foods', params: { mode: 'uusi' } }" target="_blank">{{ $t("recipes.newFood") }}</router-link></label></div>
+                        <div class="col-sm-2"><label>{{ $t("recipes.label.amount") }}</label></div>
+                        <div class="col-sm-3 col-lg-2"><label>{{ $t("recipes.label.portion") }}</label></div>
+                        <div class="col-sm-1"><label>{{ $t("recipes.label.weight") }} (g)</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
                     <template v-for="(row,index) in ingredients">
                         <div class="recipe-row row">
                             <div class="food col-sm-4">
-                                <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'foods', params: { mode: 'uusi' } }" target="_blank">Luo uusi</router-link></label>
+                                <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'foods', params: { mode: 'uusi' } }" target="_blank">{{ $t("recipes.newFood") }}</router-link></label>
                                 <food-picker v-bind:value="row.food" v-on:change="row.food=arguments[0]" />
                             </div>
                             <div class="quantity col-sm-2 col-xs-3">
-                                <label class="hidden-sm hidden-md hidden-lg">Määrä</label>
+                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("recipes.label.amount") }}</label>
                                 <input type="number" class="form-control" v-model="row.quantity" />
                             </div>
                             <div class="portion col-xs-7 col-sm-3 col-lg-2 ">
-                                <label class="hidden-sm hidden-md hidden-lg">Annos</label>
+                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("recipes.label.portion") }}</label>
                                 <div v-if="row.food">
                                     <select class="form-control" v-model="row.portion">
                                         <option v-bind:value="undefined">g</option>
@@ -54,7 +54,7 @@
                             </div>
                             <div class="actions col-sm-1 col-xs-12">
                                 <div>
-                                    <button class="btn btn-danger btn-sm" @click="removeRow(index)">Poista</button>
+                                    <button class="btn btn-danger btn-sm" @click="removeRow(index)">{{ $t("delete") }}</button>
                                 </div>
                             </div>
                         </div>
@@ -63,15 +63,23 @@
                         </div>
                     </template>
                     <div class="row">
-                        <div class="col-sm-12"><button class="btn" @click="addIngredient"><i class="fa fa-plus"></i> Lisää</button></div>
+                        <div class="col-sm-offset-6 col-sm-2 col-xs-3">
+                            {{ $t("recipes.rawWeight") }}
+                        </div>
+                        <div class="col-sm-1 col-xs-2">
+                            {{ decimal(recipeWeight) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12"><button class="btn" @click="addIngredient">{{ $t("recipes.addFood") }}</button></div>
                     </div>
                    
                 </div>
                 <div v-if="tab === 'portions'">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4 col-lg-2"><label>Nimi</label></div>
-                        <div class="col-sm-2 col-lg-1"><label>Paino (g)</label></div>
-                        <div class="col-sm-3 col-lg-1"><label>Annoksia</label></div>
+                        <div class="col-sm-4 col-lg-2"><label>{{ $t("name") }}</label></div>
+                        <div class="col-sm-3 col-lg-1"><label>{{ $t("recipes.portions") }}</label></div>
+                        <div class="col-sm-2 col-lg-1"><label>{{ $t("recipes.rawWeight") }} (g)</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
                     <template v-for="(portion,index) in portions">
@@ -80,14 +88,15 @@
                                 <label class="hidden-sm hidden-md hidden-lg">Nimi</label>
                                 <input type="text" class="form-control" v-model="portion.name" />
                             </div>
-                            <div class="quantity col-sm-2 col-xs-3 col-lg-1">
-                                <label class="hidden-sm hidden-md hidden-lg">Paino (g)</label>
-                                <input type="number" class="form-control" v-model="portion.weight" @blur="portionWeightChanged(portion)" />
-                            </div>
                             <div class="portion col-sm-3 col-xs-7 col-lg-1">
                                 <label class="hidden-sm hidden-md hidden-lg">Annoksia/resepti</label>
-                                <input type="number" class="form-control" v-model="portion.number" @blur="portionNumberChanged(portion)" />
+                                <input type="number" class="form-control" v-model="portion.amount" @blur="portionNumberChanged(portion)" />
                             </div>
+                            <div class="quantity col-sm-2 col-xs-3 col-lg-1">
+                                <label class="hidden-sm hidden-md hidden-lg">Paino (g)</label>
+                                {{ decimal(recipeWeight/portion.amount) }}
+                            </div>
+                            
                             <div class="actions col-sm-1 col-xs-12">
                                 <div>
                                     <button class="btn btn-danger btn-sm" @click="removePortion(index)">Poista</button>
@@ -269,23 +278,6 @@ module.exports = {
                 return value;
             }
             return value.toFixed(precision);
-        },
-        portionWeightChanged: function (portion) {
-            if (portion.weight) {
-                if (typeof (portion.weight) !== 'number') {
-                    portion.weight = parseFloat(portion.weight.replace(',', '.'));
-                }
-                portion.number = this.decimal(this.recipeWeight / portion.weight,1);
-            }
-            
-        },
-        portionNumberChanged: function (portion) {
-            if (portion.number) {
-                if (typeof (portion.number) !== 'number') {
-                    portion.number = parseFloat(portion.number.replace(',', '.'));
-                }
-                portion.weight = this.decimal(this.recipeWeight / portion.number, 0);
-            }
         },
         toggleGroup: function (group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))

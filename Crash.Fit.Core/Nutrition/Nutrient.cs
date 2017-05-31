@@ -24,9 +24,9 @@ namespace Crash.Fit.Nutrition
     }
     public class UserNutrient : Nutrient
     {
-        public int? Order { get; set; }
-        public bool? HideSummary { get; set; }
-        public bool? HideDetails { get; set; }
+        public int? UserOrder { get; set; }
+        public bool? UserHideSummary { get; set; }
+        public bool? UserHideDetails { get; set; }
 
     }
 }

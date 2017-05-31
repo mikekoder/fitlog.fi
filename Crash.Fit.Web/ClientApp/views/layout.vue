@@ -3,7 +3,7 @@
         <header class="main-header">
             <a href="#/" class="logo">
                 <span class="logo-mini"><b>C</b>F</span>
-                <span class="logo-lg"><b>Crash</b>FIT</span>
+                <span class="logo-lg"><b>fitlog</b></span>
             </a>
             <nav class="navbar navbar-static-top" role="navigation">
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -26,16 +26,16 @@
                             </ul>
                         </li>-->
                         <router-link tag="li" :to="{ name: 'profile'}" v-if="isLoggedIn">
-                            <a><i class="fa fa-gear"></i> <span>Profiili</span></a>
+                            <a><i class="fa fa-gear"></i> <span>{{ $t("menu.profile") }}</span></a>
                         </router-link>
                         <li v-if="!isLoggedIn">
-                            <a href="#/luo-tunnus">Rekister&ouml;idy</a>
+                            <a href="#/luo-tunnus">{{ $t("menu.register") }}</a>
                         </li>
                         <li v-if="!isLoggedIn">
-                            <a href="#/kirjaudu">Kirjaudu</a>
+                            <a href="#/kirjaudu">{{ $t("menu.login") }}</a>
                         </li>
                         <li v-if="isLoggedIn">
-                            <a @click="logout">Kirjaudu ulos</a>
+                            <a @click="logout">{{ $t("menu.logout") }}</a>
                         </li>
                     </ul>
                 </div>

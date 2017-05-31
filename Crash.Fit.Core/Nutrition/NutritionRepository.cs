@@ -24,9 +24,9 @@ namespace Crash.Fit.Nutrition
         }
         public IEnumerable<UserNutrient> GetUserNutrients(Guid userId)
         {
-            var sql = @"SELECT * FROM Nutrient
-LEFT JOIN NutrientSettings ON NutrientSettings.NutrientId = Nutrient.Id AND NutrientSettings.UserId=@userId
-WHERE DELETED IS NULL";
+            var sql = @"SELECT Nutrient.*, NS.[Order] AS UserOrder, NS.HideSummary AS UserHideSummary, NS.HideDetails AS UserHideDetails FROM Nutrient
+LEFT JOIN NutrientSettings NS ON NS.NutrientId = Nutrient.Id AND NS.UserId=@userId
+WHERE Nutrient.DELETED IS NULL";
             using (var conn = CreateConnection())
             {
                 return conn.Query<UserNutrient>(sql,new { userId });
@@ -188,7 +188,7 @@ GROUP BY R.FoodId;";
                     conn.Execute("INSERT INTO Food(Id,UserId,Name,IsRecipe,FineliId,Created) VALUES(@Id,@UserId,@Name,@IsRecipe,@FineliId,@Created)", food, tran);
                     conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount) VALUES(@FoodId,@NutrientId,@Amount)",
                         food.Nutrients.Select(n => new { FoodId = food.Id, n.NutrientId, n.Amount }), tran);
-                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Weight) VALUES(@Id,@FoodId,@Name,@Weight)", food.Portions.Select(p => new { Id = Guid.NewGuid(), FoodId = food.Id, p.Name, p.Weight }), tran);
+                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Amount,Weight) VALUES(@Id,@FoodId,@Name,@Amount,@Weight)", food.Portions.Select(p => new { Id = Guid.NewGuid(), FoodId = food.Id, p.Name, p.Amount, p.Weight }), tran);
                     if(food.Ingredients != null)
                     {
                         conn.Execute("INSERT INTO RecipeIngredient(RecipeId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@RecipeId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", food.Ingredients.Select((i,index) => new
@@ -434,22 +434,15 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
                 }
             }
         }
-        public bool SaveNutrientSettings(IEnumerable<NutrientSetting> settings)
+        public bool SaveNutrientSettings(Guid userId, IEnumerable<NutrientSetting> settings)
         {
-            var sql = @"MERGE INTO NutrientSettings
-USING (select @UserId AS UserId, @NutrientId AS NutrientId) AS Source
-ON (NutrientSettings.UserId=Source.UserId AND NutrientSettings.NutrientId=Source.NutrientId)
-WHEN MATCHED THEN
-	UPDATE SET [Order]=@Order, HideSummary=@HideSummary, HideDetails=@HideDetails
-WHEN NOT MATCHED THEN
-	INSERT(UserId,NutrientId,[Order],HideSummary,HideDetails) VALUES(@UserId,@NutrientId,@Order,@HideSummary,@HideDetails);";
-
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
                 try
                 {
-                    conn.Execute(sql, settings, tran);
+                    conn.Execute("DELETE FROM NutrientSettings WHERE UserId=@userId", new { userId }, tran);
+                    conn.Execute("INSERT NutrientSettings(UserId,NutrientId,[Order],HideSummary,HideDetails) VALUES(@UserId,@NutrientId,@Order,@HideSummary,@HideDetails);", settings, tran);
 
                     tran.Commit();
                     return true;
@@ -469,7 +462,7 @@ WHEN NOT MATCHED THEN
                 return conn.Query<NutrientTarget>(sql,new { userId }).ToList();
             }
         }
-        public bool SaveNutrientTargets(IEnumerable<NutrientTarget> targets)
+        public bool SaveNutrientTargets(Guid userId, IEnumerable<NutrientTarget> targets)
         {
             var sql = @"INSERT(UserId,NutrientId,Days,Min,Max) VALUES(@UserId,@NutrientId,@Days,@Min,@Max)";
 
@@ -478,8 +471,8 @@ WHEN NOT MATCHED THEN
             {
                 try
                 {
-                    conn.Execute(@"DELETE FROM NutrientTargets WHERE UserId=@UserId", targets, tran);
-                    conn.Execute(@"INSERT(UserId,NutrientId,Days,Min,Max) VALUES(@UserId,@NutrientId,@Days,@Min,@Max)", targets, tran);
+                    conn.Execute(@"DELETE FROM NutrientTargets WHERE UserId=@userId",  new { userId}, tran);
+                    conn.Execute(@"INSERT NutrientTargets(UserId,NutrientId,Days,Min,Max) VALUES(@UserId,@NutrientId,@Days,@Min,@Max)", targets, tran);
                     tran.Commit();
                     return true;
                 }

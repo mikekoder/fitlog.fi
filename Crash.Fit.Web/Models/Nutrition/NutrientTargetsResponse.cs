@@ -16,9 +16,9 @@ namespace Crash.Fit.Web.Models.Nutrition
         public bool Sunday { get; set; }
         public bool ExerciseDay { get; set; }
         public bool RestDay { get; set; }
-        public NutrientTarget[] NutrientTargets { get; set; }
+        public NutrientValue[] NutrientValues { get; set; }
 
-        public class NutrientTarget
+        public class NutrientValue
         {
             public Guid NutrientId { get; set; }
             public decimal? Min { get; set; }

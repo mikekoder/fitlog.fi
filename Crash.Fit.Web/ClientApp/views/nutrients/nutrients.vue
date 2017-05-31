@@ -10,7 +10,7 @@
                             <tr><th></th><th></th><th></th><th>Yhteenveto</th><th>Yksityiskohdat</th></tr>
                         </thead>
                         <tbody v-for="group in groups">
-                            <tr><th></th><th colspan="2">{{ group.name }}</th></tr>
+                            <tr><th></th><th colspan="2">{{ $t('nutrients.groups.'+group.id) }}</th></tr>
                             <tr v-for="(nutrient, index) in nutrientSettings[group.id]">
                                 <td>
                                     <button class="btn btn-sm" @click="moveNutrientUp(group.id, index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
@@ -19,14 +19,14 @@
                                 <td>{{ nutrient.name }}</td>
                                 <td>{{ unit(nutrient.unit) }}</td>
                                 <td>
-                                    <select v-model="nutrient.hideSummary">
+                                    <select v-model="nutrient.userHideSummary">
                                         <option value="null">Oletus ({{ nutrient.defaultHideSummary ? 'piilota' : 'n&auml;yt&auml;'}})</option>
                                         <option value="false">N&auml;yt&auml;</option>
                                         <option value="true">Piilota</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <select v-model="nutrient.hideDetails">
+                                    <select v-model="nutrient.userHideDetails">
                                         <option value="null">Oletus ({{ nutrient.defaultHideDetails ? 'piilota' : 'n&auml;yt&auml;'}})</option>
                                         <option value="false">N&auml;yt&auml;</option>
                                         <option value="true">Piilota</option>
@@ -40,7 +40,7 @@
             <hr />
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary">Tallenna</button>
+                    <button class="btn btn-primary" @click="save">Tallenna</button>
                 </div>
             </div>
 
@@ -79,6 +79,20 @@ module.exports = {
             var nutrient = group[index];
             group.splice(index, 1);
             group.splice(index + 1, 0, nutrient);
+        },
+        save: function () {
+            var settings = [];
+            for (var i in this.nutrientSettings) {
+                for (var j in this.nutrientSettings[i]) {
+                    var nutrient = this.nutrientSettings[i][j];
+                    settings.push({ nutrientId: nutrient.id, userHideSummary: nutrient.userHideSummary, userHideDetails: nutrient.userHideDetails })
+                }
+            }
+            this.$store.dispatch(constants.SAVE_NUTRIENT_SETTINGS, {
+                settings,
+                success: function () { },
+                failure: function () { }
+            });
         },
         unit: formatters.formatUnit
     },

@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-sm-5 col-md-3 col-lg-2">
                 <div class="form-group">
-                    <label>Aika</label>
+                    <label>{{ $t("measurements.label.time") }}</label>
                     <datetime-picker class="vue-picker1" name="picker1" v-bind:value="time" v-on:change="time=arguments[0]"></datetime-picker>
                 </div>
             </div>
@@ -12,7 +12,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
-                    <div class="col-xs-8 col-sm-4 col-md-2"><label>Mitta</label></div>
+                    <div class="col-xs-8 col-sm-4 col-md-2"><label>{{ $t("measurements.labels.measure") }}</label></div>
                     <div class="col-xs-4 col-sm-2">&nbsp;</div>
                     <div class="col-xs-4 col-sm-2">&nbsp;</div>
                 </div>
@@ -27,7 +27,7 @@
                         </div>
                         <div class="col-xs-4 col-sm-2">
                             <div>
-                                <button class="btn btn-danger btn-sm" v-if="!measurement.id" @click="removeMeasurement(index)">Poista</button>
+                                <button class="btn btn-danger btn-sm" v-if="!measurement.id" @click="removeMeasurement(index)">{{ $t("delete") }}</button>
                             </div>
                         </div>
                     </div>
@@ -36,15 +36,15 @@
                     </div>
                 </template>
                 <div class="row">
-                    <div class="col-xs-12"><button class="btn" @click="addMeasurement"><i class="fa fa-plus"></i> Lisää</button></div>
+                    <div class="col-xs-12"><button class="btn" @click="addMeasurement">{{ $t("measurements.add") }}</button></div>
                 </div>
             </div>
         </div>
         <hr />
         <div class="row main-actions">
             <div class="col-sm-12">
-                <button class="btn btn-primary" @click="save">Tallenna</button>
-                <button class="btn" @click="cancel">Peruuta</button>
+                <button class="btn btn-primary" @click="save">{{ $t("save") }}</button>
+                <button class="btn" @click="cancel">{{ $t("cancel") }}</button>
             </div>
         </div>
         <hr />
@@ -71,7 +71,6 @@ module.exports = {
     computed: {
     },
     props: {
-        //exercise: null,
         measures: null,
         saveCallback: null,
         cancelCallback: null,

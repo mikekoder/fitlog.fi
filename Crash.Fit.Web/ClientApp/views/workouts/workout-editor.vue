@@ -157,15 +157,14 @@ module.exports = {
         var self = this;
         this.id = this.workout.id;
         this.time = this.workout.time;
-        api.listExercises().then(function (exercises) {
-            self.exercises = exercises;
-            if (self.workout.sets) {
-                self.sets = self.workout.sets.map(s => { return { exercise: exercises.filter(e => e.id === s.exerciseId)[0], reps: s.reps, weights: s.weights } });
-            }
-            else {
-                self.sets = [{ exercise: null, reps: null, weights: null }];
-            }
-        });
+        this.exercises = this.$store.state.training.exercises;
+        
+        if (this.workout.sets) {
+            this.sets = this.workout.sets.map(s => { return { exercise: self.exercises.filter(e => e.id === s.exerciseId)[0], reps: s.reps, weights: s.weights } });
+        }
+        else {
+            this.sets = [{ exercise: null, reps: null, weights: null }];
+        }
     },
     mounted: function () {
     }
