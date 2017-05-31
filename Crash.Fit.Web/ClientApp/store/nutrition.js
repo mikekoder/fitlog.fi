@@ -6,7 +6,6 @@ const state = {
 
     mealsStart: null,
     mealsEnd: null,
-    mealsLoading: false,
     mealDays:[],
     meals: [],
 
@@ -16,15 +15,18 @@ const state = {
         {id:'MINERAL',name:'Mineraalit'}, 
         {id:'CARBOCMP', name:'Hiilihydraatit'}, 
         {id:'FAT',name:'Rasvat'}],
-    nutrientsLoading: false,
+
+    nutrientsLoaded: false,
     nutrients: [],
-    nutrientsGrouped: {}
+    nutrientsGrouped: {},
+    nutrientTargetsLoaded: false,
+    nutrientTargets: {}
 }
 
 // actions
 const actions = {
     [constants.FETCH_NUTRIENTS] ({commit, state},{forceRefresh, success, failure}) {
-        if(state.nutrients != null && state.nutrients.length > 0 && !forceRefresh){
+        if(state.nutrientsLoaded && !forceRefresh){
             if(success){
                 success(state.nutrients);
             }
@@ -36,16 +38,46 @@ const actions = {
                 success(nutrients);
             }
         }).fail(function(){
-            commit(constants.FETCH_NUTRIENTS_FAILURE)
             if(failure){
                 failure();
             }
         });
     },
-    [constants.FETCH_NUTRIENT_TARGETS] ({commit, state},{ success, failure}) {
+    [constants.FETCH_NUTRIENT_TARGETS] ({commit, state},{forceRefresh, success, failure}) {
+        if(state.nutrientTargetsLoaded && !forceRefresh){
+            if(success){
+                success(state.nutrientTargets);
+            }
+            return;
+        }
         api.getNutrientTargets().then(function(targets){
+            commit(constants.FETCH_NUTRIENT_TARGETS_SUCCESS,{targets})
             if(success){
                 success(targets);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.SAVE_NUTRIENT_TARGETS] ({commit, state},{targets, success, failure}){
+        api.saveNutrientTargets(targets).then(function(savedTargets){
+            commit(constants.FETCH_NUTRIENT_TARGETS_SUCCESS,{savedTargets})
+            if(success){
+                success(savedTargets);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.SAVE_NUTRIENT_SETTINGS] ({commit, state},{settings, success, failure}){
+        api.saveNutrientSettings(settings).then(function(nutrients){
+            commit(constants.FETCH_NUTRIENTS_SUCCESS,{nutrients})
+            if(success){
+                success(nutrients);
             }
         }).fail(function(){
             if(failure){
@@ -65,42 +97,36 @@ const actions = {
             }
         }
 
-        commit(constants.FETCH_MEALS_STARTED)
         api.listMeals(start, end).then(function(meals){
             commit(constants.FETCH_MEALS_SUCCESS,{start, end, meals})
             if(success){
                 success();
             }
         }).fail(function(){
-            commit(constants.FETCH_MEALS_FAILURE)
             if(failure){
                 failure();
             }
         });
     },
     [constants.SAVE_MEAL] ({commit, state},{meal, success, failure}){
-        commit(constants.SAVE_MEAL_STARTED)
         api.saveMeal(meal).then(function(savedMeal){
             commit(constants.SAVE_MEAL_SUCCESS,{id: meal.id, meal: savedMeal})
             if(success){
                 success();
             }
         }).fail(function(){
-            commit(constants.SAVE_MEAL_FAILURE)
             if(failure){
                 failure();
             }
         });
     },
     [constants.DELETE_MEAL] ({commit, state},{meal, success, failure}){
-        commit(constants.DELETE_MEAL_STARTED)
         api.deleteMeal(meal.id).then(function(){
             commit(constants.DELETE_MEAL_SUCCESS,{meal})
             if(success){
                 success();
             }
         }).fail(function(){
-            commit(constants.DELETE_MEAL_FAILURE)
             if(failure){
                 failure();
             }
@@ -131,6 +157,9 @@ const mutations = {
     },
     [constants.FETCH_NUTRIENTS_FAILURE] (state) {
         state.nutrientsLoading = false;
+    },
+    [constants.FETCH_NUTRIENT_TARGETS_SUCCESS] (state, {targets}) {
+        state.nutrientTargets = targets;
     },
     [constants.FETCH_MEALS_STARTED] (state) {
         state.mealsLoading = true;

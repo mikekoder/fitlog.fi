@@ -31,10 +31,10 @@ namespace Crash.Fit.Web.Controllers
             }
             else
             {
-                var nutrients = nutritionRepository.GetUserNutrients(CurrentUserId).OrderBy(n => n.Order ?? int.MaxValue).ThenBy(n => n.DefaultOrder ?? int.MaxValue).ThenBy(n => n.Name);
+                var nutrients = nutritionRepository.GetUserNutrients(CurrentUserId).OrderBy(n => n.UserOrder ?? int.MaxValue).ThenBy(n => n.DefaultOrder ?? int.MaxValue).ThenBy(n => n.Name);
                 var response = AutoMapper.Mapper.Map<NutrientResponse[]>(nutrients);
                 var targets = nutritionRepository.GetNutrientTargets(CurrentUserId);
-                foreach(var nutrient in response)
+                foreach (var nutrient in response)
                 {
                     nutrient.Targets.Min = targets.FirstOrDefault(t => t.NutrientId == nutrient.Id && t.Days == Days.None)?.Min;
                     nutrient.Targets.Max = targets.FirstOrDefault(t => t.NutrientId == nutrient.Id && t.Days == Days.None)?.Max;
@@ -66,19 +66,19 @@ namespace Crash.Fit.Web.Controllers
                     nutrient.Targets.RestDayMin = targets.FirstOrDefault(t => t.NutrientId == nutrient.Id && t.Days.HasFlag(Days.RestDay))?.Min;
                     nutrient.Targets.RestDayMax = targets.FirstOrDefault(t => t.NutrientId == nutrient.Id && t.Days.HasFlag(Days.RestDay))?.Max;
                 }
-                
+
                 return Ok(response);
             }
-           
+
         }
 
         [HttpGet("targets")]
-        public IActionResult Targets()
+        public IActionResult ListTargets()
         {
             var response = new List<NutrientTargetsResponse>();
             var targets = nutritionRepository.GetNutrientTargets(CurrentUserId);
             var days = targets.Select(t => t.Days).Distinct();
-            foreach(var day in days)
+            foreach (var day in days)
             {
                 var responseDay = new NutrientTargetsResponse
                 {
@@ -91,7 +91,7 @@ namespace Crash.Fit.Web.Controllers
                     Sunday = day.HasFlag(Days.Sunday),
                     ExerciseDay = day.HasFlag(Days.ExerciseDay),
                     RestDay = day.HasFlag(Days.RestDay),
-                    NutrientTargets = targets.Where(t => t.Days == day).Select(t => new NutrientTargetsResponse.NutrientTarget
+                    NutrientValues = targets.Where(t => t.Days == day).Select(t => new NutrientTargetsResponse.NutrientValue
                     {
                         NutrientId = t.NutrientId,
                         Min = t.Min,
@@ -102,6 +102,85 @@ namespace Crash.Fit.Web.Controllers
             }
             return Ok(response);
         }
+        [HttpPut("targets")]
+        public IActionResult UpdateTargets([FromBody] NutrientTargetsRequest[] request)
+        {
+            var targets = new List<NutrientTarget>();
+            foreach(var targetDay in request)
+            {
+                var days = Days.None;
+                if (targetDay.Monday)
+                {
+                    days |= Days.Monday;
+                }
+                if (targetDay.Tuesday)
+                {
+                    days |= Days.Tuesday;
+                }
+                if (targetDay.Wednesday)
+                {
+                    days |= Days.Wednesday;
+                }
+                if (targetDay.Thursday)
+                {
+                    days |= Days.Thursday;
+                }
+                if (targetDay.Friday)
+                {
+                    days |= Days.Friday;
+                }
+                if (targetDay.Saturday)
+                {
+                    days |= Days.Saturday;
+                }
+                if (targetDay.Sunday)
+                {
+                    days |= Days.Sunday;
+                }
+                if (targetDay.ExerciseDay)
+                {
+                    days |= Days.ExerciseDay;
+                }
+                if (targetDay.RestDay)
+                {
+                    days |= Days.RestDay;
+                }
+                foreach (var nutrientValue in targetDay.NutrientValues)
+                {
+                    if (nutrientValue.Min.HasValue || nutrientValue.Max.HasValue)
+                    {
+                        targets.Add(new NutrientTarget
+                        {
+                            UserId = CurrentUserId,
+                            NutrientId = nutrientValue.NutrientId,
+                            Min = nutrientValue.Min,
+                            Max = nutrientValue.Max,
+                            Days = days
+                        });
+                    }
+                }
+            }
+
+            nutritionRepository.SaveNutrientTargets(CurrentUserId, targets);
+            return ListTargets();
+        }
+
+        [HttpPut("settings")]
+        public IActionResult Settings([FromBody] NutrientSettingRequest[] request)
+        {
+            var settings = request.Select((s, index) => 
+            {
+                var setting = AutoMapper.Mapper.Map<NutrientSetting>(s);
+                setting.UserId = CurrentUserId;
+                setting.Order = index;
+                return setting;
+            });
+
+            nutritionRepository.SaveNutrientSettings(CurrentUserId, settings);
+            return List();
+        }
+
+        
         /*
         [HttpGet]
         [Route("daily-intakes")]

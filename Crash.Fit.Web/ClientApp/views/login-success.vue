@@ -11,7 +11,7 @@ module.exports = {
     components: {},
     methods: {},
     created: function () {
-        api.getUser().then(function (user) {
+        api.getProfile().then(function (user) {
             auth.setUserInfo(user.id);
             window.location = '/';
         });

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="!selectedMeal">
-            <section class="content-header"><h1>Ateriat</h1></section>
+            <section class="content-header"><h1>{{ $t("meals.title") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
@@ -10,30 +10,30 @@
                                 {{ date(start) }} - {{ date(end) }} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a @click="showDay">T&auml;n&auml;&auml;n</a></li>
-                                <li><a @click="showWeek">Kuluva viikko</a></li>
-                                <li><a @click="showMonth">Kuluva kuukausi</a></li>
+                                <li><a @click="showDay">{{ $t("today") }}</a></li>
+                                <li><a @click="showWeek">{{ $t("currentWeek") }}</a></li>
+                                <li><a @click="showMonth">{{ $t("currentMonth") }}</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a @click="showDays(7)">7 pv</a></li>
-                                <li><a @click="showDays(14)">14 pv</a></li>
-                                <li><a @click="showDays(30)">30 pv</a></li>
+                                <li><a @click="showDays(7)">7 {{ $t("days") }}</a></li>
+                                <li><a @click="showDays(14)">14 {{ $t("days") }}</a></li>
+                                <li><a @click="showDays(30)">30 {{ $t("days") }}</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li class="custom-date"><span>Valitse aikav&auml;li</span></li>
+                                <li class="custom-date"><span>{{ $t("chooseDateInterval") }}</span></li>
                                 <li class="custom-date">
                                     <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="start=arguments[0]"></datetime-picker>
                                     <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="end=arguments[0]"></datetime-picker>
-                                    <button class="btn btn-sm" @click="fetchMeals()">OK</button>
+                                    <button class="btn btn-sm" @click="fetchMeals()">{{ $t("OK") }}</button>
                                 </li>
                             </ul>
                         </div>
                         
                         <div class="btn-group" role="group" aria-label="...">
-                            <button class="btn btn-default" v-bind:class="{ active: selectedGroup==='MACROCMP' }" @click="showNutrients('MACROCMP')">Makrot</button>
-                            <button class="btn btn-default" v-bind:class="{ active: selectedGroup==='MINERAL' }" @click="showNutrients('MINERAL')">Mineraalit</button>
-                            <button class="btn btn-default" v-bind:class="{ active: selectedGroup==='VITAM' }" @click="showNutrients('VITAM')">Vitamiinit</button>
+                            <template v-for="group in groups">
+                                <button class="btn btn-default" v-bind:class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t('nutrients.group.'+group.id) }}</button>
+                            </template>
                         </div>
                        
-                        <button class="btn btn-primary" @click="createMeal"><i class="glyphicon glyphicon-plus"></i> Uusi ateria</button>
+                        <button class="btn btn-primary" @click="createMeal">{{ $t("meals.create") }}</button>
                         <div class="outer" v-if="days.length > 0">
                             <div class="inner">
                                 <table class="table" id="meal-list">
@@ -46,7 +46,7 @@
                                             <th></th>
                                         </tr>
                                         <tr>
-                                            <th class="time freeze">Aika</th>
+                                            <th class="time freeze">{{ $t("meals.columns.time") }}</th>
                                             <template v-for="col in visibleColumns">
                                                 <th class="unit" v-if="!col.hideSummary">{{ unit(col.unit) }}</th>
                                             </template>
@@ -65,7 +65,7 @@
                                                         <div class="chart" v-if="col === energyDistributionColumn">
                                                             <chart-pie-energy v-bind:protein="day.nutrients[proteinId]" v-bind:carb="day.nutrients[carbId]" v-bind:fat="day.nutrients[fatId]"></chart-pie-energy>
                                                         </div>
-                                                        <span v-else>{{ decimal(day.nutrients[col.key], col.precision) }}</span>
+                                                        <div v-else><div class="bar"></div>{{ decimal(day.nutrients[col.key], col.precision) }}</div>
                                                     </td>
                                                 </template>
                                                 <td></td>
@@ -89,7 +89,7 @@
                         </div>
                         <div v-if="days.length == 0">
                             <br />
-                            Ei aterioita
+                            {{ $t("meals.noMeals") }}
                         </div>
                        
                         <div v-for="meal in meals">
@@ -101,7 +101,7 @@
             </section>
         </div>
         <div v-if="selectedMeal">
-            <section class="content-header"><h1>Aterian tiedot</h1></section>
+            <section class="content-header"><h1>{{ $t("meals.mealDetails") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
@@ -125,8 +125,8 @@
 module.exports = {
     data () {
         return {
-            energyDistributionColumn: { title: 'Energiajakauma', unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
-            selectedGroup: 'MACROCMP',
+            energyDistributionColumn: null,
+            selectedGroup: '',
             start: null,
             end: null,
             dayStates: {},
@@ -136,12 +136,18 @@ module.exports = {
             fatId: constants.FAT_ID
         }
     },
-    computed:{
+    computed: {
+        groups: function () {
+            return this.$store.state.nutrition.nutrientGroups;
+        },
         columns: function(){
             var columns = [];
             columns.push(this.energyDistributionColumn);
             for(var i in this.$store.state.nutrition.nutrients){
                 var nutrient = this.$store.state.nutrition.nutrients[i];
+                if (nutrient.hideSummary) {
+                    continue;
+                }
                 columns.push({ title: nutrient.name, unit: nutrient.unit, precision: nutrient.precision, key: nutrient.id, hideSummary: nutrient.hideSummary, hideDetails: nutrient.hideDetails, group: nutrient.fineliGroup });
             }
             return columns;
@@ -149,6 +155,10 @@ module.exports = {
         meals: function(){
             var self = this;
             return this.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(self.start, self.end));
+        },
+        workouts: function(){
+            var self = this;
+            return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
         },
         days: function(){
             var self = this;
@@ -189,9 +199,10 @@ module.exports = {
         },
         fetchMeals: function () {
             var self = this;
-            this.$store.dispatch(constants.FETCH_MEALS, {start: self.start, end:self.end});
+            this.$store.dispatch(constants.FETCH_MEALS, { start: self.start, end: self.end });
+            this.$store.dispatch(constants.FETCH_WORKOUTS, { start: self.start, end: self.end });
         },
-        showNutrients: function(group){
+        selectGroup: function(group){
             this.selectedGroup = group;
         },
         toggleDay: function (day) {
@@ -269,6 +280,9 @@ module.exports = {
         dayIsExpanded(day){
             return this.dayStates[day.date.getTime()] && true;
         },
+        nutrientValues(nutrientId, day){
+
+        },
         date: formatters.formatDate,
         time: formatters.formatTime,
         datetime: formatters.formatDateTime,
@@ -282,7 +296,9 @@ module.exports = {
     },
     created: function () {
         var self = this;
+        this.energyDistributionColumn = { title: this.$t('meals.columns.energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
         this.$store.dispatch(constants.FETCH_NUTRIENTS, {});
+        this.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {});
         var id = this.$route.params.id;
         if (id) {
             api.getMeal(id).then(function (meal) {
@@ -296,6 +312,7 @@ module.exports = {
         } else {
             self.showWeek();
         }
+        this.selectGroup(this.groups[0].id);
     },
     beforeRouteUpdate (to, from, next) {
         if (to.params.id) {

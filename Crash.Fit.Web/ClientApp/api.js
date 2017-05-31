@@ -137,8 +137,24 @@ const api = {
     getNutrientTargets: function () {
         return $.get(baseUrl + 'nutrients/targets');
     },
+    saveNutrientTargets: function (targets) {
+        return $.ajax({
+            url: baseUrl + 'nutrients/targets',
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(targets)
+        });
+    },
     listDailyIntakes: function(gender, dob){
 
+    },
+    saveNutrientSettings: function(settings){
+        return $.ajax({
+            url: baseUrl + 'nutrients/settings',
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(settings)
+        });
     },
 
     // Workouts

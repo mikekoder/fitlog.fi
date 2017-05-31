@@ -1,11 +1,11 @@
 <template>
     <div>
         <div v-if="!selectedFood">
-            <section class="content-header"><h1>Ruoka-aineet</h1></section>
+            <section class="content-header"><h1>{{ $t("foods.title") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn btn-primary" @click="createFood"><i class="glyphicon glyphicon-plus"></i> Uusi ruoka-aine</button>
+                        <button class="btn btn-primary" @click="createFood">{{ $t("foods.create") }}</button>
                     </div>
                 </div>
                 <div class="row" v-if="foods.length > 0">
@@ -13,9 +13,9 @@
                         <table class="table" id="food-list">
                             <thead>
                                 <tr>
-                                    <th>Nimi</th>
-                                    <th>K&auml;ytt&ouml;kerrat</th>
-                                    <th>Ravintoarvoja</th>
+                                    <th>{{ $t("foods.columns.name") }}</th>
+                                    <th>{{ $t("foods.columns.usageCount") }}</th>
+                                    <th>{{ $t("foods.columns.nutrientCount") }}</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -24,7 +24,7 @@
                                     <td><router-link :to="{ name: 'foods', params: { id: food.id } }">{{ food.name }}</router-link></td>
                                     <td>{{ food.usageCount }}</td>
                                     <td>{{ food.nutrientCount }}</td>
-                                    <td><button class="btn btn-danger btn-xs" @click="deleteFood(food)">Poista</button></td>
+                                    <td><button class="btn btn-danger btn-xs" @click="deleteFood(food)">{{ $t("delete") }}</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -32,13 +32,13 @@
                 </div>
                 <div class="row" v-if="foods.length == 0">
                     <div class="col-sm-12">
-                        Ei ruoka-aineita
+                        {{ $t("foods.noFoods") }}
                     </div>
                 </div>
             </section>
         </div>
         <div v-if="selectedFood">
-            <section class="content-header"><h1>Ruoka-aineen tiedot</h1></section>
+            <section class="content-header"><h1>{{ $t("foods.foodDetails") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
@@ -73,7 +73,7 @@ module.exports = {
                     self.foods.push(foods[i]);
                 }
             }).fail(function () {
-                toaster.error('Ruoka-aineiden haku epäonnistui');
+                toaster.error(self.$t('foods.fetchError'));
             });
         },
         createFood: function(){
@@ -94,7 +94,7 @@ module.exports = {
                 self.$router.push({ name: 'foods' });
                 self.showSummary();
             }).fail(function () {
-                toaster.error('Ruoka-aineen tallennus epäonnistui');
+                toaster.error(self.$t('foods.saveError'));
             });
         },
         cancelFood: function (food) {
@@ -108,7 +108,7 @@ module.exports = {
                 self.$router.push({ name: 'foods' });
                 self.showSummary();
             }).fail(function () {
-                toaster.error('Ruoka-aineen poistaminen epäonnistui');
+                toaster.error(self.$t('foods.deleteError'));
             });
             
         },

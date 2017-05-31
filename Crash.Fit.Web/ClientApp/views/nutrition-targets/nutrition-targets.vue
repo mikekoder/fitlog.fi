@@ -49,7 +49,7 @@
                                         <th class="freeze" @click="toggleGroup(group.id)">
                                             <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
                                             <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
-                                            {{ group.name }}
+                                            {{ $t('nutrients.groups.'+group.id) }}
                                         </th>
                                         <template v-for="target in nutrientTargets">
                                             <td>&nbsp;</td>
@@ -58,7 +58,7 @@
                                     <tr v-for="nutrient in nutrients[group.id]" v-if="groupOpenStates[group.id]">
                                         <td class="freeze"><span class="name">{{ nutrient.name }}</span> <span class="unit">{{ unit(nutrient.unit) }}</span></td>
                                         <template v-for="target in nutrientTargets">
-                                            <td><input type="number" class="form-control input-4" v-model="target.targets[nutrient.id].min" /> - <input type="number" class="form-control input-4" v-model="target.targets[nutrient.id].max" /></td>
+                                            <td><input type="number" class="form-control input-4" v-model="target.nutrientValues[nutrient.id].min" /> - <input type="number" class="form-control input-4" v-model="target.nutrientValues[nutrient.id].max" /></td>
                                         </template>
                                     </tr>
                                 </tbody>
@@ -70,7 +70,7 @@
             <hr />
             <div class="row" v-if="nutrientTargets.length > 0">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary">Tallenna</button>
+                    <button class="btn btn-primary" @click="save">Tallenna</button>
                 </div>
             </div>
 
@@ -114,11 +114,11 @@ module.exports = {
                 sunday: false,
                 exerciseDay: false,
                 restDay: false,
-                targets: {}
+                nutrientValues: {}
             };
             for (var i in this.nutrients) {
                 for (var j in this.nutrients[i]) {
-                    target.targets[this.nutrients[i][j].id] = { min: undefined, max: undefined };
+                    target.nutrientValues[this.nutrients[i][j].id] = { min: undefined, max: undefined };
                 }
             }
 
@@ -127,26 +127,83 @@ module.exports = {
         deleteNutrientTarget: function(){
 
         },
-        unit: formatters.formatUnit,
         toggleGroup: function (group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
         },
         groupIsExpanded(group) {
             return this.groupOpenStates[group] && true;
-        }
+        },
+        save: function () {
+            var targets = [];
+            for (var i in this.nutrientTargets) {
+                var days = this.nutrientTargets[i];
+                var target = {
+                    monday: days.monday,
+                    tuesday: days.tuesday,
+                    wednesday: days.wednesday,
+                    thursday: days.thursday,
+                    friday: days.friday,
+                    saturday: days.saturday,
+                    sunday: days.sunday,
+                    exerciseDay: days.exerciseDay,
+                    restDay: days.restDay,
+                    nutrientValues: []
+                };
+                for (var j in days.targets) {
+                    var value = days.targets[j];
+                    if (value.min || value.min == 0 || value.max || value.max == 0) {
+                        target.nutrientValues.push({ nutrientId: j, min: value.min, max: value.max });
+                    }
+                }
+                targets.push(target);
+            }
+            this.$store.dispatch(constants.SAVE_NUTRIENT_TARGETS, {
+                targets,
+                success: function () { },
+                failure: function () { }
+            });
+        },
+        unit: formatters.formatUnit
     },
     created: function () {
         var self = this;
         this.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success: function () { },
-            failure: function () { }
-        });
-        this.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {
-            success: function (targets) {
-                self.nutrientTargets = targets;
+            success: function () {
+                self.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {
+                    success: function (targets) {
+                        var nutrientTargets = [];
+                        for (var i in targets) {
+                            var target = {
+                                monday: targets[i].monday,
+                                tuesday: targets[i].tuesday,
+                                wednesday: targets[i].wednesday,
+                                thursday: targets[i].thursday,
+                                friday: targets[i].friday,
+                                saturday: targets[i].saturday,
+                                sunday: targets[i].sunday,
+                                exerciseDay: targets[i].exerciseDay,
+                                restDay: targets[i].restDay,
+                                nutrientValues: {}
+                            };
+                            for (var g in self.nutrients) {
+                                for (var n in self.nutrients[g]) {
+                                    target.nutrientValues[self.nutrients[g][n].id] = { min: undefined, max: undefined };
+                                }
+                            }
+                            for (var j in targets[i].nutrientValues) {
+                                var value = targets[i].nutrientValues[j];
+                                target.nutrientValues[value.nutrientId] = { min: value.min, max: value.max };
+                            }
+                            nutrientTargets.push(target);
+                        }
+                        self.nutrientTargets = nutrientTargets;
+                    },
+                    failure: function () { }
+                });
             },
             failure: function () { }
         });
+        
         this.toggleGroup(this.groups[0].id);
     }
 }

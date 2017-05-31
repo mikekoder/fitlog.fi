@@ -1,11 +1,11 @@
 <template>
     <div>
         <div v-if="!create">
-            <section class="content-header"><h1>Mitat</h1></section>
+            <section class="content-header"><h1>{{ $t("measurements.title") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn btn-primary" @click="createMeasurements"><i class="glyphicon glyphicon-plus"></i> Lis&auml;&auml; mitat</button>
+                        <button class="btn btn-primary" @click="createMeasurements">{{ $t("measurements.create") }}</button>
                     </div>
                 </div>
                 <div class="row" v-if="measures.length > 0">
@@ -13,9 +13,9 @@
                         <table class="table" id="measure-list">
                             <thead>
                                 <tr>
-                                    <th>Mitta</th>
-                                    <th>Arvo</th>
-                                    <th>Aika</th>
+                                    <th>{{ $t("measurements.columns.measure") }}</th>
+                                    <th>{{ $t("measurements.columns.value") }}</th>
+                                    <th>{{ $t("measurements.columns.time") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -31,13 +31,13 @@
                 <div class="row" v-if="measures.length == 0">
                     <div class="col-sm-12">
                         <br />
-                        Ei mittoja
+                        {{ $t("measurements.noMeasurements") }}
                     </div>
                 </div>
             </section>
         </div>
         <div v-if="create">
-            <section class="content-header"><h1>Mitat</h1></section>
+            <section class="content-header"><h1>{{ $t("measurements.title") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">

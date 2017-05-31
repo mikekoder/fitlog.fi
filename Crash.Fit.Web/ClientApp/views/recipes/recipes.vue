@@ -1,11 +1,11 @@
 <template>
     <div>
         <div v-if="!selectedRecipe">
-            <section class="content-header"><h1>Reseptit</h1></section>
+            <section class="content-header"><h1>{{ $t('recipes.title') }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn btn-primary" @click="createRecipe"><i class="glyphicon glyphicon-plus"></i> Uusi resepti</button>
+                        <button class="btn btn-primary" @click="createRecipe">{{ $t('recipes.create') }}</button>
                     </div>
                 </div>
                 <div class="row" v-if="recipes.length > 0">
@@ -13,8 +13,8 @@
                         <table class="table" id="recipe-list">
                             <thead>
                                 <tr>
-                                    <th>Nimi</th>
-                                    <th>K&auml;ytt&ouml;kerrat</th>
+                                    <th>{{ $t('recipes.columns.name') }}</th>
+                                    <th>{{ $t('recipes.columns.usageCount') }}</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -22,7 +22,7 @@
                                 <tr v-for="recipe in recipes">
                                     <td><router-link :to="{ name: 'recipes', params: { id: recipe.id } }">{{ recipe.name }}</router-link></td>
                                     <td>{{ recipe.usageCount }}</td>
-                                    <td><button class="btn btn-danger btn-xs" @click="deleteRecipe(recipe)">Poista</button></td>
+                                    <td><button class="btn btn-danger btn-xs" @click="deleteRecipe(recipe)">{{ $t('delete') }}</button></td>
                                 </tr>   
                             </tbody>
                         </table>
@@ -30,13 +30,13 @@
                 </div>
                 <div class="row" v-if="recipes.length == 0">
                     <div class="col-sm-12">
-                        Ei reseptejä
+                        {{ $t('recipes.noRecipes') }}
                     </div>
                 </div>
             </section>
         </div>
         <div v-if="selectedRecipe">
-            <section class="content-header"><h1>Reseptin tiedot</h1></section>
+            <section class="content-header"><h1>{{ $t('recipes.recipeDetails') }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
@@ -50,9 +50,6 @@
 
 <script>
     var api = require('../../api');
-    var formatters = require('../../formatters')
-    var c3 = require('c3');
-    var moment = require('moment');
     var toaster = require('../../toaster');
 
 module.exports = {
@@ -74,7 +71,7 @@ module.exports = {
                     self.recipes.push(recipes[i]);
                 }
             }).fail(function () {
-                toaster.error('Reseptien haku epäonnistui');
+                toaster.error(self.$t('recipes.fetchError'));
             });
         },
         showNutrients: function(group){
@@ -89,7 +86,7 @@ module.exports = {
             api.getRecipe(id).then(function (recipeDetails) {
                 self.showRecipe(recipeDetails);
             }).fail(function () {
-                toaster.error('Reseptin haku epäonnistui');
+                toaster.error(self.$t('recipes.fetchError'));
             });
             
         },
@@ -140,7 +137,7 @@ module.exports = {
                 self.$router.push({ name: 'recipes' });
                 self.showSummary();
             }).fail(function () {
-                toaster.error('Reseptin tallennus epäonnistui');
+                toaster.error(self.$t('recipes.saveError'));
             });
         },
         cancelRecipe: function (recipe) {
@@ -154,7 +151,7 @@ module.exports = {
                 self.$router.push({ name: 'recipes' });
                 self.showSummary();
             }).fail(function () {
-                toaster.error('Reseptin poistaminen epäonnistui');
+                toaster.error(self.$t('recipes.deleteError'));
             });
            
         },
@@ -163,10 +160,7 @@ module.exports = {
         },
         showSummary: function(){
             this.selectedRecipe = undefined;
-        },
-        date: formatters.formatDate,
-        time: formatters.formatTime,
-        unit: formatters.formatUnit
+        }
     },
     watch:{
         $route: function(){

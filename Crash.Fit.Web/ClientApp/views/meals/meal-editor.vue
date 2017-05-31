@@ -86,7 +86,7 @@
                                 <th colspan="2" @click="toggleGroup(group.id)">
                                     <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
                                     <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
-                                    {{ group.name }}
+                                    {{ $t('nutrients.groups.'+group.id) }}
                                 </th>
                             </tr>
                             <tr v-for="nutrient in allNutrients[group.id]" v-if="groupOpenStates[group.id]">

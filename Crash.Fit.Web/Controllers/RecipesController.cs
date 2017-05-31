@@ -46,6 +46,7 @@ namespace Crash.Fit.Web.Controllers
             recipe.IsRecipe = true;
             
             CalculateNutrients(recipe);
+            CalculatePortionWeights(recipe);
             if(!nutritionRepository.CreateFood(recipe))
             {
                 return BadRequest();
@@ -70,7 +71,8 @@ namespace Crash.Fit.Web.Controllers
            
             AutoMapper.Mapper.Map(request, recipe);
             CalculateNutrients(recipe);
-            if(!nutritionRepository.UpdateFood(recipe))
+            CalculatePortionWeights(recipe);
+            if (!nutritionRepository.UpdateFood(recipe))
             {
                 return BadRequest();
             }
@@ -130,6 +132,17 @@ namespace Crash.Fit.Web.Controllers
                 na.Amount = na.Amount * 100 / recipeWeight;
             });
             recipe.Nutrients = recipeNutrients.ToArray();
+        }
+        private void CalculatePortionWeights(FoodDetails recipe)
+        {
+            var weight = recipe.Ingredients.Sum(i => i.Weight);
+            foreach (var portion in recipe.Portions)
+            {
+                if (portion.Amount.HasValue)
+                {
+                    portion.Weight = weight / portion.Amount.Value;
+                }
+            }
         }
     }
 }

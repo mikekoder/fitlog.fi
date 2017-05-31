@@ -35,8 +35,8 @@ namespace Crash.Fit.Nutrition
         bool DeleteMeal(Meal meal);
         bool RestoreMeal(Guid id, out MealDetails meal);
 
-        bool SaveNutrientSettings(IEnumerable<NutrientSetting> settings);
+        bool SaveNutrientSettings(Guid userId, IEnumerable<NutrientSetting> settings);
         IEnumerable<NutrientTarget> GetNutrientTargets(Guid userId);
-        bool SaveNutrientTargets(IEnumerable<NutrientTarget> targets);
+        bool SaveNutrientTargets(Guid userId, IEnumerable<NutrientTarget> targets);
     }
 }

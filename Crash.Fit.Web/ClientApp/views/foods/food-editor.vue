@@ -3,7 +3,7 @@
         <div class="row" v-if="!anon">
             <div class="col-sm-5 col-md-3 col-lg-2">
                 <div class="form-group">
-                    <label>Nimi</label>
+                    <label>{{ $t("foods.labels.name") }}</label>
                     <input class="form-control" v-model="name" />
                 </div>
 
@@ -13,13 +13,13 @@
         <div class="row">
             <div class="col-sm-12">
                 <ul class="nav nav-tabs">
-                    <li v-bind:class="{ active: tab === 'nutrients' }"><a @click="tab = 'nutrients'">Ravinto-aineet</a></li>
-                    <li v-bind:class="{ active: tab === 'portions' }"><a @click="tab = 'portions'">Annokset</a></li>
+                    <li v-bind:class="{ active: tab === 'nutrients' }"><a @click="tab = 'nutrients'">{{ $t("foods.labels.nutrients") }}</a></li>
+                    <li v-bind:class="{ active: tab === 'portions' }"><a @click="tab = 'portions'">{{ $t("foods.labels.portions") }}</a></li>
                 </ul>
                 <div v-if="tab === 'portions'">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4"><label>Nimi</label></div>
-                        <div class="col-sm-2"><label>Paino (g)</label></div>
+                        <div class="col-sm-4"><label>{{ $t("foods.labels.name") }}</label></div>
+                        <div class="col-sm-2"><label>{{ $t("foods.labels.weight") }} (g)</label></div>
                         <div class="col-sm-1">&nbsp;</div>
                     </div>
                     <template v-for="(portion,index) in portions">
@@ -43,7 +43,7 @@
                         </div>
                     </template>
                     <div class="row">
-                        <div class="col-sm-12"><button class="btn" @click="addPortion"><i class="fa fa-plus"></i> Lisää</button></div>
+                        <div class="col-sm-12"><button class="btn" @click="addPortion">{{ $t("foods.addPortion") }}</button></div>
                     </div>
                 </div>
                 <div v-if="tab === 'nutrients'">
@@ -51,7 +51,7 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Määrä/100g</th>
+                                <th>{{ $t("foods.labels.amount") }}/100g</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -60,7 +60,7 @@
                                 <th colspan="2" @click="toggleGroup(group.id)">
                                     <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
                                     <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
-                                    {{ group.name }}
+                                    {{ $t('nutrients.groups.'+group.id) }}
                                 </th>
                             </tr>
                             <tr v-for="nutrient in nutrients[group.id]" v-if="groupOpenStates[group.id]">
@@ -76,9 +76,9 @@
         <hr />
         <div class="row main-actions" v-if="!anon">
             <div class="col-sm-12">
-                <button class="btn btn-primary" @click="save">Tallenna</button>
-                <button class="btn" @click="cancel">Peruuta</button>
-                <button class="btn btn-danger" v-if="id" @click="deleteFood">Poista</button>
+                <button class="btn btn-primary" @click="save">{{ $t("save") }}</button>
+                <button class="btn" @click="cancel">{{ $t("cancel") }}</button>
+                <button class="btn btn-danger" v-if="id" @click="deleteFood">{{ $t("delete") }}</button>
             </div>
         </div>
         <hr />
@@ -102,7 +102,6 @@ module.exports = {
             id: null,
             name: null,
             portions: [],
-            //nutrients: {},
             tab: 'nutrients',
             groupOpenStates: {},
         }

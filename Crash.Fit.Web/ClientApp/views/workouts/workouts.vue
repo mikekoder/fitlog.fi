@@ -25,7 +25,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="btn-group">
+                        <div class="btn-group" v-if="workoutOptions.length > 0">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Uusi treeni <span class="caret"></span></button>
                             <ul class="dropdown-menu">
                                 <li v-for="workout in workoutOptions">
@@ -35,6 +35,9 @@
                                 <li>
                                     <a @click="createWorkout(undefined)">Vapaa treeni</a>
                                 </li></ul>
+                        </div>
+                        <div v-if="workoutOptions.length == 0">
+                            <button @click="createWorkout(undefined)">Lis‰‰ treeni</button>
                         </div>
                         <div class="outer" v-if="workouts.length > 0">
                             <div class="inner">
@@ -75,7 +78,7 @@
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <workout-editor v-bind:workout="selectedWorkout" v-bind:exercises="exercises" v-bind:saveCallback="saveWorkout" v-bind:cancelCallback="cancelWorkout" v-bind:deleteCallback="deleteWorkout" />
+                        <workout-editor v-bind:workout="selectedWorkout" v-bind:saveCallback="saveWorkout" v-bind:cancelCallback="cancelWorkout" v-bind:deleteCallback="deleteWorkout" />
                     </div>
                 </div>
             </section>
@@ -96,14 +99,24 @@ module.exports = {
         return {   
             start: null,
             end: null,
-            muscleGroups: [],
-            workouts: [],
-            exercises: [],
+            //muscleGroups: [],
+            //workouts: [],
+            //exercises: [],
             selectedWorkout: null,
             //workoutOptions: []
         }
     },
-    computed:{
+    computed: {
+        muscleGroups: function(){
+            return this.$store.state.training.muscleGroups;
+        },
+        exercises: function () {
+            return this.$store.state.training.exercises;
+        },
+        workouts: function(){
+            var self = this;
+            return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
+        },
         workoutOptions: function () {
             if (this.$store.state.training.activeRoutine) {
                 return this.$store.state.training.activeRoutine.workouts;
@@ -133,11 +146,7 @@ module.exports = {
         },
         fetchWorkouts: function () {
             var self = this;
-            api.listWorkouts(this.start, this.end).then(function (workouts) {
-                self.workouts = workouts;
-            }).fail(function () {
-                toaster.error('Treenien haku ep‰onnistui');
-            });
+            this.$store.dispatch(constants.FETCH_WORKOUTS, { start: self.start, end: self.end });
         },
         createWorkout: function (routineWorkoutId) {
             if (routineWorkoutId) {
@@ -197,20 +206,17 @@ module.exports = {
     created: function () {
 
         var self = this;
-        api.listMuscleGroups().then(function (groups) {
-            self.muscleGroups = groups;
-        }).fail(function () {
-            toaster.error('Lihasryhmien haku ep‰onnistui');
+        this.$store.dispatch(constants.FETCH_MUSCLEGROUPS, {
+            success: function () { },
+            failure: function () { }
         });
-        api.listExercises().then(function (exercises) {
-            self.exercises = exercises;
-        }).fail(function () {
-            toaster.error('Liikkeiden haku ep‰onnistui');
+        this.$store.dispatch(constants.FETCH_EXERCISES, {
+            success: function () { },
+            failure: function () { }
         });
         this.$store.dispatch(constants.FETCH_ROUTINES, {
-            success: function (routines) {
-                //var activeRoutine = this.$store.state.training
-            }, failure: function () { }
+            success: function () { },
+            failure: function () { }
         });
         var id = this.$route.params.id;
         if (id) {

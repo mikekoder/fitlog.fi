@@ -85,8 +85,21 @@ namespace Crash.Fit.Web
             AutoMapper.Mapper.Initialize(m => {
 
                 // Nutrients
-                m.CreateMap<Nutrient, Models.Nutrition.NutrientResponse>();
-                m.CreateMap<UserNutrient, Models.Nutrition.NutrientResponse>();
+                m.CreateMap<Nutrient, Models.Nutrition.NutrientResponse>().AfterMap((source, target) =>
+                {
+                    target.HideSummary = source.DefaultHideSummary;
+                    target.HideDetails = source.DefaultHideDetails;
+                });
+                m.CreateMap<UserNutrient, Models.Nutrition.NutrientResponse>().AfterMap((source, target) => 
+                {
+                    target.HideSummary = source.UserHideSummary ?? source.DefaultHideSummary;
+                    target.HideDetails = source.UserHideDetails ?? source.DefaultHideDetails;
+                });
+                m.CreateMap<Models.Nutrition.NutrientSettingRequest, NutrientSetting>().AfterMap((source, target) => 
+                {
+                    target.HideDetails = source.UserHideDetails;
+                    target.HideSummary = source.UserHideSummary;
+                });
                 m.CreateMap<IEnumerable<NutrientAmount>, Dictionary<Guid, decimal>>().ConvertUsing(na => na.ToDictionary(n => n.NutrientId, n => n.Amount));
                 m.CreateMap<NutrientAmount, Models.Nutrition.NutrientAmountResponse>();
 
