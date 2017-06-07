@@ -1,13 +1,15 @@
 <template>
-    <div>
-        <section class="content-header"><h1>Profiili</h1></section>
+    <div v-if="!loading">
+        <section class="content-header"><h1>{{ $t('profile.title') }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="nav nav-tabs">
-                        <li v-bind:class="{ active: tab == 'basic' }"><a @click="tab='basic'">Perustiedot</a></li>
-                        <li v-bind:class="{ active: tab == 'view' }"><a @click="tab='view'">N&auml;kym&auml;</a></li>
-                        <li v-bind:class="{ active: tab == 'targets' }"><a @click="tab='targets'">Tavoitteet</a></li>
+                        <li v-bind:class="{ active: tab == 'basic' }"><a @click="tab='basic'">{{ $t('profile.basic') }}</a></li>
+                        <!--
+                        <li v-bind:class="{ active: tab == 'view' }"><a @click="tab='view'">{{ $t('profile.view') }}</a></li>
+                        <li v-bind:class="{ active: tab == 'targets' }"><a @click="tab='targets'">{{ $t('profile.targets') }}</a></li>
+                            -->
                     </ul>
                 </div>
             </div>
@@ -16,7 +18,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group dob">
-                            <label>Syntym&auml;aika</label><br />
+                            <label>{{ $t('dob') }}</label><br />
                             <select v-model="day" class="form-control input-2">
                                 <option v-for="dayOption in days" v-bind:value="dayOption">
                                     {{ dayOption }}
@@ -38,7 +40,7 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label>Sukupuoli</label>
+                            <label>{{ $t('gender') }}</label>
                             <select class="form-control input-10" v-model="gender">
                                 <option v-bind:value="undefined"></option>
                                 <option v-bind:value="'male'">Mies</option>
@@ -50,7 +52,7 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label>Pituus</label><br />
+                            <label>{{ $t('height') }}</label><br />
                             <input type="number" class="form-control input-10" v-model="height" /> cm
                         </div>
                     </div>
@@ -58,7 +60,7 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label>Paino</label><br />
+                            <label>{{ $t('weight') }}</label><br />
                             <input type="number" min="1" class="form-control input-10" v-model="weight" /> kg
                         </div>
                     </div>
@@ -66,9 +68,9 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label>Lepoaineenvaihdunta</label><br />
-                            <span>Arvio: {{ rmrEstimate }}</span><br />
-                            <input type="number" min="1" class="form-control input-10" v-model="rmr" /> kcal/vrk
+                            <label>{{ $t('profile.rmr') }}</label><br />
+                            <span>{{ $t('estimate') }}: {{ rmrEstimate }}</span><br />
+                            <input type="number" min="1" class="form-control input-10" v-model="rmr" /> kcal/{{ $t('day') }}
                         </div>
 
                     </div>
@@ -76,7 +78,7 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label>Aktiivisuuskerroin</label><br />
+                            <label>{{ $t('profile.pal') }}</label><br />
                             <select v-model="pal" class="form-control input-25">
                                 <option v-for="palOption in pals" v-bind:value="palOption">
                                     {{ palOption.name }}
@@ -90,7 +92,7 @@
             <hr />
             <div class="row">
                 <div class="col-sm-6">
-                    <button class="btn btn-primary" @click="save">Tallenna</button>
+                    <button class="btn btn-primary" @click="save">{{ $t('save') }}</button>
                 </div>
             </div>
         </section>
@@ -102,6 +104,7 @@
     var utils = require('../../utils');
     var api = require('../../api');
     var formatters = require('../../formatters')
+    var toaster = require('../../toaster');
 module.exports = {
     data () {
         return {
@@ -125,7 +128,9 @@ module.exports = {
         }
     },
     computed: {
-
+        loading: function () {
+            return this.$store.state.loading;
+        },
         dob: function () {
             if (this.year && this.month && this.day) {
                 return new Date(this.year, this.month.number - 1, this.day)
@@ -186,6 +191,8 @@ module.exports = {
                         self.pal = self.pals.find(p => p.value == profile.pal);
                     }
                 }
+
+                self.$store.commit(constants.LOADING_DONE);
             }
         });
         
@@ -197,8 +204,6 @@ module.exports = {
         for (var i = 1900; i <= new Date().getFullYear(); i++) {
             this.years.push(i);
         }
-
-
     }
 }
 </script>

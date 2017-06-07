@@ -12,7 +12,6 @@ import 'admin-lte/dist/css/skins/skin-blue-light.css'
 import 'font-awesome/css/font-awesome.css'
 import './css/site.css'
 import 'bootstrap-notify'
-var auth = require('./auth');
 var $ = require('jquery');
 var translations = require('./translations')
 Vue.config.productionTip = false
@@ -29,7 +28,7 @@ const i18n = new VueI18n({
 Vue.mixin({
     computed:{
         isLoggedIn(){
-            return auth.isLoggedIn();
+            return this.$store.state.profile.profile && true;
         }
     },
     created(){
@@ -43,7 +42,6 @@ let router = new VueRouter({
 });
 router.beforeEach((to, from, next) =>{
     if (!to.matched.some(record => record.meta.anon)) {
-        console.log('authentication required');
         next();
     } else {
         next();

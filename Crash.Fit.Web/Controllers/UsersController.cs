@@ -98,7 +98,7 @@ namespace Crash.Fit.Web.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                return BadRequest();
+                return BadRequest(new { ErrorCodes = result.Errors.Select(e => e.Code) });
             }
             await _signInManager.SignInAsync(user, isPersistent: false);
             return Ok();

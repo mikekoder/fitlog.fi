@@ -16,6 +16,7 @@ namespace Crash.Fit.Nutrition
     public class FoodSearchResult : Food
     {
         public int UsageCount { get; set; }
+        public DateTimeOffset? LatestUse { get; set; }
     }
     public class FoodSummary : Food
     {
@@ -27,5 +28,6 @@ namespace Crash.Fit.Nutrition
         public RecipeIngredient[] Ingredients { get; set; }
         public Portion[] Portions { get; set; }
         public NutrientAmount[] Nutrients { get; set; }
+        public decimal? CookedWeight { get; set; }
     }
 }

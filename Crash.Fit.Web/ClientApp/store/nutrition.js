@@ -20,71 +20,13 @@ const state = {
     nutrients: [],
     nutrientsGrouped: {},
     nutrientTargetsLoaded: false,
-    nutrientTargets: {}
+    nutrientTargets: []
 }
 
 // actions
 const actions = {
-    [constants.FETCH_NUTRIENTS] ({commit, state},{forceRefresh, success, failure}) {
-        if(state.nutrientsLoaded && !forceRefresh){
-            if(success){
-                success(state.nutrients);
-            }
-            return;
-        }
-        api.listNutrients().then(function(nutrients){
-            commit(constants.FETCH_NUTRIENTS_SUCCESS,{nutrients})
-            if(success){
-                success(nutrients);
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
-    [constants.FETCH_NUTRIENT_TARGETS] ({commit, state},{forceRefresh, success, failure}) {
-        if(state.nutrientTargetsLoaded && !forceRefresh){
-            if(success){
-                success(state.nutrientTargets);
-            }
-            return;
-        }
-        api.getNutrientTargets().then(function(targets){
-            commit(constants.FETCH_NUTRIENT_TARGETS_SUCCESS,{targets})
-            if(success){
-                success(targets);
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
-    [constants.SAVE_NUTRIENT_TARGETS] ({commit, state},{targets, success, failure}){
-        api.saveNutrientTargets(targets).then(function(savedTargets){
-            commit(constants.FETCH_NUTRIENT_TARGETS_SUCCESS,{savedTargets})
-            if(success){
-                success(savedTargets);
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
-    [constants.SAVE_NUTRIENT_SETTINGS] ({commit, state},{settings, success, failure}){
-        api.saveNutrientSettings(settings).then(function(nutrients){
-            commit(constants.FETCH_NUTRIENTS_SUCCESS,{nutrients})
-            if(success){
-                success(nutrients);
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
+
+    // Meals
     [constants.FETCH_MEALS] ({ commit, state }, {start, end, success, failure}) {
         if(state.mealsStart && state.mealsEnd){
             if(moment(start).isBefore(state.mealsStart) || moment(end).isAfter(state.mealsEnd)){
@@ -93,6 +35,9 @@ const actions = {
             }
             else{
                 // within already loaded period
+                if(success){
+                    success();
+                }
                 return;
             }
         }
@@ -108,8 +53,21 @@ const actions = {
             }
         });
     },
+    [constants.FETCH_MEAL] ({commit, state},{id, success, failure}){
+        api.getMeal(id).then(function(meal){
+            //meal.time = new Date(meal.time);
+            if(success){
+                success(meal);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
     [constants.SAVE_MEAL] ({commit, state},{meal, success, failure}){
         api.saveMeal(meal).then(function(savedMeal){
+            savedMeal.time = new Date(savedMeal.time);
             commit(constants.SAVE_MEAL_SUCCESS,{id: meal.id, meal: savedMeal})
             if(success){
                 success();
@@ -131,16 +89,200 @@ const actions = {
                 failure();
             }
         });
+    },
+    [constants.RESTORE_MEAL] ({commit, state},{id, success, failure}){
+        api.restoreMeal(id).then(function(meal){
+            commit(constants.RESTORE_MEAL_SUCCESS,{meal})
+            if(success){
+                success(meal);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    // Foods
+    [constants.FETCH_MY_FOODS] ({commit, state},{success, failure}) {
+        api.listFoods().then(function(foods){
+            if(success){
+                success(foods);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.FETCH_FOODS] ({commit, state},{ids, success, failure}) {
+        var apiCalls = [];
+        for (var i in ids) {
+            if(ids[i]){
+                apiCalls.push(api.getFood(ids[i]));
+            }
+        }
+        if(apiCalls.length == 0){
+            if(success){
+                success([]);
+            }
+            return;
+        }
+        Promise.all(apiCalls).then(function (foods) {
+            if(success){
+                success(foods);
+            }
+        }).catch(function(reason){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.FETCH_FOOD] ({commit, state},{id, success, failure}) {
+        api.getFood(id).then(function(food){
+            if(success){
+                success(food);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.SAVE_FOOD] ({commit, state},{food, success, failure}) {
+        api.saveFood(food).then(function(savedFood){
+            if(success){
+                success(savedFood);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.DELETE_FOOD] ({commit, state},{food, success, failure}) {
+        api.deleteFood(food.id).then(function(){
+            if(success){
+                success();
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    // Recipes
+    [constants.FETCH_RECIPES] ({commit, state},{success, failure}) {
+        api.listRecipes().then(function(recipes){
+            if(success){
+                success(recipes);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.FETCH_RECIPE] ({commit, state},{id, success, failure}) {
+        api.getRecipe(id).then(function(recipe){
+            if(success){
+                success(recipe);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.SAVE_RECIPE] ({commit, state},{recipe, success, failure}) {
+        api.saveRecipe(recipe).then(function(savedRecipe){
+            if(success){
+                success(savedRecipe);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.DELETE_RECIPE] ({commit, state},{recipe, success, failure}) {
+        api.deleteRecipe(recipe.id).then(function(){
+            if(success){
+                success();
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    // Nutrients
+    [constants.FETCH_NUTRIENTS] ({commit, state},{forceRefresh, success, failure}) {
+        if(state.nutrientsLoaded && !forceRefresh){
+            if(success){
+                success(state.nutrients);
+            }
+            return;
+        }
+        api.listNutrients().then(function(nutrients){
+            commit(constants.FETCH_NUTRIENTS_SUCCESS,{nutrients})
+            if(success){
+                success(nutrients);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.SAVE_NUTRIENT_SETTINGS] ({commit, state},{settings, success, failure}){
+        api.saveNutrientSettings(settings).then(function(nutrients){
+            commit(constants.FETCH_NUTRIENTS_SUCCESS,{nutrients})
+            if(success){
+                success(nutrients);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+
+    // Nutrient targets
+    [constants.FETCH_NUTRIENT_TARGETS] ({commit, state},{forceRefresh, success, failure}) {
+        if(state.nutrientTargetsLoaded && !forceRefresh){
+            if(success){
+                success(state.nutrientTargets);
+            }
+            return;
+        }
+        api.getNutrientTargets().then(function(targets){
+            commit(constants.FETCH_NUTRIENT_TARGETS_SUCCESS,{targets})
+            if(success){
+                success(targets);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.SAVE_NUTRIENT_TARGETS] ({commit, state},{targets, success, failure}){
+        api.saveNutrientTargets(targets).then(function(savedTargets){
+            commit(constants.FETCH_NUTRIENT_TARGETS_SUCCESS,{targets: savedTargets})
+            if(success){
+                success(savedTargets);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
     }
 }
 
 // mutations
 const mutations = {
-    [constants.FETCH_NUTRIENTS_STARTED] (state) {
-        state.nutrientsLoading = true;
-    },
     [constants.FETCH_NUTRIENTS_SUCCESS] (state, {nutrients}) {
-        state.nutrientsLoading = false;
         state.nutrients = nutrients;
         var grouped = {};
         for (var i in nutrients) {
@@ -154,12 +296,12 @@ const mutations = {
 
         }
         state.nutrientsGrouped = grouped;
+        state.nutrientsLoaded = true;
     },
-    [constants.FETCH_NUTRIENTS_FAILURE] (state) {
-        state.nutrientsLoading = false;
-    },
+
     [constants.FETCH_NUTRIENT_TARGETS_SUCCESS] (state, {targets}) {
         state.nutrientTargets = targets;
+        state.nutrientTargetsLoaded = true;
     },
     [constants.FETCH_MEALS_STARTED] (state) {
         state.mealsLoading = true;
@@ -208,8 +350,17 @@ const mutations = {
     [constants.DELETE_MEAL_SUCCESS] (state, {meal}) {
         removeMeal(meal, state)
     },
+    [constants.RESTORE_MEAL_SUCCESS] (state, {meal}) {
+        meal.time = new Date(meal.time);
+        if(state.mealsStart && state.mealsEnd && moment(meal.time).isAfter(state.mealsStart) && moment(meal.time).isBefore(state.mealsEnd)){
+            addMeal(meal, state);
+        }
+    },
     [constants.DELETE_MEAL_FAILURE] (state) {
         
+    },
+    [constants.LOGOUT_SUCCESS] (state) {
+        // TODO: clear state
     }
 }
 

@@ -5,7 +5,7 @@
             <router-link tag="li" :to="{ name: 'meals'}" v-if="isLoggedIn">
                 <a><i class="fa fa-cutlery"></i> <span>{{ $t("menu.meals") }}</span></a>
             </router-link>
-            <router-link tag="li" :to="{ name: 'meal-calculator'}" exact v-if="!isLoggedIn">
+            <router-link tag="li" :to="{ name: 'meal-details', params: { id: constants.NEW_ID } }" exact v-if="!isLoggedIn">
                 <a><i class="fa fa-cutlery"></i> <span>{{ $t("menu.mealCalculator") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'foods'}" v-if="isLoggedIn">
@@ -18,7 +18,7 @@
                 <a><i class="fa fa-flask"></i> <span>{{ $t("menu.nutrients") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'nutrition-targets'}" v-if="isLoggedIn">
-                <a><i class="fa fa-crosshairs"></i> <span>{{ $t("menu.targets") }}</span></a>
+                <a><i class="fa fa-crosshairs"></i> <span>{{ $t("menu.nutritionTargets") }}</span></a>
             </router-link>
             <li class="header">{{ $t("menu.trainingHeader") }}</li>
             <router-link tag="li" :to="{ name: 'workouts'}" v-if="isLoggedIn">
@@ -57,11 +57,12 @@
 </template>
 
 <script>
-
+    var constants = require('../store/constants')
 module.exports = {
     //name: 'toolbar',
     data: function() {
         return {
+            constants
         }
     },
     methods: {

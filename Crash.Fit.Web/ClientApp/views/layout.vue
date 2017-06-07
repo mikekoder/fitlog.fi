@@ -2,7 +2,7 @@
     <div class="wrapper">
         <header class="main-header">
             <a href="#/" class="logo">
-                <span class="logo-mini"><b>C</b>F</span>
+                <span class="logo-mini"><b>fl</b></span>
                 <span class="logo-lg"><b>fitlog</b></span>
             </a>
             <nav class="navbar navbar-static-top" role="navigation">
@@ -26,7 +26,7 @@
                             </ul>
                         </li>-->
                         <router-link tag="li" :to="{ name: 'profile'}" v-if="isLoggedIn">
-                            <a><i class="fa fa-gear"></i> <span>{{ $t("menu.profile") }}</span></a>
+                            <a><i class="fa fa-user"></i> <span>{{ $t("menu.profile") }}</span></a>
                         </router-link>
                         <li v-if="!isLoggedIn">
                             <a href="#/luo-tunnus">{{ $t("menu.register") }}</a>
@@ -45,7 +45,11 @@
             <mainmenu />
         </aside>
         <div class="content-wrapper">
-            <transition name="md-router">
+            <div class="loader" v-if="loading">
+                <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                <span class="sr-only">Loading...</span>
+            </div>
+            <transition name="slide-left">
                 <router-view></router-view>
             </transition>
         </div>
@@ -56,11 +60,17 @@
 </template>
 
 <script>
+    var constants = require('../store/constants')
     var api = require('../api');
-    var auth = require('../auth');
+
 module.exports = {
     data () {
         return {
+        }
+    },
+    computed: {
+        loading(){
+            return this.$store.state.loading;
         }
     },
     components: {
@@ -68,14 +78,35 @@ module.exports = {
     },
     methods: {
         logout() {
-            api.logout().then(function () {
-                auth.clearUserInfo();
-                window.location = '/';
+            this.$store.dispatch(constants.LOGOUT, {
+                success: function () {
+                    window.location = '/';
+                },
+                failure: function () { }
             });
         }
+    },
+    created() {
+        this.$store.dispatch(constants.FETCH_PROFILE, {
+            success: function () { },
+            failure: function () { }
+        });
+    },
+    beforeRouteUpdate: function (to, from, next) {
+        this.$store.commit(constants.LOADING);
+        next();
+    },
+    beforeRouteLeave: function (to, from, next) {
+        this.$store.commit(constants.LOADING);
+        next();
     }
 }
 </script>
 
 <style scoped>
+    .loader {
+        position: relative;
+        top: 100px;
+        left: 200px;
+    }
 </style>

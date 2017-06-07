@@ -11,6 +11,7 @@ namespace Crash.Fit.Web.Models.Nutrition
         public string Name { get; set; }
         public string ShortName { get; set; }
         public string Unit { get; set; }
+        public bool Computed { get; set; }
 
         public string FineliId { get; set; }
         public string FineliClass { get; set; }

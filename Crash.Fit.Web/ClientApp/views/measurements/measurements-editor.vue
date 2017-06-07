@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-sm-5 col-md-3 col-lg-2">
                 <div class="form-group">
-                    <label>{{ $t("measurements.label.time") }}</label>
+                    <label>{{ $t("time") }}</label>
                     <datetime-picker class="vue-picker1" name="picker1" v-bind:value="time" v-on:change="time=arguments[0]"></datetime-picker>
                 </div>
             </div>
@@ -12,18 +12,20 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
-                    <div class="col-xs-8 col-sm-4 col-md-2"><label>{{ $t("measurements.labels.measure") }}</label></div>
-                    <div class="col-xs-4 col-sm-2">&nbsp;</div>
-                    <div class="col-xs-4 col-sm-2">&nbsp;</div>
+                    <div class="hidden-xs col-sm-4 col-md-2"><label>{{ $t("measurements.measure") }}</label></div>
+                    <div class="hidden-xs col-xs-4 col-sm-2"><label>{{ $t("value") }}</label></div>
+                    <div class="hidden-xs col-xs-4 col-sm-2">&nbsp;</div>
                 </div>
                 <template v-for="(measurement,index) in measurements">
                     <div class="measurement row">
-                        <div class="col-xs-8 col-sm-4 col-md-2">
+                        <div class="col-sm-4 col-md-2">
+                            <label class="hidden-sm hidden-md hidden-lg">{{ $t("measurements.measure") }}</label>
                             <span v-if="measurement.id">{{ measurement.name }}</span>
-                            <input type="text" v-else v-model="measurement.name" />
+                            <input type="text" class="form-control" v-else v-model="measurement.name" />
                         </div>
-                        <div class="col-xs-8 col-sm-6 col-md-2">
-                            <input type="number" v-model="measurement.value" />
+                        <div class="col-sm-4 col-md-2">
+                            <label class="hidden-sm hidden-md hidden-lg">{{ $t("value") }}</label>
+                            <input type="number" class="form-control" v-model="measurement.value" />
                         </div>
                         <div class="col-xs-4 col-sm-2">
                             <div>
@@ -36,7 +38,10 @@
                     </div>
                 </template>
                 <div class="row">
-                    <div class="col-xs-12"><button class="btn" @click="addMeasurement">{{ $t("measurements.add") }}</button></div>
+                    <div class="col-sm-12">&nbsp;</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12"><button class="btn" @click="addMeasurement">{{ $t("add") }}</button></div>
                 </div>
             </div>
         </div>
@@ -57,6 +62,7 @@
 </template>
 
 <script>
+    var constants = require('../../store/constants')
     var api = require('../../api');
     var formatters = require('../../formatters');
     var utils = require('../../utils');
