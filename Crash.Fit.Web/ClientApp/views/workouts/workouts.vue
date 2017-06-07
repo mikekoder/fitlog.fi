@@ -1,88 +1,76 @@
 <template>
-    <div>
-        <div v-if="!selectedWorkout">
-            <section class="content-header"><h1>Treenit</h1></section>
-            <section class="content">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                {{ date(start) }} - {{ date(end) }} <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a @click="showWeek">Kuluva viikko</a></li>
-                                <li><a @click="showMonth">Kuluva kuukausi</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a @click="showDays(7)">7 pv</a></li>
-                                <li><a @click="showDays(14)">14 pv</a></li>
-                                <li><a @click="showDays(30)">30 pv</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li class="custom-date"><span>Valitse aikav&auml;li</span></li>
-                                <li class="custom-date">
-                                    <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="start=arguments[0]"></datetime-picker>
-                                    <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="end=arguments[0]"></datetime-picker>
-                                    <button class="btn btn-sm" @click="fetchWorkouts()">OK</button>
-                                </li>
-                            </ul>
+    <div v-if="!loading">     
+        <section class="content-header"><h1>{{ $t("workouts.title") }}</h1></section>
+        <section class="content">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            {{ date(start) }} - {{ date(end) }} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a @click="showWeek">{{ $t("currentWeek") }}</a></li>
+                            <li><a @click="showMonth">{{ $t("currentMonth") }}</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a @click="showDays(7)">7 {{ $t("days") }}</a></li>
+                            <li><a @click="showDays(14)">14{{ $t("days") }}</a></li>
+                            <li><a @click="showDays(30)">30{{ $t("days") }}</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li class="custom-date"><span>{{ $t("chooseTimeInterval") }}</span></li>
+                            <li class="custom-date">
+                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="start=arguments[0]"></datetime-picker>
+                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="end=arguments[0]"></datetime-picker>
+                                <button class="btn btn-sm" @click="fetchWorkouts()">{{ $t("OK") }}</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="btn-group" v-if="workoutOptions.length > 0">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ $t("workouts.create") }} <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li v-for="workout in workoutOptions">
+                                <a @click="createWorkout(workout.id)">{{ workout.name }}</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li>
+                                <a @click="createWorkout(undefined)">{{ $t("workouts.freeWorkout") }}</a>
+                            </li></ul>
+                    </div>
+                    <div v-if="workoutOptions.length == 0">
+                        <button @click="createWorkout(undefined)">{{ $t("workouts.create") }}</button>
+                    </div>
+                    <div class="outer" v-if="workouts.length > 0">
+                        <div class="inner">
+                            <table class="table" id="workout-list">
+                                <thead>
+                                    <tr>
+                                        <th class="time freeze"><div><div>&nbsp;</div></div></th>
+                                        <template v-for="muscleGroup in muscleGroups">
+                                            <th class="muscle-group"><div><div>{{ muscleGroup.name}}</div></div></th>
+                                        </template>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="workout" v-for="workout in workouts">
+                                        <td class="freeze"><router-link :to="{ name: 'workouts', params: { id: workout.id } }">{{ datetime(workout.time) }}</router-link></td>
+                                        <template v-for="muscleGroup in muscleGroups">
+                                            <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
+                                        </template>
+                                        <td><button class="btn btn-danger btn-xs" @click="deleteWorkout(workout)">{{ $t("delete") }}</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="btn-group" v-if="workoutOptions.length > 0">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Uusi treeni <span class="caret"></span></button>
-                            <ul class="dropdown-menu">
-                                <li v-for="workout in workoutOptions">
-                                    <a @click="createWorkout(workout.id)">{{ workout.name }}</a>
-                                </li>
-                                <li role="separator" class="divider"></li>
-                                <li>
-                                    <a @click="createWorkout(undefined)">Vapaa treeni</a>
-                                </li></ul>
-                        </div>
-                        <div v-if="workoutOptions.length == 0">
-                            <button @click="createWorkout(undefined)">Lis‰‰ treeni</button>
-                        </div>
-                        <div class="outer" v-if="workouts.length > 0">
-                            <div class="inner">
-                                <table class="table" id="workout-list">
-                                    <thead>
-                                        <tr>
-                                            <th class="time freeze"><div><div>&nbsp;</div></div></th>
-                                            <template v-for="muscleGroup in muscleGroups">
-                                                <th class="muscle-group"><div><div>{{ muscleGroup.name}}</div></div></th>
-                                            </template>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="workout" v-for="workout in workouts">
-                                            <td class="freeze"><router-link :to="{ name: 'workouts', params: { id: workout.id } }">{{ datetime(workout.time) }}</router-link></td>
-                                            <template v-for="muscleGroup in muscleGroups">
-                                                <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
-                                            </template>
-                                            <td><button class="btn btn-danger btn-xs" @click="deleteWorkout(workout)">Poista</button></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="row" v-if="workouts.length == 0">
-                            <div class="col-sm-12">
-                                <br />
-                                Ei treenej&auml;
-                            </div>
+                    </div>
+                    <div class="row" v-if="workouts.length == 0">
+                        <div class="col-sm-12">
+                            <br />
+                            {{ $t("workouts.noWorkouts") }}
                         </div>
                     </div>
                 </div>
-            </section>
-        </div>
-        <div v-if="selectedWorkout">
-            <section class="content-header"><h1>Treenin tiedot</h1></section>
-            <section class="content">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <workout-editor v-bind:workout="selectedWorkout" v-bind:saveCallback="saveWorkout" v-bind:cancelCallback="cancelWorkout" v-bind:deleteCallback="deleteWorkout" />
-                    </div>
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -98,15 +86,13 @@ module.exports = {
     data () {
         return {   
             start: null,
-            end: null,
-            //muscleGroups: [],
-            //workouts: [],
-            //exercises: [],
-            selectedWorkout: null,
-            //workoutOptions: []
+            end: null
         }
     },
     computed: {
+        loading: function () {
+            return this.$store.state.loading;
+        },
         muscleGroups: function(){
             return this.$store.state.training.muscleGroups;
         },
@@ -125,8 +111,7 @@ module.exports = {
         }
     },
     components: {
-        'datetime-picker': require('../../components/datetime-picker'),
-        'workout-editor': require('./workout-editor')
+        'datetime-picker': require('../../components/datetime-picker')
     },
     methods: {
         showWeek(){
@@ -146,56 +131,34 @@ module.exports = {
         },
         fetchWorkouts: function () {
             var self = this;
-            this.$store.dispatch(constants.FETCH_WORKOUTS, { start: self.start, end: self.end });
+            this.$store.dispatch(constants.FETCH_WORKOUTS, {
+                start: self.start,
+                end: self.end,
+                success: function () {
+                    self.$store.commit(constants.LOADING_DONE);
+                }
+            });
         },
         createWorkout: function (routineWorkoutId) {
             if (routineWorkoutId) {
-
+                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID } });
             }
-            this.showWorkout({ time: utils.previousHalfHour() });
-        },
-        editWorkout: function (id) {
-            var self = this;
-            api.getWorkout(id).then(function (workoutDetails) {
-                self.showWorkout(workoutDetails);
-            }).fail(function () {
-                toaster.error('Treenin haku ep‰onnistui');
-            });
-
-        },
-        saveWorkout: function (workout) {
-            var self = this;
-            api.saveWorkout(workout).then(function (savedWorkout) {
-                self.fetchWorkouts();
-                self.$router.push({ name: 'workouts' });
-                self.showSummary();
-            }).fail(function () {
-                toaster.error('Treenin tallennus ep‰onnistui');
-            });
-        },
-        cancelWorkout: function (workout) {
-            this.$router.push({ name: 'workouts' });
-            this.showSummary();
+            else {
+                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }, query: { template: routineWorkoutId } });
+            }
         },
         deleteWorkout: function (workout) {
             var self = this;
-            api.deleteWorkout(workout.id).then(function () {
-                self.fetchWorkouts();
-                self.$router.push({ name: 'workouts' });
-                self.showSummary();
-            }).fail(function () {
-                toaster.error('Treenin poistaminen ep‰onnistui');
+            self.$store.dispatch(constants.DELETE_WORKOUT, {
+                workout,
+                success: function () { },
+                failure: function () {
+                    toaster(self.$t('workouts.deleteFailed'));
+                }
             });
-        },
-        showWorkout: function (workout) {
-            this.selectedWorkout = workout;
-        },
-        showSummary() {
-            this.selectedWorkout = null;
         },
         date: formatters.formatDate,
         datetime: formatters.formatDateTime,
-        unit: formatters.formatUnit,
         decimal: function (value, precision) {
             if (!value) {
                 return value;
@@ -218,28 +181,7 @@ module.exports = {
             success: function () { },
             failure: function () { }
         });
-        var id = this.$route.params.id;
-        if (id) {
-            api.getWorkout(id).then(function (workout) {
-                self.start = moment(workout.time).startOf('day');
-                self.end = moment(workout.time).endOf('day');
-                self.fetchWorkouts();
-                self.showWorkout(workout);
-            }).fail(function () {
-                toaster.error('Treenin haku ep‰onnistui');
-            });
-        } else {
-            self.showDays(7);
-        }
-    },
-    beforeRouteUpdate (to, from, next) {
-        if (to.params.id) {
-            this.editWorkout(to.params.id);
-        }
-        else {
-            this.showSummary();
-        }
-        next();
+        self.showDays(7);
     }
 }
 </script>

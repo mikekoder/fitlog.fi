@@ -1,25 +1,27 @@
 <template>
     <div>
         <section class="content-header">
-            <h1>Crash.Fit</h1>
         </section>
         <section class="content" v-if="isLoggedIn">
-            Olet kirjautunut
         </section>
         <section class="content" v-if="!isLoggedIn">
-            Et ole kirjautunut
         </section>
 </div>
 </template>
 
 <script>
+    var constants = require('../store/constants')
+
 module.exports = {
     data () {
         return {
         }
     },
     components: {},
-    methods: { }
+    methods: {},
+    created () {
+        this.$store.commit(constants.LOADING_DONE);
+    }
 }
 </script>
 

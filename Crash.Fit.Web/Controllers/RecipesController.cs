@@ -96,6 +96,8 @@ namespace Crash.Fit.Web.Controllers
 
         private void CalculateNutrients(FoodDetails recipe)
         {
+            recipe.Ingredients = recipe.Ingredients.Where(i => i.FoodId != Guid.Empty).ToArray();
+
             var foodIds = recipe.Ingredients.Select(i => i.FoodId);
             var foods = nutritionRepository.GetFoods(foodIds);
             var recipeNutrients = new List<NutrientAmount>();
@@ -128,6 +130,10 @@ namespace Crash.Fit.Web.Controllers
                 }
                 recipeWeight += ingredient.Weight;
             }
+            if (recipe.CookedWeight.HasValue)
+            {
+                recipeWeight = recipe.CookedWeight.Value;
+            }
             recipeNutrients.ForEach(na => {
                 na.Amount = na.Amount * 100 / recipeWeight;
             });
@@ -135,12 +141,16 @@ namespace Crash.Fit.Web.Controllers
         }
         private void CalculatePortionWeights(FoodDetails recipe)
         {
-            var weight = recipe.Ingredients.Sum(i => i.Weight);
+            var recipeWeight = recipe.Ingredients.Sum(i => i.Weight);
+            if (recipe.CookedWeight.HasValue)
+            {
+                recipeWeight = recipe.CookedWeight.Value;
+            }
             foreach (var portion in recipe.Portions)
             {
                 if (portion.Amount.HasValue)
                 {
-                    portion.Weight = weight / portion.Amount.Value;
+                    portion.Weight = recipeWeight / portion.Amount.Value;
                 }
             }
         }

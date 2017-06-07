@@ -1,15 +1,15 @@
 <template>
-    <div>
+    <div v-if="!loading">
         <div>
             <section class="content-header">
-                <h1>Sarjapainolaskuri</h1>
+                <h1>{{ $t("repCalculator.title") }}</h1>
             </section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <input type="number" min="1" step="1" v-model="reps" placeholder="Toistot" /> x
-                        <input type="number" min="0" step="2.5" v-model="weights" placeholder="Painot" />
-                        <button class="btn btn-primary" @click="calculate">Laske</button>
+                        <input type="number" min="1" step="1" v-model="reps" v-bind:placeholder="$t('reps')" /> x
+                        <input type="number" min="0" step="2.5" v-model="weights" v-bind:placeholder="$t('weights')" />
+                        <button class="btn btn-primary" @click="calculate">{{ $t('repCalculator.calculate') }}</button>
                     </div>
                 </div>
                 <div class="row">
@@ -17,8 +17,8 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Toistot</th>
-                                    <th>Keskiarvo</th>
+                                    <th>{{ $t('reps') }}</th>
+                                    <th>{{ $t('average') }}</th>
                                     <th>Epley<sub>*</sub></th>
                                     <th>Brzycki<sub>*</sub></th>
                                     <th>Lander<sub>*</sub></th>
@@ -55,13 +55,18 @@
 </template>
 
 <script>
-
+    var constants = require('../../store/constants')
     module.exports = {
         data () {
             return {
                 reps: undefined,
                 weights: undefined,
                 results: []
+            }
+        },
+        computed:{
+            loading: function() {
+                return this.$store.state.loading;
             }
         },
         components: {},
@@ -157,6 +162,9 @@
                     }
                 }
             }
+        },
+        created: function () {
+            this.$store.commit(constants.LOADING_DONE);
         }
     }
     function Epley(r, w) {

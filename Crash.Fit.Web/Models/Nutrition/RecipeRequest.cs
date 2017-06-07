@@ -10,5 +10,6 @@ namespace Crash.Fit.Web.Models.Nutrition
         public string Name { get; set; }
         public RecipeIngredient[] Ingredients { get; set; }
         public Portion[] Portions { get; set; }
+        public decimal? CookedWeight { get; set; }
     }
 }

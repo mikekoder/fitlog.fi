@@ -25,6 +25,15 @@ module.exports = {
         format: {},
         icon: {}
     },
+    watch: {
+        value(){
+            if (this.value) {
+                var format = this.format || 'DD.MM.YYYY HH:mm';
+                var m = moment(this.value);
+                this.control.date(m.format(format));
+            }
+        }
+    },
     methods: {
     },
     mounted: function () {

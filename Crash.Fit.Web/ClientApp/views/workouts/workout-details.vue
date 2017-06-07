@@ -1,79 +1,81 @@
 ﻿<template>
-    <div>
-        <div class="row">
-            <div class="col-sm-5 col-md-3 col-lg-2">
-                <div class="form-group">
-                    <label>Aika</label>
-                    <datetime-picker class="vue-picker1" name="picker1" v-bind:value="time" v-on:change="time=arguments[0]"></datetime-picker>
+    <div v-if="!loading">
+        <section class="content-header"><h1>{{ $t("workoutDetails.title") }}</h1></section>
+        <section class="content">
+            <div class="row">
+                <div class="col-sm-5 col-md-3 col-lg-2">
+                    <div class="form-group">
+                        <label>{{ $t("time") }}</label>
+                        <datetime-picker class="vue-picker1" name="picker1" v-bind:value="time" v-on:change="time=arguments[0]"></datetime-picker>
+                    </div>
+
                 </div>
-                
             </div>
-        </div>
-        <div class="row">&nbsp;</div>
-        <div class="row">
-            <div class="col-sm-12">
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-sm-12">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4 col-md-4 col-lg-2"><label>Liike</label></div>
-                        <div class="col-sm-2 col-md-2 col-lg-1"><label>Toistot</label></div>
-                        <div class="col-sm-3 col-md-2 col-lg-1"><label>Painot</label></div>
+                        <div class="col-sm-4 col-md-4 col-lg-2"><label>{{ $t("exercise") }}</label></div>
+                        <div class="col-sm-2 col-md-2 col-lg-1"><label>{{ $t("reps") }}</label></div>
+                        <div class="col-sm-3 col-md-2 col-lg-1"><label>{{ $t("weights") }}</label></div>
                         <div class="col-sm-3">&nbsp;</div>
                     </div>
                     <template v-for="(set,index) in sets">
                         <div class="row">
                             <div class="col-sm-4 col-md-4 col-lg-2">
-                                <label class="hidden-sm hidden-md hidden-lg">Liike</label>
+                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
                                 <exercise-picker v-bind:exercises="exercises" v-bind:value="set.exercise" v-on:change="set.exercise=arguments[0]" v-on:nameChange="processNewExercise(set, arguments[0])" />
                             </div>
                             <div class="quantity col-sm-2 col-xs-4 col-md-2 col-lg-1">
-                                <label class="hidden-sm hidden-md hidden-lg">Toistot</label>
+                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("reps") }}</label>
                                 <input type="number" min="0" class="form-control" v-model="set.reps" />
                             </div>
                             <div class="portion col-sm-3 col-xs-4 col-md-2 col-lg-1">
-                                <label class="hidden-sm hidden-md hidden-lg">Painot</label>
+                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("weights") }}</label>
                                 <input type="number" min="0" step="2.5" class="form-control" v-model="set.weights" />
                             </div>
                             <div class="actions col-sm-3 col-xs-4">
                                 <button class="btn btn-sm" @click="moveSetUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
                                 <button class="btn btn-sm" @click="moveSetDown(index)" :disabled="index === (sets.length - 1)"><i class="fa fa-arrow-down"></i></button>
-                                <button class="btn btn-primary" @click="copySet(index)">Kopioi</button>
-                                <button class="btn btn-danger btn-sm" @click="removeSet(index)">Poista</button>
+                                <button class="btn btn-primary" @click="copySet(index)">{{ $t("copy") }}</button>
+                                <button class="btn btn-danger btn-sm" @click="removeSet(index)">{{ $t("delete") }}</button>
                             </div>
                         </div>
                         <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
                             <div class="col-sm-12"><hr /></div>
                         </div>
                     </template>
-                    
-            </div>
-        </div>
-        <div class="row">&nbsp;</div>
-        <div class="row">
-            <div class="col-sm-12"><button class="btn" @click="addSet"><i class="fa fa-plus"></i> Lisää</button></div>
-        </div>
-        <hr />
-        <div class="row main-actions">
-            <div class="col-sm-12">
-                <button class="btn btn-primary" @click="save">Tallenna</button>
-                <button class="btn" @click="cancel">Peruuta</button>
-                <button class="btn btn-danger" v-if="id" @click="deleteWorkout">Poista</button>
-            </div>
-        </div>
-        <hr />
-        <div class="row">
-            <table>
-                <tbody>
 
-                </tbody>
-            </table>
-        </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-sm-12"><button class="btn" @click="addSet">{{ $t("add") }}</button></div>
+            </div>
+            <hr />
+            <div class="row main-actions">
+                <div class="col-sm-12">
+                    <button class="btn btn-primary" @click="save">{{ $t("save") }}</button>
+                    <button class="btn" @click="cancel">{{ $t("cancel") }}</button>
+                    <button class="btn btn-danger" v-if="id" @click="deleteWorkout">{{ $t("delete") }}</button>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <table>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
     </div>
 </template>
 
 <script>
+    var constants = require('../../store/constants')
     var api = require('../../api');
     var formatters = require('../../formatters');
     var utils = require('../../utils');
-
+    var toaster = require('../../toaster');
 module.exports = {
     data () {
         return {
@@ -83,11 +85,10 @@ module.exports = {
             exercises: [],
         }
     },
-    props: {
-        workout: null,
-        saveCallback: null,
-        cancelCallback: null,
-        deleteCallback: null
+    computed: {
+        loading: function () {
+            return this.$store.state.loading;
+        }
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
@@ -132,18 +133,36 @@ module.exports = {
             }
         },
         save: function () {
+            var self = this;
             var workout = {
-                id: this.id,
-                time: this.time,
-                sets: this.sets.filter(s => s.exercise && s.reps).map(s => { return { exerciseId: s.exercise.id, exerciseName: s.exercise.name, reps: utils.parseFloat(s.reps), weights: utils.parseFloat(s.weights) } })
+                id: self.id,
+                time: self.time,
+                sets: self.sets.filter(s => s.exercise && s.reps).map(s => { return { exerciseId: s.exercise.id, exerciseName: s.exercise.name, reps: utils.parseFloat(s.reps), weights: utils.parseFloat(s.weights) } })
             };
-            this.saveCallback(workout);
+            self.$store.dispatch(constants.SAVE_WORKOUT, {
+                workout,
+                success: function () {
+                    self.$router.replace({ name: 'workouts' });
+                },
+                failure: function () {
+                    toaster(self.$t('workoutDetails.saveFailed'));
+                }
+            })
         },
         cancel: function () {
-            this.cancelCallback();
+            this.$router.go(-1);
         },
         deleteWorkout: function () {
-            this.deleteCallback(this.workout);
+            var self = this;
+            self.$store.dispatch(constants.DELETE_WORKOUT, {
+                workout: { id: self.id },
+                success: function () {
+                    self.$router.replace({ name: 'workouts' });
+                },
+                failure: function () {
+                    toaster(self.$t('routineDetails.deleteFailed'));
+                }
+            });
         },
         unit: formatters.formatUnit,
         decimal: function (value, precision) {
@@ -151,20 +170,48 @@ module.exports = {
                 return value;
             }
             return value.toFixed(precision);
+        },
+        populate(workout) {
+            var self = this;
+            self.id = workout.id;
+            self.time = workout.time;
+            self.$store.dispatch(constants.FETCH_EXERCISES, {
+                success: function (exercises) {
+                    self.exercises = exercises;
+                    if (workout.sets) {
+                        self.sets = workout.sets.map(s => { return { exercise: self.exercises.filter(e => e.id === s.exerciseId)[0], reps: s.reps, weights: s.weights } });
+                    }
+                    else {
+                        self.sets = [{ exercise: null, reps: null, weights: null }];
+                    }
+                    self.$store.commit(constants.LOADING_DONE);
+                },
+                failure: function () {
+                    toaster(self.$t('routineDetails.fetchFailed'));
+                }
+            });
         }
     },
     created: function () {
-        var self = this;
-        this.id = this.workout.id;
-        this.time = this.workout.time;
-        this.exercises = this.$store.state.training.exercises;
         
-        if (this.workout.sets) {
-            this.sets = this.workout.sets.map(s => { return { exercise: self.exercises.filter(e => e.id === s.exerciseId)[0], reps: s.reps, weights: s.weights } });
+
+        var self = this;
+        var id = self.$route.params.id;
+        if (id == constants.NEW_ID) {
+            self.populate({ id: undefined, time: utils.previousHalfHour() });
         }
         else {
-            this.sets = [{ exercise: null, reps: null, weights: null }];
+            self.$store.dispatch(constants.FETCH_WORKOUT, {
+                id,
+                success: function (workout) {
+                    self.populate(workout);
+                },
+                failure: function () {
+                    toaster(self.$t('workoutDetails.fetchFailed'));
+                }
+            });
         }
+
     },
     mounted: function () {
     }

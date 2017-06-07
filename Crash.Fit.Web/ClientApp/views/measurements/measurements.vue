@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="!loading">
         <div v-if="!create">
             <section class="content-header"><h1>{{ $t("measurements.title") }}</h1></section>
             <section class="content">
@@ -50,6 +50,7 @@
 </template>
 
 <script>
+var constants = require('../../store/constants')
 var api = require('../../api');
 var toaster = require('../../toaster');
 var formatters = require('../../formatters')
@@ -61,6 +62,11 @@ module.exports = {
             create: false
         }
     },
+    computed:{
+        loading: function() {
+            return this.$store.state.loading;
+        }
+    },
     components: {
         'measurements-editor': require('./measurements-editor')
     },
@@ -69,6 +75,7 @@ module.exports = {
             var self = this;
             api.listMeasures().then(function (measures) {
                 self.measures = measures;
+                self.$store.commit(constants.LOADING_DONE);
             });
         },
         createMeasurements: function () {
@@ -88,11 +95,6 @@ module.exports = {
     },
     created: function () {
         this.loadMeasures();
-        /*
-        var id = this.$route.params.id;
-        if (id) {
-            this.editExercise(id);
-        }*/
     },
     beforeRouteUpdate (to, from, next) {
         /*

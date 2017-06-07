@@ -1,8 +1,14 @@
 ﻿<template>
-    <div class="bar-container">
-        <div class="bar protein" :title="'Proteiini ' + decimal(proteinWidth, 2) +'%'" :style="'width: '+ proteinWidth +'%;'">P</div>
-        <div class="bar carb" :title="'Hiilihydraatti ' + decimal(carbWidth, 2) +'%'" :style="'width: '+ carbWidth +'%;'">HH</div>
-        <div class="bar fat" :title="'Rasva ' + decimal(fatWidth, 2) +'%'" :style="'width: '+ fatWidth +'%;'">R</div>
+    <div>
+        <div class="bar-container" v-if="target.min || target.max" :title="title">
+            <div class="line min" :style="minStyle" :class="minClass" v-if="target.min"><div></div><div></div><div></div></div>
+            <div class="line max" :style="maxStyle" :class="maxClass" v-if="target.max"><div></div><div></div><div></div></div>
+            <div class="bar value" :style="valueStyle"></div>
+            <div class="text">{{ decimal(value, precision) }}</div>
+        </div>
+        <div v-else>
+            {{ decimal(value, precision) }}
+        </div>
     </div>
 </template>
 
@@ -10,29 +16,92 @@
 module.exports = {
     data: function() {
         return {
-           
-
         }
     },
     computed: {
-        energy: function(){
-            return 4 * this.protein + 4 * this.carb + 9 * this.fat;
+        
+        maxValue: function(){
+            return Math.max(this.target.min || 0, this.value || 0, this.target.max || 0) * 1.1;
+        },/*
+        color: function () {
+            
+            var diff = 0;
+            if (this.value || this.value == 0) {
+                if (this.target.min && this.value < this.target.min) {
+                    diff = (this.target.min - this.value) / this.target.min;
+                }
+                if (this.target.max && this.value > this.target.max) {
+                    diff = (this.value - this.target.max) / this.target.max;
+                }
+            }
+            if (diff == 0) {
+                return 'green';
+            }
+            if (diff < 0.2) {
+                return 'orange';
+            }
+            return '#bbbbbb';
         },
-        proteinWidth: function () {
-            return (4 * this.protein / this.energy) * 100;
+     */
+        
+        minLeft: function () {
+            return (this.target.min || 0) / this.maxValue * 100;
         },
-        carbWidth: function () {
-            return (4 * this.carb / this.energy) * 100;
+        minStyle: function () {
+            return 'left: ' + this.minLeft + '%;';
         },
-        fatWidth: function () {
-            return (9 * this.fat / this.energy) * 100;
+        minClass: function () {
+            if (this.target.min && this.value < this.target.min) {
+                return 'bad';
+            }
+            if (this.target.min && this.value > this.target.min) {
+                return 'good';
+            }
+            return '';
+        },
+        maxLeft: function () {
+            return (this.target.max || 0) / this.maxValue * 100;
+        },
+        maxStyle: function () {
+            return 'left: ' + this.maxLeft + '%;';
+        },
+        maxClass: function () {
+            if (this.target.max && this.value > this.target.max) {
+                return 'bad';
+            }
+            if (this.target.max && this.value < this.target.max) {
+                return 'good';
+            }
+            return '';
+        },
+        valueLeft: function () {
+            return (this.value || 0) / this.maxValue * 100;
+        },
+        valueStyle: function(){
+            return 'width: ' + this.valueLeft + '%; background-color: #ccc;';
+        },
+        title: function () {
+            if (this.target.min) {
+                if (this.target.max) {
+                    return this.target.min + ' - ' + this.target.max;
+                }
+                else {
+                    return '> ' + this.target.min;
+                }
+            }
+            if (this.target.max) {
+                return '< ' + this.target.max;
+            }
+            return '';
         }
     },
     props: {
+        target: undefined,
         value: undefined,
         precision: undefined
     },
-    mounted: function () {
+    created: function () {
+
     },
     methods: {
         decimal: function (value, precision) {
@@ -45,28 +114,71 @@ module.exports = {
 }
 </script>
 <style scoped>
-    .bar-container
-    {
+    .bar-container {
+        width: 100%;
+        height: 20px;
+        /*background-color: #f5f5f5;*/
+        position:relative;
+        cursor: default;
+    }
+    .bar {
+        position: absolute;
+        top:2px;
+        height: 16px;
+        z-index: 1;
+    }
+    .line {
+        position: absolute;
+        top:0;
+        height: 100%;
+        width: 3px;
+        z-index: 2;
+    }
+    .line.bad > div {
+        background-color: #FF0000;
+    }
+    .line.good > div {
+        background-color: green;
+    }
+    .min > div, .max > div {
+        position:absolute;
+        background-color: #808080;
+    }
+    .min > div:nth-child(1){
+        height: 20px;
+        width: 1px;
+    }
+    .min > div:nth-child(2){
+        left: 1px;
+        height: 1px;
+        width: 2px;
+    }
+    .min > div:nth-child(3){
+        left: 1px;
+        top: 19px;
+        height: 1px;
+        width: 2px;
+    }
+    .max > div:nth-child(1){
+        left: 2px;
+        height: 20px;
+        width: 1px;
+    }
+    .max > div:nth-child(2){
+        height: 1px;
+        width: 2px;
+    }
+    .max > div:nth-child(3){
+        top: 19px;
+        height: 1px;
+        width: 2px;
+    }
+    .text {
+        position: absolute;
+        top:0;
         width: 100%;
         height: 100%;
-    }
-    .bar
-    {
-        float:left;
-        height: 100%;
-        text-align: center;
-        color:white;
-    }
-    .protein 
-    {
-        background-color: #4F81BD;
-    }
-    .carb
-    {
-        background-color: #C0504D;
-    }
-   .fat 
-   {
-       background-color: #9BBB59;
-   }
+        z-index: 3;
+        text-align:center;
+     }
 </style>

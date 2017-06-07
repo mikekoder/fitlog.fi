@@ -1,10 +1,10 @@
 <template>
-    <div>
-        <section class="content-header"><h1>Tavoitteet</h1></section>
+    <div v-if="!loading">
+        <section class="content-header"><h1>{{ $t("nutritionTargets.title") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="addNutrientTarget">Lis&auml;&auml; tavoite</button>
+                    <button class="btn btn-primary" @click="addNutrientTarget">{{ $t("nutritionTargets.addTarget") }}</button>
                 </div>
             </div>
             <div class="row">
@@ -15,29 +15,40 @@
                                 <thead>
                                     <tr>
                                         <th class="freeze"></th>
-                                        <template v-for="target in nutrientTargets">
-                                            <th><button class="btn btn-sm btn-danger">Poista</button></th>
+                                        <template v-for="(target,index) in nutrientTargets">
+                                            <th><button class="btn btn-sm btn-danger" @click="deleteNutrientTarget(index)">{{ $t("delete") }}</button></th>
                                         </template>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <th class="freeze">Vain p&auml;ivin&auml;</th>
+                                        <th class="freeze">{{ $t("nutritionTargets.onlyDays") }}</th>
                                         <template v-for="target in nutrientTargets">
                                             <td>
                                                 <table class="days">
-                                                    <tr><td>M</td><td>T</td><td>K</td><td>T</td><td>P</td><td>L</td><td>S</td><td class="divider"></td><td>T</td><td>L</td></tr>
                                                     <tr>
-                                                        <td><input type="checkbox" v-model="target.monday" title="Maanantai" /></td>
-                                                        <td><input type="checkbox" v-model="target.tuesday" title="Tiistai" /></td>
-                                                        <td><input type="checkbox" v-model="target.wednesday" title="Keskiviikko" /></td>
-                                                        <td><input type="checkbox" v-model="target.thursday" title="Torstain" /></td>
-                                                        <td><input type="checkbox" v-model="target.friday" title="Perjantai" /></td>
-                                                        <td><input type="checkbox" v-model="target.saturday" title="Lauantai" /></td>
-                                                        <td><input type="checkbox" v-model="target.sunday" title="Sunnuntai" /></td>
+                                                        <td>{{ $t("mondayShort") }}</td>
+                                                        <td>{{ $t("tuesdayShort") }}</td>
+                                                        <td>{{ $t("wednesdayShort") }}</td>
+                                                        <td>{{ $t("thursdayShort") }}</td>
+                                                        <td>{{ $t("fridayShort") }}</td>
+                                                        <td>{{ $t("saturdayShort") }}</td>
+                                                        <td>{{ $t("sundayShort") }}</td>
                                                         <td class="divider"></td>
-                                                        <td><input type="checkbox" v-model="target.exerciseDay" title="Treeni" /></td>
-                                                        <td><input type="checkbox" v-model="target.restDay" title="Lepo" /></td>
+                                                        <td>{{ $t("exerciseDayShort") }}</td>
+                                                        <td>{{ $t("restDayShort") }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><input type="checkbox" v-model="target.monday" v-bind:title="$t('monday')" /></td>
+                                                        <td><input type="checkbox" v-model="target.tuesday" v-bind:title="$t('tuesday')" /></td>
+                                                        <td><input type="checkbox" v-model="target.wednesday" v-bind:title="$t('wednesday')" /></td>
+                                                        <td><input type="checkbox" v-model="target.thursday" v-bind:title="$t('thursday')" /></td>
+                                                        <td><input type="checkbox" v-model="target.friday" v-bind:title="$t('friday')" /></td>
+                                                        <td><input type="checkbox" v-model="target.saturday" v-bind:title="$t('saturday')" /></td>
+                                                        <td><input type="checkbox" v-model="target.sunday" v-bind:title="$t('sunday')" /></td>
+                                                        <td class="divider"></td>
+                                                        <td><input type="checkbox" v-model="target.exerciseDay" v-bind:title="$t('exerciseDay')" /></td>
+                                                        <td><input type="checkbox" v-model="target.restDay" v-bind:title="$t('restDay')" /></td>
                                                     </tr>
                                                 </table>
                                             </td>
@@ -46,7 +57,7 @@
                                 </tbody>
                                 <tbody v-for="group in groups">
                                     <tr>
-                                        <th class="freeze" @click="toggleGroup(group.id)">
+                                        <th class="freeze clickable" @click="toggleGroup(group.id)">
                                             <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
                                             <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
                                             {{ $t('nutrients.groups.'+group.id) }}
@@ -70,10 +81,16 @@
             <hr />
             <div class="row" v-if="nutrientTargets.length > 0">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="save">Tallenna</button>
+                    <button class="btn btn-primary" @click="save">{{ $t('save') }}</button>
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>
+                        {{ $t('nutritionTargets.info') }}
+                    </p>
+                </div>
+            </div>
         </section>
         
     </div>
@@ -84,7 +101,7 @@
     var utils = require('../../utils');
     var api = require('../../api');
     var formatters = require('../../formatters')
-
+    var toaster = require('../../toaster');
 module.exports = {
     data () {
         return {
@@ -93,7 +110,10 @@ module.exports = {
             groupOpenStates: {},
         }
     },
-    computed:{
+    computed: {
+        loading: function () {
+            return this.$store.state.loading;
+        },
         groups: function(){
             return this.$store.state.nutrition.nutrientGroups;
         },
@@ -124,8 +144,8 @@ module.exports = {
 
             this.nutrientTargets.push(target);
         },
-        deleteNutrientTarget: function(){
-
+        deleteNutrientTarget: function(index){
+            this.nutrientTargets.splice(index, 1);
         },
         toggleGroup: function (group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
@@ -134,9 +154,10 @@ module.exports = {
             return this.groupOpenStates[group] && true;
         },
         save: function () {
+            var self = this;
             var targets = [];
-            for (var i in this.nutrientTargets) {
-                var days = this.nutrientTargets[i];
+            for (var i in self.nutrientTargets) {
+                var days = self.nutrientTargets[i];
                 var target = {
                     monday: days.monday,
                     tuesday: days.tuesday,
@@ -149,18 +170,22 @@ module.exports = {
                     restDay: days.restDay,
                     nutrientValues: []
                 };
-                for (var j in days.targets) {
-                    var value = days.targets[j];
+                for (var j in days.nutrientValues) {
+                    var value = days.nutrientValues[j];
                     if (value.min || value.min == 0 || value.max || value.max == 0) {
                         target.nutrientValues.push({ nutrientId: j, min: value.min, max: value.max });
                     }
                 }
                 targets.push(target);
             }
-            this.$store.dispatch(constants.SAVE_NUTRIENT_TARGETS, {
+            self.$store.dispatch(constants.SAVE_NUTRIENT_TARGETS, {
                 targets,
-                success: function () { },
-                failure: function () { }
+                success: function () {
+                    toaster.info(self.$t('nutrientTargets.saved'));
+                },
+                failure: function () {
+                    toaster.error(self.$t('nutrientTargets.saveFailed'));
+                }
             });
         },
         unit: formatters.formatUnit
@@ -197,6 +222,8 @@ module.exports = {
                             nutrientTargets.push(target);
                         }
                         self.nutrientTargets = nutrientTargets;
+
+                        self.$store.commit(constants.LOADING_DONE);
                     },
                     failure: function () { }
                 });

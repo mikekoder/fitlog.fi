@@ -26,102 +26,168 @@ const state = {
 
 // actions
 const actions = {
-    [constants.FETCH_MUSCLEGROUPS] ({commit, state},{forceRefresh, success, failure}) {
-        if(state.muscleGroupsLoaded && !forceRefresh){
-            if(success){
-                success(state.muscleGroups);
-            }
-            return;
-        }
-        api.listMuscleGroups().then(function(muscleGroups){
-            commit(constants.FETCH_MUSCLEGROUPS_SUCCESS,{muscleGroups});
-            if(success){
-                success(muscleGroups);
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
-    [constants.FETCH_EXERCISES] ({commit, state},{forceRefresh, success, failure}) {
-        if(state.exercisesLoaded && !forceRefresh){
-            if(success){
-                success(state.exercises);
-            }
-            return;
-        }
-        api.listExercises().then(function(exercises){
-            commit(constants.FETCH_EXERCISES_SUCCESS,{exercises});
-            if(success){
-                success(exercises);
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
-    [constants.FETCH_ROUTINES] ({commit, state},{forceRefresh, success, failure}) {
-        if(state.routinesLoaded && !forceRefresh){
-            if(success){
-                success(state.routines);
-            }
-            return;
-        }
-        api.listRoutines().then(function(routines){
-            commit(constants.FETCH_ROUTINES_SUCCESS,{routines})
+     
+    // MuscleGroups 
+     [constants.FETCH_MUSCLEGROUPS] ({commit, state},{forceRefresh, success, failure}) {
+         if(state.muscleGroupsLoaded && !forceRefresh){
+             if(success){
+                 success(state.muscleGroups);
+             }
+             return;
+         }
+         api.listMuscleGroups().then(function(muscleGroups){
+             commit(constants.FETCH_MUSCLEGROUPS_SUCCESS,{muscleGroups});
+             if(success){
+                 success(muscleGroups);
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
+    // Workouts
+     [constants.FETCH_WORKOUTS] ({ commit, state }, {start, end, success, failure}) {
+         if(state.workoutsStart && state.workoutsEnd){
+             if(moment(start).isBefore(state.workoutsStart) || moment(end).isAfter(state.workoutsEnd)){
+                 start = moment.min(moment(start), moment(state.workoutsEnd));
+                 end = moment.max(moment(end), moment(state.workoutsStart));
+             }
+             else{
+                 // within already loaded period
+                 if(success){
+                     success(state.workouts);
+                 }
+                 return;
+             }
+         }
 
-            var active = routines.find(r => r.active);
-            if(active){
-                api.getRoutine(active.id).then(function(routine){
-                    commit(constants.FETCH_ACTIVE_ROUTINE_SUCCESS,{routine});
-                    if(success){
-                        success(routines);
-                    }
-                });
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
-    [constants.FETCH_WORKOUTS] ({ commit, state }, {start, end, success, failure}) {
-        if(state.workoutsStart && state.workoutsEnd){
-            if(moment(start).isBefore(state.workoutsStart) || moment(end).isAfter(state.workoutsEnd)){
-                start = moment.min(moment(start), moment(state.workoutsEnd));
-                end = moment.max(moment(end), moment(state.workoutsStart));
-            }
-            else{
-                // within already loaded period
-                return;
-            }
-        }
+         api.listWorkouts(start, end).then(function(workouts){
+             commit(constants.FETCH_WORKOUTS_SUCCESS,{start, end, workouts})
+             if(success){
+                 success(workouts);
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
+     [constants.SAVE_WORKOUT] ({commit, state},{workout, success, failure}){
+         api.saveWorkout(workout).then(function(savedWorkout){
+             commit(constants.SAVE_WORKOUT_SUCCESS,{id: workout.id, workout: savedWorkout})
+             if(success){
+                 success(savedWorkout);
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
+     [constants.DELETE_WORKOUT] ({commit, state},{workout, success, failure}){
+         api.deleteWorkout(workout.id).then(function(){
+             commit(constants.DELETE_WORKOUT_SUCCESS,{workout})
+             if(success){
+                 success();
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
+    // Exercises
+     [constants.FETCH_EXERCISES] ({commit, state},{forceRefresh, success, failure}) {
+         if(state.exercisesLoaded && !forceRefresh){
+             if(success){
+                 success(state.exercises);
+             }
+             return;
+         }
+         api.listExercises().then(function(exercises){
+             commit(constants.FETCH_EXERCISES_SUCCESS,{exercises});
+             if(success){
+                 success(exercises);
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
+     [constants.FETCH_EXERCISE] ({commit, state},{id, success, failure}) {
+         api.getExercise(id).then(function(exercise){
+             if(success){
+                 success(exercise);
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
+     [constants.SAVE_EXERCISE] ({commit, state},{exercise, success, failure}){
+         api.saveExercise(exercise).then(function(savedExercise){
+             commit(constants.SAVE_EXERCISE_SUCCESS,{id: exercise.id, exercise: savedExercise})
+             if(success){
+                 success(savedExercise);
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
+     [constants.DELETE_EXERCISE] ({commit, state},{exercise, success, failure}){
+         api.deleteExercise(exercise.id).then(function(){
+             commit(constants.DELETE_EXERCISE_SUCCESS,{exercise})
+             if(success){
+                 success();
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
+    // Routines
+     [constants.FETCH_ROUTINES] ({commit, state},{forceRefresh, success, failure}) {
+         if(state.routinesLoaded && !forceRefresh){
+             if(success){
+                 success(state.routines);
+             }
+             return;
+         }
+         api.listRoutines().then(function(routines){
+             commit(constants.FETCH_ROUTINES_SUCCESS,{routines})
 
-        api.listWorkouts(start, end).then(function(workouts){
-            commit(constants.FETCH_WORKOUTS_SUCCESS,{start, end, workouts})
-            if(success){
-                success(workouts);
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
-    [constants.SAVE_EXERCISE] ({commit, state},{exercise, success, failure}){
-        api.saveExercise(exercise).then(function(savedExercise){
-            commit(constants.SAVE_EXERCISE_SUCCESS,{id: exercise.id, exercise: savedExercise})
-            if(success){
-                success(savedExercise);
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
+             var active = routines.find(r => r.active);
+             if(active){
+                 api.getRoutine(active.id).then(function(routine){
+                     commit(constants.FETCH_ACTIVE_ROUTINE_SUCCESS,{routine});
+                     if(success){
+                         success(routines);
+                     }
+                 });
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
+     [constants.FETCH_ROUTINE] ({commit, state},{id, success, failure}){
+         api.getRoutine(id).then(function(routine){
+             if(success){
+                 success(routine);
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
     [constants.SAVE_ROUTINE] ({commit, state},{routine, success, failure}){
         api.saveRoutine(routine).then(function(savedRoutine){
             commit(constants.SAVE_ROUTINE_SUCCESS,{id: routine.id, routinee: savedRoutine})
@@ -134,45 +200,9 @@ const actions = {
             }
         });
     },
-    [constants.SAVE_WORKOUT] ({commit, state},{workout, success, failure}){
-        api.saveWorkout(workout).then(function(savedWorkout){
-            commit(constants.SAVE_WORKOUT_SUCCESS,{id: workout.id, workout: savedWorkout})
-            if(success){
-                success(savedWorkout);
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
-    [constants.DELETE_EXERCISE] ({commit, state},{exercise, success, failure}){
-        api.deleteExercise(exercise.id).then(function(){
-            commit(constants.DELETE_EXERCISE_SUCCESS,{exercise})
-            if(success){
-                success();
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
     [constants.DELETE_ROUTINE] ({commit, state},{routine, success, failure}){
         api.deleteRoutine(routine.id).then(function(){
             commit(constants.DELETE_ROUTINE_SUCCESS,{routine})
-            if(success){
-                success();
-            }
-        }).fail(function(){
-            if(failure){
-                failure();
-            }
-        });
-    },
-    [constants.DELETE_WORKOUT] ({commit, state},{workout, success, failure}){
-        api.deleteWorkout(workout.id).then(function(){
-            commit(constants.DELETE_WORKOUT_SUCCESS,{workout})
             if(success){
                 success();
             }
@@ -254,6 +284,9 @@ const mutations = {
     },
     [constants.DELETE_WORKOUT_SUCCESS] (state, {workout}) {
         removeWorkout(meal, state)
+    },
+    [constants.LOGOUT_SUCCESS] (state) {
+        // TODO: clear state
     }
 }
 function removeExercise(exercise, state){

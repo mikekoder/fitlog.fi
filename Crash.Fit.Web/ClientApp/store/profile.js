@@ -9,17 +9,34 @@ const state = {
 
 // actions
 const actions = {
-    [constants.FETCH_PROFILE] ({commit, state},{success, failure}) {
+    [constants.FETCH_PROFILE] ({commit, state},{forceRefresh,success, failure}) {
+        if(state.profile && !forceRefresh){
+            if(success){
+                success(state.profile);
+            }
+        }
         api.getProfile().then(function(profile){
             if(profile.doB){
                 profile.doB = new Date(profile.doB);
             }
             commit(constants.FETCH_PROFILE_SUCCESS,{profile})
             if(success){
-                success();
+                success(profile);
             }
         }).fail(function(){
             commit(constants.FETCH_PROFILE_FAILURE)
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.LOGOUT] ({commit, state},{success, failure}) {
+        api.logout().then(function(){
+            commit(constants.LOGOUT_SUCCESS)
+            if(success){
+                success();
+            }
+        }).fail(function(){
             if(failure){
                 failure();
             }
@@ -35,6 +52,9 @@ const mutations = {
     [constants.FETCH_PROFILE_SUCCESS] (state, {profile}) {
         state.loading = false;
         state.profile = profile;
+    },
+    [constants.LOGOUT_SUCCESS] (state) {
+        state.profile = undefined;
     },
     [constants.FETCH_PROFILE_FAILURE] (state) {
         state.loading = false;

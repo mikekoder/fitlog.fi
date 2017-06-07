@@ -291,7 +291,21 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
         }
         public bool DeleteRoutine(Routine routine)
         {
-            throw new NotImplementedException();
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE Routine SET Deleted=@Deleted WHERE Id=@Id", new { routine.Id, Deleted = DateTimeOffset.Now }, tran);
+                    tran.Commit();
+                    return true;
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
         }    
         public bool RestoreRoutine(Guid id, out RoutineDetails routine)
         {
@@ -396,7 +410,21 @@ SELECT * FROM WorkoutSet WHERE WorkoutId=@id ORDER BY [Index];";
         }
         public bool DeleteWorkout(Workout workout)
         {
-            throw new NotImplementedException();
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE Workout SET Deleted=@Deleted WHERE Id=@Id", new { workout.Id, Deleted = DateTimeOffset.Now }, tran);
+                    tran.Commit();
+                    return true;
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
         }
         public bool RestoreWorkout(Guid id, out WorkoutDetails workout)
         {

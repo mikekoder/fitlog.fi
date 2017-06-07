@@ -1,13 +1,13 @@
 <template>
-    <div>
-        <section class="content-header"><h1>Ravintoaineet</h1></section>
+    <div v-if="!loading">
+        <section class="content-header"><h1>{{ $t("nutrients.title") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
                     <table class="nutrient-settings">
                         <thead>
-                            <tr><th></th><th></th><th></th><th colspan="2">N&auml;kyvyys</th></tr>
-                            <tr><th></th><th></th><th></th><th>Yhteenveto</th><th>Yksityiskohdat</th></tr>
+                            <tr><th></th><th></th><th></th><th colspan="2">{{ $t("visibility") }}</th></tr>
+                            <tr><th></th><th></th><th></th><th>{{ $t("summary") }}</th><th>{{ $t("details") }}</th></tr>
                         </thead>
                         <tbody v-for="group in groups">
                             <tr><th></th><th colspan="2">{{ $t('nutrients.groups.'+group.id) }}</th></tr>
@@ -20,16 +20,16 @@
                                 <td>{{ unit(nutrient.unit) }}</td>
                                 <td>
                                     <select v-model="nutrient.userHideSummary">
-                                        <option value="null">Oletus ({{ nutrient.defaultHideSummary ? 'piilota' : 'n&auml;yt&auml;'}})</option>
-                                        <option value="false">N&auml;yt&auml;</option>
-                                        <option value="true">Piilota</option>
+                                        <option value="null">{{ $t("default") }} ({{ nutrient.defaultHideSummary ? $t("hide") : $t("show")}})</option>
+                                        <option value="false">{{ $t("show") }}</option>
+                                        <option value="true">{{ $t("hide") }}</option>
                                     </select>
                                 </td>
                                 <td>
                                     <select v-model="nutrient.userHideDetails">
-                                        <option value="null">Oletus ({{ nutrient.defaultHideDetails ? 'piilota' : 'n&auml;yt&auml;'}})</option>
-                                        <option value="false">N&auml;yt&auml;</option>
-                                        <option value="true">Piilota</option>
+                                        <option value="null">{{ $t("default") }} ({{ nutrient.defaultHideDetails ? $t("hide") : $t("show")}})</option>
+                                        <option value="false">{{ $t("show") }}</option>
+                                        <option value="true">{{ $t("hide") }}</option>
                                     </select>
                                 </td>
                             </tr>
@@ -40,7 +40,7 @@
             <hr />
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="save">Tallenna</button>
+                    <button class="btn btn-primary" @click="save">{{ $t("save") }}</button>
                 </div>
             </div>
 
@@ -54,14 +54,17 @@
     var utils = require('../../utils');
     var api = require('../../api');
     var formatters = require('../../formatters')
-
+    var toaster = require('../../toaster');
 module.exports = {
     data () {
         return {
             nutrientSettings: {},
         }
     },
-    computed:{
+    computed: {
+        loading: function () {
+            return this.$store.state.loading;
+        },
         groups: function(){
             return this.$store.state.nutrition.nutrientGroups;
         }
@@ -81,17 +84,22 @@ module.exports = {
             group.splice(index + 1, 0, nutrient);
         },
         save: function () {
+            var self = this;
             var settings = [];
-            for (var i in this.nutrientSettings) {
-                for (var j in this.nutrientSettings[i]) {
-                    var nutrient = this.nutrientSettings[i][j];
+            for (var i in self.nutrientSettings) {
+                for (var j in self.nutrientSettings[i]) {
+                    var nutrient = self.nutrientSettings[i][j];
                     settings.push({ nutrientId: nutrient.id, userHideSummary: nutrient.userHideSummary, userHideDetails: nutrient.userHideDetails })
                 }
             }
-            this.$store.dispatch(constants.SAVE_NUTRIENT_SETTINGS, {
+            self.$store.dispatch(constants.SAVE_NUTRIENT_SETTINGS, {
                 settings,
-                success: function () { },
-                failure: function () { }
+                success: function () {
+                    toaster.info(self.$t('nutrients.saved'));
+                },
+                failure: function () {
+                    toaster.error(self.$t('nutrients.saveFailed'));
+                }
             });
         },
         unit: formatters.formatUnit
@@ -112,6 +120,7 @@ module.exports = {
 
                 }
                 self.nutrientSettings = grouped;
+                self.$store.commit(constants.LOADING_DONE);
             }, failure: function () { }
         });
     }
