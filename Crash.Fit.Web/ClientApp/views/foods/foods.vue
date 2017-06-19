@@ -1,10 +1,10 @@
 <template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("foods.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("foods") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="createFood">{{ $t("foods.create") }}</button>
+                    <button class="btn btn-primary" @click="createFood">{{ $t("create") }}</button>
                 </div>
             </div>
             <div class="row" v-if="foods.length > 0">
@@ -12,9 +12,9 @@
                     <table class="table" id="food-list">
                         <thead>
                             <tr>
-                                <th>{{ $t("foods.columns.name") }}</th>
-                                <th>{{ $t("foods.columns.usageCount") }}</th>
-                                <th>{{ $t("foods.columns.nutrientCount") }}</th>
+                                <th>{{ $t("name") }}</th>
+                                <th>{{ $t("usageCount") }}</th>
+                                <th>{{ $t("nutrientCount") }}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -31,7 +31,7 @@
             </div>
             <div class="row" v-if="foods.length == 0">
                 <div class="col-sm-12">
-                    {{ $t("foods.noFoods") }}
+                    {{ $t("noFoods") }}
                 </div>
             </div>
         </section>
@@ -66,7 +66,7 @@ module.exports = {
                     self.foods.splice(self.foods.findIndex(f => f.id == food.id), 1);
                 },
                 failure: function () {
-                    toaster(this.$t('foods.deleteFailed'));
+                    toaster(this.$t('deleteFailed'));
                 }
             });
         },
@@ -80,7 +80,7 @@ module.exports = {
                 self.$store.commit(constants.LOADING_DONE);
             },
             failure: function () {
-                toaster(this.$t('foods.fetchFailed'));
+                toaster(this.$t('fetchFailed'));
             }
         });
     }

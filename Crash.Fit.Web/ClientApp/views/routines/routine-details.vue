@@ -1,6 +1,6 @@
 ﻿<template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t('routineDetails.title') }}</h1></section>
+        <section class="content-header"><h1>{{ $t('routineDetails') }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-5 col-md-3 col-lg-2">
@@ -12,7 +12,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <h4>{{ $t("routines.workouts") }}</h4>
+                    <h4>{{ $t("workouts") }}</h4>
                 </div>
             </div>
             <div class="row">
@@ -76,7 +76,7 @@
                     </template>
                     <div class="row">
                         <div class="col-sm-12">
-                            <button class="btn" @click="addWorkout">{{ $t("routiens.addWorkout") }}</button>
+                            <button class="btn" @click="addWorkout">{{ $t("addWorkout") }}</button>
                         </div>
                     </div>
                 </div>
@@ -189,7 +189,7 @@ module.exports = {
                     self.$router.replace({ name: 'routines' });
                 },
                 failure: function () {
-                    toaster(self.$t('routineDetails.saveFailed'));
+                    toaster(self.$t('saveFailed'));
                 }
             })
         },
@@ -204,7 +204,7 @@ module.exports = {
                     self.$router.push({ name: 'routines' });
                 },
                 failure: function () {
-                    toaster(self.$t('routineDetails.deleteFailed'));
+                    toaster(self.$t('deleteFailed'));
                 }
             });
         },
@@ -237,7 +237,7 @@ module.exports = {
                     self.$store.commit(constants.LOADING_DONE);
                 },
                 failure: function () {
-                    toaster(self.$t('routineDetails.fetchFailed'));
+                    toaster(self.$t('fetchFailed'));
                 }
             });
 

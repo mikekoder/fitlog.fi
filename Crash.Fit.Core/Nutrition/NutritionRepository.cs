@@ -129,6 +129,7 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN @ids ORDER BY [Index]";
             {
                 sql += " AND Food.UserId IS NULL";
             }
+            sql += " AND Food.Deleted IS NULL";
             sql = @"SELECT Food.*, FoodUsage.UsageCount
 FROM Food 
 LEFT JOIN FoodUsage ON FoodUsage.FoodId=Food.Id AND FoodUsage.UserId=@UserId

@@ -1,16 +1,13 @@
 <template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t('profile.title') }}</h1></section>
+        <section class="content-header"><h1>{{ $t('profile') }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
+                    <!--
                     <ul class="nav nav-tabs">
-                        <li v-bind:class="{ active: tab == 'basic' }"><a @click="tab='basic'">{{ $t('profile.basic') }}</a></li>
-                        <!--
-                        <li v-bind:class="{ active: tab == 'view' }"><a @click="tab='view'">{{ $t('profile.view') }}</a></li>
-                        <li v-bind:class="{ active: tab == 'targets' }"><a @click="tab='targets'">{{ $t('profile.targets') }}</a></li>
-                            -->
-                    </ul>
+                        <li v-bind:class="{ active: tab == 'basic' }"><a @click="tab='basic'">{{ $t('basic') }}</a></li>
+                    </ul>-->
                 </div>
             </div>
             <div class="row"></div>
@@ -68,17 +65,18 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label>{{ $t('profile.rmr') }}</label><br />
+                            <label>{{ $t('rmr') }}</label><br />
                             <span>{{ $t('estimate') }}: {{ rmrEstimate }}</span><br />
                             <input type="number" min="1" class="form-control input-10" v-model="rmr" /> kcal/{{ $t('day') }}
                         </div>
 
                     </div>
                 </div>
+                <!--
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label>{{ $t('profile.pal') }}</label><br />
+                            <label>{{ $t('pal') }}</label><br />
                             <select v-model="pal" class="form-control input-25">
                                 <option v-for="palOption in pals" v-bind:value="palOption">
                                     {{ palOption.name }}
@@ -87,7 +85,7 @@
                         </div>
 
                     </div>
-                </div>
+                </div>-->
             </div>
             <hr />
             <div class="row">

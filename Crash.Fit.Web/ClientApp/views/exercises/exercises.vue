@@ -1,10 +1,10 @@
 <template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("exercises.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("exercises") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="createExercise">{{ $t("exercises.create") }}</button>
+                    <button class="btn btn-primary" @click="createExercise">{{ $t("create") }}</button>
                 </div>
             </div>
             <div class="row" v-if="exercises.length > 0">
@@ -12,8 +12,8 @@
                     <table class="table" id="exercise-list">
                         <thead>
                             <tr>
-                                <th>{{ $t("exercises.columns.name") }}</th>
-                                <th>{{ $t("exercises.columns.sets") }}</th>
+                                <th>{{ $t("name") }}</th>
+                                <th>{{ $t("sets") }}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -32,7 +32,7 @@
             <div class="row" v-if="exercises.length == 0">
                 <div class="col-sm-12">
                     <br />
-                    {{ $t("exercises.noExercises") }}
+                    {{ $t("noExercises") }}
                 </div>
             </div>
         </section>
@@ -66,7 +66,7 @@ module.exports = {
                 success: function () {
                 },
                 failure: function () {
-                    toaster(self.$t('exercises.deleteFailed'));
+                    toaster(self.$t('deleteFailed'));
                 }
             });
         }
@@ -79,7 +79,7 @@ module.exports = {
                 self.$store.commit(constants.LOADING_DONE);
             },
             failure: function () {
-                toaster(self.$t('exercises.fetchFailed'));
+                toaster(self.$t('efetchFailed'));
             }
         });
     }

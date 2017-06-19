@@ -1,10 +1,10 @@
 <template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("nutritionTargets.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("nutritionTargets") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="addNutrientTarget">{{ $t("nutritionTargets.addTarget") }}</button>
+                    <button class="btn btn-primary" @click="addNutrientTarget">{{ $t("addTarget") }}</button>
                 </div>
             </div>
             <div class="row">
@@ -22,7 +22,7 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <th class="freeze">{{ $t("nutritionTargets.onlyDays") }}</th>
+                                        <th class="freeze">{{ $t("onlyDays") }}</th>
                                         <template v-for="target in nutrientTargets">
                                             <td>
                                                 <table class="days">
@@ -60,7 +60,7 @@
                                         <th class="freeze clickable" @click="toggleGroup(group.id)">
                                             <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
                                             <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
-                                            {{ $t('nutrients.groups.'+group.id) }}
+                                            {{ $t(group.id) }}
                                         </th>
                                         <template v-for="target in nutrientTargets">
                                             <td>&nbsp;</td>
@@ -87,7 +87,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <p>
-                        {{ $t('nutritionTargets.info') }}
+                        {{ $t('nutritionTargetsInfo') }}
                     </p>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 <template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("meals.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("meals") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
@@ -17,7 +17,7 @@
                             <li class="clickable"><a @click="showDays(14)">14 {{ $t("days") }}</a></li>
                             <li class="clickable"><a @click="showDays(30)">30 {{ $t("days") }}</a></li>
                             <li role="separator" class="divider"></li>
-                            <li class="custom-date"><span>{{ $t("chooseDateInterval") }}</span></li>
+                            <li class="custom-date"><span>{{ $t("timeInterval") }}</span></li>
                             <li class="custom-date">
                                 <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="start=arguments[0]"></datetime-picker>
                                 <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="end=arguments[0]"></datetime-picker>
@@ -28,11 +28,11 @@
                         
                     <div class="btn-group" role="group" aria-label="...">
                         <template v-for="group in groups">
-                            <button class="btn btn-default" v-bind:class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t('nutrients.groups.'+group.id) }}</button>
+                            <button class="btn btn-default" v-bind:class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t(group.id) }}</button>
                         </template>
                     </div>
                        
-                    <button class="btn btn-primary" @click="createMeal">{{ $t("meals.create") }}</button>
+                    <button class="btn btn-primary" @click="createMeal">{{ $t("create") }}</button>
                     <div class="outer" v-if="days.length > 0">
                         <div class="inner">
                             <table class="table" id="meal-list">
@@ -45,7 +45,7 @@
                                         <th></th>
                                     </tr>
                                     <tr>
-                                        <th class="time freeze">{{ $t("meals.columns.time") }}</th>
+                                        <th class="time freeze">{{ $t("time") }}</th>
                                         <template v-for="col in visibleColumns">
                                             <th class="unit" v-if="!col.hideSummary">{{ unit(col.unit) }}</th>
                                         </template>
@@ -90,11 +90,11 @@
                     </div>
                     <div v-if="days.length == 0">
                         <br />
-                        {{ $t("meals.noMeals") }}
+                        {{ $t("noMeals") }}
                     </div>
                        
                     <div v-for="meal in meals">
-                        <div class="alert alert-info" role="alert" v-if="meal.deleted">Ateria {{ datetime(meal.time) }} poistettu. <button class="btn btn-link" @click="restoreMeal(meal)">Palauta</button></div>
+                        <div class="alert alert-info" role="alert" v-if="meal.deleted">Ateria {{ datetime(meal.time) }} poistettu. <button class="btn btn-link" @click="restoreMeal(meal)">{{ $t("restore") }}</button></div>
                     </div>
                         
                 </div>
@@ -219,10 +219,10 @@ module.exports = {
                 meal,
                 success: function () {
                     var restoreUrl = self.$router.resolve({ name: 'meal-details', params: { id: meal.id, action: constants.RESTORE_ACTION } });
-                    toaster.info(self.$t('meals.deleted') + ' <a href="' + restoreUrl.href + '">' + self.$t('restore') + '</a>');
+                    toaster.info(self.$t('mealDeleted') + ' <a href="' + restoreUrl.href + '">' + self.$t('restore') + '</a>');
                 },
                 failure: function () {
-                    toaster.error(self.$t('meals.deleteFailed'));
+                    toaster.error(self.$t('deleteFailed'));
                 }
             });
         },

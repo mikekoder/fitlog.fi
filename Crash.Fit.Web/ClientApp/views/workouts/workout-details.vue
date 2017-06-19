@@ -1,6 +1,6 @@
 ﻿<template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("workoutDetails.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("workoutDetails") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-5 col-md-3 col-lg-2">
@@ -145,7 +145,7 @@ module.exports = {
                     self.$router.replace({ name: 'workouts' });
                 },
                 failure: function () {
-                    toaster(self.$t('workoutDetails.saveFailed'));
+                    toaster(self.$t('saveFailed'));
                 }
             })
         },
@@ -160,7 +160,7 @@ module.exports = {
                     self.$router.replace({ name: 'workouts' });
                 },
                 failure: function () {
-                    toaster(self.$t('routineDetails.deleteFailed'));
+                    toaster(self.$t('deleteFailed'));
                 }
             });
         },

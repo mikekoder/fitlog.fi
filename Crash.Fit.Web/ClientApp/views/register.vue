@@ -5,35 +5,37 @@
         </div>
         <div class="register-box-body">
                 <div class="form-group has-feedback">
-                    <label>{{ $t("register.email") }}</label> <span class="error">{{ emailError }}</span>
+                    <label>{{ $t("email") }}</label> <span class="error">{{ emailError }}</span>
                     <input type="email" class="form-control" v-model="email" @blur="checkEmail">
                 </div>
                 <div class="form-group has-feedback">
-                    <label>{{ $t("register.password") }}</label> <span class="error">{{ passwordError}}</span>
+                    <label>{{ $t("password") }}</label> <span class="error">{{ passwordError}}</span>
                     <input type="password" class="form-control" v-model="password" @blur="checkPassword">
                 </div>
                 <div class="form-group has-feedback">
-                    <label>{{ $t("register.passwordConfirm") }}</label> <span class="error">{{ password2Error}}</span>
+                    <label>{{ $t("confirmPassword") }}</label> <span class="error">{{ password2Error}}</span>
                     <input type="password" class="form-control" v-model="password2" @blur="checkPassword">
                 </div>
                 <div class="row">
                     <div class="col-xs-8">
-                        {{ $t("register.agree") }} <a href="#">{{ $t("register.terms") }}</a>
+                        <!--
+                        {{ $t("agree") }} <a href="#">{{ $t("terms") }}</a>
+                            -->
                     </div>
                     <div class="col-xs-4">
-                        <button type="submit" class="btn btn-primary btn-block btn-flat" @click="register" :disabled="!isValid">{{ $t("register.create") }}</button>
+                        <button type="submit" class="btn btn-primary btn-block btn-flat" @click="register" :disabled="!isValid">{{ $t("register") }}</button>
                     </div>
                 </div>
             <div class="social-auth-links text-center">
-                <p>- {{ $t("login.or") }} -</p>
+                <p>- {{ $t("or") }} -</p>
                 <a href="#" class="btn btn-block btn-social btn-facebook btn-flat">
-                    <i class="fa fa-facebook"></i> {{ $t("login.useFacebook") }}
+                    <i class="fa fa-facebook"></i> {{ $t("useFacebook") }}
                 </a>
                 <a href="#" class="btn btn-block btn-social btn-google btn-flat">
-                    <i class="fa fa-google-plus"></i> {{ $t("login.useGoogle") }}
+                    <i class="fa fa-google-plus"></i> {{ $t("useGoogle") }}
                 </a>
             </div>
-            <router-link :to="{ name: 'login' }" class="text-center">{{ $t("register.login") }}</router-link>
+            <router-link :to="{ name: 'login' }" class="text-center">{{ $t("login") }}</router-link>
         </div>
         <!-- /.form-box -->
     </div>

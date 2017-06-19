@@ -1,11 +1,11 @@
 <template>
     <div v-if="!loading">
         <div v-if="!create">
-            <section class="content-header"><h1>{{ $t("measurements.title") }}</h1></section>
+            <section class="content-header"><h1>{{ $t("measurements") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn btn-primary" @click="createMeasurements">{{ $t("measurements.create") }}</button>
+                        <button class="btn btn-primary" @click="createMeasurements">{{ $t("create") }}</button>
                     </div>
                 </div>
                 <div class="row" v-if="measures.length > 0">
@@ -13,9 +13,9 @@
                         <table class="table" id="measure-list">
                             <thead>
                                 <tr>
-                                    <th>{{ $t("measurements.columns.measure") }}</th>
-                                    <th>{{ $t("measurements.columns.value") }}</th>
-                                    <th>{{ $t("measurements.columns.time") }}</th>
+                                    <th>{{ $t("measure") }}</th>
+                                    <th>{{ $t("value") }}</th>
+                                    <th>{{ $t("time") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -31,13 +31,13 @@
                 <div class="row" v-if="measures.length == 0">
                     <div class="col-sm-12">
                         <br />
-                        {{ $t("measurements.noMeasurements") }}
+                        {{ $t("noMeasurements") }}
                     </div>
                 </div>
             </section>
         </div>
         <div v-if="create">
-            <section class="content-header"><h1>{{ $t("measurements.title") }}</h1></section>
+            <section class="content-header"><h1>{{ $t("measurements") }}</h1></section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
