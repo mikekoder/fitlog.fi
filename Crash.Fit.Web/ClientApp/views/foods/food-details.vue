@@ -1,6 +1,6 @@
 ﻿<template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("foodDetails.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("foodDetails") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-6 col-md-6 col-lg-4">
@@ -45,7 +45,7 @@
                             </div>
                         </template>
                         <div class="row">
-                            <div class="col-sm-12"><button class="btn" @click="addPortion">{{ $t("foods.addPortion") }}</button></div>
+                            <div class="col-sm-12"><button class="btn" @click="addPortion">{{ $t("add") }}</button></div>
                         </div>
                     </div>
                     <div v-if="tab === 'nutrients'">
@@ -62,7 +62,7 @@
                                     <th class="clickable" colspan="2" @click="toggleGroup(group.id)">
                                         <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
                                         <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
-                                        {{ $t('nutrients.groups.'+group.id) }}
+                                        {{ $t(group.id) }}
                                     </th>
                                 </tr>
                                 <tr v-for="nutrient in nutrientsGrouped[group.id]" v-if="groupOpenStates[group.id]">

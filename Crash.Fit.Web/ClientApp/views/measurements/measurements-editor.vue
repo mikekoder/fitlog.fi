@@ -12,14 +12,14 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
-                    <div class="hidden-xs col-sm-4 col-md-2"><label>{{ $t("measurements.measure") }}</label></div>
+                    <div class="hidden-xs col-sm-4 col-md-2"><label>{{ $t("measure") }}</label></div>
                     <div class="hidden-xs col-xs-4 col-sm-2"><label>{{ $t("value") }}</label></div>
                     <div class="hidden-xs col-xs-4 col-sm-2">&nbsp;</div>
                 </div>
                 <template v-for="(measurement,index) in measurements">
                     <div class="measurement row">
                         <div class="col-sm-4 col-md-2">
-                            <label class="hidden-sm hidden-md hidden-lg">{{ $t("measurements.measure") }}</label>
+                            <label class="hidden-sm hidden-md hidden-lg">{{ $t("measure") }}</label>
                             <span v-if="measurement.id">{{ measurement.name }}</span>
                             <input type="text" class="form-control" v-else v-model="measurement.name" />
                         </div>

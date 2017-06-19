@@ -1,10 +1,10 @@
 <template>
     <div v-if="!loading">     
-        <section class="content-header"><h1>{{ $t('recipes.title') }}</h1></section>
+        <section class="content-header"><h1>{{ $t('recipes') }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="createRecipe">{{ $t('recipes.create') }}</button>
+                    <button class="btn btn-primary" @click="createRecipe">{{ $t('create') }}</button>
                 </div>
             </div>
             <div class="row" v-if="recipes.length > 0">
@@ -12,8 +12,8 @@
                     <table class="table" id="recipe-list">
                         <thead>
                             <tr>
-                                <th>{{ $t('recipes.columns.name') }}</th>
-                                <th>{{ $t('recipes.columns.usageCount') }}</th>
+                                <th>{{ $t('name') }}</th>
+                                <th>{{ $t('usageCount') }}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -29,7 +29,7 @@
             </div>
             <div class="row" v-if="recipes.length == 0">
                 <div class="col-sm-12">
-                    {{ $t('recipes.noRecipes') }}
+                    {{ $t('noRecipes') }}
                 </div>
             </div>
         </section>

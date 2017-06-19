@@ -26,16 +26,16 @@
                             </ul>
                         </li>-->
                         <router-link tag="li" :to="{ name: 'profile'}" v-if="isLoggedIn">
-                            <a><i class="fa fa-user"></i> <span>{{ $t("menu.profile") }}</span></a>
+                            <a><i class="fa fa-user"></i> <span>{{ $t("profile") }}</span></a>
                         </router-link>
                         <li v-if="!isLoggedIn">
-                            <a href="#/luo-tunnus">{{ $t("menu.register") }}</a>
+                            <a href="#/luo-tunnus">{{ $t("register") }}</a>
                         </li>
                         <li v-if="!isLoggedIn">
-                            <a href="#/kirjaudu">{{ $t("menu.login") }}</a>
+                            <a href="#/kirjaudu">{{ $t("login") }}</a>
                         </li>
                         <li v-if="isLoggedIn">
-                            <a @click="logout">{{ $t("menu.logout") }}</a>
+                            <a @click="logout">{{ $t("logout") }}</a>
                         </li>
                     </ul>
                 </div>

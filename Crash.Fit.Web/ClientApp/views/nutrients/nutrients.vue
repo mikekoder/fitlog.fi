@@ -1,6 +1,6 @@
 <template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("nutrients.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("nutrients") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
@@ -10,7 +10,7 @@
                             <tr><th></th><th></th><th></th><th>{{ $t("summary") }}</th><th>{{ $t("details") }}</th></tr>
                         </thead>
                         <tbody v-for="group in groups">
-                            <tr><th></th><th colspan="2">{{ $t('nutrients.groups.'+group.id) }}</th></tr>
+                            <tr><th></th><th colspan="2">{{ $t(group.id) }}</th></tr>
                             <tr v-for="(nutrient, index) in nutrientSettings[group.id]">
                                 <td>
                                     <button class="btn btn-sm" @click="moveNutrientUp(group.id, index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>

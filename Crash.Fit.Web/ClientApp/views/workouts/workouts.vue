@@ -1,6 +1,6 @@
 <template>
     <div v-if="!loading">     
-        <section class="content-header"><h1>{{ $t("workouts.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("workouts") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
@@ -16,7 +16,7 @@
                             <li><a @click="showDays(14)">14{{ $t("days") }}</a></li>
                             <li><a @click="showDays(30)">30{{ $t("days") }}</a></li>
                             <li role="separator" class="divider"></li>
-                            <li class="custom-date"><span>{{ $t("chooseTimeInterval") }}</span></li>
+                            <li class="custom-date"><span>{{ $t("timeInterval") }}</span></li>
                             <li class="custom-date">
                                 <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="start=arguments[0]"></datetime-picker>
                                 <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="end=arguments[0]"></datetime-picker>
@@ -25,18 +25,18 @@
                         </ul>
                     </div>
                     <div class="btn-group" v-if="workoutOptions.length > 0">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ $t("workouts.create") }} <span class="caret"></span></button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ $t("create") }} <span class="caret"></span></button>
                         <ul class="dropdown-menu">
                             <li v-for="workout in workoutOptions">
                                 <a @click="createWorkout(workout.id)">{{ workout.name }}</a>
                             </li>
                             <li role="separator" class="divider"></li>
                             <li>
-                                <a @click="createWorkout(undefined)">{{ $t("workouts.freeWorkout") }}</a>
+                                <a @click="createWorkout(undefined)">{{ $t("freeWorkout") }}</a>
                             </li></ul>
                     </div>
                     <div v-if="workoutOptions.length == 0">
-                        <button @click="createWorkout(undefined)">{{ $t("workouts.create") }}</button>
+                        <button @click="createWorkout(undefined)">{{ $t("create") }}</button>
                     </div>
                     <div class="outer" v-if="workouts.length > 0">
                         <div class="inner">
@@ -65,7 +65,7 @@
                     <div class="row" v-if="workouts.length == 0">
                         <div class="col-sm-12">
                             <br />
-                            {{ $t("workouts.noWorkouts") }}
+                            {{ $t("noWorkouts") }}
                         </div>
                     </div>
                 </div>

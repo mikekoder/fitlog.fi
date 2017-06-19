@@ -1,41 +1,41 @@
 <template>
     <section class="sidebar">
         <ul class="sidebar-menu">
-            <li class="header">{{ $t("menu.nutritionHeader") }}</li>
+            <li class="header">{{ $t("nutrition") }}</li>
             <router-link tag="li" :to="{ name: 'meals'}" v-if="isLoggedIn">
-                <a><i class="fa fa-cutlery"></i> <span>{{ $t("menu.meals") }}</span></a>
+                <a><i class="fa fa-cutlery"></i> <span>{{ $t("meals") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'meal-details', params: { id: constants.NEW_ID } }" exact v-if="!isLoggedIn">
-                <a><i class="fa fa-cutlery"></i> <span>{{ $t("menu.mealCalculator") }}</span></a>
+                <a><i class="fa fa-cutlery"></i> <span>{{ $t("mealCalculator") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'foods'}" v-if="isLoggedIn">
-                <a><i class="fa fa-apple"></i> <span>{{ $t("menu.foods") }}</span></a>
+                <a><i class="fa fa-apple"></i> <span>{{ $t("foods") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'recipes'}" v-if="isLoggedIn">
-                <a><i class="fa fa-book"></i> <span>{{ $t("menu.recipes") }}</span></a>
+                <a><i class="fa fa-book"></i> <span>{{ $t("recipes") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'nutrients'}" v-if="isLoggedIn">
-                <a><i class="fa fa-flask"></i> <span>{{ $t("menu.nutrients") }}</span></a>
+                <a><i class="fa fa-flask"></i> <span>{{ $t("nutrients") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'nutrition-targets'}" v-if="isLoggedIn">
-                <a><i class="fa fa-crosshairs"></i> <span>{{ $t("menu.nutritionTargets") }}</span></a>
+                <a><i class="fa fa-crosshairs"></i> <span>{{ $t("nutritionTargets") }}</span></a>
             </router-link>
-            <li class="header">{{ $t("menu.trainingHeader") }}</li>
+            <li class="header">{{ $t("training") }}</li>
             <router-link tag="li" :to="{ name: 'workouts'}" v-if="isLoggedIn">
-                <a><i class="fa fa-trophy"></i> <span>{{ $t("menu.workouts") }}</span></a>
+                <a><i class="fa fa-trophy"></i> <span>{{ $t("workouts") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'exercises'}" v-if="isLoggedIn">
-                <a><i class="fa fa-universal-access"></i> <span>{{ $t("menu.exercises") }}</span></a>
+                <a><i class="fa fa-universal-access"></i> <span>{{ $t("exercises") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'routines'}" v-if="isLoggedIn">
-                <a><i class="fa fa-calendar"></i> <span>{{ $t("menu.routines") }}</span></a>
+                <a><i class="fa fa-calendar"></i> <span>{{ $t("routines") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'rep-calculator'}">
-                <a><i class="fa fa-calculator"></i> <span>{{ $t("menu.repCalculator") }}</span></a>
+                <a><i class="fa fa-calculator"></i> <span>{{ $t("repCalculator") }}</span></a>
             </router-link>
-            <li class="header" v-if="isLoggedIn">{{ $t("menu.measurementsHeader") }}</li>
+            <li class="header" v-if="isLoggedIn">{{ $t("measurements") }}</li>
             <router-link tag="li" :to="{ name: 'measurements'}" v-if="isLoggedIn">
-                <a><i class="fa fa-balance-scale"></i> <span>{{ $t("menu.measurements") }}</span></a>
+                <a><i class="fa fa-balance-scale"></i> <span>{{ $t("measurements") }}</span></a>
             </router-link>
             <!--
             <li class="treeview">

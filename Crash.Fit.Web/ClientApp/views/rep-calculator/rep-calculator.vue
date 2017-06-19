@@ -2,14 +2,14 @@
     <div v-if="!loading">
         <div>
             <section class="content-header">
-                <h1>{{ $t("repCalculator.title") }}</h1>
+                <h1>{{ $t("repCalculator") }}</h1>
             </section>
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
                         <input type="number" min="1" step="1" v-model="reps" v-bind:placeholder="$t('reps')" /> x
                         <input type="number" min="0" step="2.5" v-model="weights" v-bind:placeholder="$t('weights')" />
-                        <button class="btn btn-primary" @click="calculate">{{ $t('repCalculator.calculate') }}</button>
+                        <button class="btn btn-primary" @click="calculate">{{ $t('calculate') }}</button>
                     </div>
                 </div>
                 <div class="row">
@@ -46,7 +46,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        * K&auml;ytetyt kaavat wikipediasta <a href="https://en.wikipedia.org/wiki/One-repetition_maximum">"One-repetition maximum"</a>
+                        {{ $t('repCalculatorInfo') }} <a href="https://en.wikipedia.org/wiki/One-repetition_maximum">"One-repetition maximum"</a>
                     </div>
                 </div>
             </section>

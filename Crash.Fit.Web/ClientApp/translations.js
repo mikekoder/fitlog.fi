@@ -1,193 +1,135 @@
 ﻿const fi = {
-
+    active: 'Aktiivinen',
+    activate: 'Aktivoi',
     add: 'Lisää',
+    addTarget: 'Lisää tavoite',
+    agree: 'Suostun',
     all: 'Kaikki',
     amount: 'Määrä',
     average: 'Keskiarvo',
+    calculate: 'Laske',
     cancel: 'Peruuta',
+    cancelCopy: 'Peruuta kopiointi',
+    CARBOCMP: 'Hiilihydraatit',
     chooseDateInterval: 'Valitse aikaväli',
+    confirmCopy: 'Vahvista kopiointi',
+    confirmPassword: 'Vahvista salasana',
+    cookedWeight: 'Valmispaino',
     copy: 'Kopioi',
+    create: 'Lisää',
+    createExercise: 'Lisää liike',
+    createFood: 'Lisää ruoka-aine',
+    createMeal: 'Lisää ateria',
     createNew: 'Luo uusi',
+    createRecipe: 'Lisää resepti',
     currentMonth: 'Kuluva kuukausi',
     currentWeek: 'Kuluva viikko',
     day: 'vrk',
     days: 'pv',
     'default': 'Oletus',
     'delete': 'Poista',
+    deleteFailed: 'Poistaminen epäonnistui',
     details: 'Yksityiskohdat',
     dob: 'Syntymäaika',
+    email: 'Sähköposti',
+    energyDistribution: 'Energiajakauma',
     estimate: 'Arvio',
+    exerciseDay: 'Treeni',
+    exerciseDayShort: 'T',
+    exerciseDetails: 'Liikkeen tiedot',
+    exercises: 'Liikkeet',
+    FAT: ' Rasvat',
+    fetchFailed: 'Haku epäonnistui',
     food: 'Ruoka-aine',
+    foodDetails: 'Ruoka-aineen tiedot',
     foods: 'Ruoka-aineet',
+    freeWorkout: 'Vapaa treeni',
+    friday: 'Perjantai',
+    fridayShort: 'P',
     gender: 'Sukupuoli',
     height: 'Pituus',
     hide: 'Piilota',
-    name: 'Nimi',
-    nutrients: 'Ravintoaineet',
-    OK: 'OK',
-    portion: 'Annos',
-    portions: 'Annokset',
-    reps: 'Toistot',
-    save: 'Tallenna',
-    show: 'Näytä',
-    summary: 'Yhteenveto',
-    time: 'Aika',
-    today: 'Tänään',
-    value: 'Arvo',
-    visibility: 'Näkyvyys',
-    weight: 'Paino',
-    weights: 'Painot',
-    
+    login: 'Kirjaudu',
+    logout: 'Kirjaudu ulos',
+    MACROCMP: 'Makrot',
+    mealCalculator: 'Aterialaskuri',
+    mealDeleted: 'Ateria poistettu',
+    mealDetails: 'Aterian tiedot',
+    meals: 'Ateriat',
+    measure: 'Mitta',
+    measurements: 'Mitat',
+    MINERAL: 'Mineraalit',
     monday: 'Maanantai',
     mondayShort: 'M',
-    tuesday: 'Tiistai',
-    tuesdayShort: 'T',
-    wednesday: 'Keskiviikko',
-    wednesdayShort: 'K',
-    thursday: 'Torstai',
-    thursdayShort: 'T',
-    friday: 'Perjantai',
-    fridayShort: 'P',
-    saturday: 'Lauantai',
-    saturdayShort: 'L',
-    sunday: 'Sunnuntai',
-    sundayShort: 'S',
-    exerciseDay: 'Treeni',
-    exerciseDayShort: 'T',
+    muscleGroups: 'Lihasryhmät',
+    name: 'Nimi',
+    noExercises: 'Ei liikkeitä',
+    noFoods: 'Ei ruoka-aineita',
+    noMeals: 'Ei aterioita',
+    noMeasurements: 'Ei mittoja',
+    noRecipes: 'Ei reseptejä',
+    noRoutines: 'Ei ohjelmia',
+    noWorkouts: 'Ei treenejä',
+    nutrientCount: 'Ravintoarvoja',
+    nutrients: 'Ravintoaineet',
+    nutrition: 'Ravinto',
+    nutritionTargets: 'Tavoitteet',
+    nutritionTargetsInfo: '',
+    OK: 'OK',
+    onlyDays: 'Vain päivinä',
+    or: 'Tai',
+    pal: 'Aktiivisuuskerroin',
+    password: 'Salasana',
+    portion: 'Annos',
+    portions: 'Annokset',
+    profile: 'Profiili',
+    rawWeight: 'Raakapaino',
+    recipe: 'Resepti',
+    recipeDetails: 'Reseptin tiedot',
+    recipes: 'Reseptit',
+    register: 'Rekisteröidy',
+    repCalculator: 'Sarjapainolaskuri',
+    repCalculatorInfo: '* Käytetyt kaavat wikipediasta',
+    reps: 'Toistot',
     restDay: 'Lepo',
     restDayShort: 'L',
-
-    menu: {
-        login: 'Kirjaudu',
-        register: 'Rekisteröidy',
-        profile: 'Profiili',
-        logout: 'Kirjaudu ulos',
-
-        nutritionHeader: 'Ravinto',
-        meals: 'Ateriat',
-        foods: 'Ruoka-aineet',
-        recipes: 'Reseptit',
-        nutrients: 'Ravintoaineet',
-        nutritionTargets: 'Tavoitteet',
-
-        trainingHeader: 'Treenaus',
-        workouts: 'Treenit',
-        exercises: 'Liikkeet',
-        routines: 'Ohjelmat',
-        repCalculator: 'Sarjapainolaskuri',
-
-        measurementsHeader: 'Mitat',
-        measurements: 'Mitat',
-
-        mealCalculator: 'Aterialaskuri'
-    },
-
-    profile: {
-        title: 'Profiili',
-        rmr: 'Lepoaineenvaihdunta',
-        pal:'Aktiivisuuskerroin'
-    },
-
-   
-
-    
-
-    meals: {
-        title: 'Ateriat',
-        create: 'Lisää ateria',
-        noMeals: 'Ei aterioita',
-        columns: {
-            time: 'Aika',
-            energyDistribution: 'Energiajakauma'
-        },
-        tabs: {
-            foods: 'Ruoka-aineet',
-            nutrients: 'Ravintoaineet'
-        },
-        mealDetails: 'Aterian tiedot'
-    },
-
-    foods: {
-        title: 'Ruoka-aineet',
-        create: 'Lisää ruoka-aine',
-        noFoods: 'Ei ruoka-aineita',
-        columns: {
-            name: 'Nimi',
-            usageCount: 'Käyttökertoja',
-            nutrientCount: 'Ravintoarvoja'
-        },
-        tabs: {
-            nutrients: 'Ravintoarvot',
-            portions: 'Annokset'
-        },
-        foodDetails: 'Ruoka-aineet tiedot'
-    },
-    recipes: {
-        title: 'Reseptit',
-        create: 'Lisää resepti',
-        noRecipes: 'Ei reseptejä',
-        columns: {
-            name: 'Nimi',
-            usageCount: 'Käyttökertoja'
-        },
-        recipeDetails: 'Reseption tiedot',
-        rawWeight: 'Raakapaino',
-        cookedWeight: 'Valmispaino',
-        weightChange: 'Valmistushävikki/-lisä'
-    },
-    nutrients: {
-        title: 'Ravintoaineet',
-        groups: {
-            MACROCMP: 'Makrot',
-            VITAM: 'Vitamiinit',
-            MINERAL: 'Mineraalit',
-            CARBOCMP: 'Hiilihydraatit',
-            FAT:' Rasvat'
-        },
-        columns: {
-            visibility: 'Näkyvyys',
-            summary: 'Yhteenveto',
-            details: 'Yksityiskohdat'
-        },
-        options: {
-            'default': 'Oletus',
-            show: 'Näytä',
-            hide: 'Piilota'
-        }
-    },
-    nutritionTargets:{
-        title: 'Tavoitteet',
-        addTarget: 'Lisää tavoite',
-        onlyDays: 'Vain päivinä'
-    },
-
-    workouts: {
-        title: 'Treenit'
-    },
-    exercises: {
-        title: 'Liikkeet',
-        create: 'Lisää liike',
-        noExercises: 'Ei liikkeitä',
-        columns: {
-            name: 'Nimi',
-            sets: 'Sarjoja'
-        }
-    },
-    routines: {
-        title: 'Ohjelmat',
-        noRoutines: 'Ei ohjelmia'
-    },
-    repCalculator: {
-        title: 'Sarjapainolaskuri',
-        calculate: 'Laske'
-    },
-
-    measurements: {
-        title: 'Mitat',
-        create: 'Lisää',
-        noMeasurements: 'Ei mittoja',
-        measure: 'Mitta'
-    }
+    restore: 'Palauta',
+    rmr: 'Lepoaineenvaihdunta',
+    routineDetails: 'Ohjelman tiedot',
+    routines: 'Ohjelmat',
+    saturday: 'Lauantai',
+    saturdayShort: 'L',
+    save: 'Tallenna',
+    saveFailed: 'Tallennus epäonnistui',
+    sets: 'Sarjoja',
+    show: 'Näytä',
+    summary: 'Yhteenveto',
+    sunday: 'Sunnuntai',
+    sundayShort: 'S',
+    targets: 'Tavoitteet',
+    terms: 'ehtoihin',
+    thursday: 'Torstai',
+    thursdayShort: 'T',
+    time: 'Aika',
+    timeInterval: 'Aikaväli',
+    today: 'Tänään',
+    training: 'Treenaus',
+    tuesday: 'Tiistai',
+    tuesdayShort: 'T',
+    usageCount: 'Käyttökertoja',
+    useFacebook: 'Käytä Facebook-tunnuksia',
+    useGoogle: 'Käytä Google-tunnuksia',
+    username: 'Käyttäjätunnus',
+    value: 'Arvo',
+    visibility: 'Näkyvyys',
+    VITAM: 'Vitamiinit',
+    wednesday: 'Keskiviikko',
+    wednesdayShort: 'K',
+    weight: 'Paino',
+    weightChange: 'Valmistushävikki/-lisä',
+    weights: 'Painot',
+    workoutDetails: 'Treenin tiedot',
+    workouts: 'Treenit'
 }
 
 module.exports = {

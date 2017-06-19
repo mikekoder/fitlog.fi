@@ -1,6 +1,6 @@
 ﻿<template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("mealsDetails.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("mealDetails") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-5 col-md-3 col-lg-2">
@@ -14,12 +14,12 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="nav nav-tabs">
-                        <li class="clickable" v-bind:class="{ active: !showNutrients }"><a @click="toggleNutrients(false)">{{ $t("meals.tabs.foods") }}</a></li>
-                        <li class="clickable" v-bind:class="{ active: showNutrients }"><a @click="toggleNutrients(true)">{{ $t("meals.tabs.nutrients") }}</a></li>
+                        <li class="clickable" v-bind:class="{ active: !showNutrients }"><a @click="toggleNutrients(false)">{{ $t("foods") }}</a></li>
+                        <li class="clickable" v-bind:class="{ active: showNutrients }"><a @click="toggleNutrients(true)">{{ $t("nutrients") }}</a></li>
                     </ul>
                     <div v-if="!showNutrients">
                         <div class="row hidden-xs">
-                            <div class="col-sm-4"><label>{{ $t("food") }} <router-link :to="{ name: 'foods', params: { id: 'uusi' } }" target="_blank" v-if="!copyMode">{{ $t("createNew") }}</router-link></label></div>
+                            <div class="col-sm-4"><label>{{ $t("food") }} <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode">{{ $t("createNew") }}</router-link></label></div>
                             <div class="col-sm-2"><label>{{ $t("amount") }}</label></div>
                             <div class="col-sm-3 col-lg-2"><label>{{ $t("portion") }}</label></div>
                             <div class="col-sm-1"><label>{{ $t("weight") }} (g)</label></div>
@@ -28,7 +28,7 @@
                         <template v-for="(row,index) in rows">
                             <div class="meal-row row">
                                 <div class="food col-sm-4">
-                                    <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'foods', params: { id: 'uusi' } }" target="_blank" v-if="!copyMode">{{ $t("createNew") }}/router-link></label>
+                                    <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode">{{ $t("createNew") }}/router-link></label>
                                     <div v-if="copyMode">
                                         <input type="checkbox" v-model="row.copy" />
                                         <span>{{ row.food ? row.food.name : '' }}</span>
@@ -88,7 +88,7 @@
                                     <th colspan="2" class="clickable" @click="toggleGroup(group.id)">
                                         <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
                                         <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
-                                        {{ $t('nutrients.groups.'+group.id) }}
+                                        {{ $t(group.id) }}
                                     </th>
                                 </tr>
                                 <tr v-for="nutrient in allNutrients[group.id]" v-if="groupOpenStates[group.id]">
@@ -107,8 +107,8 @@
                     <button class="btn btn-primary" v-if="!copyMode" @click="save">{{ $t("save") }}</button>
                     <button class="btn" v-if="!copyMode" @click="cancel">{{ $t("cancel") }}</button>
                     <button class="btn" v-if="id && !copyMode" @click="startCopy">{{ $t("copy") }}</button>
-                    <button class="btn btn-primary" v-if="copyMode" @click="confirmCopy">{{ $t("copyConfirm") }}</button>
-                    <button class="btn" v-if="copyMode" @click="cancelCopy">{{ $t("copyCancel") }}</button>
+                    <button class="btn btn-primary" v-if="copyMode" @click="confirmCopy">{{ $t("confirmCopy") }}</button>
+                    <button class="btn" v-if="copyMode" @click="cancelCopy">{{ $t("cancelCopy") }}</button>
                     <button class="btn btn-danger" v-if="id && !copyMode" @click="deleteMeal">{{ $t("delete") }}</button>
                 </div>
             </div>
@@ -117,7 +117,7 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
+    var constants = require('../../store/constants');
     var api = require('../../api');
     var formatters = require('../../formatters');
     var utils = require('../../utils');
@@ -138,6 +138,9 @@ module.exports = {
     computed: {
         loading: function () {
             return this.$store.state.loading;
+        },
+        constants: function () {
+            return constants;
         },
         groups: function(){
             return this.$store.state.nutrition.nutrientGroups;
@@ -234,11 +237,11 @@ module.exports = {
             this.copyMode = true;
             this.copyAllRows = true;
         },
-        confirmCopy: function (){
-            var meal = {
-                rows: this.rows.filter(r => r.copy).map(r => { return { foodId: r.food ? r.food.id : undefined, quantity: utils.parseFloat(r.quantity), portionId: r.portion ? r.portion.id : undefined } })
-            };
-            this.copyCallback(meal);
+        confirmCopy: function () {
+            this.id = undefined;
+            this.time = utils.previousHalfHour();
+            this.rows = this.rows.filter(r => r.copy);
+            this.copyMode = false;
         },
         cancelCopy: function () {
             this.copyMode = false;

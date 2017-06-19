@@ -1,10 +1,10 @@
 <template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("routines.title") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("routines") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="createRoutine">{{ $t("routines.create") }}</button>
+                    <button class="btn btn-primary" @click="createRoutine">{{ $t("create") }}</button>
                 </div>
             </div>
             <div class="row" v-if="routines.length > 0">
@@ -21,8 +21,8 @@
                             <tr class="routine" v-for="routine in routines">
                                 <td><router-link :to="{ name: 'routine-details', params: { id: routine.id } }">{{ routine.name }}</router-link></td>
                                 <td>
-                                    <span v-if="routine.active">{{ $t("routines.active") }}</span>
-                                    <button class="btn btn-primary" v-if="!routine.active">{{ $t("routines.activate") }}</button>
+                                    <span v-if="routine.active">{{ $t("active") }}</span>
+                                    <button class="btn btn-primary" v-if="!routine.active">{{ $t("activate") }}</button>
                                 </td>
                                 <td><button class="btn btn-danger btn-xs" @click="deleteRoutine(routine)">{{ $t("delete") }}</button></td>
                             </tr>
@@ -33,7 +33,7 @@
             <div class="row" v-if="routines.length == 0">
                 <div class="col-sm-12">
                     <br />
-                    {{ $t("routines.noRoutines") }}
+                    {{ $t("noRoutines") }}
                 </div>
             </div>
         </section>
