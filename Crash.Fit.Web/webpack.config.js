@@ -26,7 +26,7 @@ module.exports = (env) => {
         },
         module: {
             rules: [
-                { test: /\.ts$/, include: /ClientApp/, use: 'awesome-typescript-loader?silent=true' },
+                //{ test: /\.ts$/, include: /ClientApp/, use: 'awesome-typescript-loader?silent=true' },
                 { test: /\.html$/, use: 'raw-loader' },
                 { test: /\.css$/, use:  ['style-loader', 'css-loader'] },
                 { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' },
