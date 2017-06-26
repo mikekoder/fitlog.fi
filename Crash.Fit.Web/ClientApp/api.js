@@ -1,4 +1,4 @@
-﻿let $ = require('jquery')
+﻿var $ = require('jquery')
 $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="X-CSRF-TOKEN"]').attr('content') } });
 const baseUrl = '/api/'
 
@@ -6,7 +6,7 @@ const api = {
     baseUrl: baseUrl,
 
     // Users
-    register(registration) {
+    register: function(registration) {
         return $.ajax({
             url: baseUrl + 'users/register',
             type: 'POST',
@@ -14,7 +14,7 @@ const api = {
             data: JSON.stringify(registration)
         });
     },
-    login(login) {
+    login: function(login) {
         return $.ajax({
             url: baseUrl + 'users/login',
             type: 'POST',
@@ -22,15 +22,15 @@ const api = {
             data: JSON.stringify(login)
         });
     },
-    getProfile(){
+    getProfile: function(){
         return $.get(baseUrl + 'users/me/');
     },
-    logout(){
+    logout: function(){
         return $.post(baseUrl+'users/logout');
     },
 
     // Meals
-    listMeals(start, end) {
+    listMeals: function(start, end) {
         var query = {};
         if (start) {
             query.start = start.toISOString();
@@ -103,7 +103,7 @@ const api = {
     },
 
     // Recipes
-    listRecipes(s) {
+    listRecipes: function(s) {
         return $.get(baseUrl + 'recipes');
     },
     getRecipe: function (id) {
