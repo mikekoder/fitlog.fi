@@ -1,8 +1,1 @@
-{
-  "projects": [ "Crash.Fit.Core", "Crash.Fit.Web" ],
-  "sdk": {
-    "version": "1.0.0-preview2-003133",
-    "architecture": "x64",
-    "runtime": "clr"
-  }
-}
+{"projects":["Crash.Fit.Core","Crash.Fit.Web"]}
