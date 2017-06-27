@@ -28,7 +28,7 @@
                         <template v-for="(row,index) in rows">
                             <div class="meal-row row">
                                 <div class="food col-sm-4">
-                                    <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode">{{ $t("createNew") }}/router-link></label>
+                                    <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode">{{ $t("createNew") }}</router-link></label>
                                     <div v-if="copyMode">
                                         <input type="checkbox" v-model="row.copy" />
                                         <span>{{ row.food ? row.food.name : '' }}</span>
