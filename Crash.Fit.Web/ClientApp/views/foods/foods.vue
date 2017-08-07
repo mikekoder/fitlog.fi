@@ -31,6 +31,7 @@
             </div>
             <div class="row" v-if="foods.length == 0">
                 <div class="col-sm-12">
+                  <br />
                     {{ $t("noFoods") }}
                 </div>
             </div>
