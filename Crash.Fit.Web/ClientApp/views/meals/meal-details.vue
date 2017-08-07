@@ -19,7 +19,12 @@
                     </ul>
                     <div v-if="!showNutrients">
                         <div class="row hidden-xs">
-                            <div class="col-sm-4"><label>{{ $t("food") }} <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode">{{ $t("createNew") }}</router-link></label></div>
+                            <div class="col-sm-4">
+                              <label>{{ $t("food") }}</label>
+                              <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createFood") }}</router-link>
+                              <span>|</span>
+                              <router-link :to="{ name: 'recipe-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createRecipe") }}</router-link>
+                            </div>
                             <div class="col-sm-2"><label>{{ $t("amount") }}</label></div>
                             <div class="col-sm-3 col-lg-2"><label>{{ $t("portion") }}</label></div>
                             <div class="col-sm-1"><label>{{ $t("weight") }} (g)</label></div>
@@ -28,7 +33,10 @@
                         <template v-for="(row,index) in rows">
                             <div class="meal-row row">
                                 <div class="food col-sm-4">
-                                    <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode">{{ $t("createNew") }}</router-link></label>
+                                    <label class="hidden-sm hidden-md hidden-lg">Ruoka</label>
+                                  <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createFood") }}</router-link>
+                                  <span class="hidden-sm hidden-md hidden-lg">|</span>
+                                  <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'recipe-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createRecipe") }}</router-link>
                                     <div v-if="copyMode">
                                         <input type="checkbox" v-model="row.copy" />
                                         <span>{{ row.food ? row.food.name : '' }}</span>
@@ -102,7 +110,7 @@
                 </div>
             </div>
             <hr />
-            <div class="row main-actions">
+            <div class="row main-actions" v-if="isLoggedIn">
                 <div class="col-sm-12">
                     <button class="btn btn-primary" v-if="!copyMode" @click="save">{{ $t("save") }}</button>
                     <button class="btn" v-if="!copyMode" @click="cancel">{{ $t("cancel") }}</button>

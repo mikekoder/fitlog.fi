@@ -21,7 +21,10 @@
                     </ul>
                     <div v-if="tab === 'ingredients'">
                         <div class="row hidden-xs">
-                            <div class="col-sm-4"><label>{{ $t("food") }} <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank">{{ $t("createNew") }}</router-link></label></div>
+                            <div class="col-sm-4">
+                              <label>{{ $t("food") }}</label>
+                              <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank">{{ $t("createFood") }}</router-link>
+                            </div>
                             <div class="col-sm-2"><label>{{ $t("amount") }}</label></div>
                             <div class="col-sm-3 col-lg-2"><label>{{ $t("portion") }}</label></div>
                             <div class="col-sm-1"><label>{{ $t("weight") }} (g)</label></div>
@@ -30,7 +33,8 @@
                         <template v-for="(row,index) in ingredients">
                             <div class="recipe-row row">
                                 <div class="food col-sm-4">
-                                    <label class="hidden-sm hidden-md hidden-lg">Ruoka <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank">{{ $t("newFood") }}</router-link></label>
+                                    <label class="hidden-sm hidden-md hidden-lg">Ruoka</label>
+                                    <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank">{{ $t("createFood") }}</router-link>
                                     <food-picker v-bind:value="row.food" v-on:change="row.food=arguments[0]" />
                                 </div>
                                 <div class="quantity col-sm-2 col-xs-3">
