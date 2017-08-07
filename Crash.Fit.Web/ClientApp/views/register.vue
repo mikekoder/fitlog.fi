@@ -28,11 +28,11 @@
                 </div>
             <div class="social-auth-links text-center">
                 <p>- {{ $t("or") }} -</p>
-                <a href="#" class="btn btn-block btn-social btn-facebook btn-flat">
-                    <i class="fa fa-facebook"></i> {{ $t("useFacebook") }}
+                <a class="btn btn-block btn-social btn-facebook btn-flat" @click="loginFacebook">
+                  <i class="fa fa-facebook"></i> {{ $t("useFacebook") }}
                 </a>
-                <a href="#" class="btn btn-block btn-social btn-google btn-flat">
-                    <i class="fa fa-google-plus"></i> {{ $t("useGoogle") }}
+                <a class="btn btn-block btn-social btn-google btn-flat" @click="loginGoogle">
+                  <i class="fa fa-google-plus"></i> {{ $t("useGoogle") }}
                 </a>
             </div>
             <router-link :to="{ name: 'login' }" class="text-center">{{ $t("login") }}</router-link>
@@ -109,6 +109,14 @@ module.exports = {
                 }
             });
             
+        },
+        loginGoogle() {
+            //dialog = window.open(api.baseUrl+'users/external-login/?provider=Google','_blank','width=400,height=600');
+            window.location = api.baseUrl + 'users/external-login/?provider=Google';
+        },
+        loginFacebook() {
+            //this.dialog = window.open(api.baseUrl + 'users/external-login/?provider=Facebook', '_blank', 'width=400,height=600');
+            window.location = api.baseUrl + 'users/external-login/?provider=Facebook';
         }
     },
     created: function () {
