@@ -30,6 +30,22 @@ const actions = {
             }
         });
     },
+    [constants.SAVE_PROFILE]({commit, state}, {profile, success, failure}) {
+        api.saveProfile(profile).then(function (savedProfile) {
+            if (savedProfile.doB) {
+                savedProfile.doB = new Date(savedProfile.doB);
+            }
+            commit(constants.SAVE_PROFILE_SUCCESS, { profile: savedProfile })
+            if (success) {
+                success(savedProfile);
+            }
+        }).fail(function () {
+            commit(constants.FETCH_PROFILE_FAILURE)
+            if (failure) {
+                failure();
+            }
+        });
+    },
     [constants.LOGOUT] ({commit, state},{success, failure}) {
         api.logout().then(function(){
             commit(constants.LOGOUT_SUCCESS)
@@ -49,7 +65,11 @@ const mutations = {
     [constants.FETCH_PROFILE_STARTED] (state) {
         state.loading = true;
     },
-    [constants.FETCH_PROFILE_SUCCESS] (state, {profile}) {
+    [constants.FETCH_PROFILE_SUCCESS] (state, { profile }) {
+        state.loading = false;
+        state.profile = profile;
+    },
+    [constants.SAVE_PROFILE_SUCCESS](state, { profile }) {
         state.loading = false;
         state.profile = profile;
     },

@@ -100,6 +100,7 @@
     saturday: 'Lauantai',
     saturdayShort: 'L',
     save: 'Tallenna',
+    savedProfile: 'Profiili tallennettu',
     saveFailed: 'Tallennus epäonnistui',
     sets: 'Sarjoja',
     show: 'Näytä',
