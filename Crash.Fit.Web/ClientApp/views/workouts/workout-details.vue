@@ -145,7 +145,7 @@ module.exports = {
                     self.$router.replace({ name: 'workouts' });
                 },
                 failure: function () {
-                    toaster(self.$t('saveFailed'));
+                    toaster.error(self.$t('saveFailed'));
                 }
             })
         },
@@ -160,7 +160,7 @@ module.exports = {
                     self.$router.replace({ name: 'workouts' });
                 },
                 failure: function () {
-                    toaster(self.$t('deleteFailed'));
+                    toaster.error(self.$t('deleteFailed'));
                 }
             });
         },
@@ -187,7 +187,7 @@ module.exports = {
                     self.$store.commit(constants.LOADING_DONE);
                 },
                 failure: function () {
-                    toaster(self.$t('routineDetails.fetchFailed'));
+                    toaster.error(self.$t('routineDetails.fetchFailed'));
                 }
             });
         }
@@ -207,7 +207,7 @@ module.exports = {
                     self.populate(workout);
                 },
                 failure: function () {
-                    toaster(self.$t('workoutDetails.fetchFailed'));
+                    toaster.error(self.$t('workoutDetails.fetchFailed'));
                 }
             });
         }
