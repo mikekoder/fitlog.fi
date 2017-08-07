@@ -73,7 +73,7 @@ module.exports = {
                 routine,
                 success: function () { },
                 failure: function () {
-                    toaster(this.$t('routines.deleteFailed'));
+                    toaster(this.$t('deleteFailed'));
                 }
             });
         }

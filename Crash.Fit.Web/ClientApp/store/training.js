@@ -160,17 +160,16 @@ const actions = {
              return;
          }
          api.listRoutines().then(function(routines){
-             commit(constants.FETCH_ROUTINES_SUCCESS,{routines})
-
-             var active = routines.find(r => r.active);
-             if(active){
-                 api.getRoutine(active.id).then(function(routine){
-                     commit(constants.FETCH_ACTIVE_ROUTINE_SUCCESS,{routine});
-                     if(success){
-                         success(routines);
-                     }
-                 });
-             }
+            commit(constants.FETCH_ROUTINES_SUCCESS,{routines})
+            if (success) {
+                success(routines);
+            }
+            var active = routines.find(r => r.active);
+            if(active){
+                api.getRoutine(active.id).then(function(routine){
+                    commit(constants.FETCH_ACTIVE_ROUTINE_SUCCESS,{routine});
+                });
+            }
          }).fail(function(){
              if(failure){
                  failure();
@@ -190,7 +189,7 @@ const actions = {
      },
     [constants.SAVE_ROUTINE] ({commit, state},{routine, success, failure}){
         api.saveRoutine(routine).then(function(savedRoutine){
-            commit(constants.SAVE_ROUTINE_SUCCESS,{id: routine.id, routinee: savedRoutine})
+            commit(constants.SAVE_ROUTINE_SUCCESS,{id: routine.id, routine: savedRoutine})
             if(success){
                 success(savedRoutine);
             }
@@ -293,7 +292,7 @@ function removeExercise(exercise, state){
     state.exercises.splice(state.exercises.findIndex(x => x.id == exercise.id), 1);
 }
 function removeRoutine(routine, state){
-    state.routines.splice(state.routines.findIndex(x => x.id == workout.id), 1);
+    state.routines.splice(state.routines.findIndex(x => x.id == routine.id), 1);
 }
 function removeWorkout(workout, state){
     state.workouts.splice(state.workouts.findIndex(x => x.id == workout.id), 1);

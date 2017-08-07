@@ -181,7 +181,7 @@ module.exports = {
             var routine = {
                 id: self.id,
                 name: self.name,
-                workouts: self.workouts.map(w => { return { id: w.id, name: w.name, exercises: w.exercises.map(e => { return { exerciseId: e.exercise.id, exerciseName: e.exercise.name, sets: utils.parseFloat(e.sets), reps: utils.parseFloat(e.reps) } }) } })
+                workouts: self.workouts.map(w => { return { id: w.id, name: w.name, exercises: w.exercises.filter(e => e.exercise).map(e => { return { exerciseId: e.exercise.id, exerciseName: e.exercise.name, sets: utils.parseFloat(e.sets), reps: utils.parseFloat(e.reps) } }) } })
             };
             self.$store.dispatch(constants.SAVE_ROUTINE, {
                 routine,
@@ -189,7 +189,7 @@ module.exports = {
                     self.$router.replace({ name: 'routines' });
                 },
                 failure: function () {
-                    toaster(self.$t('saveFailed'));
+                    toaster.error(self.$t('saveFailed'));
                 }
             })
         },
@@ -204,7 +204,7 @@ module.exports = {
                     self.$router.push({ name: 'routines' });
                 },
                 failure: function () {
-                    toaster(self.$t('deleteFailed'));
+                    toaster.error(self.$t('deleteFailed'));
                 }
             });
         },
@@ -237,7 +237,7 @@ module.exports = {
                     self.$store.commit(constants.LOADING_DONE);
                 },
                 failure: function () {
-                    toaster(self.$t('fetchFailed'));
+                    toaster.error(self.$t('fetchFailed'));
                 }
             });
 
@@ -256,7 +256,7 @@ module.exports = {
                     self.populate(routine);
                 },
                 failure: function () {
-                    toaster(self.$t('routineDetails.fetchFailed'));
+                    toaster.error(self.$t('routineDetails.fetchFailed'));
                 }
             });
         }
