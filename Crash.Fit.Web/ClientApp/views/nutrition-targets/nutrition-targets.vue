@@ -78,12 +78,19 @@
                     </div>
                 </div>
             </div>
+            <div class="row" v-if="nutrientTargets.length == 0">
+              <div class="col-sm-12">
+                <br />
+                {{ $t("noNutrientTargets") }}
+              </div>
+            </div>
             <hr />
             <div class="row" v-if="nutrientTargets.length > 0">
                 <div class="col-sm-12">
                     <button class="btn btn-primary" @click="save">{{ $t('save') }}</button>
                 </div>
             </div>
+          
             <div class="row">
                 <div class="col-sm-12">
                     <p>
