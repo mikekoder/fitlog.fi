@@ -1,6 +1,7 @@
 var Vue = require('vue')
 import VueRouter from 'vue-router'
 import VueI18n from 'vue-i18n'
+import VueAnalytics from 'vue-analytics'
 import store from './store/store'
 import routes from './routes'
 import 'jquery'
@@ -52,7 +53,10 @@ router.afterEach((to, from) => {
         $('body').addClass('sidebar-collapse').removeClass('sidebar-open');
     }
 })
-
+Vue.use(VueAnalytics, {
+    id: 'UA-10474486-3',
+    router
+})
 
 import app from './app'
 
