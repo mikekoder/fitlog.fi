@@ -9,12 +9,12 @@
                             {{ date(start) }} - {{ date(end) }} <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a @click="showWeek">{{ $t("currentWeek") }}</a></li>
-                            <li><a @click="showMonth">{{ $t("currentMonth") }}</a></li>
+                            <li class="clickable"><a @click="showWeek">{{ $t("currentWeek") }}</a></li>
+                            <li class="clickable"><a @click="showMonth">{{ $t("currentMonth") }}</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a @click="showDays(7)">7 {{ $t("days") }}</a></li>
-                            <li><a @click="showDays(14)">14{{ $t("days") }}</a></li>
-                            <li><a @click="showDays(30)">30{{ $t("days") }}</a></li>
+                            <li class="clickable"><a @click="showDays(7)">7 {{ $t("days") }}</a></li>
+                            <li class="clickable"><a @click="showDays(14)">14{{ $t("days") }}</a></li>
+                            <li class="clickable"><a @click="showDays(30)">30{{ $t("days") }}</a></li>
                             <li role="separator" class="divider"></li>
                             <li class="custom-date"><span>{{ $t("timeInterval") }}</span></li>
                             <li class="custom-date">
@@ -33,11 +33,10 @@
                             <li role="separator" class="divider"></li>
                             <li>
                                 <a @click="createWorkout(undefined)">{{ $t("freeWorkout") }}</a>
-                            </li></ul>
+                            </li>
+                        </ul>
                     </div>
-                    <div v-if="workoutOptions.length == 0">
-                        <button @click="createWorkout(undefined)">{{ $t("create") }}</button>
-                    </div>
+                    <button class="btn btn-primary" @click="createWorkout(undefined)" v-if="workoutOptions.length == 0">{{ $t("create") }}</button>
                     <div class="outer" v-if="workouts.length > 0">
                         <div class="inner">
                             <table class="table" id="workout-list">
@@ -141,10 +140,10 @@ module.exports = {
         },
         createWorkout: function (routineWorkoutId) {
             if (routineWorkoutId) {
-                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID } });
+                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }, query: { template: routineWorkoutId }  });
             }
             else {
-                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }, query: { template: routineWorkoutId } });
+                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }});
             }
         },
         deleteWorkout: function (workout) {
@@ -187,6 +186,14 @@ module.exports = {
 </script>
 
 <style scoped>
+    li.custom-date
+    {
+        padding: 3px 10px;
+    }
+    li.custom-date button
+    {
+        margin-top: 3px;
+    }
     .outer 
     {
       position: relative;
