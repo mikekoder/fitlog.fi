@@ -111,7 +111,7 @@ module.exports = {
             months: [],
             years: [],
             pals: [
-                { value: 1.2, name: '1.2 Makaaminen s&auml;ngyssä' }
+                { value: 1.2, name: '1.2 Makaaminen s&auml;ngyssÃ¤' }
             ],
 
             day: undefined,
@@ -143,11 +143,11 @@ module.exports = {
             var weight = utils.parseFloat(this.weight);
             var age = moment().diff(this.dob, 'years');
             if (this.gender == 'male') {
-                // BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) + 5
+                // BMR = (10 Ã— weight in kg) + (6.25 Ã— height in cm) - (5 Ã— age in years) + 5
                 return (10 * weight) + (6.25 * height) - (5 * age) + 5;
             }
             else if (this.gender == 'female') {
-                // BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) - 161
+                // BMR = (10 Ã— weight in kg) + (6.25 Ã— height in cm) - (5 Ã— age in years) - 161
                 return (10 * weight) + (6.25 * height) - (5 * age) - 161;
             }
             return undefined;
@@ -157,23 +157,30 @@ module.exports = {
     methods: {
         
         save: function () {
+            var self = this;
+            self.$ga.event('profile', 'save');
             var profile = {
-                doB: new Date(this.year, this.month.number - 1, this.day),
+                doB: new Date(this.year, this.month.number - 1, this.day,12),
                 gender: this.gender,
-                rmr: this.rmr
+                height: this.height,
+                weight: this.weight,
+                rmr: this.rmr,
+                pal: this.pal
             };
-            this.$store.dispatch(constants.SAVE_PROFILE, {
+            self.$store.dispatch(constants.SAVE_PROFILE, {
                 profile,
                 success: function () {
+                  toaster.info(self.$t('savedProfile'));
                 },
                 failure: function () {
+                  toaster.error(self.$t('saveFailed'));
                 }
             });
         }
     },
     created: function () {
         var self = this;
-        
+        this.$ga.event('profile', 'open');
         this.$store.dispatch(constants.FETCH_PROFILE, {
             success: function () {
                 var profile = self.$store.state.profile.profile;
@@ -184,6 +191,8 @@ module.exports = {
                         self.year = profile.doB.getFullYear();
                     }
                     self.gender = profile.gender;
+                    self.height = profile.height;
+                    self.weight = profile.weight;
                     self.rmr = profile.rmr;
                     if (profile.pal) {
                         self.pal = self.pals.find(p => p.value == profile.pal);

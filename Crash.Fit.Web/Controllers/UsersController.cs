@@ -47,8 +47,8 @@ namespace Crash.Fit.Web.Controllers
 
             return Ok(result);
         }
-        [HttpPost("me")]
-        public IActionResult SaveProfile()
+        [HttpPut("me")]
+        public IActionResult SaveProfile([FromBody]ProfileRequest model)
         {
             var profile = _profileRepository.GetProfile(CurrentUserId);
             if (profile == null)
@@ -58,6 +58,13 @@ namespace Crash.Fit.Web.Controllers
                     UserId = CurrentUserId
                 };
             }
+            profile.DoB = model.DoB;
+            profile.Gender = model.Gender;
+            profile.Height = model.Height;
+            profile.Rmr = model.Rmr;
+            profile.Weight = model.Weight;
+
+            _profileRepository.SaveProfile(profile);
             var result = AutoMapper.Mapper.Map<ProfileResponse>(profile);
 
             return Ok(result);

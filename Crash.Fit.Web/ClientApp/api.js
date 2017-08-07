@@ -25,6 +25,14 @@ const api = {
     getProfile: function(){
         return $.get(baseUrl + 'users/me/');
     },
+    saveProfile: function (profile) {
+        return $.ajax({
+            url: baseUrl + 'users/me/',
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(profile)
+        });
+    },
     logout: function(){
         return $.post(baseUrl+'users/logout');
     },
