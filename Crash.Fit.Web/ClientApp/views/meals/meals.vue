@@ -299,7 +299,7 @@ module.exports = {
     },
     created: function () {
         var self = this;
-        self.energyDistributionColumn = { title: this.$t('meals.columns.energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
+        self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
         self.$store.dispatch(constants.FETCH_NUTRIENTS, {});
         self.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {});
         self.showWeek();      
