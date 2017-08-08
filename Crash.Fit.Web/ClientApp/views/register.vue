@@ -9,7 +9,7 @@
                     <input type="email" class="form-control" v-model="email" @blur="checkEmail">
                 </div>
                 <div class="form-group has-feedback">
-                    <label>{{ $t("password") }}</label> <span class="error">{{ passwordError}}</span>
+                    <label>{{ $t("password") }}</label> ({{ $t("min") }} 6 {{ $t("characters") }})<span class="error">{{ passwordError}}</span>
                     <input type="password" class="form-control" v-model="password" @blur="checkPassword">
                 </div>
                 <div class="form-group has-feedback">
@@ -76,7 +76,7 @@ module.exports = {
         checkEmail() {
             this.emailError = null;
             if (this.email && !this.emailIsValid) {
-                this.emailError = this.$t('register.invalidEmail');
+                this.emailError = this.$t('invalidEmail');
             }
         },
         checkPassword() {
@@ -84,10 +84,10 @@ module.exports = {
             this.password2Error = null;
 
             if (this.password && this.password.length < 6) {
-                self.passwordError = self.$t('register.passwordTooShort');
+                this.passwordError = this.$t('passwordTooShort');
             }
             if (this.password && this.password2 && this.password !== this.password2) {
-                this.password2Error = this.$t('register.passwordsDontMatch');
+                this.password2Error = this.$t('passwordsDontMatch');
             }
         },
         register() {
@@ -104,7 +104,7 @@ module.exports = {
                 if (response.responseJSON && response.responseJSON.errorCodes) {
                     var errorCodes = response.responseJSON.errorCodes;
                     if (errorCodes.includes('PasswordTooShort')) {
-                        self.passwordError = self.$t('register.passwordTooShort');
+                        self.passwordError = self.$t('passwordTooShort');
                     }
                 }
             });
