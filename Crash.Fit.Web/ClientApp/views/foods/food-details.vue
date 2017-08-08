@@ -25,18 +25,18 @@
                             <div class="col-sm-1">&nbsp;</div>
                         </div>
                         <template v-for="(portion,index) in portions">
-                            <div class="recipe-row row">
+                            <div class="row">
                                 <div class="col-sm-4">
-                                    <label class="hidden-sm hidden-md hidden-lg">Nimi</label>
+                                    <label class="hidden-sm hidden-md hidden-lg">{{ $t("name") }}</label>
                                     <input type="text" class="form-control" v-model="portion.name" />
                                 </div>
                                 <div class="quantity col-sm-2 col-xs-3">
-                                    <label class="hidden-sm hidden-md hidden-lg">Paino (g)</label>
+                                    <label class="hidden-sm hidden-md hidden-lg">{{ $t("weight") }} (g)</label>
                                     <input type="number" class="form-control" v-model="portion.weight" />
                                 </div>
                                 <div class="actions col-sm-1 col-xs-12">
                                     <div>
-                                        <button class="btn btn-danger btn-sm" @click="removePortion(index)">Poista</button>
+                                        <button class="btn btn-danger btn-sm" @click="removePortion(index)">{{ $t("delete") }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -195,7 +195,7 @@ module.exports = {
             var self = this;
             self.id = food.id;
             self.name = food.name;
-            self.portions = food.portions;
+            self.portions = food.portions || [];
             self.$store.dispatch(constants.FETCH_NUTRIENTS, {
                 success: function () {
                     for (var i in self.nutrientsGrouped) {
