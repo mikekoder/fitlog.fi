@@ -24,19 +24,19 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="btn-group" v-if="workoutOptions.length > 0">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ $t("create") }} <span class="caret"></span></button>
+                    <div class="btn-group" v-if="activeRoutine">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ $t("log") }} <span class="caret"></span></button>
                         <ul class="dropdown-menu">
-                            <li v-for="workout in workoutOptions">
-                                <a @click="createWorkout(workout.id)">{{ workout.name }}</a>
+                            <li v-for="workout in activeRoutine.workouts">
+                                <a @click="createWorkout(activeRoutine.id, workout.id)">{{ workout.name }}</a>
                             </li>
                             <li role="separator" class="divider"></li>
                             <li>
-                                <a @click="createWorkout(undefined)">{{ $t("freeWorkout") }}</a>
+                                <a @click="createWorkout()">{{ $t("freeWorkout") }}</a>
                             </li>
                         </ul>
                     </div>
-                    <button class="btn btn-primary" @click="createWorkout(undefined)" v-if="workoutOptions.length == 0">{{ $t("create") }}</button>
+                    <button class="btn btn-primary" @click="createWorkout(undefined)" v-if="!activeRoutine">{{ $t("create") }}</button>
                     <div class="outer" v-if="workouts.length > 0">
                         <div class="inner">
                             <table class="table" id="workout-list">
@@ -84,8 +84,6 @@
 module.exports = {
     data () {
         return {   
-            start: null,
-            end: null
         }
     },
     computed: {
@@ -102,31 +100,46 @@ module.exports = {
             var self = this;
             return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
         },
-        workoutOptions: function () {
-            if (this.$store.state.training.activeRoutine) {
-                return this.$store.state.training.activeRoutine.workouts;
-            }
-            return [];
-        }
+        activeRoutine: function(){
+            return this.$store.state.training.activeRoutine;
+        },
+        start: function(){
+            var self = this;
+            return this.$store.state.training.workoutsDisplayStart;
+        },
+        end: function(){
+            var self = this;
+            return this.$store.state.training.workoutsDisplayEnd;
+        },
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker')
     },
     methods: {
         showWeek(){
-            this.end = moment().endOf('day').toDate();
-            this.start = moment().startOf('isoWeek').toDate();
-            this.fetchWorkouts();
+            var end = moment().endOf('day').toDate();
+            var start = moment().startOf('isoWeek').toDate();
+            this.showDateRange(start, end);
         },
         showMonth(){
-            this.end = moment().endOf('day').toDate();
-            this.start = moment().startOf('month').toDate();
-            this.fetchWorkouts();
+            var end = moment().endOf('day').toDate();
+            var start = moment().startOf('month').toDate();
+            this.showDateRange(start, end);
         },
         showDays(days) {
-            this.end = moment().endOf('day').toDate();
-            this.start = moment().subtract(days - 1, 'days').startOf('day').toDate();
-            this.fetchWorkouts();
+            var end = moment().endOf('day').toDate();
+            var start = moment().subtract(days - 1, 'days').startOf('day').toDate();
+            this.showDateRange(start, end);
+        },
+        showDateRange: function(start, end){
+          var self = this;
+            self.$store.dispatch(constants.SELECT_WORKOUT_DATE_RANGE, {
+                start: start,
+                end: end,
+                success: function () {
+                    self.fetchWorkouts();
+                }
+            });
         },
         fetchWorkouts: function () {
             var self = this;
@@ -138,9 +151,9 @@ module.exports = {
                 }
             });
         },
-        createWorkout: function (routineWorkoutId) {
-            if (routineWorkoutId) {
-                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }, query: { template: routineWorkoutId }  });
+        createWorkout: function (routineId, workoutId) {
+            if (routineId && workoutId) {
+                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }, query: { [constants.ROUTINE_PARAM]: routineId, [constants.WORKOUT_PARAM]: workoutId }  });
             }
             else {
                 this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }});
@@ -152,7 +165,7 @@ module.exports = {
                 workout,
                 success: function () { },
                 failure: function () {
-                    toaster(self.$t('workouts.deleteFailed'));
+                    toaster(self.$t('deleteFailed'));
                 }
             });
         },
@@ -180,7 +193,13 @@ module.exports = {
             success: function () { },
             failure: function () { }
         });
-        self.showDays(7);
+        if(self.start && self.end){
+            self.fetchWorkouts();
+        }
+        else {
+            self.showDays(7);
+        }
+        
     }
 }
 </script>
