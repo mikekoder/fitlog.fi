@@ -12,6 +12,10 @@ namespace Crash.Fit.Nutrition
         public string Name { get; set; }
         public bool IsRecipe { get; set; }
         public string FineliId { get; set; }
+        /// <summary>
+        /// For which portion nutrient amounts are given
+        /// </summary>
+        public Guid? NutrientPortionId { get; set; }
     }
     public class FoodSearchResult : Food
     {
@@ -27,7 +31,7 @@ namespace Crash.Fit.Nutrition
     {
         public RecipeIngredient[] Ingredients { get; set; }
         public Portion[] Portions { get; set; }
-        public NutrientAmount[] Nutrients { get; set; }
+        public FoodNutrientAmount[] Nutrients { get; set; }
         public decimal? CookedWeight { get; set; }
     }
 }

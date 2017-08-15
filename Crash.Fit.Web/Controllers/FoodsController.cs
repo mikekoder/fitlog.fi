@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Nutrition;
-using Crash.Fit.Web.Models.Nutrition;
+using Crash.Fit.Api.Models.Nutrition;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Crash.Fit.Logging;
 
@@ -53,8 +53,10 @@ namespace Crash.Fit.Web.Controllers
         [HttpPost("")]
         public IActionResult Create([FromBody]FoodRequest request)
         {
+            CheckNutrientPortion(request);
             var food = AutoMapper.Mapper.Map<FoodDetails>(request);
             food.UserId = CurrentUserId;
+            CalculatePortionNutrients(request, food);
             nutritionRepository.CreateFood(food);
 
             var response = AutoMapper.Mapper.Map<FoodDetailsResponse>(food);
@@ -69,7 +71,9 @@ namespace Crash.Fit.Web.Controllers
             {
                 return Unauthorized();
             }
+            CheckNutrientPortion(request);
             AutoMapper.Mapper.Map(request, food);
+            CalculatePortionNutrients(request, food);
             nutritionRepository.UpdateFood(food);
 
             var response = AutoMapper.Mapper.Map<FoodDetailsResponse>(food);
@@ -87,6 +91,30 @@ namespace Crash.Fit.Web.Controllers
             nutritionRepository.DeleteFood(food);
 
             return Ok();
+        }
+
+        private void CheckNutrientPortion(FoodRequest request)
+        {
+            var nutrientPortion = request.Portions?.FirstOrDefault(p => p.NutrientPortion);
+            if (nutrientPortion != null && nutrientPortion.Id == Guid.Empty)
+            {
+                nutrientPortion.Id = Guid.NewGuid();
+            }
+        }
+        private void CalculatePortionNutrients(FoodRequest request, FoodDetails food)
+        {
+            var nutrientPortion = request.Portions.FirstOrDefault(p => p.NutrientPortion);
+            if (nutrientPortion != null)
+            {
+                food.NutrientPortionId = nutrientPortion.Id;
+
+                var portionWeight = nutrientPortion.Weight;
+                foreach(var nutrientAmount in food.Nutrients)
+                {
+                    nutrientAmount.PortionAmount = nutrientAmount.Amount;
+                    nutrientAmount.Amount = nutrientAmount.Amount * (100m / portionWeight);
+                }
+            }
         }
     }
 }

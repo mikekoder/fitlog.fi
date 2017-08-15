@@ -96,7 +96,7 @@ SELECT * FROM RecipeIngredient WHERE RecipeId IN @ids ORDER BY [Index]";
             {
                 var foods = multi.Read<FoodDetails>().ToArray();
                 var portions = multi.Read<PortionRaw>().ToArray();
-                var nutrients = multi.Read<FoodNutrientAmount>().ToArray();
+                var nutrients = multi.Read<FoodNutrientAmountRaw>().ToArray();
                 var ingredients = multi.Read<RecipeIngredientRaw>().ToArray();
                 foreach(var food in foods)
                 {
@@ -186,10 +186,17 @@ GROUP BY R.FoodId;";
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Food(Id,UserId,Name,IsRecipe,FineliId,Created,CookedWeight) VALUES(@Id,@UserId,@Name,@IsRecipe,@FineliId,@Created,@CookedWeight)", food, tran);
-                    conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount) VALUES(@FoodId,@NutrientId,@Amount)",
-                        food.Nutrients.Select(n => new { FoodId = food.Id, n.NutrientId, n.Amount }), tran);
-                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Amount,Weight) VALUES(@Id,@FoodId,@Name,@Amount,@Weight)", food.Portions.Select(p => new { Id = Guid.NewGuid(), FoodId = food.Id, p.Name, p.Amount, p.Weight }), tran);
+                    conn.Execute("INSERT INTO Food(Id,UserId,Name,IsRecipe,FineliId,Created,CookedWeight,NutrientPortionId) VALUES(@Id,@UserId,@Name,@IsRecipe,@FineliId,@Created,@CookedWeight,@NutrientPortionId)", food, tran);
+                    conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount,PortionAmount) VALUES(@FoodId,@NutrientId,@Amount,@PortionAmount)",
+                        food.Nutrients.Select(n => new { FoodId = food.Id, n.NutrientId, n.Amount,n.PortionAmount }), tran);
+                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Amount,Weight) VALUES(@Id,@FoodId,@Name,@Amount,@Weight)", food.Portions.Select(p => new
+                    {
+                        Id = p.Id == Guid.Empty ? Guid.NewGuid() : p.Id,
+                        FoodId = food.Id,
+                        p.Name,
+                        p.Amount,
+                        p.Weight
+                    }), tran);
                     if(food.Ingredients != null)
                     {
                         conn.Execute("INSERT INTO RecipeIngredient(RecipeId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@RecipeId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", food.Ingredients.Select((i,index) => new
@@ -224,12 +231,13 @@ GROUP BY R.FoodId;";
                     conn.Execute("DELETE FROM RecipeIngredient WHERE RecipeId=@Id", new { food.Id }, tran);
                     conn.Execute("DELETE FROM FoodPortion WHERE FoodId=@Id", new { food.Id }, tran);
 
-                    conn.Execute("UPDATE Food SET Name=@Name,CookedWeight=@CookedWeight WHERE Id=@Id", food, tran);
-                    conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount) VALUES(@FoodId,@NutrientId,@Amount)", food.Nutrients.Select(n => new
+                    conn.Execute("UPDATE Food SET Name=@Name,CookedWeight=@CookedWeight,NutrientPortionId=@NutrientPortionId WHERE Id=@Id", food, tran);
+                    conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount,PortionAmount) VALUES(@FoodId,@NutrientId,@Amount,@PortionAmount)", food.Nutrients.Select(n => new
                     {
                         FoodId = food.Id,
                         n.NutrientId,
-                        n.Amount
+                        n.Amount,
+                        n.PortionAmount
                     }), tran);
                     conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Weight,Amount) VALUES(@Id,@FoodId,@Name,@Weight,@Amount)", food.Portions.Select(p => new
                     {
@@ -492,7 +500,7 @@ SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
         {
             public Guid FoodId { get; set; }
         }
-        private class FoodNutrientAmount : NutrientAmount
+        private class FoodNutrientAmountRaw : FoodNutrientAmount
         {
             public Guid FoodId { get; set; }
         }
