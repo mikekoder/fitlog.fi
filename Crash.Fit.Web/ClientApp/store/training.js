@@ -21,7 +21,9 @@ const state = {
     workoutsStart: null,
     workoutsEnd: null,
     workouts: [],
-    workoutDays: {} // [day.getTime()] = true
+    workoutDays: {},
+    workoutsDisplayStart: null,
+    workoutsDisplayEnd: null
 }
 
 // actions
@@ -47,6 +49,12 @@ const actions = {
          });
      },
     // Workouts
+    [constants.SELECT_WORKOUT_DATE_RANGE]({ commit, state }, { start, end, success, failure }) {
+        commit(constants.SELECT_WORKOUT_DATE_RANGE_SUCCESS, { start, end });
+        if (success) {
+            success();
+        }
+    },
      [constants.FETCH_WORKOUTS] ({ commit, state }, {start, end, success, failure}) {
          if(state.workoutsStart && state.workoutsEnd){
              if(moment(start).isBefore(state.workoutsStart) || moment(end).isAfter(state.workoutsEnd)){
@@ -242,6 +250,10 @@ const mutations = {
     [constants.FETCH_ACTIVE_ROUTINE_SUCCESS] (state, {routine}) {
         state.activeRoutine = routine;
         state.activeRoutineLoaded = true;
+    },
+    [constants.SELECT_WORKOUT_DATE_RANGE_SUCCESS](state, { start, end }) {
+        state.workoutsDisplayStart = start;
+        state.workoutsDisplayEnd = end;
     },
     [constants.FETCH_WORKOUTS_SUCCESS] (state, {start, end, workouts}) {
         for(var i in workouts){
