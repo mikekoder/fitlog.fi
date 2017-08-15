@@ -210,6 +210,18 @@ const actions = {
                 failure();
             }
         });
+    },
+    [constants.ACTIVATE_ROUTINE] ({commit, state},{routine, success, failure}){
+        api.activateRoutine(routine.id).then(function(){
+            commit(constants.ACTIVATE_ROUTINE_SUCCESS,{routine})
+            if(success){
+                success();
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
     }
 }
 
@@ -280,6 +292,18 @@ const mutations = {
     },
     [constants.DELETE_ROUTINE_SUCCESS] (state, {routine}) {
         removeRoutine(routine, state)
+    },
+    [constants.ACTIVATE_ROUTINE_SUCCESS] (state, {routine}) {
+        state.routines.forEach(r => {
+            if (r.id === routine.id) {
+                r.active = true;
+                state.activeRoutine = r;
+                state.activeRoutineLoaded = true;
+            }
+            else {
+                r.active = false;
+            }
+        });
     },
     [constants.DELETE_WORKOUT_SUCCESS] (state, {workout}) {
         removeWorkout(meal, state)

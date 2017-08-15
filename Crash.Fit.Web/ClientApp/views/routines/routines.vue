@@ -22,7 +22,7 @@
                                 <td><router-link :to="{ name: 'routine-details', params: { id: routine.id } }">{{ routine.name }}</router-link></td>
                                 <td>
                                     <span v-if="routine.active">{{ $t("active") }}</span>
-                                    <button class="btn btn-primary" v-if="!routine.active">{{ $t("activate") }}</button>
+                                    <button class="btn btn-primary" v-if="!routine.active" @click="activate(routine)">{{ $t("activate") }}</button>
                                 </td>
                                 <td><button class="btn btn-danger btn-xs" @click="deleteRoutine(routine)">{{ $t("delete") }}</button></td>
                             </tr>
@@ -66,6 +66,16 @@ module.exports = {
     methods: {
         createRoutine: function(){
             this.$router.push({ name: 'routine-details', params: { id: constants.NEW_ID } });
+        },
+        activate: function(routine){
+            var self = this;
+            this.$store.dispatch(constants.ACTIVATE_ROUTINE, {
+                routine,
+                success: function () { },
+                failure: function () {
+                    toaster(this.$t('activationFailed'));
+                }
+            });
         },
         deleteRoutine: function (routine) {
             var self = this;
