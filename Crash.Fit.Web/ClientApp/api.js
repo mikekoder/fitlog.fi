@@ -281,6 +281,29 @@ const api = {
             contentType: 'text/json',
             data: JSON.stringify(measurements)
         });
-    }
+    },
+
+    // Feedback
+    saveFeedback: function (feedback) {
+        var url = baseUrl + 'feedback/';
+        var method = 'POST';
+        if (feedback.id) {
+            url += feedback.id;
+            method = 'PUT';
+        }
+
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(feedback)
+        });
+    },
+    listBugs: function () {
+        return $.get(baseUrl + 'feedback/bugs');
+    },
+    listImprovements: function () {
+        return $.get(baseUrl + 'feedback/improvements');
+    },
 };
 module.exports = api

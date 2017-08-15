@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import nutrition from './nutrition'
 import training from './training'
 import profile from './profile'
+import feedback from './feedback'
 var constants = require('./constants')
 
 Vue.use(Vuex)
@@ -28,6 +29,7 @@ export default new Vuex.Store({
     modules: {
         nutrition,
         training,
-        profile
+        profile,
+        feedback
     }
 })
