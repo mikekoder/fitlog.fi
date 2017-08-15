@@ -62,6 +62,7 @@
     improvement: 'Kehitysidea',
     improvements: 'Kehitysideat',
     invalidEmail: 'Virheellinen email',
+    log: 'Kirjaa',
     login: 'Kirjaudu',
     logout: 'Kirjaudu ulos',
     MACROCMP: 'Makrot',

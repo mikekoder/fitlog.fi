@@ -25,14 +25,13 @@
                             </li>
                         </ul>
                     </div>
-                        
+                    <button class="btn btn-primary" @click="createMeal">{{ $t("log") }}</button>    
                     <div class="btn-group" role="group" aria-label="...">
                         <template v-for="group in groups">
                             <button class="btn btn-default" v-bind:class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t(group.id) }}</button>
                         </template>
                     </div>
-                       
-                    <button class="btn btn-primary" @click="createMeal">{{ $t("create") }}</button>
+
                     <div class="outer" v-if="days.length > 0">
                         <div class="inner">
                             <table class="table" id="meal-list">
@@ -117,8 +116,6 @@ module.exports = {
         return {
             energyDistributionColumn: null,
             selectedGroup: '',
-            start: null,
-            end: null,
             dayStates: {},
             selectedMeal: null,
             proteinId: constants.PROTEIN_ID,
@@ -165,6 +162,14 @@ module.exports = {
         },
         nutrientTargets: function () {
             return this.$store.state.nutrition.nutrientTargets;
+        },
+        start: function(){
+            var self = this;
+            return this.$store.state.nutrition.mealsDisplayStart;
+        },
+        end: function(){
+            var self = this;
+            return this.$store.state.nutrition.mealsDisplayEnd;
         }
     },
     components: {
@@ -174,24 +179,34 @@ module.exports = {
     },
     methods: {
         showDay() {
-            this.end = moment().endOf('day').toDate();
-            this.start = moment().startOf('day').toDate();
-            this.fetchMeals();
+            var end = moment().endOf('day').toDate();
+            var start = moment().startOf('day').toDate();
+            this.showDateRange(start, end);
         },
         showWeek(){
-            this.end = moment().endOf('day').toDate();
-            this.start = moment().startOf('isoWeek').toDate();
-            this.fetchMeals();
+            var end = moment().endOf('day').toDate();
+            var start = moment().startOf('isoWeek').toDate();
+            this.showDateRange(start, end);
         },
         showMonth(){
-            this.end = moment().endOf('day').toDate();
-            this.start = moment().startOf('month').toDate();
-            this.fetchMeals();
+            var end = moment().endOf('day').toDate();
+            var start = moment().startOf('month').toDate();
+            this.showDateRange(start, end);
         },
         showDays(days) {
-            this.end = moment().endOf('day').toDate();
-            this.start = moment().subtract(days - 1, 'days').startOf('day').toDate();
-            this.fetchMeals();
+            var end = moment().endOf('day').toDate();
+            var start = moment().subtract(days - 1, 'days').startOf('day').toDate();
+            this.showDateRange(start, end);
+        },
+        showDateRange: function(start, end){
+          var self = this;
+            self.$store.dispatch(constants.SELECT_MEAL_DATE_RANGE, {
+                start: start,
+                end: end,
+                success: function () {
+                    self.fetchMeals();
+                }
+            });
         },
         fetchMeals: function () {
             var self = this;
@@ -302,7 +317,12 @@ module.exports = {
         self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
         self.$store.dispatch(constants.FETCH_NUTRIENTS, {});
         self.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {});
-        self.showWeek();      
+        if(self.start && self.end){
+          self.fetchMeals();
+        }
+        else {
+          self.showWeek();    
+        }
         self.selectGroup(self.groups[0].id);
     }
 }

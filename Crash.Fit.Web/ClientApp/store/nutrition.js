@@ -8,6 +8,8 @@ const state = {
     mealsEnd: null,
     mealDays:[],
     meals: [],
+    mealsDisplayStart: null,
+    mealsDisplayEnd: null,
 
     nutrientGroups: [
         {id:'MACROCMP',name:'Makrot'}, 
@@ -27,6 +29,12 @@ const state = {
 const actions = {
 
     // Meals
+    [constants.SELECT_MEAL_DATE_RANGE]({ commit, state }, { start, end, success, failure }) {
+        commit(constants.SELECT_MEAL_DATE_RANGE_SUCCESS, { start, end });
+        if (success) {
+            success();
+        }
+    },
     [constants.FETCH_MEALS] ({ commit, state }, {start, end, success, failure}) {
         if(state.mealsStart && state.mealsEnd){
             if(moment(start).isBefore(state.mealsStart) || moment(end).isAfter(state.mealsEnd)){
@@ -282,6 +290,10 @@ const actions = {
 
 // mutations
 const mutations = {
+    [constants.SELECT_MEAL_DATE_RANGE_SUCCESS](state, { start, end }) {
+        state.mealsDisplayStart = start;
+        state.mealsDisplayEnd = end;
+    },
     [constants.FETCH_NUTRIENTS_SUCCESS] (state, {nutrients}) {
         state.nutrients = nutrients;
         var grouped = {};
