@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="App.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Foods\AllFoods.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Foods\FoodEditor.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Foods\Foods.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Foods\MyFoods.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Foods\PortionEditor.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Login\Login.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Main\Home.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Main\MainMenu.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Main\MainMenuContainer.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Main\MainMenuContainerDetail.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ninject" Version="4.0.0-beta-0134" />
+    <PackageReference Include="Xamarin.Forms" Version="2.3.5.256-pre6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Crash.Fit.Api\Crash.Fit.Api.csproj" />
+    <ProjectReference Include="..\Crash.Fit.MobileServices\Crash.Fit.MobileServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Foods\AllFoods.xaml.cs">
+      <DependentUpon>AllFoods.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Foods\FoodEditor.xaml.cs">
+      <DependentUpon>FoodEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Foods\Foods.xaml.cs">
+      <DependentUpon>Foods.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Foods\MyFoods.xaml.cs">
+      <DependentUpon>MyFoods.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Foods\PortionEditor.xaml.cs">
+      <DependentUpon>PortionEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Login\Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Main\Home.xaml.cs">
+      <DependentUpon>Home.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Main\MainMenu.xaml.cs">
+      <DependentUpon>MainMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Main\MainMenuContainer.xaml.cs">
+      <DependentUpon>MainMenuContainer.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Main\MainMenuContainerDetail.xaml.cs">
+      <DependentUpon>MainMenuContainerDetail.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>
