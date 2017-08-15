@@ -30,5 +30,6 @@ namespace Crash.Fit.Training
         bool UpdateRoutine(RoutineDetails routine);
         bool DeleteRoutine(Routine routine);
         bool RestoreRoutine(Guid id, out RoutineDetails routine);
+        bool ActivateRoutine(Guid userId, Guid routineId);
     }
 }

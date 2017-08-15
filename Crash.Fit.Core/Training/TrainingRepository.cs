@@ -311,7 +311,26 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
         {
             throw new NotImplementedException();
         }
-
+        public bool ActivateRoutine(Guid userId, Guid routineId)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE Routine SET Active=0 WHERE UserId=@userId", new { userId }, tran);
+                    conn.Execute("UPDATE Routine SET Active=1 WHERE Id=@routineId", new { routineId }, tran);
+                    tran.Commit();
+                    return true;
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+    
         public IEnumerable<WorkoutSummary> SearchWorkouts(Guid userId, DateTimeOffset start, DateTimeOffset end)
         {
             var filter = "UserId=@userId AND Time >= @start AND Time <= @end AND Deleted IS NULL";
