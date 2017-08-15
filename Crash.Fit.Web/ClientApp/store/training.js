@@ -195,6 +195,17 @@ const actions = {
              }
          });
      },
+     [constants.FETCH_ROUTINE_WORKOUT] ({commit, state},{id, success, failure}){
+         api.getRoutineWorkout(id).then(function(workout){
+             if(success){
+                 success(workout);
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
+     },
     [constants.SAVE_ROUTINE] ({commit, state},{routine, success, failure}){
         api.saveRoutine(routine).then(function(savedRoutine){
             commit(constants.SAVE_ROUTINE_SUCCESS,{id: routine.id, routine: savedRoutine})
