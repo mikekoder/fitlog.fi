@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Nutrition;
-using Crash.Fit.Web.Models.Nutrition;
+using Crash.Fit.Api.Models.Nutrition;
 using Microsoft.Extensions.Logging;
 using Crash.Fit.Logging;
 

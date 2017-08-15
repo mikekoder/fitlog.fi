@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using Crash.Fit.Web.Models.Users;
+using Crash.Fit.Api.Models.Users;
 using Crash.Fit.Web.Models.Auth;
 using Microsoft.AspNetCore.Antiforgery;
 using Crash.Fit.Logging;
 using Crash.Fit.Profile;
-using Crash.Fit.Web.Models.Profile;
+using Crash.Fit.Api.Models.Profile;
 
 namespace Crash.Fit.Web.Controllers
 {
