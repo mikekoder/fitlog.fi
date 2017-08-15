@@ -263,6 +263,12 @@ const api = {
             type: 'DELETE'
         });
     },
+    activateRoutine: function(id){
+        return $.ajax({
+            url: baseUrl + 'routines/' + id + '/activate',
+            type: 'POST'
+        });
+    },
 
     // Measurements
     listMeasures: function(){

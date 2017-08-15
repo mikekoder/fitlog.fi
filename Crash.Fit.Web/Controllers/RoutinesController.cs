@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Training;
-using Crash.Fit.Web.Models.Training;
+using Crash.Fit.Api.Models.Training;
 using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web.Controllers
@@ -78,6 +78,17 @@ namespace Crash.Fit.Web.Controllers
             }
             trainingRepository.DeleteRoutine(routine);
 
+            return Ok();
+        }
+        [HttpPost("{id}/activate")]
+        public IActionResult Activate(Guid id)
+        {
+            var routine = trainingRepository.GetRoutine(id);
+            if (routine == null || routine.UserId != CurrentUserId)
+            {
+                return NotFound();
+            }
+            trainingRepository.ActivateRoutine(CurrentUserId, id);
             return Ok();
         }
         private void CreateExercises(IEnumerable<RoutineExerciseRequest> sets)
