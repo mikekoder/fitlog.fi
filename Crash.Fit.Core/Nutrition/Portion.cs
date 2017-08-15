@@ -9,6 +9,9 @@ namespace Crash.Fit.Nutrition
     public class Portion : Entity
     {
         public string Name { get; set; }
+        /// <summary>
+        /// How many portions in a recipe
+        /// </summary>
         public decimal? Amount { get; set; }
         public decimal Weight { get; set; }
     }

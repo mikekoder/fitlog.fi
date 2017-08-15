@@ -53,7 +53,11 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>{{ $t("amount") }}/100g</th>
+                                    <th>{{ $t("amount") }}/
+                                        <select v-model="nutrientPortion" @change="changeNutrientPortion">
+                                            <option v-for="portion in nutrientPortions" v-bind:value="portion">{{ portion.name }}</option>
+                                        <select>
+                                    </th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -78,9 +82,14 @@
                 </div>
             </div>
             <hr />
+            <div class="row errors" v-if="!isValid">
+                <div class="col-sm-12">
+                    <div class="alert alert-danger"><span v-for="error in errors">{{ error }}<br /></span></div>
+                </div>
+            </div>
             <div class="row main-actions">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="save">{{ $t("save") }}</button>
+                    <button class="btn btn-primary" @click="save" :disabled="!isValid">{{ $t("save") }}</button>
                     <button class="btn" @click="cancel">{{ $t("cancel") }}</button>
                     <button class="btn btn-danger" v-if="id" @click="deleteFood">{{ $t("delete") }}</button>
                 </div>
@@ -95,6 +104,8 @@
     var formatters = require('../../formatters');
     var utils = require('../../utils');
     var toaster = require('../../toaster');
+    var defaultNutrientPortion = { id: undefined, name: '100g'};
+    
 module.exports = {
     data () {
         return {
@@ -104,6 +115,7 @@ module.exports = {
             portions: [],
             tab: 'nutrients',
             groupOpenStates: {},
+            nutrientPortion: defaultNutrientPortion
         }
     },
     computed: {
@@ -115,16 +127,53 @@ module.exports = {
         },
         nutrientsGrouped: function () {
             return this.$store.state.nutrition.nutrientsGrouped;
+        },
+        nutrientPortions: function(){
+            var portions = [];
+            portions.push(defaultNutrientPortion);
+            if(this.portions.length === 0){
+                portions.push({ name: this.$t('portion'), nutrientPortion: true });
+            }
+            else {
+                this.portions.forEach(p => { portions.push(p); });
+            }
+            return portions;
+        },
+        errors: function(){
+            var errors = [];
+            if(!this.name){
+                errors.push('Nimi puuttuu');
+            }
+            this.portions.forEach(p => {
+                if(!p.name){
+                    errors.push('Annoksen nimi puuttuu');
+                }
+                else if(!p.weight || p.weight == ''){
+                    errors.push('Annoksen "'+p.name+'" paino puuttuu');
+                }
+            });
+            return errors;
+        },
+        isValid: function(){
+            return this.errors.length === 0;
         }
     },
     components: {
     },
     methods: {
+        changeNutrientPortion: function(){
+            if(this.nutrientPortion.nutrientPortion && this.portions.length === 0){
+                this.portions.push(this.nutrientPortion);
+            }
+        },
         addPortion : function(){
             this.portions.push({ name: null, weight: null});
         },
         removePortion: function (index) {
-            this.portions.splice(index, 1);
+            if(this.nutrientPortion == this.portions[index]){
+                this.nutrientPortion = defaultNutrientPortion;
+            }
+            this.portions.splice(index, 1); 
         },
         weight: function (quantity, portion) {
             if (!quantity) {
@@ -145,7 +194,7 @@ module.exports = {
                 id: self.id,
                 name: self.name,
                 nutrients: [],
-                portions: self.portions ? self.portions.map(p => { return { id: p.id, name: p.name, weight: utils.parseFloat(p.weight) }}) : []
+                portions: self.portions ? self.portions.map(p => { return { id: p.id, name: p.name, weight: utils.parseFloat(p.weight), nutrientPortion: p === self.nutrientPortion }}) : []
             };
             for (var i in self.nutrients) {
                 if (self.nutrients[i] || self.nutrients[i] == 0) {
@@ -196,6 +245,9 @@ module.exports = {
             self.id = food.id;
             self.name = food.name;
             self.portions = food.portions || [];
+            if(food.nutrientPortionId){
+                self.nutrientPortion = self.portions.find(p => p.id === food.nutrientPortionId);
+            }
             self.$store.dispatch(constants.FETCH_NUTRIENTS, {
                 success: function () {
                     for (var i in self.nutrientsGrouped) {
@@ -204,7 +256,12 @@ module.exports = {
                             var nutrient = group[j];
                             var value = food.nutrients ? food.nutrients.find(n => n.nutrientId == nutrient.id) : undefined;
                             if (value) {
-                                self.nutrients[nutrient.id] = value.amount;
+                                if(self.nutrientPortion){
+                                    self.nutrients[nutrient.id] = value.portionAmount;                                   
+                                }
+                                else {
+                                    self.nutrients[nutrient.id] = value.amount;
+                                }
                             }
                             else {
                                 self.nutrients[nutrient.id] = undefined;
