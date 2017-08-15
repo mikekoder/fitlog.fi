@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit
 {
-    public enum Gender
+    public static class Gender
     {
-        Male,
-        Female
+        public static readonly string Male = "Male";
+        public static readonly string Female = "Female";
     }
 }

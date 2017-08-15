@@ -68,7 +68,7 @@ WHERE Nutrient.DELETED IS NULL";
                 }
             }
         }
-        public IEnumerable<DailyIntake> GetDailyIntakes(Gender gender, TimeSpan age)
+        public IEnumerable<DailyIntake> GetDailyIntakes(string gender, TimeSpan age)
         {
             var sql = @"
 SELECT * FROM DailyIntake 

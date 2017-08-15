@@ -8,7 +8,7 @@ namespace Crash.Fit.Nutrition
 {
     public class DailyIntake
     {
-        public Gender Gender { get; set; }
+        public string Gender { get; set; }
         public decimal? StartAge { get; set; }
         public decimal? EndAge { get; set; }
         public decimal? MinAmount { get; set; }
