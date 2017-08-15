@@ -12,7 +12,7 @@ namespace Crash.Fit.Nutrition
         IEnumerable<UserNutrient> GetUserNutrients(Guid userId);
         bool CreateNutrient(Nutrient nutrient);
         bool UpdateNutrient(Nutrient nutrient);
-        IEnumerable<DailyIntake> GetDailyIntakes(Gender gender, TimeSpan age);
+        IEnumerable<DailyIntake> GetDailyIntakes(string gender, TimeSpan age);
 
 
         IEnumerable<FoodSearchResult> SearchFoods(string[] nameTokens, Guid? userId = null);
