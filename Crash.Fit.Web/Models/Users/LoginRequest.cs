@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Crash.Fit.Web.Models.Users
+namespace Crash.Fit.Api.Models.Users
 {
     public class LoginRequest
     {

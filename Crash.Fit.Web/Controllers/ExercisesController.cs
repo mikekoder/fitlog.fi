@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Training;
-using Crash.Fit.Web.Models.Training;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Crash.Fit.Logging;
+using Crash.Fit.Api.Models.Training;
 
 namespace Crash.Fit.Web.Controllers
 {

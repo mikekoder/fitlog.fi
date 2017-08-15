@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Nutrition;
-using Crash.Fit.Web.Models.Nutrition;
+using Crash.Fit.Api.Models.Nutrition;
 using Microsoft.Extensions.Logging;
 using Crash.Fit.Logging;
 using Crash.Fit.Measurements;
-using Crash.Fit.Web.Models.Measurements;
+using Crash.Fit.Api.Models.Measurements;
 
 namespace Crash.Fit.Web.Controllers
 {
