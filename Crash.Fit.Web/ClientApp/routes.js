@@ -22,6 +22,8 @@ import NotFound from './views/notfound'
 import RepCalculator from './views/rep-calculator/rep-calculator'
 import Measurements from './views/measurements/measurements'
 import Profile from './views/profile/profile'
+import Feedback from './views/feedback/feedback'
+import FeedbackDetails from './views/feedback/feedback-details'
 
 const main = [
     {
@@ -114,11 +116,36 @@ const main = [
                 name: 'measurements',
                 component: Measurements
             },
-            ,
             {
                 path: '/profiili',
                 name: 'profile',
                 component: Profile
+            },
+            {
+                path: '/bugit',
+                name: 'bugs',
+                component: Feedback,
+                params: { foo: 'bar'},
+                meta: { type: 'Bug' }
+            },
+            {
+                path: '/bugit/:id',
+                name: 'bug-details',
+                component: FeedbackDetails,
+                params: { foo: 'bar' },
+                meta: { type: 'Bug' }
+            },
+            {
+                path: '/kehitysideat',
+                name: 'improvements',
+                component: Feedback,
+                meta: { type: 'Improvement' }
+            },
+            {
+                path: '/kehitysideat/:id',
+                name: 'improvement-details',
+                component: FeedbackDetails,
+                meta: { type: 'Improvement' }
             }
         ]
     },
