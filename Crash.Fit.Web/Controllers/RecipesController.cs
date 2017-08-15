@@ -100,7 +100,7 @@ namespace Crash.Fit.Web.Controllers
 
             var foodIds = recipe.Ingredients.Select(i => i.FoodId);
             var foods = nutritionRepository.GetFoods(foodIds);
-            var recipeNutrients = new List<NutrientAmount>();
+            var recipeNutrients = new List<FoodNutrientAmount>();
             var recipeWeight = 0m;
             foreach(var ingredient in recipe.Ingredients)
             {
@@ -119,7 +119,7 @@ namespace Crash.Fit.Web.Controllers
                     var recipeNutrient = recipeNutrients.SingleOrDefault(n => n.NutrientId == foodNutrient.NutrientId);
                     if(recipeNutrient == null)
                     {
-                        recipeNutrient = new NutrientAmount
+                        recipeNutrient = new FoodNutrientAmount
                         {
                             NutrientId = foodNutrient.NutrientId
                         };
