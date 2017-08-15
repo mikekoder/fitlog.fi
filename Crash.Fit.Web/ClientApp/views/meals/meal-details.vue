@@ -22,7 +22,7 @@
                             <div class="col-sm-4">
                               <label>{{ $t("food") }}</label>
                               <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createFood") }}</router-link>
-                              <span>|</span>
+                              <span v-if="!copyMode && isLoggedIn">|</span>
                               <router-link :to="{ name: 'recipe-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createRecipe") }}</router-link>
                             </div>
                             <div class="col-sm-2"><label>{{ $t("amount") }}</label></div>
@@ -35,7 +35,7 @@
                                 <div class="food col-sm-4">
                                     <label class="hidden-sm hidden-md hidden-lg">Ruoka</label>
                                   <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createFood") }}</router-link>
-                                  <span class="hidden-sm hidden-md hidden-lg">|</span>
+                                  <span class="hidden-sm hidden-md hidden-lg" v-if="!copyMode && isLoggedIn">|</span>
                                   <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'recipe-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createRecipe") }}</router-link>
                                     <div v-if="copyMode">
                                         <input type="checkbox" v-model="row.copy" />
