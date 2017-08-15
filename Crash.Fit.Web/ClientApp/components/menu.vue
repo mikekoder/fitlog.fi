@@ -22,7 +22,7 @@
             </router-link>
             <li class="header">{{ $t("training") }}</li>
             <router-link tag="li" :to="{ name: 'workouts'}" v-if="isLoggedIn">
-                <a><i class="fa fa-trophy"></i> <span>{{ $t("workouts") }}</span></a>
+                <a><i class="fa fa-heartbeat"></i> <span>{{ $t("workouts") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'exercises'}" v-if="isLoggedIn">
                 <a><i class="fa fa-universal-access"></i> <span>{{ $t("exercises") }}</span></a>
