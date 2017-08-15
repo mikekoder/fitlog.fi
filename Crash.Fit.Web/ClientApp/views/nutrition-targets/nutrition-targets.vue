@@ -35,8 +35,8 @@
                                                         <td>{{ $t("saturdayShort") }}</td>
                                                         <td>{{ $t("sundayShort") }}</td>
                                                         <td class="divider"></td>
-                                                        <td>{{ $t("exerciseDayShort") }}</td>
-                                                        <td>{{ $t("restDayShort") }}</td>
+                                                        <td><i class="fa fa-heartbeat"></i></td>
+                                                        <td><i class="fa fa-bed"></i></td>
                                                     </tr>
                                                     <tr>
                                                         <td><input type="checkbox" v-model="target.monday" v-bind:title="$t('monday')" /></td>
