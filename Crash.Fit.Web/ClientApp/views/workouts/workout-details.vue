@@ -197,8 +197,34 @@ module.exports = {
 
         var self = this;
         var id = self.$route.params.id;
+        var routineId = self.$route.query[constants.ROUTINE_PARAM];
+        var routineWorkoutId = self.$route.query[constants.WORKOUT_PARAM];
         if (id == constants.NEW_ID) {
-            self.populate({ id: undefined, time: utils.previousHalfHour() });
+            var workout = {
+                id: undefined, 
+                time: utils.previousHalfHour(),
+                sets: []
+            };
+            if(routineId && routineWorkoutId){
+                self.$store.dispatch(constants.FETCH_ROUTINE, {
+                    id: routineId,
+                    success: function (routine) {
+                        var routineWorkout = routine.workouts.find(w => w.id === routineWorkoutId);
+                        routineWorkout.exercises.forEach(e => {
+                            for(var i = 0; i < e.sets; i++){
+                                workout.sets.push({ exerciseId: e.exerciseId, reps: e.reps });
+                            }
+                        });
+                        self.populate(workout);
+                    },
+                    failure: function () {
+                        toaster.error(self.$t('fetchFailed'));
+                    }
+                });
+            }
+            else {
+                self.populate(workout);
+            }   
         }
         else {
             self.$store.dispatch(constants.FETCH_WORKOUT, {
