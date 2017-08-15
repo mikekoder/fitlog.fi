@@ -13,8 +13,14 @@
                         <thead>
                             <tr>
                                 <th>{{ $t("name") }}</th>
-                                <th>{{ $t("usageCount") }}</th>
-                                <th>{{ $t("nutrientCount") }}</th>
+                                <th>
+                                    <span class="hidden-xs">{{ $t("usageCount") }}</span>
+                                    <span class="hidden-sm hidden-md hidden-lg" v-bind:title="$t('usageCount')" ><i class="fa fa-cutlery"></i></i></span>
+                                </th>
+                                <th>
+                                    <span class="hidden-xs">{{ $t("nutrientCount") }}</span>
+                                    <span class="hidden-sm hidden-md hidden-lg" v-bind:title="$t('nutrientCount')"><i class="fa fa-flask"></i></span>
+                                </th>
                                 <th></th>
                             </tr>
                         </thead>

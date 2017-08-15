@@ -136,7 +136,7 @@
     training: 'Treenaus',
     tuesday: 'Tiistai',
     tuesdayShort: 'T',
-    usageCount: 'Käyttökertoja',
+    usageCount: 'Käytetty',
     useFacebook: 'Käytä Facebook-tunnuksia',
     useGoogle: 'Käytä Google-tunnuksia',
     username: 'Käyttäjätunnus',
