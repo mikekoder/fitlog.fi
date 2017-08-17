@@ -56,7 +56,7 @@
                                     <th>{{ $t("amount") }}/
                                         <select v-model="nutrientPortion" @change="changeNutrientPortion">
                                             <option v-for="portion in nutrientPortions" v-bind:value="portion">{{ portion.name }}</option>
-                                        <select>
+                                        </select>
                                     </th>
                                     <th></th>
                                 </tr>
