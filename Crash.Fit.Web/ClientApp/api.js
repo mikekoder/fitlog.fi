@@ -1,5 +1,24 @@
 ﻿var $ = require('jquery')
-$.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="X-CSRF-TOKEN"]').attr('content') } });
+
+$.ajaxSetup({
+    headers: { 'X-CSRF-TOKEN': $('meta[name="X-CSRF-TOKEN"]').attr('content') },
+    beforeSend: function (xhr) {
+        var token = localStorage.getItem("access_token");
+        xhr.setRequestHeader('Authorization', 'bearer ' + token);
+    }
+    /*, error: function (x, status, error) {
+        if (x.status == 401) {
+            alert("Istunto on vanhentunut. Kirjaudu sisään ja yritä sitten uudestaan");
+            var loginWindow = new BrowserWindow({ width: 600, height: 300, frame: false, show: false });
+            loginWindow.loadURL('/#/kirjaudu');
+            //loginWindow.on('closed', () => { loginWindow = null; });
+            loginWindow.show();
+        }
+        else {
+            alert("An error occurred: " + status + "nError: " + error);
+        }
+    }*/
+});
 const baseUrl = '/api/'
 
 const api = {
@@ -35,6 +54,9 @@ const api = {
     },
     logout: function(){
         return $.post(baseUrl+'users/logout');
+    },
+    refreshToken: function (refreshToken) {
+        return $.get(baseUrl + 'users/refresh-token/?refreshToken=' + refreshToken);
     },
 
     // Meals

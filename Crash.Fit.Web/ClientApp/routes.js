@@ -156,7 +156,7 @@ const main = [
         meta: { anon: true }
     },
     {
-        path: '/login-success',
+        path: '/login-success/:client/:refreshToken/:accessToken',
         name: 'login-success',
         component: LoginSuccess,
         meta: { anon: true }

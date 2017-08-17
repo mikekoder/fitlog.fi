@@ -33,7 +33,6 @@ Vue.mixin({
         }
     },
     created(){
-        console.log(document.cookie)
     }
 });
 

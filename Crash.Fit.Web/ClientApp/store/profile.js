@@ -9,6 +9,29 @@ const state = {
 
 // actions
 const actions = {
+    [constants.STORE_TOKENS]({ commit, state }, { client, refreshToken, accessToken, success, failure }) {
+        localStorage.setItem('client', client);
+        localStorage.setItem('refresh_token', refreshToken);
+        localStorage.setItem('access_token', accessToken);
+
+        if (success) {
+            success();
+        }
+    },
+    [constants.REFRESH_TOKEN]({ commit, state }, { success, failure }) {
+        //var client = localStorage.getItem('client');
+        var refreshToken = localStorage.getItem('refresh_token');
+        api.refreshToken(refreshToken).then(function (response) {
+            localStorage.setItem('access_token', response.accessToken);
+            if (success) {
+                success();
+            }
+        }).fail(function () {
+            if(failure){
+                failure();
+            }
+        });
+    },
     [constants.FETCH_PROFILE] ({commit, state},{forceRefresh,success, failure}) {
         if(state.profile && !forceRefresh){
             if(success){
@@ -24,7 +47,6 @@ const actions = {
                 success(profile);
             }
         }).fail(function(){
-            commit(constants.FETCH_PROFILE_FAILURE)
             if(failure){
                 failure();
             }
@@ -40,15 +62,16 @@ const actions = {
                 success(savedProfile);
             }
         }).fail(function () {
-            commit(constants.FETCH_PROFILE_FAILURE)
             if (failure) {
                 failure();
             }
         });
     },
-    [constants.LOGOUT] ({commit, state},{success, failure}) {
-        api.logout().then(function(){
-            commit(constants.LOGOUT_SUCCESS)
+    [constants.LOGOUT]({ commit, state }, { success, failure }) {
+        api.logout().then(function () {
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('access_token');
+            commit(constants.LOGOUT_SUCCESS);
             if(success){
                 success();
             }
