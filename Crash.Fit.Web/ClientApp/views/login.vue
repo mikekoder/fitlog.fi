@@ -34,6 +34,7 @@
 <script>
     var constants = require('../store/constants')
     var api = require('../api');
+
 module.exports = {
     data ()
     {
@@ -50,8 +51,19 @@ module.exports = {
                 username: this.username,
                 password: this.password
             };
-            api.login(data).then(function () {
-                window.location = '/';
+            api.login(data).then(function (response) {
+                self.$store.dispatch(constants.STORE_TOKENS, {
+                    client: response.client,
+                    refreshToken: response.refreshToken,
+                    accessToken: response.accessToken,
+                    success: function () {
+                        window.location = '/';
+                    },
+                    failure: function () {
+                        toaster(self.$t('failed'));
+                    }
+                });
+                
             });
         },
         loginGoogle() {

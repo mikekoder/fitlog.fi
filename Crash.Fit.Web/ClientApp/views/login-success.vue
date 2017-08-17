@@ -13,7 +13,24 @@ module.exports = {
     methods: {},
     created: function () {
         var self = this;
-        window.location = '/';
+
+        var client = self.$route.params.client;
+        var refreshToken = self.$route.params.refreshToken;
+        var accessToken = self.$route.params.accessToken;
+
+        self.$store.dispatch(constants.STORE_TOKENS, {
+            client,
+            refreshToken,
+            accessToken,
+            success: function () {
+                if(client == 'web'){
+                    window.location = '/';
+                }
+            },
+            failure: function () {
+                toaster(self.$t('failed'));
+            }
+        });
     }
 }
 </script>

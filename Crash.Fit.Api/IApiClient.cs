@@ -1,4 +1,5 @@
 ﻿using Crash.Fit.Api.Models.Nutrition;
+using Crash.Fit.Api.Models.Profile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Crash.Fit.Api
 {
     public interface IApiClient
     {
+        ApiResult<ProfileResponse> GetProfile();
         /*
         // Nutrients
         ApiResult<NutrientResponse[]> GetNutrients();

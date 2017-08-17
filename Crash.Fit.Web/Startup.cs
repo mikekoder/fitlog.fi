@@ -24,6 +24,8 @@ using Crash.Fit.Api.Models.Training;
 using Crash.Fit.Api.Models.Nutrition;
 using Crash.Fit.Api.Models.Profile;
 using Crash.Fit.Api.Models.Measurements;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Crash.Fit.Web
 {
@@ -92,6 +94,7 @@ namespace Crash.Fit.Web
             {
                 return new FeedbackRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
             });
+            services.AddSingleton<IConfigurationRoot>(Configuration);
             AutoMapper.Mapper.Initialize(m => {
 
                 // Nutrients
@@ -210,7 +213,19 @@ namespace Crash.Fit.Web
                 AppId = Configuration["Authentication:Facebook:AppId"],
                 AppSecret = Configuration["Authentication:Facebook:AppSecret"]
             });
-            
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("Authentication:Jwt:Key").Value)),
+                    ValidAudience = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value
+                }
+            });
             app.Use(async (context, next) =>
             {
                 context.Request.EnableRewind();

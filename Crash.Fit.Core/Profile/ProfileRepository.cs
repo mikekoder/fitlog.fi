@@ -20,7 +20,9 @@ namespace Crash.Fit.Profile
                 return conn.QuerySingleOrDefault<Profile>(sql, new { userId });
             }
         }
-        public bool SaveProfile(Profile profile)
+
+        
+        public void SaveProfile(Profile profile)
         {
             var sql = @"MERGE INTO Profile
 USING (select @UserId AS UserId) AS Source
@@ -38,13 +40,55 @@ WHEN NOT MATCHED THEN
                     conn.Execute(sql, profile, tran);
 
                     tran.Commit();
-                    return true;
                 }
                 catch (Exception ex)
                 {
                     tran.Rollback();
                     throw;
                 }
+            }
+        }
+
+        public string UpdateRefreshToken(Guid userId)
+        {
+            var token = Guid.NewGuid().ToString() + userId.ToString();
+            var sql = @"MERGE INTO Profile
+USING (select @userId AS UserId) AS Source
+ON (Profile.UserId=Source.UserId)
+WHEN MATCHED THEN
+	UPDATE SET RefreshToken=@token
+WHEN NOT MATCHED THEN
+	INSERT(UserId,RefreshToken) VALUES(@userId, @token);";
+
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute(sql, new {userId, token }, tran);
+
+                    tran.Commit();
+                    return token;
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+        public string GetRefreshToken(Guid userId)
+        {
+            using (var conn = CreateConnection())
+            {
+                return conn.QuerySingleOrDefault<string>("SELECT RefreshToken FROM Profile WHERE UserId=@userId", new { userId });
+            }
+        }
+        public Guid? GetUserIdByRefreshToken(string refreshToken)
+        {
+            using (var conn = CreateConnection())
+            {
+                return conn.QuerySingleOrDefault<Guid?>("SELECT UserId FROM Profile WHERE RefreshToken=@refreshToken", new { refreshToken });
             }
         }
     }

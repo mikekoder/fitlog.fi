@@ -84,13 +84,33 @@ module.exports = {
                 },
                 failure: function () { }
             });
+        },
+        refreshTokens() {
+            var self = this;
+
+            self.$store.dispatch(constants.REFRESH_TOKEN, {
+                success: function () { 
+                    if(!self.isLoggedIn){
+                        self.$store.dispatch(constants.FETCH_PROFILE, {});
+                    }
+                },
+                failure: function () {
+                    //toaster(self.$t('failed'));
+                }
+            });
         }
     },
     created() {
-        this.$store.dispatch(constants.FETCH_PROFILE, {
+        var self = this;
+
+        self.$store.dispatch(constants.FETCH_PROFILE, {
             success: function () { },
             failure: function () { }
         });
+        
+        setInterval(function () {
+            self.refreshTokens();
+        }, 60000); 
     },
     beforeRouteUpdate: function (to, from, next) {
         this.$store.commit(constants.LOADING);

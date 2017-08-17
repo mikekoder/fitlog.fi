@@ -8,6 +8,9 @@ namespace Crash.Fit.Profile
     public interface IProfileRepository
     {
         Profile GetProfile(Guid userId);
-        bool SaveProfile(Profile profile);
+        void SaveProfile(Profile profile);
+        string GetRefreshToken(Guid userId);
+        string UpdateRefreshToken(Guid userId);
+        Guid? GetUserIdByRefreshToken(string refreshToken);
     }
 }

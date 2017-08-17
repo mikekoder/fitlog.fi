@@ -9,9 +9,6 @@ module.exports =  {
     name: 'App',
     data: function () {
         return { }
-    },
-    components: {
-        'mainmenu': require('./components/menu')
     }
 }
 </script>
