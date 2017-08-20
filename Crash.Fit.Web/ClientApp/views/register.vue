@@ -97,8 +97,18 @@ module.exports = {
                 password: this.password,
                 password2:this.password2
             };
-            api.register(data).then(function () {
-                window.location = '/';
+            api.register(data).then(function (response) {
+                self.$store.dispatch(constants.STORE_TOKENS, {
+                    client: response.client,
+                    refreshToken: response.refreshToken,
+                    accessToken: response.accessToken,
+                    success: function () {
+                        window.location = '/';
+                    },
+                    failure: function () {
+                        toaster(self.$t('failed'));
+                    }
+                });
             }).fail(function (response) {
                 toaster.error(self.$t('register.fixErrors'));
                 if (response.responseJSON && response.responseJSON.errorCodes) {
