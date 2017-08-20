@@ -72,7 +72,7 @@
                                 <tr v-for="nutrient in nutrientsGrouped[group.id]" v-if="groupOpenStates[group.id]">
                                     <template v-if="!nutrient.computed">
                                         <td>{{ nutrient.name }}</td>
-                                        <td><input v-model="nutrients[nutrient.id]" /></td>
+                                        <td><input type="number" v-model="nutrients[nutrient.id]" /></td>
                                         <td>{{ unit(nutrient.unit)}}</td>
                                     </template>
                                 </tr>
