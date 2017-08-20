@@ -87,7 +87,7 @@
                 <div class="col-sm-12">
                     <button class="btn btn-primary" @click="save">{{ $t("save") }}</button>
                     <button class="btn" @click="cancel">{{ $t("cancel") }}</button>
-                    <button class="btn btn-danger btn-sm" v-if="id" @click="deleteWorkout">{{ $t("delete") }}</button>
+                    <button class="btn btn-danger btn-sm" v-if="id" @click="removeWorkout">{{ $t("delete") }}</button>
                 </div>
             </div>
         </section>
