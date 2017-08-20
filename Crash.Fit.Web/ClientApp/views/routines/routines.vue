@@ -92,6 +92,7 @@ module.exports = {
 
         var self = this;
         this.$store.dispatch(constants.FETCH_EXERCISES, {
+            forceRefresh: true,
             success: function () { },
             failure: function () { }
         });
