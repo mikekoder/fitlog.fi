@@ -256,7 +256,7 @@ module.exports = {
                             var nutrient = group[j];
                             var value = food.nutrients ? food.nutrients.find(n => n.nutrientId == nutrient.id) : undefined;
                             if (value) {
-                                if(self.nutrientPortion){
+                                if(self.nutrientPortion && self.nutrientPortion != defaultNutrientPortion){
                                     self.nutrients[nutrient.id] = value.portionAmount;                                   
                                 }
                                 else {
