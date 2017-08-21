@@ -23,7 +23,7 @@ Vue.use(VueI18n)
 
 const i18n = new VueI18n({
     locale: 'fi',
-    messages: translations,
+    messages: translations
 })
 
 Vue.mixin({

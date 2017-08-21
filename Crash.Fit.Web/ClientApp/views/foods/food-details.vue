@@ -208,7 +208,7 @@ module.exports = {
                     self.$router.replace({ name: 'foods' });
                 },
                 failure: function () {
-                    toaster.error(self.$t('foodDetails.saveFailed'));
+                    toaster.error(self.$t('saveFailed'));
                 }
             });
         },
@@ -223,7 +223,7 @@ module.exports = {
                     self.$router.push({ name: 'foods' });
                 },
                 failure: function () {
-                    toaster.error(self.$t('foodDetails.deleteFailed'));
+                    toaster.error(self.$t('deleteFailed'));
                 }
             });
         },
