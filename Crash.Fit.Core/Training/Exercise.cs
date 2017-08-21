@@ -15,7 +15,7 @@ namespace Crash.Fit.Training
     {
         public int UsageCount { get; set; }
     }
-    public class ExerciseDetails : Exercise
+    public class ExerciseDetails : ExerciseSummary
     {
         public Guid[] Targets { get; set; }
     }

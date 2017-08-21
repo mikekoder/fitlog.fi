@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Api.Models.Training
 {
-    public class ExerciseDetailsResponse : ExerciseResponse
+    public class ExerciseDetailsResponse : ExerciseSummaryResponse
     {
         public Guid[] Targets { get; set; }
     }

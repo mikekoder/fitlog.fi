@@ -50,14 +50,20 @@ namespace Crash.Fit.Training
                 return conn.Query<Exercise>(sql, parameters);
             }
         }
-        public IEnumerable<ExerciseSummary> SearchUserExercises(Guid userId)
+        public IEnumerable<ExerciseDetails> SearchUserExercises(Guid userId)
         {
             var sql = @"
-SELECT Exercise.*,(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount FROM Exercise WHERE UserId=@userId AND Deleted IS NULL;";
+SELECT Exercise.*,(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount FROM Exercise WHERE UserId=@userId AND Deleted IS NULL;
+SELECT * FROM ExerciseTarget";
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, new { userId }))
             {
-                var exercises = multi.Read<ExerciseSummary>().ToList();
+                var exercises = multi.Read<ExerciseDetails>().ToList();
+                var targets = multi.Read<ExerciseTargetRaw>().ToList();
+                foreach(var exercise in exercises)
+                {
+                    exercise.Targets = targets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                }
                 return exercises;
             }
         }
@@ -463,6 +469,11 @@ SELECT * FROM WorkoutSet WHERE WorkoutId=@id ORDER BY [Index];";
             public Guid ExerciseId { get; set; }
             public int Sets { get; set; }
             public int Reps { get; set; }
+        }
+        class ExerciseTargetRaw
+        {
+            public Guid ExerciseId { get; set; }
+            public Guid MuscleGroupId { get; set; }
         }
     }
 }

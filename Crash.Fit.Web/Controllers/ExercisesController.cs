@@ -25,7 +25,7 @@ namespace Crash.Fit.Web.Controllers
         {
             var exercises = trainingRepository.SearchUserExercises(CurrentUserId).OrderBy(e => e.Name);
 
-            var response = AutoMapper.Mapper.Map<ExerciseSummaryResponse[]>(exercises);
+            var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse[]>(exercises);
             return Ok(response);
         }
         [HttpGet("search")]
