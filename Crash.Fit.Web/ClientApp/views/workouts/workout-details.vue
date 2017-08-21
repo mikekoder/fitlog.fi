@@ -233,7 +233,7 @@ module.exports = {
                     self.populate(workout);
                 },
                 failure: function () {
-                    toaster.error(self.$t('workoutDetails.fetchFailed'));
+                    toaster.error(self.$t('fetchFailed'));
                 }
             });
         }
