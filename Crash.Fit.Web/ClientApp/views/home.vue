@@ -2,9 +2,10 @@
     <div>
         <section class="content-header">
         </section>
-        <section class="content" v-if="isLoggedIn">
-        </section>
-        <section class="content" v-if="!isLoggedIn">
+        <section class="content">
+          Fitlog on ilmainen ruoka- ja treenipäiväkirja.
+          <div  v-if="isLoggedIn"></div>
+          <div  v-if="!isLoggedIn"></div>
         </section>
 </div>
 </template>
