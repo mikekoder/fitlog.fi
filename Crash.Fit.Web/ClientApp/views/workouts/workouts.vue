@@ -51,7 +51,7 @@
                                 </thead>
                                 <tbody>
                                     <tr class="workout" v-for="workout in workouts">
-                                        <td class="freeze"><router-link :to="{ name: 'workouts', params: { id: workout.id } }">{{ datetime(workout.time) }}</router-link></td>
+                                        <td class="freeze"><router-link :to="{ name: 'workout-details', params: { id: workout.id } }">{{ datetime(workout.time) }}</router-link></td>
                                         <template v-for="muscleGroup in muscleGroups">
                                             <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
                                         </template>

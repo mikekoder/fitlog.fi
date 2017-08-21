@@ -80,6 +80,17 @@ const actions = {
                  failure();
              }
          });
+    },
+     [constants.FETCH_WORKOUT] ({ commit, state }, {id, success, failure}) {
+         api.getWorkout(id).then(function(workout){
+             if(success){
+                 success(workout);
+             }
+         }).fail(function(){
+             if(failure){
+                 failure();
+             }
+         });
      },
      [constants.SAVE_WORKOUT] ({commit, state},{workout, success, failure}){
          api.saveWorkout(workout).then(function (savedWorkout) {
