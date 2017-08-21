@@ -82,7 +82,7 @@ const actions = {
          });
      },
      [constants.SAVE_WORKOUT] ({commit, state},{workout, success, failure}){
-         api.saveWorkout(workout).then(function(savedWorkout){
+         api.saveWorkout(workout).then(function (savedWorkout) {
              commit(constants.SAVE_WORKOUT_SUCCESS,{id: workout.id, workout: savedWorkout})
              if(success){
                  success(savedWorkout);
@@ -308,6 +308,23 @@ const mutations = {
                 removeWorkout(old, state)
             }
         }
+        workout.muscleGroupSets = {};
+        workout.sets.forEach(s => {
+            if (s.exerciseId) {
+                var exercise = state.exercises.find(e => e.id == s.exerciseId);
+                if (exercise) {
+                    exercise.targets.forEach(t => {
+                        if (workout.muscleGroupSets[t]) {
+                            workout.muscleGroupSets[t] += 1;
+                        }
+                        else {
+                            workout.muscleGroupSets[t] = 1;
+                        }
+                    });
+                }  
+            }
+        });
+
         state.workouts.push(workout);
     },
     [constants.DELETE_EXERCISE_SUCCESS] (state, {exercise}) {
@@ -329,7 +346,7 @@ const mutations = {
         });
     },
     [constants.DELETE_WORKOUT_SUCCESS] (state, {workout}) {
-        removeWorkout(meal, state)
+        removeWorkout(workout, state)
     },
     [constants.LOGOUT_SUCCESS] (state) {
         // TODO: clear state
