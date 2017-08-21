@@ -91,15 +91,13 @@ namespace Crash.Fit.Web.Controllers
             return Ok(result);
         }
         [HttpGet("votes")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GetVotes(Guid id)
+        public async Task<IActionResult> GetVotes()
         {
             var votes = _feedbackRepository.GetVotes(CurrentUserId);
             return Ok(votes);
         }
 
         [HttpPost("{id}/vote")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Vote(Guid id)
         {
             if(_feedbackRepository.UserHasVoted(id, CurrentUserId))

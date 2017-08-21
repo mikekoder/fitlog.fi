@@ -5,8 +5,10 @@ const state = {
     loading: false,
     bugsLoaded: false,
     improvementsLoaded: false,
+    votesLoaded: false,
     bugs: [],
-    improvements: []
+    improvements: [],
+    votes: []
 }
 
 // actions
@@ -59,6 +61,36 @@ const actions = {
                 failure();
             }
         });
+    },
+    [constants.FETCH_VOTES]({ commit, state }, { forceRefresh, success, failure }) {
+        if (state.votesLoaded && !forceRefresh) {
+            if (success) {
+                success(state.votes);
+            }
+        }
+        api.getVotes().then(function (votes) {
+            commit(constants.FETCH_VOTES_SUCCESS, { votes })
+            if (success) {
+                success(votes);
+            }
+        }).fail(function () {
+            if (failure) {
+                failure();
+            }
+        });
+    },
+    [constants.SAVE_VOTE]({commit, state}, {feedbackId, success, failure}) {
+        api.saveVote(feedbackId).then(function () {
+            commit(constants.SAVE_VOTE_SUCCESS, { feedbackId })
+            if (success) {
+                success();
+            }
+        }).fail(function () {
+            commit(constants.SAVE_FEEDBACK_FAILURE)
+            if (failure) {
+                failure();
+            }
+        });
     }
 }
 
@@ -79,8 +111,14 @@ const mutations = {
     [constants.FETCH_IMPROVEMENTS_SUCCESS](state, { improvements }) {
         state.improvementsLoaded = true;
         state.improvements = improvements;
+    },
+    [constants.FETCH_VOTES_SUCCESS](state, { votes }) {
+        state.votes = votes;
+        state.votesLoaded = true;
+    },
+    [constants.SAVE_VOTE_SUCCESS](state, { feedbackId }) {
+        state.votes.push(feedbackId);
     }
-
 }
 
 
