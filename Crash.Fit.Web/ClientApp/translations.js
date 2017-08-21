@@ -72,6 +72,7 @@
     meals: 'Ateriat',
     measure: 'Mitta',
     measurements: 'Mitat',
+    min: 'väh.',
     MINERAL: 'Mineraalit',
     monday: 'Maanantai',
     mondayShort: 'M',
@@ -150,7 +151,7 @@
     weightChange: 'Valmistushävikki/-lisä',
     weights: 'Painot',
     workoutDetails: 'Treenin tiedot',
-    workouts: 'Treenit'
+    workouts: 'Treenit',
     youHaveVoted: 'Olet äänestänyt'
 }
 
