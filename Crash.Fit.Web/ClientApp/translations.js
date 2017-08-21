@@ -143,6 +143,7 @@
     value: 'Arvo',
     visibility: 'Näkyvyys',
     VITAM: 'Vitamiinit',
+    vote: 'Äänestä',
     wednesday: 'Keskiviikko',
     wednesdayShort: 'K',
     weight: 'Paino',
@@ -150,6 +151,7 @@
     weights: 'Painot',
     workoutDetails: 'Treenin tiedot',
     workouts: 'Treenit'
+    youHaveVoted: 'Olet äänestänyt'
 }
 
 module.exports = {

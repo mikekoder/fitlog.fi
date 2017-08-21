@@ -37,6 +37,19 @@
             <router-link tag="li" :to="{ name: 'measurements'}" v-if="isLoggedIn">
                 <a><i class="fa fa-balance-scale"></i> <span>{{ $t("measurements") }}</span></a>
             </router-link>
+            <li class="header" v-if="isLoggedIn">{{ $t("getInvolved") }}</li>
+            <router-link tag="li" :to="{ name: 'bugs'}" v-if="isLoggedIn">
+              <a>
+                <i class="fa fa-bug"></i>
+                <span>{{ $t("bugs") }}</span>
+              </a>
+            </router-link>
+            <router-link tag="li" :to="{ name: 'improvements'}" v-if="isLoggedIn">
+              <a>
+                <i class="fa fa-lightbulb-o"></i>
+                <span>{{ $t("improvements") }}</span>
+              </a>
+            </router-link>
             <!--
             <li class="treeview">
                 <a href="#">

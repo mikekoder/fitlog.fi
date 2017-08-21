@@ -13,21 +13,67 @@
                 </button>
             </div>
           </div>
-          <template v-for="item in items">
-            <h3>{{ item.title }}</h3>
-            </template>
+        <div class="row">
+            <div class="col-sm-12">
+                <br />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+                <template v-for="item in itemsSorted">
+                    <div class="box box-solid" v-bind:class="{voted: userHasVoted(item.id)}">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">{{ item.title }}</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    {{ item.description }}
+                                    <template v-if="userHasVoted(item.id)">
+                                        <a class="btn btn-app pull-right" v-bind:title="$t('youHaveVoted')">
+                                            <span class="badge bg-red">{{ item.score }}</span>
+                                            <i class="fa fa-thumbs-o-up"></i>
+                                        </a>
+                                    </template>
+                                    <template v-else>
+                                        <button class="btn btn-app pull-right" @click="vote(item)" :disabled="item.locked">
+                                            <span class="badge bg-red">{{ item.score }}</span>
+                                            <i class="fa fa-thumbs-o-up"></i> {{ $t('vote') }}
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="row" v-if="item.adminComment">
+                                <div class="col-sm-12">
+                                    <pre>{{ item.adminComment }}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+          
         </section>
   </div>
 </template>
 
 <script>
     var constants = require('../../store/constants')
-
+    var toaster = require('../../toaster');
 module.exports = {
     data () {
         return {
           type: '',
           items: []
+        }
+    },
+    computed: {
+        itemsSorted: function () {
+            return this.items.sort((a, b) => { return a.score < b.score; });
+        },
+        votes: function () {
+            return this.$store.state.feedback.votes;
         }
     },
     components: {},
@@ -42,7 +88,7 @@ module.exports = {
                 self.$store.commit(constants.LOADING_DONE);
             },
             failure: function () {
-                toaster(self.$t('fetchFailed'));
+                toaster.error(self.$t('fetchFailed'));
             }
           });
         }
@@ -53,7 +99,7 @@ module.exports = {
                 self.$store.commit(constants.LOADING_DONE);
             },
             failure: function () {
-                toaster(self.$t('fetchFailed'));
+                toaster.error(self.$t('fetchFailed'));
             }
           });
         }
@@ -65,11 +111,33 @@ module.exports = {
         else if(this.type === 'Improvement'){
           this.$router.push({ name: 'improvement-details', params: { id: constants.NEW_ID } });
         }
+      },
+      userHasVoted: function (feedbackId) {
+          return this.votes.includes(feedbackId);
+      },
+      vote: function (feedback) {
+          var self = this;
+          self.$store.dispatch(constants.SAVE_VOTE, {
+            feedbackId: feedback.id,
+            success: function () {
+                feedback.score++;
+            },
+            failure: function () {
+                toaster.error(self.$t('saveFailed'));
+            }
+          });
       }
-      
     },
-    created () {
-      this.loadItems();
+    created() {
+        var self = this;
+        self.$store.dispatch(constants.FETCH_VOTES, {
+            success: function (votes) {
+            },
+            failure: function () {
+                toaster.error(self.$t('fetchFailed'));
+            }
+          });
+        self.loadItems();
     },
     watch: {
       $route: function(){
@@ -80,4 +148,5 @@ module.exports = {
 </script>
 
 <style scoped>
+    .box.voted i { color: blue; }
 </style>

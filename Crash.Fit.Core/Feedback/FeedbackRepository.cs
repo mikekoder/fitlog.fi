@@ -90,7 +90,7 @@ SELECT * FROM FeedbackComment WHERE FeedbackId=@Id";
 
         public IEnumerable<Guid> GetVotes(Guid userId)
         {
-            var sql = @"SELECT FeedbackId FROM FeedbackVotes WHERE UserId=@userId";
+            var sql = @"SELECT FeedbackId FROM FeedbackVote WHERE UserId=@userId";
             using (var conn = CreateConnection())
             {
                 return conn.Query<Guid>(sql, new { userId });
@@ -118,7 +118,7 @@ SELECT * FROM FeedbackComment WHERE FeedbackId=@Id";
 
         public bool UserHasVoted(Guid feedbackId, Guid userId)
         {
-            var sql = @"SELECT FeedbackId FROM FeedbackVotes WHERE UserId=@userId AND FeedbackId=@feedbackId";
+            var sql = @"SELECT FeedbackId FROM FeedbackVote WHERE UserId=@userId AND FeedbackId=@feedbackId";
             using (var conn = CreateConnection())
             {
                 return conn.QuerySingleOrDefault<Guid?>(sql, new { userId, feedbackId }) != null;

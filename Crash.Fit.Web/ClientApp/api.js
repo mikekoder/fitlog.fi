@@ -327,5 +327,16 @@ const api = {
     listImprovements: function () {
         return $.get(baseUrl + 'feedback/improvements');
     },
+    getVotes: function () {
+        return $.get(baseUrl + 'feedback/votes');
+    },
+    saveVote: function (feedbackId) {
+        var url = baseUrl + 'feedback/' + feedbackId+'/vote';
+        return $.ajax({
+            url: url,
+            type: 'POST',
+            contentType: 'text/json'
+        });
+    }
 };
 module.exports = api

@@ -12,6 +12,8 @@ namespace Crash.Fit.Api.Models.Feedback
         public Guid UserId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public string AdminComment { get; set; }
+        public bool Locked { get; set; }
         public int Score { get; set; }
         public DateTimeOffset Created { get; set; }
         public int CommentCount { get; set; }
