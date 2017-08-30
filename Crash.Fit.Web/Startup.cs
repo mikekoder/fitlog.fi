@@ -127,9 +127,40 @@ namespace Crash.Fit.Web
                 // Meals
                 m.CreateMap<MealDetails, MealDetailsResponse>();
                 m.CreateMap<MealRow, MealRowModel>();
-                m.CreateMap<MealRequest, MealDetails>();
+                m.CreateMap<MealRequest, MealDetails>().ForMember(d => d.Time, x => { x.Ignore(); }).AfterMap((source, target) =>
+                {
+                    int hour = 0;
+                    int minute = 0;
+                    var timeParts = (source.Time ?? "").Replace('.', ':').Split(':');
+                    if (timeParts.Length > 0)
+                    {
+                        int.TryParse(timeParts[0], out hour);
+                    }
+                    if (timeParts.Length > 1)
+                    {
+                        int.TryParse(timeParts[1], out minute);
+                    }
+                    var date = DateTimeUtils.ToLocal(source.Date);
+                    var time = new DateTime(date.Year, date.Month, date.Day, hour, minute, 0);
+
+                    target.Time = new DateTimeOffset(time, DateTimeUtils.GetTimeZoneOffset(time));
+                });
                 m.CreateMap<MealRowModel, MealRow>();
 
+                // Meal rhythm
+                m.CreateMap<MealDefinition, MealDefinitionResponse>().AfterMap((source, target) => 
+                {
+                    if (source.Start.HasValue)
+                    {
+                        target.StartHour = source.Start.Value.Hours;
+                        target.StartMinute = source.Start.Value.Minutes;
+                    }
+                    if (source.End.HasValue)
+                    {
+                        target.EndHour = source.End.Value.Hours;
+                        target.EndMinute = source.End.Value.Minutes;
+                    }
+                });
                 // Recipes
                 m.CreateMap<FoodSummary, RecipeSummaryResponse>();
                 m.CreateMap<FoodDetails, RecipeDetailsResponse>();
@@ -145,7 +176,10 @@ namespace Crash.Fit.Web
                 m.CreateMap<WorkoutSummary, WorkoutSummaryResponse>();
                 m.CreateMap<WorkoutDetails, WorkoutDetailsResponse>();
                 m.CreateMap<WorkoutSet, WorkoutSetResponse>();
-                m.CreateMap<WorkoutRequest, WorkoutDetails>();
+                m.CreateMap<WorkoutRequest, WorkoutDetails>().AfterMap((source, target) => 
+                {
+                    target.Time = DateTimeUtils.ToLocal(target.Time);
+                });
                 m.CreateMap<WorkoutSetRequest, WorkoutSet>();
 
                 // Exercises

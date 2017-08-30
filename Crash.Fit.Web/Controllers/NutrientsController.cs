@@ -75,12 +75,12 @@ namespace Crash.Fit.Web.Controllers
         [HttpGet("targets")]
         public IActionResult ListTargets()
         {
-            var response = new List<NutrientTargetsResponse>();
+            var response = new List<NutritionGoalsResponse>();
             var targets = nutritionRepository.GetNutrientTargets(CurrentUserId);
             var days = targets.Select(t => t.Days).Distinct();
             foreach (var day in days)
             {
-                var responseDay = new NutrientTargetsResponse
+                var responseDay = new NutritionGoalsResponse
                 {
                     Monday = day.HasFlag(Days.Monday),
                     Tuesday = day.HasFlag(Days.Tuesday),
@@ -91,7 +91,7 @@ namespace Crash.Fit.Web.Controllers
                     Sunday = day.HasFlag(Days.Sunday),
                     ExerciseDay = day.HasFlag(Days.ExerciseDay),
                     RestDay = day.HasFlag(Days.RestDay),
-                    NutrientValues = targets.Where(t => t.Days == day).Select(t => new NutrientTargetsResponse.NutrientValue
+                    NutrientValues = targets.Where(t => t.Days == day).Select(t => new NutritionGoalsResponse.NutrientValue
                     {
                         NutrientId = t.NutrientId,
                         Min = t.Min,
@@ -103,9 +103,9 @@ namespace Crash.Fit.Web.Controllers
             return Ok(response);
         }
         [HttpPut("targets")]
-        public IActionResult UpdateTargets([FromBody] NutrientTargetsRequest[] request)
+        public IActionResult UpdateTargets([FromBody] NutritionGoalsRequest[] request)
         {
-            var targets = new List<NutrientTarget>();
+            var targets = new List<NutrientGoal>();
             foreach(var targetDay in request)
             {
                 var days = Days.None;
@@ -149,7 +149,7 @@ namespace Crash.Fit.Web.Controllers
                 {
                     if (nutrientValue.Min.HasValue || nutrientValue.Max.HasValue)
                     {
-                        targets.Add(new NutrientTarget
+                        targets.Add(new NutrientGoal
                         {
                             UserId = CurrentUserId,
                             NutrientId = nutrientValue.NutrientId,

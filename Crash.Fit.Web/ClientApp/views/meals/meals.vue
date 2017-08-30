@@ -25,7 +25,7 @@
                             </li>
                         </ul>
                     </div>
-                    <button class="btn btn-primary" @click="createMeal">{{ $t("log") }}</button>    
+                    <button class="btn btn-primary" @click="createMeal()">{{ $t("log") }}</button> 
                     <div class="btn-group" role="group" aria-label="...">
                         <template v-for="group in groups">
                             <button class="btn btn-default" v-bind:class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t(group.id) }}</button>
@@ -71,7 +71,7 @@
                                             <td></td>
                                         </tr>
                                         <tr class="meal" v-if="dayStates[day.date.getTime()]" v-for="meal in day.meals">
-                                            <td class="freeze"><router-link :to="{ name: 'meal-details', params: { id: meal.id } }">{{ time(meal.time) }}</router-link></td>
+                                            <td class="freeze"><router-link :to="{ name: 'meal-details', params: { id: meal.id } }">{{ mealName(meal) }}</router-link></td>
                                             <template v-for="col in visibleColumns">
                                                 <td class="nutrient" v-if="!col.hideSummary">
                                                     <div class="chart" v-if="col === energyDistributionColumn">
@@ -310,6 +310,15 @@ module.exports = {
                 return value;
             }
             return value.toFixed(precision);
+        },
+        mealName: function (meal) {
+            if (meal.definitionId) {
+                var def = this.$store.state.nutrition.mealDefinitions.find(d => d.id == meal.definitionId);
+                if (def) {
+                    return def.name;
+                }
+            }
+            return this.time(meal.time);
         }
     },
     created: function () {
@@ -317,6 +326,7 @@ module.exports = {
         self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
         self.$store.dispatch(constants.FETCH_NUTRIENTS, {});
         self.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {});
+        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {});
         if(self.start && self.end){
           self.fetchMeals();
         }

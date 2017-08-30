@@ -2,12 +2,46 @@
     <div v-if="!loading">
         <section class="content-header"><h1>{{ $t("mealDetails") }}</h1></section>
         <section class="content">
-            <div class="row">
-                <div class="col-sm-5 col-md-3 col-lg-2">
-                    <div class="form-group">
-                        <label>{{ $t("time") }}</label>
-                        <datetime-picker class="vue-picker1" name="picker1" v-bind:value="time" v-on:change="time=arguments[0]"></datetime-picker>
-                    </div>
+            <div class="row" v-if="isLoggedIn">
+                <div class="col-sm-4 col-md-3 col-lg-3">                  
+                        <label>{{ $t("time") }}</label><br />
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ formatDate(date) }} <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a @click="setDate(0)">{{ $t("today") }}</a>
+                                </li>
+                                <li>
+                                    <a @click="setDate(-1)">{{ $t("yesterday") }}</a>
+                                </li>             
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <datetime-picker v-bind:value="date" v-on:change="date=arguments[0]" v-bind:format="'DD.MM.YYYY'"></datetime-picker>
+                                </li>
+                            </ul>
+                        </div> 
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ mealName }} <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li v-for="meal in mealDefinitions">
+                                    <a @click="setMealDefinition(meal)">{{ meal.name }}</a>
+                                </li>
+                                <li>
+                                    <div class="input-group">
+                                      <span class="input-group-addon" style="border: 0px;">klo</span>
+                                      <datetime-picker v-bind:value="selectedTime" v-on:change="selectedTime=arguments[0]" v-bind:format="'HH:mm'" v-on:click="selectedTime=arguments[0]"></datetime-picker>
+                                      <span class="input-group-btn">
+                                        <button class="btn btn-secondary" type="button" @click="setTime">{{ $t('use') }}</button>
+                                      </span>
+                                    </div>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <a @click="showMealRhythm">{{ $t("defineMealRhythm") }}</a>
+                                </li>
+                            </ul>
+                        </div> 
+                    
                 </div>
             </div>
             <div class="row">&nbsp;</div>
@@ -33,7 +67,7 @@
                         <template v-for="(row,index) in rows">
                             <div class="meal-row row">
                                 <div class="food col-sm-4">
-                                    <label class="hidden-sm hidden-md hidden-lg">Ruoka</label>
+                                    <label class="hidden-sm hidden-md hidden-lg">{{ $t('food') }}</label>
                                   <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createFood") }}</router-link>
                                   <span class="hidden-sm hidden-md hidden-lg" v-if="!copyMode && isLoggedIn">|</span>
                                   <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'recipe-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createRecipe") }}</router-link>
@@ -121,6 +155,9 @@
                 </div>
             </div>
         </section>
+         <section v-if="mealRhythmOpen">
+            <meal-rhythm v-bind:show="mealRhythmOpen" v-on:close="hideMealRhythm"></meal-rhythm>
+        </section>
     </div>
 </template>
 
@@ -134,16 +171,31 @@ module.exports = {
     data () {
         return {
             id: null,
+            date: null,
             time: null,
+            selectedTime: null,
+            mealDefinitionId: undefined,
             name: null,
             rows: [],
             copyMode: false,
             copyAllRows: false,
             showNutrients: false,
             groupOpenStates: {},
+            mealRhythmOpen: false
         }
     },
     computed: {
+        mealDefinitions: function () {
+            return this.$store.state.nutrition.mealDefinitions;
+        },
+        mealName: function () {
+            var self = this;
+            if (self.mealDefinitionId) {
+                var meal = self.mealDefinitions.find(m => m.id == self.mealDefinitionId);
+                return meal.name;
+            }
+            return formatters.formatTime(self.time);
+        },
         loading: function () {
             return this.$store.state.loading;
         },
@@ -180,7 +232,8 @@ module.exports = {
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
-        'food-picker': require('../foods/food-picker')
+        'food-picker': require('../foods/food-picker'),
+        'meal-rhythm': require('./meal-rhythm'),
     },
     methods: {
         toggleNutrients: function(show){
@@ -210,9 +263,12 @@ module.exports = {
         },
         save: function () {
             var self = this;
+            var time = new Date(self.time);
             var meal = {
                 id: self.id,
-                time: new Date(self.time),
+                date: new Date(self.date),
+                time: time.getHours() + ':' + time.getMinutes(),
+                definitionId: self.mealDefinitionId,
                 name: self.name,
                 rows: self.rows.filter(r => r.food && r.quantity).map(r => { return { foodId: r.food.id, quantity: utils.parseFloat(r.quantity), portionId: r.portion ? r.portion.id : undefined } })
             };
@@ -222,7 +278,7 @@ module.exports = {
                     self.$router.replace({ name: 'meals' });
                 },
                 failure: function () {
-                    toaster(self.$t('mealDetails.saveFailed'));
+                    toaster.error(self.$t('saveFailed'));
                 }
             });
         },
@@ -237,7 +293,7 @@ module.exports = {
                     self.$router.push({ name: 'meals' });
                 },
                 failure: function () {
-                    toaster.error(self.$t('mealDetails.deleteFailed'));
+                    toaster.error(self.$t('deleteFailed'));
                 }
             });
         },
@@ -256,6 +312,7 @@ module.exports = {
             this.copyAllRows = true;
         },
         unit: formatters.formatUnit,
+        formatDate: formatters.formatDate,
         decimal: function (value, precision) {
             if (!value) {
                 return value;
@@ -271,7 +328,10 @@ module.exports = {
         populate(meal){
             var self = this;
             self.id = meal.id;
+            self.date = meal.time;
             self.time = meal.time;
+            self.selectedTime = meal.time;
+            self.mealDefinitionId = meal.definitionId;
             self.name = meal.name;
             var foodIds = meal.rows.map(r => { return r.foodId });
             this.$store.dispatch(constants.FETCH_FOODS, {
@@ -284,9 +344,26 @@ module.exports = {
                     self.$store.commit(constants.LOADING_DONE);
                 },
                 failure: function () {
-                    toaster(self.$t('mealDetails.fetchFailed'));
+                    toaster.error(self.$t('fetchFailed'));
                 }
             });
+        },
+        showMealRhythm: function () {
+            this.mealRhythmOpen = true;
+        },
+        hideMealRhythm: function () {
+            this.mealRhythmOpen = false;
+        },
+        setDate: function (offset) {
+            this.date = moment().add(offset, 'days').toDate();
+        },
+        setTime: function (time) {
+            this.time = this.selectedTime;
+            this.mealDefinitionId = undefined;
+        },
+        setMealDefinition: function (definition) {
+            this.mealDefinitionId = definition.id;
+            this.time = undefined;
         }
     },
     watch: {
@@ -298,6 +375,12 @@ module.exports = {
     },
     created: function () {
         var self = this;
+        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {});
+        this.$store.dispatch(constants.FETCH_NUTRIENTS, {
+            success: function () { },
+            failure: function () { }
+        });
+        
         var id = self.$route.params.id;
         var action = self.$route.params.action;
         if (id == constants.NEW_ID) {
@@ -311,7 +394,7 @@ module.exports = {
                         self.$router.replace({ name: 'meals' });
                     },
                     failure: function () {
-                        toaster(self.$t('mealDetails.restoreFailed'));
+                        toaster.error(self.$t('restoreFailed'));
                     }
                 });
             }
@@ -321,15 +404,12 @@ module.exports = {
                     self.populate(meal);
                 },
                 failure: function () {
-                    toaster(self.$t('mealDetails.fetchFailed'));
+                    toaster.error(self.$t('fetchFailed'));
                 }
             });
         }
-        this.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success: function () { },
-            failure: function () { }
-        });
-
+        
+        
         this.toggleGroup(this.groups[0].id);
     },
     mounted: function () {

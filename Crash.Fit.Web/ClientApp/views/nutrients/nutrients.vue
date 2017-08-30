@@ -3,7 +3,7 @@
         <section class="content-header"><h1>{{ $t("nutrients") }}</h1></section>
         <section class="content">
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-lg-9">
                     <div class="row hidden-xs">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-3"></div>

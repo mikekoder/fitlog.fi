@@ -100,6 +100,14 @@ const api = {
             type: 'POST'
         });
     },
+    addMealRow: function (row) {
+        return $.ajax({
+            url: baseUrl + 'meals/add-row/',
+            type: 'POST',
+            contentType: 'text/json',
+            data: JSON.stringify(row)
+        });
+    },
     // foods
     searchFoods: function(name){
         return $.get(baseUrl + 'foods/search', { name });
@@ -184,6 +192,20 @@ const api = {
             type: 'PUT',
             contentType: 'text/json',
             data: JSON.stringify(settings)
+        });
+    },
+
+    // Meal rhythm
+    getMealDefinitions: function () {
+        return $.get(baseUrl + 'meals/definitions');
+    },
+    saveMealDefinitions: function (definitions) {
+        var url = baseUrl + 'meals/definitions';
+        return $.ajax({
+            url: url,
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(definitions)
         });
     },
 

@@ -7,7 +7,9 @@ namespace Crash.Fit.Api.Models.Nutrition
 {
     public class MealRequest
     {
-        public DateTimeOffset Time { get; set; }
+        public DateTimeOffset Date { get; set; }
+        public string Time { get; set; }
+        public Guid? DefinitionId { get; set; }
         public MealRowModel[] Rows { get; set; }
     }
 }
