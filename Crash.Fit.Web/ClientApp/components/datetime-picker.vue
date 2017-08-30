@@ -52,6 +52,11 @@ module.exports = {
             self.$emit('change', m.toDate());
             //self.model = m.toDate();
         });
+        element.on("dp.show", function () {
+            var m = moment(self.control.date(), format);
+            self.$emit('click', m.toDate());
+            //self.model = m.toDate();
+        });
     }
 }
 </script>

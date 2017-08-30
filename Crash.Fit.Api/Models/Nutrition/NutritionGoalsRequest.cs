@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Api.Models.Nutrition
 {
-    public class NutrientTargetsRequest
+    public class NutritionGoalsRequest
     {
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }

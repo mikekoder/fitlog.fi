@@ -1,6 +1,9 @@
 <template>
     <section class="sidebar">
         <ul class="sidebar-menu">
+            <router-link tag="li" :to="{ name: 'home'}" exact>
+                <a><i class="fa fa-home"></i> <span>{{ $t("home") }}</span></a>
+            </router-link>
             <li class="header">{{ $t("nutrition") }}</li>
             <router-link tag="li" :to="{ name: 'meals'}" v-if="isLoggedIn">
                 <a><i class="fa fa-cutlery"></i> <span>{{ $t("meals") }}</span></a>
@@ -17,8 +20,8 @@
             <router-link tag="li" :to="{ name: 'nutrients'}" v-if="isLoggedIn">
                 <a><i class="fa fa-flask"></i> <span>{{ $t("nutrients") }}</span></a>
             </router-link>
-            <router-link tag="li" :to="{ name: 'nutrition-targets'}" v-if="isLoggedIn">
-                <a><i class="fa fa-crosshairs"></i> <span>{{ $t("nutritionTargets") }}</span></a>
+            <router-link tag="li" :to="{ name: 'nutrition-goals'}" v-if="isLoggedIn">
+                <a><i class="fa fa-crosshairs"></i> <span>{{ $t("nutritionGoals") }}</span></a>
             </router-link>
             <li class="header">{{ $t("training") }}</li>
             <router-link tag="li" :to="{ name: 'workouts'}" v-if="isLoggedIn">

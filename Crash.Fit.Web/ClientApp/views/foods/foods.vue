@@ -7,7 +7,16 @@
                     <button class="btn btn-primary" @click="createFood">{{ $t("create") }}</button>
                 </div>
             </div>
-            <div class="row" v-if="foods.length > 0">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="nav nav-tabs">
+                        <li class="clickable" v-bind:class="{ active: showOwn }"><a @click="">{{ $t("own") }}</a></li>
+                        <li class="clickable" v-bind:class="{ active: !showOwn }"><a @click="">{{ $t("all") }}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div v-if="showOwn">
+                 <div class="row" v-if="foods.length > 0">
                 <div class="col-sm-12">
                     <table class="table" id="food-list">
                         <thead>
@@ -41,6 +50,14 @@
                     {{ $t("noFoods") }}
                 </div>
             </div>
+            </div>
+           <div v-if="!showOwn">
+               <div class="row">
+                   <div class="col-sm-12">
+
+                   </div>
+               </div>
+           </div>
         </section>
     </div>
 </template>
@@ -53,7 +70,8 @@
 module.exports = {
     data () {
         return {
-            foods: []
+            foods: [],
+            showOwn: true
         }
     },
     computed:{

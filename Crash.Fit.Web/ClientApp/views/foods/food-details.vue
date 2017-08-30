@@ -11,6 +11,15 @@
 
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-6 col-md-6 col-lg-4">
+                    <div class="form-group">
+                        <label>{{ $t("manufacturer") }}</label>
+                        <input class="form-control" v-model="manufacturer" />
+                    </div>
+
+                </div>
+            </div>
             <div class="row">&nbsp;</div>
             <div class="row">
                 <div class="col-sm-12">
@@ -82,14 +91,16 @@
                 </div>
             </div>
             <hr />
+            <!--
             <div class="row errors" v-if="!isValid">
                 <div class="col-sm-12">
                     <div class="alert alert-danger"><span v-for="error in errors">{{ error }}<br /></span></div>
                 </div>
             </div>
+            -->
             <div class="row main-actions">
                 <div class="col-sm-12">
-                    <button class="btn btn-primary" @click="save" :disabled="!isValid">{{ $t("save") }}</button>
+                    <button class="btn btn-primary" @click="save">{{ $t("save") }}</button>
                     <button class="btn" @click="cancel">{{ $t("cancel") }}</button>
                     <button class="btn btn-danger" v-if="id" @click="deleteFood">{{ $t("delete") }}</button>
                 </div>
@@ -111,6 +122,7 @@ module.exports = {
         return {
             id: null,
             name: null,
+            manufacturer: null,
             nutrients: {},
             portions: [],
             tab: 'nutrients',

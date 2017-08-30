@@ -9,6 +9,7 @@ namespace Crash.Fit.Api.Models.Nutrition
     {
         public Guid Id { get; set; }
         public DateTimeOffset Time { get; set; }
+        public Guid? DefinitionId { get; set; }
         public MealRowModel[] Rows { get; set; }
         public Dictionary<Guid,decimal> Nutrients { get; set; }
     }

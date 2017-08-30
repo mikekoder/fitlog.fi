@@ -36,7 +36,11 @@ namespace Crash.Fit.Nutrition
         bool RestoreMeal(Guid id, out MealDetails meal);
 
         bool SaveNutrientSettings(Guid userId, IEnumerable<NutrientSetting> settings);
-        IEnumerable<NutrientTarget> GetNutrientTargets(Guid userId);
-        bool SaveNutrientTargets(Guid userId, IEnumerable<NutrientTarget> targets);
+        IEnumerable<NutrientGoal> GetNutrientTargets(Guid userId);
+        bool SaveNutrientTargets(Guid userId, IEnumerable<NutrientGoal> targets);
+        void SaveMealDefinitions(IEnumerable<MealDefinition> definitions);
+        IEnumerable<MealDefinition> GetMealDefinitions(Guid userId);
+        MealRow GetMealRow(Guid id);
+        void AddMealRow(MealRow row);
     }
 }

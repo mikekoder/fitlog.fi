@@ -6,23 +6,26 @@ const state = {
 
     mealsStart: null,
     mealsEnd: null,
-    mealDays:[],
+    mealDays: [],
     meals: [],
     mealsDisplayStart: null,
     mealsDisplayEnd: null,
 
     nutrientGroups: [
-        {id:'MACROCMP',name:'Makrot'}, 
-        {id:'VITAM', name:'Vitamiinit'}, 
-        {id:'MINERAL',name:'Mineraalit'}, 
-        {id:'CARBOCMP', name:'Hiilihydraatit'}, 
-        {id:'FAT',name:'Rasvat'}],
+        { id: 'MACROCMP', name: 'Makrot' },
+        { id: 'VITAM', name: 'Vitamiinit' },
+        { id: 'MINERAL', name: 'Mineraalit' },
+        { id: 'CARBOCMP', name: 'Hiilihydraatit' },
+        { id: 'FAT', name: 'Rasvat' }],
 
     nutrientsLoaded: false,
     nutrients: [],
     nutrientsGrouped: {},
     nutrientTargetsLoaded: false,
-    nutrientTargets: []
+    nutrientTargets: [],
+
+    mealDefinitionsLoaded: false,
+    mealDefinitions: []
 }
 
 // actions
@@ -63,7 +66,7 @@ const actions = {
     },
     [constants.FETCH_MEAL] ({commit, state},{id, success, failure}){
         api.getMeal(id).then(function(meal){
-            //meal.time = new Date(meal.time);
+            meal.time = new Date(meal.time);
             if(success){
                 success(meal);
             }
@@ -109,6 +112,24 @@ const actions = {
                 failure();
             }
         });
+    },
+    [constants.ADD_MEAL_ROW]({ commit, state }, { row, success, failure }) {
+
+        api.addMealRow(row).then(function (savedRow) {
+            var meal = state.meals.find(m => m.id == savedRow.mealId);
+            if (!meal) {
+                api.getMeal(savedRow.mealId).then(function (createdMeal) {
+                    createdMeal.time = new Date(createdMeal.time);
+                    addMeal(createdMeal, state);
+                });
+            }
+            if (meal) {
+                savedRow.foodName = row.food.name;
+                savedRow.portionName = row.portion ? row.portion.name : undefined;
+                meal.rows.push(savedRow);
+            }
+        }).fail(function () { });
+        
     },
     // Foods
     [constants.FETCH_MY_FOODS] ({commit, state},{success, failure}) {
@@ -285,6 +306,38 @@ const actions = {
                 failure();
             }
         });
+    },
+
+    // Meal rhythm
+    [constants.FETCH_MEAL_DEFINITIONS] ({commit, state},{forceRefresh, success, failure}) {
+        if(state.mealDefinitionsLoaded && !forceRefresh){
+            if (success) {
+                success(state.mealDefinitions);
+            }
+            return;
+        }
+        api.getMealDefinitions().then(function (definitions) {
+            commit(constants.FETCH_MEAL_DEFINITIONS_SUCCESS,{definitions})
+            if(success){
+                success(definitions);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
+    },
+    [constants.SAVE_MEAL_DEFINITIONS]({ commit, state }, { definitions, success, failure }) {
+        api.saveMealDefinitions(definitions).then(function(savedDefinitions){
+            commit(constants.SAVE_MEAL_DEFINITIONS_SUCCESS,{definitions: savedDefinitions})
+            if(success){
+                success(savedDefinitions);
+            }
+        }).fail(function(){
+            if(failure){
+                failure();
+            }
+        });
     }
 }
 
@@ -324,6 +377,7 @@ const mutations = {
         for(var i in meals){
             var meal = meals[i];
             meal.time = new Date(meal.time);
+            meal.definition = state.mealDefinitions.find(d => d.id == meal.definitionId);
             if(!state.mealsStart || !state.mealsEnd || moment(meal.time).isBefore(state.mealsStart) || moment(meal.time).isAfter(state.mealsEnd)){
                 addMeal(meal, state);
             }
@@ -373,7 +427,14 @@ const mutations = {
     },
     [constants.LOGOUT_SUCCESS] (state) {
         // TODO: clear state
-    }
+    },
+    [constants.FETCH_MEAL_DEFINITIONS_SUCCESS](state, { definitions }) {
+        state.mealDefinitions = definitions.sort((a,b) => (a.startHour || 99) - (b.startHour || 99));
+        state.mealDefinitionsLoaded = true;
+    },
+    [constants.SAVE_MEAL_DEFINITIONS_SUCCESS](state, { definitions }) {
+        state.mealDefinitions = definitions;
+    },
 }
 
     function removeMeal(meal, state){

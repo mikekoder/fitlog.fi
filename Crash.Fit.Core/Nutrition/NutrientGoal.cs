@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Nutrition
 {
-    public class NutrientTarget
+    public class NutrientGoal
     {
         public Guid UserId { get; set; }
         public Guid NutrientId { get; set; }

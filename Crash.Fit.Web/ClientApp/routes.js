@@ -1,5 +1,5 @@
 ﻿import Layout from './views/layout'
-import Home from './views/home'
+import Home from './views/home/home'
 import Meals from './views/meals/meals'
 import MealDetails from './views/meals/meal-details'
 import Foods from './views/foods/foods'
@@ -7,7 +7,7 @@ import FoodDetails from './views/foods/food-details'
 import Recipes from './views/recipes/recipes'
 import RecipeDetails from './views/recipes/recipe-details'
 import Nutrients from './views/nutrients/nutrients'
-import NutritionTargets from './views/nutrition-targets/nutrition-targets'
+import NutritionGoals from './views/nutrition-goals/nutrition-goals'
 
 import Workouts from './views/workouts/workouts'
 import WorkoutDetails from './views/workouts/workout-details'
@@ -33,7 +33,8 @@ const main = [
             {
                 path: '',
                 name: 'home',
-                component: Home
+                component: Home,
+                meta: { anon: true }
             },
             {
                 path: '/ateriat',
@@ -72,8 +73,8 @@ const main = [
             },
             {
                 path: '/ravintotavoitteet',
-                name: 'nutrition-targets',
-                component: NutritionTargets
+                name: 'nutrition-goals',
+                component: NutritionGoals
             },
             {
                 path: '/treenit',

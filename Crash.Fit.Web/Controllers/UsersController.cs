@@ -116,7 +116,51 @@ namespace Crash.Fit.Web.Controllers
                 return BadRequest(new { ErrorCodes = result.Errors.Select(e => e.Code) });
             }
 
+            InitProfile(user);
+
             return await TokenResult(user.Id);
+        }
+
+        private void InitProfile(User user)
+        {
+            var mealDefinitions = new[]
+            {
+                new Nutrition.MealDefinition
+                {
+                    UserId = user.Id,
+                    Name = "Aamiainen",
+                    Start = new TimeSpan(6,0,0),
+                    End = new TimeSpan(11,0,0)
+                },
+                new Nutrition.MealDefinition
+                {
+                    UserId = user.Id,
+                    Name = "Lounas",
+                    Start = new TimeSpan(11,0,0),
+                    End = new TimeSpan(14,0,0)
+                },
+                new Nutrition.MealDefinition
+                {
+                    UserId = user.Id,
+                    Name = "Päivällinen",
+                    Start = new TimeSpan(14,0,0),
+                    End = new TimeSpan(19,0,0)
+                },
+                new Nutrition.MealDefinition
+                {
+                    UserId = user.Id,
+                    Name = "Iltapala",
+                    Start = new TimeSpan(19,0,0),
+                    End = new TimeSpan(23,0,0)
+                },
+                new Nutrition.MealDefinition
+                {
+                    UserId = user.Id,
+                    Name = "Välipalat",
+                    Start = null,
+                    End = null
+                }
+            };
         }
 
         [HttpPost("logout")]
@@ -165,6 +209,8 @@ namespace Crash.Fit.Web.Controllers
                 if (!creationResult.Succeeded)
                 {
                 }
+
+                InitProfile(user);
             }
 
             var refreshToken = _profileRepository.GetRefreshToken(user.Id);
@@ -175,7 +221,12 @@ namespace Crash.Fit.Web.Controllers
             var jwtToken = await GetJwtSecurityToken(user.Id);
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
-            return RedirectToLocal("/#/login-success/" + client + "/" + refreshToken + "/" + accessToken);
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+            {
+                return Redirect($"{returnUrl.TrimEnd('/')}/#/{refreshToken}");
+            }
+
+            return RedirectToLocal($"/#/login-success/{client}/{refreshToken}/{accessToken}");
         }
         [HttpGet("refresh-token")]
         [AllowAnonymous]
