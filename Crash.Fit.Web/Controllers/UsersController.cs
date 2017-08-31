@@ -18,6 +18,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Crash.Fit.Nutrition;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -29,13 +30,15 @@ namespace Crash.Fit.Web.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IProfileRepository _profileRepository;
         private readonly IConfigurationRoot _configuration;
+        private readonly INutritionRepository _nutritionRepository;
 
-        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager, IProfileRepository profileRepository, ILogRepository logger, IConfigurationRoot configuration) : base(logger)
+        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager, IProfileRepository profileRepository, ILogRepository logger, IConfigurationRoot configuration, INutritionRepository nutritionRepository) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _profileRepository = profileRepository;
             _configuration = configuration;
+            _nutritionRepository = nutritionRepository;
         }
 
         [HttpGet("me")]
@@ -130,13 +133,13 @@ namespace Crash.Fit.Web.Controllers
                     UserId = user.Id,
                     Name = "Aamiainen",
                     Start = new TimeSpan(6,0,0),
-                    End = new TimeSpan(11,0,0)
+                    End = new TimeSpan(10,0,0)
                 },
                 new Nutrition.MealDefinition
                 {
                     UserId = user.Id,
                     Name = "Lounas",
-                    Start = new TimeSpan(11,0,0),
+                    Start = new TimeSpan(10,0,0),
                     End = new TimeSpan(14,0,0)
                 },
                 new Nutrition.MealDefinition
@@ -161,6 +164,8 @@ namespace Crash.Fit.Web.Controllers
                     End = null
                 }
             };
+
+            _nutritionRepository.SaveMealDefinitions(mealDefinitions);
         }
 
         [HttpPost("logout")]

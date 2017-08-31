@@ -35,10 +35,6 @@
                                       </span>
                                     </div>
                                 </li>
-                                <li role="separator" class="divider"></li>
-                                <li>
-                                    <a @click="showMealRhythm">{{ $t("defineMealRhythm") }}</a>
-                                </li>
                             </ul>
                         </div> 
                     
@@ -155,9 +151,6 @@
                 </div>
             </div>
         </section>
-         <section v-if="mealRhythmOpen">
-            <meal-rhythm v-bind:show="mealRhythmOpen" v-on:close="hideMealRhythm"></meal-rhythm>
-        </section>
     </div>
 </template>
 
@@ -180,8 +173,7 @@ module.exports = {
             copyMode: false,
             copyAllRows: false,
             showNutrients: false,
-            groupOpenStates: {},
-            mealRhythmOpen: false
+            groupOpenStates: {}
         }
     },
     computed: {
@@ -232,8 +224,7 @@ module.exports = {
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
-        'food-picker': require('../foods/food-picker'),
-        'meal-rhythm': require('./meal-rhythm'),
+        'food-picker': require('../foods/food-picker')
     },
     methods: {
         toggleNutrients: function(show){
@@ -347,12 +338,6 @@ module.exports = {
                     toaster.error(self.$t('fetchFailed'));
                 }
             });
-        },
-        showMealRhythm: function () {
-            this.mealRhythmOpen = true;
-        },
-        hideMealRhythm: function () {
-            this.mealRhythmOpen = false;
         },
         setDate: function (offset) {
             this.date = moment().add(offset, 'days').toDate();
