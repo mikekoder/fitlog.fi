@@ -19,3 +19,9 @@ select.input-10 { width: 110px;}
 select.input-20 { width: 190px;}
 select.input-25 { width: 210px;}
 section.content { min-height: 700px;}
+
+@media (min-width: 768px){
+    .sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > a > span:not(.pull-right){
+        display: none !important;
+    }
+}

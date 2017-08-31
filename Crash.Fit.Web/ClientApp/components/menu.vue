@@ -11,6 +11,9 @@
             <router-link tag="li" :to="{ name: 'meal-details', params: { id: constants.NEW_ID } }" exact v-if="!isLoggedIn">
                 <a><i class="fa fa-cutlery"></i> <span>{{ $t("mealCalculator") }}</span></a>
             </router-link>
+            <router-link tag="li" :to="{ name: 'mealrhythm'}" v-if="isLoggedIn">
+                <a><i class="fa fa-clock-o"></i> <span>{{ $t("mealRhythm") }}</span></a>
+            </router-link>
             <router-link tag="li" :to="{ name: 'foods'}" v-if="isLoggedIn">
                 <a><i class="fa fa-apple"></i> <span>{{ $t("foods") }}</span></a>
             </router-link>

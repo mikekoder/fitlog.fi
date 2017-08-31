@@ -1,6 +1,8 @@
 ﻿import Layout from './views/layout'
 import Home from './views/home/home'
+
 import Meals from './views/meals/meals'
+import MealRhythm from './views/meal-rhythm/meal-rhythm'
 import MealDetails from './views/meals/meal-details'
 import Foods from './views/foods/foods'
 import FoodDetails from './views/foods/food-details'
@@ -45,6 +47,11 @@ const main = [
                 path: '/ateriat/:id/:action?',
                 name: 'meal-details',
                 component: MealDetails
+            },
+            {
+                path: '/ateriarytmi',
+                name: 'mealrhythm',
+                component: MealRhythm
             },
             {
                 path: '/ruoka-aineet',

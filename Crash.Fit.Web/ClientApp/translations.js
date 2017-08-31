@@ -113,6 +113,7 @@
     OK: 'OK',
     onlyDays: 'Vain päivinä',
     or: 'Tai',
+    otherTimes: 'Muina aikoina',
     pal: 'Aktiivisuuskerroin',
     password: 'Salasana',
     passwordTooShort: 'Salasana liian lyhyt',
