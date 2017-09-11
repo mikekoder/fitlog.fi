@@ -30,6 +30,8 @@ namespace Crash.Fit.Api.Models.Nutrition
         public bool HideSummary { get; set; }
         public bool HideDetails { get; set; }
 
+        public int? HomeOrder { get; set; }
+
         public NutrientTargets Targets { get; set; }
 
         public NutrientResponse()

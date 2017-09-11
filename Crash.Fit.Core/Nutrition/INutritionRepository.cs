@@ -42,5 +42,6 @@ namespace Crash.Fit.Nutrition
         IEnumerable<MealDefinition> GetMealDefinitions(Guid userId);
         MealRow GetMealRow(Guid id);
         void AddMealRow(MealRow row);
+        void SaveHomeNutrients(Guid userId, Guid[] nutrients);
     }
 }

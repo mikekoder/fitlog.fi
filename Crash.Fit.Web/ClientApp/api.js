@@ -208,7 +208,14 @@ const api = {
             data: JSON.stringify(settings)
         });
     },
-
+    saveHomeSettings: function(settings){
+        return $.ajax({
+            url: baseUrl + 'settings/home',
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(settings)
+        });
+    },
     // Meal rhythm
     getMealDefinitions: function () {
         return $.get(baseUrl + 'meals/definitions');

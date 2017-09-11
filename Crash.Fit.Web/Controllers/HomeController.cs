@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
+using Crash.Fit.Nutrition;
+using Crash.Fit.Api.Models.Home;
+using Crash.Fit.Logging;
 
 namespace Crash.Fit.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : ApiControllerBase
     {
-        private readonly IAntiforgery antiforgery;
-        public HomeController(IAntiforgery antiforgery)
+        public HomeController(ILogRepository logger):base(logger)
         {
-            this.antiforgery = antiforgery;
         }
         public IActionResult Index()
         {
-            var tokens = antiforgery.GetAndStoreTokens(HttpContext);
-            ViewData["X-CSRF-TOKEN"] = tokens.RequestToken;
             return View();
         }
+
     }
 }
