@@ -60,7 +60,7 @@
                                                 {{ date(day.date) }}</td>
                                             <template v-for="col in visibleColumns">
                                                 <td class="nutrient" v-if="!col.hideSummary">
-                                                    <div class="chart" v-if="col === energyDistributionColumn">
+                                                    <div class="chart" v-if="col.key === energyDistributionId">
                                                         <chart-pie-energy v-bind:protein="day.nutrients[proteinId]" v-bind:carb="day.nutrients[carbId]" v-bind:fat="day.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
                                                     <div v-else>
@@ -74,7 +74,7 @@
                                             <td class="freeze"><router-link :to="{ name: 'meal-details', params: { id: meal.id } }">{{ mealName(meal) }}</router-link></td>
                                             <template v-for="col in visibleColumns">
                                                 <td class="nutrient" v-if="!col.hideSummary">
-                                                    <div class="chart" v-if="col === energyDistributionColumn">
+                                                    <div class="chart" v-if="col.key === energyDistributionId">
                                                         <chart-pie-energy v-bind:protein="meal.nutrients[proteinId]" v-bind:carb="meal.nutrients[carbId]" v-bind:fat="meal.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
                                                     <span v-else>{{ decimal(meal.nutrients[col.key], col.precision) }}</span>
@@ -114,13 +114,13 @@
 module.exports = {
     data () {
         return {
-            energyDistributionColumn: null,
             selectedGroup: '',
             dayStates: {},
             selectedMeal: null,
             proteinId: constants.PROTEIN_ID,
             carbId: constants.CARB_ID,
-            fatId: constants.FAT_ID
+            fatId: constants.FAT_ID,
+            energyDistributionId: constants.ENERGY_DISTRIBUTION_ID,
         }
     },
     computed: {
@@ -132,7 +132,7 @@ module.exports = {
         },
         columns: function(){
             var columns = [];
-            columns.push(this.energyDistributionColumn);
+            //columns.push(this.energyDistributionColumn);
             for(var i in this.$store.state.nutrition.nutrients){
                 var nutrient = this.$store.state.nutrition.nutrients[i];
                 if (nutrient.hideSummary) {
@@ -174,7 +174,7 @@ module.exports = {
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
-        'chart-pie-energy': require('./energy-distribution-bar'),
+        'chart-pie-energy': require('../../components/energy-distribution-bar'),
         'nutrient-bar': require('./nutrient-bar')
     },
     methods: {
@@ -323,7 +323,7 @@ module.exports = {
     },
     created: function () {
         var self = this;
-        self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
+        //self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
         self.$store.dispatch(constants.FETCH_NUTRIENTS, {});
         self.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {});
         self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {});

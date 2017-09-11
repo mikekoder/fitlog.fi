@@ -4,7 +4,7 @@
         <section class="content">
             <div v-if="isLoggedIn">
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-xs-12">
                         <button class="btn" @click="changeDate(-1)"><i class="fa fa-chevron-left"></i></button>
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -20,56 +20,109 @@
                             </ul>
                         </div>
                         <button class="btn" @click="changeDate(1)"><i class="fa fa-chevron-right"></i></button>
+                        
                     </div>
                 </div>
                 <br />
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-xs-12">
                         <div class="box box-solid">
                             <div class="box-body">
-                                <div class="row">
-                                    <div class="col-xs-3">{{ $t('protein') }}</div>
-                                    <div class="col-xs-3">{{ $t('carbs') }}</div>
-                                    <div class="col-xs-3">{{ $t('fat') }}</div>
-                                    <div class="col-xs-3">{{ $t('energy') }}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-3">{{ nutrients[proteinId] }}</div>
-                                    <div class="col-xs-3">{{ nutrients[carbId] }}</div>
-                                    <div class="col-xs-3">{{ nutrients[fatId] }}</div>
-                                    <div class="col-xs-3">{{ nutrients[energyId] }}</div>
-                                </div>
+                                <template v-if="!editNutrients">
+                                    <div class="row">
+                                        <div class="col-xs-2" v-for="nutrient in visibleNutrients">
+                                            <span class="hidden-md hidden-lg">{{ nutrient.shortName }}</span>
+                                            <span class="hidden-xs hidden-sm">{{ nutrient.name }}</span>
+                                        </div>
+                                        <button class="btn pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-2" v-for="nutrient in visibleNutrients">
+                                            <div v-if="nutrient.id == energyDistributionId">
+                                                <chart-pie-energy v-bind:protein="nutrients[proteinId]" v-bind:carb="nutrients[carbId]" v-bind:fat="nutrients[fatId]"></chart-pie-energy>
+                                            </div>
+                                            <div v-else>{{ decimal(nutrients[nutrient.id]) }}</div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="row">
+                                        <div class="col-xs-2" v-for="(id,i) in selectedNutrients">
+                                            <select class="form-control" v-model="selectedNutrients[i]">
+                                                <option v-bind:value="undefined"></option>
+                                                <template v-for="group in nutrientGroups">
+                                                    <option disabled>{{ group.name }}</option>
+                                                    <option v-for="nutrient in group.nutrients" v-bind:value="nutrient.id">
+                                                    {{ nutrient.name }} ({{ unit(nutrient.unit) }})
+                                                    </option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <button class="btn btn-primary pull-right" @click="saveSettings" v-if="editNutrients">{{ $t('save') }}</button>
+                                            <span class="pull-right">&nbsp;</span>
+                                            <button class="btn pull-right" @click="editNutrients=false" v-if="editNutrients">{{ $t('cancel') }}</button>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-xs-12">
                         <div class="box box-solid box-primary" v-for="meal in meals">
                             <div class="box-header with-border">
                                 <h3 class="box-title">{{ mealName(meal) }}</h3>
-                                <div class="row" v-if="meal.nutrients">
-                                    <div class="col-xs-3">{{ meal.nutrients[proteinId] }}</div>
-                                    <div class="col-xs-3">{{ meal.nutrients[carbId] }}</div>
-                                    <div class="col-xs-3">{{ meal.nutrients[fatId] }}</div>
-                                    <div class="col-xs-3">{{ meal.nutrients[energyId] }}</div>
-                                </div>
                             </div>
                             <div class="box-body" v-if="meal.meal">
+                                <div class="row meal-nutrients" v-if="meal.meal.nutrients">
+                                    <div class="col-xs-2" v-for="nutrient in visibleNutrients">
+                                        <div v-if="nutrient.id == energyDistributionId">
+                                            <chart-pie-energy v-bind:protein="meal.meal.nutrients[proteinId]" v-bind:carb="meal.meal.nutrients[carbId]" v-bind:fat="meal.meal.nutrients[fatId]"></chart-pie-energy>
+                                        </div>
+                                        <div v-else>{{ decimal(meal.meal.nutrients[nutrient.id]) }}</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <hr />
+                                    </div>
+                                </div>
                                 <template v-for="row in meal.meal.rows">
                                     <div class="row">
-                                        <div class="col-sm-12"> {{ row.foodName }} {{ row.quantity }} {{ row.portionName || 'g' }}</div>
+                                        <div class="col-xs-8 col-sm-10 food"><span>{{ row.foodName }} {{ row.quantity }} {{ row.portionName || 'g' }}</span></div>
+                                        <div class="col-xs-4 col-sm-2">
+                                            <button class="btn pull-right" @click="deleteFood(row)"><i class="fa fa-trash-o"></i></button>
+                                            <span class="pull-right">&nbsp;</span>
+                                            <button class="btn pull-right" @click="editFood(row)"><i class="fa fa-edit"></i></button>
+                                        </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-xs-3">{{ row.nutrients[proteinId] }}</div>
-                                        <div class="col-xs-3">{{ row.nutrients[carbId] }}</div>
-                                        <div class="col-xs-3">{{ row.nutrients[fatId] }}</div>
-                                        <div class="col-xs-3">{{ row.nutrients[energyId] }}</div>
+                                        <div class="col-xs-2" v-for="nutrient in visibleNutrients">
+                                            <div v-if="nutrient.id == energyDistributionId">
+                                                <chart-pie-energy v-bind:protein="row.nutrients[proteinId]" v-bind:carb="row.nutrients[carbId]" v-bind:fat="row.nutrients[fatId]"></chart-pie-energy>
+                                            </div>
+                                            <div v-else>{{ decimal(row.nutrients[nutrient.id]) }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <hr />
+                                        </div>
                                     </div>
                                 </template>
+                                
                             </div>
                             <div class="box-footer">
-                                <button class="btn" @click="addFood(meal)">{{ $t('addFood') }}</button>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <button class="btn" @click="addFood(meal)">{{ $t('addFood') }}</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -80,7 +133,7 @@
             </div>
         </section>
         <section v-if="showAddFood">
-            <add-food v-bind:show="showAddFood" v-bind:row="row" v-on:save="saveFood(arguments[0])"></add-food>
+            <add-food v-bind:show="showAddFood" v-bind:row="row" v-on:save="saveFood(arguments[0])" v-on:close="showAddFood=false"></add-food>
         </section>
     </div>
 </template>
@@ -88,6 +141,8 @@
 <script>
     var constants = require('../../store/constants')
     var formatters = require('../../formatters')
+    var toaster = require('../../toaster');
+
 module.exports = {
     data () {
         return {
@@ -95,8 +150,12 @@ module.exports = {
             carbId: constants.CARB_ID,
             fatId: constants.FAT_ID,
             energyId: constants.ENERGY_ID,
+            energyDistributionId: constants.ENERGY_DISTRIBUTION_ID,
             showAddFood: false,
-            row: undefined
+            row: undefined,
+            selectedNutrients: [],
+            editNutrients: false,
+
         }
     },
     computed: {
@@ -111,6 +170,9 @@ module.exports = {
                 return this.$t('yesterday');
             }
             return this.date(this.selectedDate);
+        },
+        visibleNutrients() {
+            return this.$store.state.nutrition.nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1,n2) => n1.homeOrder - n2.homeOrder);
         },
         meals: function () {
             var self = this;
@@ -141,11 +203,22 @@ module.exports = {
                 }
             });
             return result;
+        },
+        nutrientGroups: function () {
+            var nutrients = this.$store.state.nutrition.nutrients;
+            return this.$store.state.nutrition.nutrientGroups.map(g => {
+                return {
+                    name: g.name,
+                    nutrients: nutrients.filter(n => n.fineliGroup == g.id).sort((n1, n2) => n1.name < n2.name ? -1 : 1)
+                }
+            });
+            return 
         }
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
-        'add-food': require('./add-food')
+        'add-food': require('./add-food'),
+        'chart-pie-energy': require('../../components/energy-distribution-bar'),
     },
     methods: {
         fetchMeals: function () {
@@ -196,24 +269,61 @@ module.exports = {
             };
             this.showAddFood = true;
         },
-        saveFood: function (data) {
-            data.date = this.selectedDate;
-            data.foodId = data.food.id;
-            data.portionId = data.portion ? data.portion.id : undefined;
-            this.$store.dispatch(constants.ADD_MEAL_ROW, {
-                row: data,
+        editFood: function (row) {
+           this.row = row;
+           this.showAddFood = true;
+        },
+        saveFood: function (row) {
+            row.date = this.selectedDate;
+            this.$store.dispatch(constants.SAVE_MEAL_ROW, {
+                row,
                 success: function () {},
                 failure: function () { }
             });
             this.row = {};
             this.showAddFood = false;
         },
+        deleteFood: function () {
+
+        },
+        editSettings() {
+            var selectedNutrients = [];
+            this.visibleNutrients.forEach(n => { selectedNutrients.push(n.id); });
+            for (var i = selectedNutrients.length; i < 6; i++) {
+                selectedNutrients.push(undefined);
+            }
+            this.selectedNutrients = selectedNutrients;
+            this.editNutrients = true;
+        },
+        saveSettings: function () {
+            var self = this;
+            var settings = {
+                nutrients: self.selectedNutrients
+            };
+            
+            this.$store.dispatch(constants.SAVE_HOME_SETTINGS, {
+                settings,
+                success: function () {},
+                failure: function () { }
+            });
+            this.editNutrients = false;
+        },
         date: formatters.formatDate,
-        time: formatters.formatTime
+        time: formatters.formatTime,
+        unit: formatters.formatUnit,
+        decimal: function (value, precision) {
+            if (!value) {
+                return value;
+            }
+            return value.toFixed(precision);
+        }
     },
     created() {
         var self = this;
-
+        self.$store.dispatch(constants.FETCH_NUTRIENTS, {
+            success: function () {},
+            failure: function () { }
+        });
         self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
             success: function () {
                 self.fetchMeals();
@@ -226,7 +336,12 @@ module.exports = {
 </script>
 
 <style scoped>
-    button.dropdown-toggle{ width: 200px; }
+    .meal-nutrients{font-weight: bold; }
     table.nutrition{width: auto;}
     table.nutrition td{ width: 50px;}
+    div.food{ padding-top:5px;}
+    .box-body hr{ margin: 2px 0px;}
+    .box-body div.row:last-child hr{display:none;}
+    option[disabled]{font-weight: bold;}
+    div.row > button.pull-right{margin-right:15px;}
 </style>

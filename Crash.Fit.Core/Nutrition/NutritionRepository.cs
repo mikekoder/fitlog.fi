@@ -24,7 +24,7 @@ namespace Crash.Fit.Nutrition
         }
         public IEnumerable<UserNutrient> GetUserNutrients(Guid userId)
         {
-            var sql = @"SELECT Nutrient.*, NS.[Order] AS UserOrder, NS.HideSummary AS UserHideSummary, NS.HideDetails AS UserHideDetails FROM Nutrient
+            var sql = @"SELECT Nutrient.*, NS.[Order] AS UserOrder, NS.HideSummary AS UserHideSummary, NS.HideDetails AS UserHideDetails, NS.HomeOrder FROM Nutrient
 LEFT JOIN NutrientSettings NS ON NS.NutrientId = Nutrient.Id AND NS.UserId=@userId
 WHERE Nutrient.DELETED IS NULL";
             using (var conn = CreateConnection())
@@ -518,6 +518,30 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
 
                     tran.Commit();
                     return true;
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+        public void SaveHomeNutrients(Guid userId, Guid[] nutrients)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE NutrientSettings SET HomeOrder=NULL WHERE UserId=@userId", new { userId }, tran);
+                    conn.Execute("UPDATE NutrientSettings SET HomeOrder=@index WHERE UserId=@userId AND NutrientId=@nutrientId", nutrients.Select((nutrientId,index) => new
+                    {
+                        userId,
+                        nutrientId,
+                        index
+                    }), tran);
+
+                    tran.Commit();
                 }
                 catch (Exception ex)
                 {

@@ -279,7 +279,6 @@ const actions = {
             }
         });
     },
-
     // Nutrient targets
     [constants.FETCH_NUTRIENT_TARGETS] ({commit, state},{forceRefresh, success, failure}) {
         if(state.nutrientTargetsLoaded && !forceRefresh){
@@ -446,6 +445,17 @@ const mutations = {
 
         updateMealRow(row, state);
     },
+    [constants.SAVE_HOME_NUTRIENTS_SUCCESS](state, { nutrients }) {
+        state.nutrients.forEach(n => {
+            var index = nutrients.findIndex(id => n.id == id);
+            if (index >= 0) {
+                n.homeOrder = index;
+            }
+            else {
+                n.HomeOrder = undefined;
+            }
+        });
+    }
 }
 
     function removeMeal(meal, state){

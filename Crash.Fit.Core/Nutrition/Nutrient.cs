@@ -28,6 +28,7 @@ namespace Crash.Fit.Nutrition
         public int? UserOrder { get; set; }
         public bool? UserHideSummary { get; set; }
         public bool? UserHideDetails { get; set; }
+        public int? HomeOrder { get; set; }
 
     }
 }
