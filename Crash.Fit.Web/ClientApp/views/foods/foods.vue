@@ -7,6 +7,7 @@
                     <button class="btn btn-primary" @click="createFood">{{ $t("create") }}</button>
                 </div>
             </div>
+            <!--
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="nav nav-tabs">
@@ -15,6 +16,7 @@
                     </ul>
                 </div>
             </div>
+                -->
             <div v-if="showOwn">
                  <div class="row" v-if="foods.length > 0">
                 <div class="col-sm-12">

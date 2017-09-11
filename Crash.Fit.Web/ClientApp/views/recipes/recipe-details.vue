@@ -160,7 +160,7 @@
                                     <td>{{ decimal(recipeNutrients[nutrient.id], nutrient.precision) }}</td>
                                     <td>{{ decimal(recipeNutrients[nutrient.id] * 100 / recipeWeight, nutrient.precision) }}</td>
                                     <template v-for="portion in portions">
-                                        <td><span v-if="portion.weight">{{ decimal(recipeNutrients[nutrient.id] / recipeWeight * portion.weight, nutrient.precision) }}</span></td>
+                                        <td><span v-if="portion.amount">{{ decimal(recipeNutrients[nutrient.id] / recipeWeight * ((cookedWeight || recipeWeight)/portion.amount), nutrient.precision) }}</span></td>
                                     </template>
                                     <td>{{ unit(nutrient.unit)}}</td>
                                 </tr>
