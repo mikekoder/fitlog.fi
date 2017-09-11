@@ -80,6 +80,13 @@ const actions = {
                 failure();
             }
         });
+    },
+    [constants.UPDATE_LOGIN]({ commit, state }, { login, success, failure }) {
+        api.updateLogin(login).then(function () {
+
+        }).fail(function () {
+
+            });
     }
 }
 

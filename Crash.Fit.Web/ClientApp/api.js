@@ -58,6 +58,14 @@ const api = {
     refreshToken: function (refreshToken) {
         return $.get(baseUrl + 'users/refresh-token/?refreshToken=' + refreshToken);
     },
+    updateLogin: function(login) {
+        return $.ajax({
+            url: baseUrl + 'users/login',
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(login)
+        });
+    },
 
     // Meals
     listMeals: function(start, end) {

@@ -13,5 +13,9 @@ namespace Crash.Fit.Api.Models.Profile
         public decimal? Height { get; set; }
         public decimal? Weight { get; set; }
         public decimal? Rmr { get; set; }
+
+        public string[] Logins { get; set; }
+        public bool HasPassword { get; set; }
+        public string Username { get; set; }
     }
 }
