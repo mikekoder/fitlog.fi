@@ -111,9 +111,6 @@ module.exports = {
         }
     },
     computed: {
-        loading: function () {
-            return this.$store.state.loading;
-        }
     },
     components: {
         'exercise-picker': require('../../components/exercise-picker')

@@ -30,6 +30,9 @@ Vue.mixin({
     computed:{
         isLoggedIn(){
             return this.$store.state.profile.profile && true;
+        },
+        loading: function() {
+            return this.$store.state.loading;
         }
     },
     created(){

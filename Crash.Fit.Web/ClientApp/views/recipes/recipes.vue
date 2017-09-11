@@ -50,9 +50,6 @@ module.exports = {
         }
     },
     computed:{
-        loading: function () {
-            return this.$store.state.loading;
-        }
     },
     methods: {
         createRecipe: function(){
