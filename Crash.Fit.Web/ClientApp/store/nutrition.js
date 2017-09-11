@@ -65,8 +65,9 @@ const actions = {
         });
     },
     [constants.FETCH_MEAL] ({commit, state},{id, success, failure}){
-        api.getMeal(id).then(function(meal){
+        api.getMeal(id).then(function (meal) {
             meal.time = new Date(meal.time);
+            commit(constants.FETCH_MEAL_SUCCESS, { meal }); 
             if(success){
                 success(meal);
             }
@@ -113,22 +114,25 @@ const actions = {
             }
         });
     },
-    [constants.ADD_MEAL_ROW]({ commit, state }, { row, success, failure }) {
-
-        api.addMealRow(row).then(function (savedRow) {
+    [constants.SAVE_MEAL_ROW]({ commit, state }, { row, success, failure }) {
+        api.saveMealRow(row).then(function (savedRow) {
             var meal = state.meals.find(m => m.id == savedRow.mealId);
-            if (!meal) {
+            if (meal) {
+                commit(constants.SAVE_MEAL_ROW_SUCCESS, { row: savedRow });
+            }
+            else {
                 api.getMeal(savedRow.mealId).then(function (createdMeal) {
                     createdMeal.time = new Date(createdMeal.time);
-                    addMeal(createdMeal, state);
+                    commit(constants.FETCH_MEAL_SUCCESS, { meal: createdMeal });
+                    
                 });
             }
-            if (meal) {
-                savedRow.foodName = row.food.name;
-                savedRow.portionName = row.portion ? row.portion.name : undefined;
-                meal.rows.push(savedRow);
+            
+        }).fail(function () {
+            if(failure){
+                failure();
             }
-        }).fail(function () { });
+        });
         
     },
     // Foods
@@ -395,6 +399,9 @@ const mutations = {
     [constants.FETCH_MEALS_FAILURE] (state) {
         state.mealsLoading = false;
     },
+    [constants.FETCH_MEAL_SUCCESS](state, { meal }) {
+        addMeal(meal, state);
+    },
     [constants.SAVE_MEAL_STARTED] (state) {
         
     },
@@ -434,6 +441,10 @@ const mutations = {
     },
     [constants.SAVE_MEAL_DEFINITIONS_SUCCESS](state, { definitions }) {
         state.mealDefinitions = definitions;
+    },
+    [constants.SAVE_MEAL_ROW_SUCCESS](state, { row }) {
+
+        updateMealRow(row, state);
     },
 }
 
@@ -482,6 +493,23 @@ const mutations = {
             day.nutrients[nutrientId] += meal.nutrients[nutrientId];
         }
         state.meals.push(meal);
+    }
+    function updateMealRow(row, state) {
+        var meal = state.meals.find(m => m.id == row.mealId);
+        var rowIndex = meal.rows.findIndex(r => r.id == row.id);
+        if (rowIndex >= 0) {
+            var oldRow = meal.rows[rowIndex];
+            for (var i in oldRow.nutrients) {
+                meal.nutrients[i] -= oldRow.nutrients[i];
+            }
+            meal.rows.splice(rowIndex, 1, row);
+        }
+        else {            
+            meal.rows.push(row);
+        }
+        for (var i in row.nutrients) {
+            meal.nutrients[i] += row.nutrients[i];
+        }
     }
 
 module.exports = { state, actions, mutations }
