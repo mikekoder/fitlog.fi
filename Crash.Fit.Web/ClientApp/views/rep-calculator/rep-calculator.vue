@@ -65,9 +65,6 @@
             }
         },
         computed:{
-            loading: function() {
-                return this.$store.state.loading;
-            }
         },
         components: {},
         methods: {

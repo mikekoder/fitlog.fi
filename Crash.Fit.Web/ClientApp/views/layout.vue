@@ -69,9 +69,6 @@ module.exports = {
         }
     },
     computed: {
-        loading(){
-            return this.$store.state.loading;
-        }
     },
     components: {
         'mainmenu': require('../components/menu')

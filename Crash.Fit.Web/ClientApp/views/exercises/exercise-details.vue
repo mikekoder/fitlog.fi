@@ -68,9 +68,6 @@ module.exports = {
         }
     },
     computed: {
-        loading: function () {
-            return this.$store.state.loading;
-        },
         muscleGroups: function () {
             return this.$store.state.training.muscleGroups;
         }

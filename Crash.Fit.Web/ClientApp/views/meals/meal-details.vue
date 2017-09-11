@@ -188,9 +188,6 @@ module.exports = {
             }
             return formatters.formatTime(self.time);
         },
-        loading: function () {
-            return this.$store.state.loading;
-        },
         constants: function () {
             return constants;
         },

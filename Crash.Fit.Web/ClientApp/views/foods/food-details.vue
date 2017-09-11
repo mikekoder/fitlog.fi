@@ -131,9 +131,6 @@ module.exports = {
         }
     },
     computed: {
-        loading: function () {
-            return this.$store.state.loading;
-        },
         nutrientGroups: function () {
             return this.$store.state.nutrition.nutrientGroups;
         },
