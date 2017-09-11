@@ -508,13 +508,19 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
         }
         public bool SaveNutrientSettings(Guid userId, IEnumerable<NutrientSetting> settings)
         {
+            var sql = @"MERGE INTO NutrientSettings
+USING(select @NutrientId AS NutrientId, @UserId AS UserId) AS Source
+ON(NutrientSettings.UserId = Source.UserId AND NutrientSettings.NutrientId=Source.NutrientId)
+WHEN MATCHED THEN
+    UPDATE SET [Order] = @Order, HideSummary=@HideSummary, HideDetails=@HideDetails
+WHEN NOT MATCHED THEN
+    INSERT(Id,UserId, NutrientId,[Order],HideSummary,HideDetails) VALUES(newid(),@UserId, @NutrientId,@Order,@HideSummary,@HideDetails);";
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
                 try
                 {
-                    conn.Execute("DELETE FROM NutrientSettings WHERE UserId=@userId", new { userId }, tran);
-                    conn.Execute("INSERT NutrientSettings(UserId,NutrientId,[Order],HideSummary,HideDetails) VALUES(@UserId,@NutrientId,@Order,@HideSummary,@HideDetails);", settings, tran);
+                    conn.Execute(sql, settings, tran);
 
                     tran.Commit();
                     return true;
@@ -528,17 +534,25 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
         }
         public void SaveHomeNutrients(Guid userId, Guid[] nutrients)
         {
+            var sql = @"MERGE INTO NutrientSettings
+USING(select @NutrientId AS NutrientId, @UserId AS UserId) AS Source
+ON(NutrientSettings.UserId = Source.UserId AND NutrientSettings.NutrientId=Source.NutrientId)
+WHEN MATCHED THEN
+    UPDATE SET HomeOrder=@HomeOrder
+WHEN NOT MATCHED THEN
+    INSERT(Id,UserId, NutrientId,HomeOrder) VALUES(newid(),@UserId, @NutrientId,@HomeOrder);";
+
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
                 try
                 {
                     conn.Execute("UPDATE NutrientSettings SET HomeOrder=NULL WHERE UserId=@userId", new { userId }, tran);
-                    conn.Execute("UPDATE NutrientSettings SET HomeOrder=@index WHERE UserId=@userId AND NutrientId=@nutrientId", nutrients.Select((nutrientId,index) => new
+                    conn.Execute(sql, nutrients.Select((nutrientId,index) => new
                     {
-                        userId,
-                        nutrientId,
-                        index
+                        UserId = userId,
+                        NutrientId = nutrientId,
+                        HomeOrder = index
                     }), tran);
 
                     tran.Commit();
