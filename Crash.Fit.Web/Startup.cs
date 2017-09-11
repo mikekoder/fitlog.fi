@@ -65,6 +65,7 @@ namespace Crash.Fit.Web
                 options.Cookies.ApplicationCookie.CookieHttpOnly = false;
             });
 
+            services.AddCors();
             services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
             services.AddMvc();
             
@@ -236,6 +237,7 @@ namespace Crash.Fit.Web
 
             app.UseStaticFiles();
 
+            app.UseCors(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseIdentity();
             app.UseGoogleAuthentication(new GoogleOptions()
             {
