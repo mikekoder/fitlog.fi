@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Nutrition
 {
-    public class DailyIntake
+    public class DailyIntake : Entity
     {
         public string Gender { get; set; }
         public decimal? StartAge { get; set; }
