@@ -421,7 +421,7 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
         }
         public bool UpdateMeal(MealDetails meal)
         {
-            foreach(var row in meal.Rows)
+            foreach(var row in meal.Rows.Where(r => r.Id == Guid.Empty))
             {
                 row.Id = Guid.NewGuid();
             }

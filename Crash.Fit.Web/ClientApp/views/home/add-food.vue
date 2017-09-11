@@ -16,8 +16,8 @@
                 </div>
                 <div class="row" v-if="food">
                     <div class="col-sm-3">
-                        <label>{{ $t('amount') }}</label>
-                        <input class="form-control" type="number" v-model="amount" />
+                        <label>{{ $t('quantity') }}</label>
+                        <input class="form-control" type="number" v-model="quantity" />
                     </div>
                     <div class="col-sm-9">
                         <label>{{ $t('portion') }}</label>
@@ -32,7 +32,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default pull-left" @click="cancel">{{ $t('cancel')}}</button>
-                <button class="btn btn-primary" @click="save">{{ $t('save')}}</button>
+                <button class="btn btn-primary" @click="save" :disabled="!canSave">{{ $t('save')}}</button>
             </div>
         </div>
         </div>
@@ -49,7 +49,7 @@ module.exports = {
     data () {
         return {
             food: undefined,
-            amount: undefined,
+            quantity: undefined,
             portion: undefined
         }
     },
@@ -58,6 +58,9 @@ module.exports = {
         row: undefined
     },
     computed: {
+        canSave() {
+            return this.food && this.quantity;
+        }
     },
     components: {
         'food-picker': require('../foods/food-picker'),
@@ -69,11 +72,16 @@ module.exports = {
         save: function () {
             var self = this;
             var row = {
+                id: self.row.id,
                 mealDefinitionId: self.row.mealDefinitionId,
                 mealId: self.row.mealId,
-                food: self.food,
-                amount: self.amount,
-                portion: self.portion
+                //food: self.food,
+                foodId: self.food.id,
+                foodName: self.food.name,
+                quantity: self.quantity,
+                //portion: self.portion,
+                portionId: self.portion ? self.portion.id : undefined,
+                portionName: self.portion ? self.portion.name : undefined
             };
             this.$emit('save', row);
         }
@@ -94,7 +102,7 @@ module.exports = {
                 }
             });
         }
-        self.amount = self.row.amount;
+        self.quantity = self.row.quantity;
     }
 }
 </script>

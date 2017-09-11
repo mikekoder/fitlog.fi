@@ -10,7 +10,7 @@ namespace Crash.Fit.Api.Models.Nutrition
         public Guid? MealDefinitionId { get; set; }
         public Guid? MealId { get; set; }
         public Guid FoodId { get; set; }
-        public decimal Amount { get; set; }
+        public decimal Quantity { get; set; }
         public Guid? PortionId { get; set; }
     }
 }

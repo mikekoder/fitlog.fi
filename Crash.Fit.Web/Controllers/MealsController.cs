@@ -131,58 +131,103 @@ namespace Crash.Fit.Web.Controllers
             nutritionRepository.SaveMealDefinitions(definitions);
             return GetDefinitions();
         }
-        [HttpPost("add-row")]
+        [HttpPost("row")]
         public IActionResult AddRow([FromBody]AddMealRowRequest request)
         {
-            
+            var dayStart = DateTimeUtils.ToLocal(request.Date).Date;
+            var dayEnd = dayStart.AddDays(1).AddMilliseconds(-1);
             var mealRow = new MealRow
             {
                 FoodId = request.FoodId,
-                Quantity = request.Amount,
+                Quantity = request.Quantity,
                 PortionId = request.PortionId
             };
             MealDetails meal;
             if (request.MealId.HasValue)
             {
                 meal = nutritionRepository.GetMeal(request.MealId.Value);
-                if(meal == null)
-                {
-                    return NotFound();
-                }
-                if(meal.UserId != CurrentUserId)
-                {
-                    return Unauthorized();
-                }
-                mealRow.MealId = meal.Id;
-                meal.Rows = meal.Rows.Union(new[] { mealRow }).ToArray();
-                CalculateNutrients(meal);
-                nutritionRepository.AddMealRow(mealRow);
             }
             else if (request.MealDefinitionId.HasValue)
             {
-                var start = DateTimeUtils.ToLocal(request.Date).Date;
-                var end = start.AddDays(1).AddMilliseconds(-1);
-
-                meal = nutritionRepository.SearchMeals(CurrentUserId,start,end).FirstOrDefault(m => m.DefinitionId == request.MealDefinitionId);
-                if(meal == null)
+                meal = nutritionRepository.SearchMeals(CurrentUserId,dayStart,dayEnd).FirstOrDefault(m => m.DefinitionId == request.MealDefinitionId);
+            }
+            else
+            {
+                return BadRequest();
+            }
+            if(meal == null)
+            {
+                if (request.MealId.HasValue)
+                {
+                    return NotFound();
+                }
+                else if (request.MealDefinitionId.HasValue)
                 {
                     var def = nutritionRepository.GetMealDefinitions(CurrentUserId).Single(d => d.Id == request.MealDefinitionId.Value);
+                    if(def == null)
+                    {
+                        return BadRequest();
+                    }
+
                     meal = new MealDetails
                     {
                         UserId = CurrentUserId,
                         DefinitionId = def.Id,
-                        Time = DateTimeUtils.CreateLocal(start, def.Time),
-                        Rows = new[]
-                        {
-                            mealRow
-                        }
+                        Time = DateTimeUtils.CreateLocal(dayStart, def.Time),
+                        Rows = new MealRow[] { }
                     };
-                    CalculateNutrients(meal);
-                    nutritionRepository.CreateMeal(meal);
                 }
+            }
+            if (meal.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+            mealRow.MealId = meal.Id;
+            meal.Rows = meal.Rows.Union(new[] { mealRow }).ToArray();
+            CalculateNutrients(meal);
+            if (meal.Id == Guid.Empty)
+            {
+                nutritionRepository.CreateMeal(meal);
+            }
+            else
+            {
+                nutritionRepository.UpdateMeal(meal);
             }
 
             var result = AutoMapper.Mapper.Map<MealRowModel>(mealRow);
+            return Ok(result);
+        }
+        [HttpPut("row/{id}")]
+        public IActionResult UpdateRow(Guid id, [FromBody]AddMealRowRequest request)
+        {
+            if (!request.MealId.HasValue)
+            {
+                return BadRequest();
+            }
+            var meal = nutritionRepository.GetMeal(request.MealId.Value);
+            if(meal == null)
+            {
+                return NotFound();
+            }
+            if (meal.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+
+            var row = meal.Rows.FirstOrDefault(r => r.Id == id);
+            if(row == null)
+            {
+                return NotFound();
+            }
+            row.FoodId = request.FoodId;
+            row.Quantity = request.Quantity;
+            row.PortionId = request.PortionId;
+            row.Nutrients = null;
+            CalculateNutrients(meal);
+
+            nutritionRepository.UpdateMeal(meal);
+
+            var result = AutoMapper.Mapper.Map<MealRowModel>(row);
             return Ok(result);
         }
         private void AdjustTime(MealDetails meal)

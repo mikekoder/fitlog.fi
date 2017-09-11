@@ -108,10 +108,16 @@ const api = {
             type: 'POST'
         });
     },
-    addMealRow: function (row) {
+    saveMealRow: function (row) {
+        var url = baseUrl + 'meals/row/';
+        var method = 'POST';
+        if (row.id) {
+            url += row.id;
+            method = 'PUT';
+        }
         return $.ajax({
-            url: baseUrl + 'meals/add-row/',
-            type: 'POST',
+            url: url,
+            type: method,
             contentType: 'text/json',
             data: JSON.stringify(row)
         });
