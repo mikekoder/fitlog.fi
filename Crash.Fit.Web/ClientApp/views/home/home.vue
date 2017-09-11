@@ -36,7 +36,7 @@
                                         </div>
                                         <button class="btn pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button>
                                     </div>
-                                    <div class="row">
+                                    <div class="row" v-if="meals.find(m => m.meal)">
                                         <div class="col-xs-2" v-for="nutrient in visibleNutrients">
                                             <div v-if="nutrient.id == energyDistributionId">
                                                 <chart-pie-energy v-bind:protein="nutrients[proteinId]" v-bind:carb="nutrients[carbId]" v-bind:fat="nutrients[fatId]"></chart-pie-energy>
