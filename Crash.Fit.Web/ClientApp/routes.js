@@ -158,7 +158,7 @@ const main = [
         ]
     },
     {
-        path: '/kirjaudu',
+        path: '/kirjaudu/:client?',
         name: 'login',
         component: Login,
         meta: { anon: true }
