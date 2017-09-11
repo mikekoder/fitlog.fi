@@ -42,7 +42,7 @@ namespace Crash.Fit.Web.Controllers
         }
 
         [HttpGet("me")]
-        public IActionResult GetProfile()
+        public async Task<IActionResult> GetProfile()
         {
             var profile = _profileRepository.GetProfile(CurrentUserId);
             if(profile == null)
@@ -52,7 +52,14 @@ namespace Crash.Fit.Web.Controllers
                     UserId = CurrentUserId
                 };
             }
+            var user = await _userManager.FindByIdAsync(CurrentUserId.ToString());
+            var logins = await _userManager.GetLoginsAsync(user);
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+
             var result = AutoMapper.Mapper.Map<ProfileResponse>(profile);
+            result.Logins = logins.Select(l => l.LoginProvider).ToArray();
+            result.HasPassword = hasPassword;
+            result.Username = user.UserName;
 
             return Ok(result);
         }
@@ -101,7 +108,42 @@ namespace Crash.Fit.Web.Controllers
 
             return await TokenResult(user.Id);
         }
+        [HttpPut("login")]
+        public async Task<IActionResult> UpdateLogin([FromBody]ChangeLoginRequest model)
+        {
+            var user = await _userManager.FindByIdAsync(CurrentUserId.ToString());
+            if(user == null)
+            {
+                return Unauthorized();
+            }
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+            if (hasPassword)
+            {
+                var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                if (!changePasswordResult.Succeeded)
+                {
+                    return BadRequest();   
+                }
+            }
+            else
+            {
+                var createPasswordResult = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                if (!createPasswordResult.Succeeded)
+                {
+                    return BadRequest();
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(model.Username) && model.Username != user.UserName)
+            {
+                var setUsernameResult = await _userManager.SetUserNameAsync(user, model.Username);
+                if (!setUsernameResult.Succeeded)
+                {
+                    return BadRequest();
+                }
+            }
 
+            return Ok();
+        }
         [HttpPost("register")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -126,6 +168,12 @@ namespace Crash.Fit.Web.Controllers
 
         private void InitProfile(User user)
         {
+            var profile = new Profile.Profile
+            {
+                UserId = user.Id
+            };
+            _profileRepository.SaveProfile(profile);
+
             var mealDefinitions = new[]
             {
                 new Nutrition.MealDefinition
@@ -179,17 +227,21 @@ namespace Crash.Fit.Web.Controllers
 
         [HttpGet("external-login")]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null, string client = null)
+        public IActionResult ExternalLogin(string provider, string returnUrl = null, string client = null, bool add = false, string token = null)
         {
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Users", new { ReturnUrl = returnUrl, Client = client ?? Api.ApiClient.Web });
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Users", new
+            {
+                ReturnUrl = returnUrl,
+                Client = client ?? Api.ApiClient.Web,
+                Token = token
+            });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
 
         [HttpGet("external-login-callback")]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string client, string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult> ExternalLoginCallback(string client, string returnUrl = null, string remoteError = null, string token = null)
         {
             if (remoteError != null)
             {
@@ -201,21 +253,45 @@ namespace Crash.Fit.Web.Controllers
             {
                 return RedirectToAction(nameof(Login));
             }
+
             var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
             if(user == null)
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                user = new User { Email = email, UserName = info.LoginProvider + "_" + info.ProviderKey };
-                var creationResult = await _userManager.CreateAsync(user);
-                if (!creationResult.Succeeded)
+                // register / login
+                if(string.IsNullOrWhiteSpace(token))
+                {
+                    var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                    user = new User { Email = email, UserName = info.LoginProvider + "_" + info.ProviderKey };
+                    var creationResult = await _userManager.CreateAsync(user);
+                    if (!creationResult.Succeeded)
+                    {
+                    }
+                    InitProfile(user);
+                }
+                // add login
+                else
+                {
+                    var userId = _profileRepository.GetUserIdByRefreshToken(token);
+                    if (userId.HasValue)
+                    {
+                        user = await _userManager.FindByIdAsync(userId.ToString());
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+                
+                var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                if (!addLoginResult.Succeeded)
                 {
                 }
-                creationResult = await _userManager.AddLoginAsync(user, info);
-                if (!creationResult.Succeeded)
-                {
-                }
-
-                InitProfile(user);
+            }
+            else if (!string.IsNullOrWhiteSpace(token))
+            {
+                // adding login, but it's already linked to another user
+                // TODO: error or merge?
+                return BadRequest();
             }
 
             var refreshToken = _profileRepository.GetRefreshToken(user.Id);

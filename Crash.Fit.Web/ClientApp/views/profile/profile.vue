@@ -4,10 +4,10 @@
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
-                    <!--
                     <ul class="nav nav-tabs">
-                        <li v-bind:class="{ active: tab == 'basic' }"><a @click="tab='basic'">{{ $t('basic') }}</a></li>
-                    </ul>-->
+                        <li v-bind:class="{ active: tab == 'basic' }"><a @click="tab='basic'">{{ $t('basicInformation') }}</a></li>
+                        <li v-bind:class="{ active: tab == 'logins' }"><a @click="tab='logins'">{{ $t('logins') }}</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="row"></div>
@@ -86,13 +86,60 @@
 
                     </div>
                 </div>-->
-            </div>
-            <hr />
-            <div class="row">
-                <div class="col-sm-6">
-                    <button class="btn btn-primary" @click="save">{{ $t('save') }}</button>
+                <hr />
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button class="btn btn-primary" @click="save">{{ $t('save') }}</button>
+                    </div>
                 </div>
             </div>
+            <div v-if="tab == 'logins'">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>{{ $t("username") }}</label> <span class="error">{{ usernameError }}</span>
+                            <input type="text" class="form-control" v-model="username" @blur="checkUsername">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" v-if="hasPassword">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>{{ $t('oldPassword') }}</label><br />
+                            <input type="text" class="form-control" v-model="oldPassword" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>{{ $t("newPassword") }}</label> ({{ $t("min") }} 6 {{ $t("characters") }})<span class="error">{{ passwordError}}</span>
+                            <input type="password" class="form-control" v-model="newPassword" @blur="checkPassword">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>{{ $t("confirmNewPassword") }}</label> <span class="error">{{ password2Error}}</span>
+                            <input type="password" class="form-control" v-model="newPassword2" @blur="checkPassword">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button class="btn btn-primary" @click="updateLogin" :disabled="!isValid">{{ $t('save') }}</button>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary" @click="connectFacebook" :disabled="hasFacebook">{{ $t('connectFacebook') }}</button>
+                        <button class="btn btn-primary" @click="connectGoogle" :disabled="hasGoogle">{{ $t('connectGoogle') }}</button>
+                    </div>
+                </div>
+            </div>
+            
         </section>
     </div>
 </template>
@@ -122,13 +169,20 @@ module.exports = {
             weight: undefined,
             rmr: undefined,
             pal: undefined,
-            
+
+            username: undefined,
+            hasPassword: false,
+            hasFacebook: false,
+            hasGoogle: false,
+            oldPassword: undefined,
+            newPassword: undefined,
+            newPassword2: undefined,
+            usernameError: null,
+            passwordError: null,
+            password2Error: null
         }
     },
     computed: {
-        loading: function () {
-            return this.$store.state.loading;
-        },
         dob: function () {
             if (this.year && this.month && this.day) {
                 return new Date(this.year, this.month.number - 1, this.day)
@@ -151,11 +205,39 @@ module.exports = {
                 return (10 * weight) + (6.25 * height) - (5 * age) - 161;
             }
             return undefined;
+        },
+        usernameIsValid(){
+            return this.username && this.username.length > 0;
+        },
+        newPasswordIsValid(){
+            return this.newPassword && this.newPassword.length >= 6;
+        },
+        newPassword2IsValid(){
+            return this.newPassword2 === this.newPassword;
+        },
+        isValid(){
+            return this.usernameIsValid && this.newPasswordIsValid && this.newPassword2IsValid;
         }
     },
     components: {},
     methods: {
-        
+        checkUsername() {
+            this.usernameError = null;
+            if (this.username && !this.usernameIsValid) {
+                this.usernameError = this.$t('invalidUsername');
+            }
+        },
+        checkPassword() {
+            this.passwordError = null;
+            this.password2Error = null;
+
+            if (this.newPassword && this.newPassword.length < 6) {
+                this.passwordError = this.$t('passwordTooShort');
+            }
+            if (this.newPassword && this.newPassword2 && this.newPassword !== this.newPassword2) {
+                this.password2Error = this.$t('passwordsDontMatch');
+            }
+        },
         save: function () {
             var self = this;
             self.$ga.event('profile', 'save');
@@ -176,6 +258,26 @@ module.exports = {
                   toaster.error(self.$t('saveFailed'));
                 }
             });
+        },
+        updateLogin: function () {
+            var self = this;
+            var login = {
+                username: self.email,
+                oldPassword: self.oldPassword,
+                newPassword: self.newPassword
+            };
+
+            self.$store.dispatch(constants.UPDATE_LOGIN, {
+                login,
+                success: function () { },
+                failure: function () { }
+            });
+        },
+        connectFacebook: function () {
+            window.location = api.baseUrl + 'users/external-login/?provider=Facebook&client=web&add=true&returnUrl=/#/profiili';
+        },
+        connectGoogle: function () {
+            window.location = api.baseUrl + 'users/external-login/?provider=Google&client=web&add=true&returnUrl=/#/profiili';
         }
     },
     created: function () {
@@ -197,6 +299,14 @@ module.exports = {
                     if (profile.pal) {
                         self.pal = self.pals.find(p => p.value == profile.pal);
                     }
+
+                    self.hasPassword = profile.hasPassword;
+                    if (profile.hasPassword) {
+                        // don't show generated username
+                        self.email = profile.username;
+                    }
+                    self.hasFacebook = profile.logins.includes('Facebook');
+                    self.hasGoogle = profile.logins.includes('Google');
                 }
 
                 self.$store.commit(constants.LOADING_DONE);
@@ -220,6 +330,8 @@ module.exports = {
         display:initial;
     }
     input.form-control { display:initial;}
-   
+    span.error {
+        color: red;
+    }
     
 </style>
