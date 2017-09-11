@@ -18,8 +18,16 @@
                         <div class="col-sm-3"><strong>{{ $t("details") }}</strong></div>
                     </div>
                     <template v-for="group in groups">
-                        <div class="row"><div class="col-sm-12"><h4>{{ $t(group.id) }}</h4></div></div>
-                        <template v-for="(nutrient, index) in nutrientSettings[group.id]">
+                        <div class="row clickable" @click="toggleGroup(group.id)">
+                            <div class="col-sm-12">
+                                <h4>
+                                    <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
+                                    <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
+                                    {{ $t(group.id) }}
+                                </h4>
+                            </div>
+                        </div>
+                        <template v-for="(nutrient, index) in nutrientSettings[group.id]" v-if="groupOpenStates[group.id]">
                             <div class="row">
                                 <div class="col-xs-4 col-sm-2">
                                     <button class="btn btn-sm" @click="moveNutrientUp(group.id, index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
@@ -80,6 +88,7 @@ module.exports = {
     data () {
         return {
             nutrientSettings: {},
+            groupOpenStates: {}
         }
     },
     computed: {
@@ -89,6 +98,9 @@ module.exports = {
     },
     components: {},
     methods: {
+        toggleGroup: function (group) {
+            this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
+        },
         moveNutrientUp: function (group, index) {
             var group = this.nutrientSettings[group];
             var nutrient = group[index];

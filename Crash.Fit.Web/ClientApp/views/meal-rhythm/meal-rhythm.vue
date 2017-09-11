@@ -12,7 +12,7 @@
                     </div>
                     <template v-for="(def, index) in definitions">
                         <div class="row meal-row">
-                            <div class="col-sm-6">
+                            <div class="col-sm-6 col-lg-4">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t('mealName') }}</label>
                                 <input class="form-control" v-model="def.name" />
                             </div>
@@ -39,7 +39,7 @@
                     </div>
                     <br />
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-6 ol-lg-4">
                         <label class="hidden-sm hidden-md hidden-lg">{{ $t('otherTimes') }}</label>
                         <input class="form-control" v-model="othersName" /></div>
                         <div class="col-sm-4 hidden-xs">{{ $t('otherTimes') }}</div>
