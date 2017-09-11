@@ -40,7 +40,8 @@ module.exports = {
     {
         return {
             username: null,
-            password: null
+            password: null,
+            client: ''
         }
     },
     components: {},
@@ -49,7 +50,8 @@ module.exports = {
             var self = this;
             var data = {
                 username: this.username,
-                password: this.password
+                password: this.password,
+                client: this.client
             };
             api.login(data).then(function (response) {
                 self.$store.dispatch(constants.STORE_TOKENS, {
@@ -68,14 +70,15 @@ module.exports = {
         },
         loginGoogle() {
             //dialog = window.open(api.baseUrl+'users/external-login/?provider=Google','_blank','width=400,height=600');
-            window.location = api.baseUrl + 'users/external-login/?provider=Google';
+            window.location = api.baseUrl + 'users/external-login/?provider=Google&client=' + this.client;
         },
         loginFacebook() {
             //this.dialog = window.open(api.baseUrl + 'users/external-login/?provider=Facebook', '_blank', 'width=400,height=600');
-            window.location = api.baseUrl + 'users/external-login/?provider=Facebook';
+            window.location = api.baseUrl + 'users/external-login/?provider=Facebook&client=' + this.client;
         }
     },
-    created(){
+    created() {
+        this.client = this.$route.params.client || 'web';
         this.$store.commit(constants.LOADING_DONE);
     },
     mounted() {
