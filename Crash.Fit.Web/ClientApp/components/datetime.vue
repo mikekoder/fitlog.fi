@@ -3,8 +3,8 @@
 </template>
 
 <script>
-moment = require('moment');
-module.exports = {
+import moment from 'moment'
+export default {
     data: function() {
         return {
             str: null
@@ -16,7 +16,7 @@ module.exports = {
     },
     methods: {
     },
-    mounted: function () {
+    mounted() {
         var format = this.format || 'DD.MM.YYYY HH:mm';
         if (this.value) {
             var m = moment(this.value);

@@ -65,11 +65,11 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var toaster = require('../../toaster');
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import toaster from '../../toaster'
 
-module.exports = {
+export default {
     data () {
         return {
             foods: [],
@@ -82,28 +82,28 @@ module.exports = {
         createFood: function(){
             this.$router.push({ name: 'food-details', params: { id: constants.NEW_ID } });
         },
-        deleteFood: function (food) {
+        deleteFood(food) {
             var self = this;
             this.$store.dispatch(constants.DELETE_FOOD, {
                 food,
-                success: function () {
+                success() {
                     self.foods.splice(self.foods.findIndex(f => f.id == food.id), 1);
                 },
-                failure: function () {
+                failure() {
                     toaster(this.$t('deleteFailed'));
                 }
             });
         },
     },
-    created: function () {
+    created() {
         var self = this;
         self.foods = [];
         self.$store.dispatch(constants.FETCH_MY_FOODS, {
-            success: function (foods) {
+            success(foods) {
                 self.foods = foods;
                 self.$store.commit(constants.LOADING_DONE);
             },
-            failure: function () {
+            failure() {
                 toaster(this.$t('fetchFailed'));
             }
         });

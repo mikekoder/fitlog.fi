@@ -1,5 +1,5 @@
-﻿var moment = require('moment');
-const utils = {
+﻿import moment from 'moment'
+export default {
     parseFloat(value) {
         if (typeof (value) === 'number') {
             return value;
@@ -18,4 +18,3 @@ const utils = {
         return value;
     }
 }
-module.exports = utils

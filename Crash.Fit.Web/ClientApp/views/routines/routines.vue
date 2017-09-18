@@ -41,12 +41,12 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var formatters = require('../../formatters')
-    var toaster = require('../../toaster');
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import toaster from '../../toaster'
 
-module.exports = {
+export default {
     data () {
         return {
             selectedRoutine: null
@@ -56,7 +56,7 @@ module.exports = {
         routines: function(){
             return this.$store.state.training.routines;
         },
-        exercises: function () {
+        exercises() {
             return this.$store.state.training.exercises;
         }
     },
@@ -68,36 +68,36 @@ module.exports = {
             var self = this;
             this.$store.dispatch(constants.ACTIVATE_ROUTINE, {
                 routine,
-                success: function () { },
-                failure: function () {
+                success() { },
+                failure() {
                     toaster(this.$t('activationFailed'));
                 }
             });
         },
-        deleteRoutine: function (routine) {
+        deleteRoutine(routine) {
             var self = this;
             this.$store.dispatch(constants.DELETE_ROUTINE, {
                 routine,
-                success: function () { },
-                failure: function () {
+                success() { },
+                failure() {
                     toaster(this.$t('deleteFailed'));
                 }
             });
         }
     },
-    created: function () {
+    created() {
 
         var self = this;
         this.$store.dispatch(constants.FETCH_EXERCISES, {
             forceRefresh: true,
-            success: function () { },
-            failure: function () { }
+            success() { },
+            failure() { }
         });
         this.$store.dispatch(constants.FETCH_ROUTINES, {
-            success: function () {
+            success() {
                 self.$store.commit(constants.LOADING_DONE);
             },
-            failure: function () { }
+            failure() { }
         });
     }
 }

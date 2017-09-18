@@ -50,12 +50,12 @@
 </template>
 
 <script>
-var constants = require('../../store/constants')
-var api = require('../../api');
-var toaster = require('../../toaster');
-var formatters = require('../../formatters')
+import constants from '../../store/constants'
+import api from '../../api'
+import toaster from '../../toaster'
+import formatters from '../../formatters'
 
-module.exports = {
+export default {
     data () {
         return {
             measures: [],
@@ -68,29 +68,29 @@ module.exports = {
         'measurements-editor': require('./measurements-editor')
     },
     methods: {
-        loadMeasures: function () {
+        loadMeasures() {
             var self = this;
             api.listMeasures().then(function (measures) {
                 self.measures = measures;
                 self.$store.commit(constants.LOADING_DONE);
             });
         },
-        createMeasurements: function () {
+        createMeasurements() {
             this.create = true;
         },
-        saveMeasurements: function (measurements) {
+        saveMeasurements(measurements) {
             var self = this;
             api.saveMeasurements(measurements).then(function () {
                 self.loadMeasures();
                 self.create = false;
             });
         },
-        cancelMeasurements: function () {
+        cancelMeasurements() {
             this.create = false;
         },
         datetime: formatters.formatDateTime
     },
-    created: function () {
+    created() {
         this.loadMeasures();
     },
     beforeRouteUpdate (to, from, next) {

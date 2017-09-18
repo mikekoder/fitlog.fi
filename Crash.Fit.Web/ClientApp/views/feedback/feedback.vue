@@ -59,9 +59,9 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var toaster = require('../../toaster');
-module.exports = {
+    import constants from '../../store/constants'
+    import toaster from '../../toaster'
+export default {
     data () {
         return {
           type: '',
@@ -69,10 +69,10 @@ module.exports = {
         }
     },
     computed: {
-        itemsSorted: function () {
+        itemsSorted() {
             return this.items.sort((a, b) => { return a.score < b.score; });
         },
-        votes: function () {
+        votes() {
             return this.$store.state.feedback.votes;
         }
     },
@@ -83,22 +83,22 @@ module.exports = {
         self.type = self.$route.meta.type;
         if(self.type === 'Bug'){
           self.$store.dispatch(constants.FETCH_BUGS, {
-            success: function (bugs) {
+            success(bugs) {
                 self.items = bugs;
                 self.$store.commit(constants.LOADING_DONE);
             },
-            failure: function () {
+            failure() {
                 toaster.error(self.$t('fetchFailed'));
             }
           });
         }
         else if(self.type === 'Improvement'){
           self.$store.dispatch(constants.FETCH_IMPROVEMENTS, {
-            success: function (improvements) {
+            success(improvements) {
                 self.items = improvements;
                 self.$store.commit(constants.LOADING_DONE);
             },
-            failure: function () {
+            failure() {
                 toaster.error(self.$t('fetchFailed'));
             }
           });
@@ -112,17 +112,17 @@ module.exports = {
           this.$router.push({ name: 'improvement-details', params: { id: constants.NEW_ID } });
         }
       },
-      userHasVoted: function (feedbackId) {
+      userHasVoted(feedbackId) {
           return this.votes.includes(feedbackId);
       },
-      vote: function (feedback) {
+      vote(feedback) {
           var self = this;
           self.$store.dispatch(constants.SAVE_VOTE, {
             feedbackId: feedback.id,
-            success: function () {
+            success() {
                 feedback.score++;
             },
-            failure: function () {
+            failure() {
                 toaster.error(self.$t('saveFailed'));
             }
           });
@@ -131,9 +131,9 @@ module.exports = {
     created() {
         var self = this;
         self.$store.dispatch(constants.FETCH_VOTES, {
-            success: function (votes) {
+            success(votes) {
             },
-            failure: function () {
+            failure() {
                 toaster.error(self.$t('fetchFailed'));
             }
           });

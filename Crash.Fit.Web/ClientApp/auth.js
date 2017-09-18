@@ -1,4 +1,4 @@
-﻿const auth = {
+﻿export default {
     isLoggedIn() {
         return sessionStorage.getItem('userid') && true;
     },
@@ -9,5 +9,3 @@
         sessionStorage.removeItem('userid');
     }
 }
-
-module.exports = auth;

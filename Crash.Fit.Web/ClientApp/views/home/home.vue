@@ -41,7 +41,7 @@
                                             <div v-if="nutrient.id == energyDistributionId">
                                                 <chart-pie-energy v-bind:protein="nutrients[proteinId]" v-bind:carb="nutrients[carbId]" v-bind:fat="nutrients[fatId]"></chart-pie-energy>
                                             </div>
-                                            <div v-else>{{ decimal(nutrients[nutrient.id]) }}</div>
+                                            <div v-else>{{ decimal(nutrients[nutrient.id], nutrient.precision) }}</div>
                                         </div>
                                     </div>
                                 </template>
@@ -84,7 +84,7 @@
                                         <div v-if="nutrient.id == energyDistributionId">
                                             <chart-pie-energy v-bind:protein="meal.meal.nutrients[proteinId]" v-bind:carb="meal.meal.nutrients[carbId]" v-bind:fat="meal.meal.nutrients[fatId]"></chart-pie-energy>
                                         </div>
-                                        <div v-else>{{ decimal(meal.meal.nutrients[nutrient.id]) }}</div>
+                                        <div v-else>{{ decimal(meal.meal.nutrients[nutrient.id], nutrient.precision) }}</div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -106,7 +106,7 @@
                                             <div v-if="nutrient.id == energyDistributionId">
                                                 <chart-pie-energy v-bind:protein="row.nutrients[proteinId]" v-bind:carb="row.nutrients[carbId]" v-bind:fat="row.nutrients[fatId]"></chart-pie-energy>
                                             </div>
-                                            <div v-else>{{ decimal(row.nutrients[nutrient.id]) }}</div>
+                                            <div v-else>{{ decimal(row.nutrients[nutrient.id], nutrient.precision) }}</div>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -139,11 +139,12 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var formatters = require('../../formatters')
-    var toaster = require('../../toaster');
+    import constants from '../../store/constants'
+    import formatters from '../../formatters'
+    import toaster from '../../toaster'
+    import moment from 'moment'
 
-module.exports = {
+export default {
     data () {
         return {
             proteinId: constants.PROTEIN_ID,
@@ -159,10 +160,10 @@ module.exports = {
         }
     },
     computed: {
-        selectedDate: function () {
+        selectedDate() {
             return this.$store.state.home.date;
         },
-        dateText: function () {
+        dateText() {
             if (moment().isSame(this.selectedDate, 'd')) {
                 return this.$t('today');
             }
@@ -174,7 +175,7 @@ module.exports = {
         visibleNutrients() {
             return this.$store.state.nutrition.nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1,n2) => n1.homeOrder - n2.homeOrder);
         },
-        meals: function () {
+        meals() {
             var self = this;
             var start = moment(self.selectedDate).startOf('day');
             var end = moment(self.selectedDate).endOf('day');
@@ -192,7 +193,7 @@ module.exports = {
             );
             return result;
         },
-        nutrients: function () {
+        nutrients() {
             var result = {};
             this.meals.filter(m => m.meal).forEach(m => {
                 for (var i in m.meal.nutrients) {
@@ -204,7 +205,7 @@ module.exports = {
             });
             return result;
         },
-        nutrientGroups: function () {
+        nutrientGroups() {
             var nutrients = this.$store.state.nutrition.nutrients;
             return this.$store.state.nutrition.nutrientGroups.map(g => {
                 return {
@@ -221,20 +222,20 @@ module.exports = {
         'chart-pie-energy': require('../../components/energy-distribution-bar'),
     },
     methods: {
-        fetchMeals: function () {
+        fetchMeals() {
             var self = this;
             var start = moment(self.selectedDate).startOf('day');
             var end = moment(self.selectedDate).endOf('day');
             self.$store.dispatch(constants.FETCH_MEALS, {
                 start,
                 end,
-                success: function () {
+                success() {
 
                 },
-                failure: function () { }
+                failure() { }
             });
         },
-        changeDate: function (date) {
+        changeDate(date) {
             var newDate;
             if (date == 'today') {
                 newDate = new Date();
@@ -256,34 +257,34 @@ module.exports = {
                 this.fetchMeals();
             }
         },
-        mealName: function (defMeal) {
+        mealName(defMeal) {
             if (defMeal.definition) {
                 return defMeal.definition.name;
             }
             return this.time(defMeal.meal.time);
         },
-        addFood: function (defMeal) {
+        addFood(defMeal) {
             this.row = {
                 mealDefinitionId: defMeal.definition ? defMeal.definition.id : undefined,
                 mealId: defMeal.meal ? defMeal.meal.id : undefined
             };
             this.showAddFood = true;
         },
-        editFood: function (row) {
+        editFood(row) {
            this.row = row;
            this.showAddFood = true;
         },
-        saveFood: function (row) {
+        saveFood(row) {
             row.date = this.selectedDate;
             this.$store.dispatch(constants.SAVE_MEAL_ROW, {
                 row,
-                success: function () {},
-                failure: function () { }
+                success() {},
+                failure() { }
             });
             this.row = {};
             this.showAddFood = false;
         },
-        deleteFood: function () {
+        deleteFood() {
 
         },
         editSettings() {
@@ -295,7 +296,7 @@ module.exports = {
             this.selectedNutrients = selectedNutrients;
             this.editNutrients = true;
         },
-        saveSettings: function () {
+        saveSettings() {
             var self = this;
             var settings = {
                 nutrients: self.selectedNutrients
@@ -303,32 +304,41 @@ module.exports = {
             
             this.$store.dispatch(constants.SAVE_HOME_SETTINGS, {
                 settings,
-                success: function () {},
-                failure: function () { }
+                success() {},
+                failure() { }
             });
             this.editNutrients = false;
         },
         date: formatters.formatDate,
         time: formatters.formatTime,
         unit: formatters.formatUnit,
-        decimal: function (value, precision) {
+        decimal(value, precision) {
             if (!value) {
                 return value;
             }
+
             return value.toFixed(precision);
         }
     },
     created() {
         var self = this;
         self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success: function () {},
-            failure: function () { }
+            success() {},
+            failure() { }
         });
         self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-            success: function () {
+            success() {
                 self.fetchMeals();
             },
-            failure: function () { }
+            failure() { }
+        });
+        self.$store.dispatch(constants.FETCH_LATEST_FOODS, {
+            success() { },
+            failure() { }
+        });
+        self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, {
+            success() { },
+            failure() { }
         });
         this.$store.commit(constants.LOADING_DONE);
     }

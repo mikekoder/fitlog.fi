@@ -76,8 +76,8 @@
 </template>
 
 <script>
-    var constants = require('../store/constants')
-module.exports = {
+    import constants from '../store/constants'
+export default {
     //name: 'toolbar',
     data: function() {
         return {

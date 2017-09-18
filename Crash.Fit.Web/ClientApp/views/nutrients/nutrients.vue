@@ -79,12 +79,12 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var utils = require('../../utils');
-    var api = require('../../api');
-    var formatters = require('../../formatters')
-    var toaster = require('../../toaster');
-module.exports = {
+    import constants from '../../store/constants'
+    import utils from '../../utils'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import toaster from '../../toaster'
+export default {
     data () {
         return {
             nutrientSettings: {},
@@ -98,22 +98,22 @@ module.exports = {
     },
     components: {},
     methods: {
-        toggleGroup: function (group) {
+        toggleGroup(group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
         },
-        moveNutrientUp: function (group, index) {
+        moveNutrientUp(group, index) {
             var group = this.nutrientSettings[group];
             var nutrient = group[index];
             group.splice(index, 1);
             group.splice(index - 1, 0, nutrient);
         },
-        moveNutrientDown: function (group, index) {
+        moveNutrientDown(group, index) {
             var group = this.nutrientSettings[group];
             var nutrient = group[index];
             group.splice(index, 1);
             group.splice(index + 1, 0, nutrient);
         },
-        save: function () {
+        save() {
             var self = this;
             var settings = [];
             for (var i in self.nutrientSettings) {
@@ -124,20 +124,20 @@ module.exports = {
             }
             self.$store.dispatch(constants.SAVE_NUTRIENT_SETTINGS, {
                 settings,
-                success: function () {
+                success() {
                     toaster.info(self.$t('nutrients.saved'));
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('nutrients.saveFailed'));
                 }
             });
         },
         unit: formatters.formatUnit
     },
-    created: function () {
+    created() {
         var self = this;
         this.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success: function (nutrients) {
+            success(nutrients) {
                 var grouped = {};
                 for (var i in nutrients) {
                     var nutrient = nutrients[i];
@@ -151,7 +151,7 @@ module.exports = {
                 }
                 self.nutrientSettings = grouped;
                 self.$store.commit(constants.LOADING_DONE);
-            }, failure: function () { }
+            }, failure() { }
         });
     }
 }

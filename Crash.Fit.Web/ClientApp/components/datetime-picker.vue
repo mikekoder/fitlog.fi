@@ -12,11 +12,12 @@
 
 <script>
 
-$ = require('jquery')
+import $ from 'jquery'
 require('eonasdan-bootstrap-datetimepicker')
 require('eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css')
-moment = require('moment');
-module.exports = {
+import moment from 'moment'
+
+export default {
     data: function() {
         return { }
     },
@@ -36,7 +37,7 @@ module.exports = {
     },
     methods: {
     },
-    mounted: function () {
+    mounted() {
         var element = $(this.$el).children();
         var format = this.format || 'DD.MM.YYYY HH:mm';
         element.datetimepicker({ format: format, locale: 'fi' });

@@ -32,10 +32,10 @@
 </template>
 
 <script>
-    var constants = require('../store/constants')
-    var api = require('../api');
+    import constants from '../store/constants'
+    import api from '../api'
 
-module.exports = {
+export default {
     data ()
     {
         return {
@@ -58,10 +58,10 @@ module.exports = {
                     client: response.client,
                     refreshToken: response.refreshToken,
                     accessToken: response.accessToken,
-                    success: function () {
+                    success() {
                         window.location = '/';
                     },
-                    failure: function () {
+                    failure() {
                         toaster(self.$t('failed'));
                     }
                 });

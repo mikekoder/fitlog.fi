@@ -40,42 +40,42 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var toaster = require('../../toaster');
+    import constants from '../../store/constants'
+    import toaster from '../../toaster'
 
-module.exports = {
+export default {
     data () {
         return { }
     },
     computed: {
-        exercises: function () {
+        exercises() {
             return this.$store.state.training.exercises;
         }
     },
     methods: {
-        createExercise: function () {
+        createExercise() {
             this.$router.push({ name: 'exercise-details', params: { id: constants.NEW_ID } });
         },
-        deleteExercise: function (exercise) {
+        deleteExercise(exercise) {
             var self = this;
             self.$store.dispatch(constants.DELETE_EXERCISE, {
                 exercise,
-                success: function () {
+                success() {
                 },
-                failure: function () {
+                failure() {
                     toaster(self.$t('deleteFailed'));
                 }
             });
         }
     },
-    created: function () {
+    created() {
         var self = this;
 
         self.$store.dispatch(constants.FETCH_EXERCISES, {
-            success: function () {
+            success() {
                 self.$store.commit(constants.LOADING_DONE);
             },
-            failure: function () {
+            failure() {
                 toaster(self.$t('efetchFailed'));
             }
         });

@@ -5,9 +5,9 @@
 </template>
 
 <script>
-module.exports =  {
+export default {
     name: 'App',
-    data: function () {
+    data() {
         return { }
     }
 }

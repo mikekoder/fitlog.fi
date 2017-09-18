@@ -145,12 +145,12 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var utils = require('../../utils');
-    var api = require('../../api');
-    var formatters = require('../../formatters')
-    var toaster = require('../../toaster');
-module.exports = {
+    import constants from '../../store/constants'
+    import utils from '../../utils'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import toaster from '../../toaster'
+export default {
     data () {
         return {
             tab: 'basic',
@@ -183,13 +183,13 @@ module.exports = {
         }
     },
     computed: {
-        dob: function () {
+        dob() {
             if (this.year && this.month && this.day) {
                 return new Date(this.year, this.month.number - 1, this.day)
             }
             return undefined;
         },
-        rmrEstimate: function () {
+        rmrEstimate() {
             if (!this.gender || !this.height || !this.weight || !this.dob) {
                 return undefined;
             }
@@ -238,7 +238,7 @@ module.exports = {
                 this.password2Error = this.$t('passwordsDontMatch');
             }
         },
-        save: function () {
+        save() {
             var self = this;
             self.$ga.event('profile', 'save');
             var profile = {
@@ -251,15 +251,15 @@ module.exports = {
             };
             self.$store.dispatch(constants.SAVE_PROFILE, {
                 profile,
-                success: function () {
+                success() {
                   toaster.info(self.$t('savedProfile'));
                 },
-                failure: function () {
+                failure() {
                   toaster.error(self.$t('saveFailed'));
                 }
             });
         },
-        updateLogin: function () {
+        updateLogin() {
             var self = this;
             var login = {
                 username: self.email,
@@ -269,22 +269,22 @@ module.exports = {
 
             self.$store.dispatch(constants.UPDATE_LOGIN, {
                 login,
-                success: function () { },
-                failure: function () { }
+                success() { },
+                failure() { }
             });
         },
-        connectFacebook: function () {
+        connectFacebook() {
             window.location = api.baseUrl + 'users/external-login/?provider=Facebook&client=web&add=true&returnUrl=/#/profiili';
         },
-        connectGoogle: function () {
+        connectGoogle() {
             window.location = api.baseUrl + 'users/external-login/?provider=Google&client=web&add=true&returnUrl=/#/profiili';
         }
     },
-    created: function () {
+    created() {
         var self = this;
         this.$ga.event('profile', 'open');
         this.$store.dispatch(constants.FETCH_PROFILE, {
-            success: function () {
+            success() {
                 var profile = self.$store.state.profile.profile;
                 if (profile) {
                     if (profile.doB) {

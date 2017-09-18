@@ -34,9 +34,9 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
+    import constants from '../../store/constants'
 
-module.exports = {
+export default {
     data () {
         return {
           id: undefined,
@@ -47,7 +47,7 @@ module.exports = {
     },
     components: {},
     methods: {
-      save: function () {
+      save() {
         var self = this;
         var feedback = {
             id: self.id,
@@ -57,7 +57,7 @@ module.exports = {
         };
         self.$store.dispatch(constants.SAVE_FEEDBACK, {
             feedback,
-            success: function () {
+            success() {
                 if(feedback.type === 'Bug'){
                   self.$router.replace({ name: 'bugs' });
                 }
@@ -65,12 +65,12 @@ module.exports = {
                   self.$router.replace({ name: 'improvements' });
                 }
             },
-            failure: function () {
+            failure() {
                 toaster(self.$t('saveFailed'));
             }
         });
       },
-      cancel: function () {
+      cancel() {
         this.$router.go(-1);
       },
       deleteFeedback: function(){}

@@ -1,4 +1,4 @@
-﻿var moment = require('moment');
+﻿import moment from 'moment'
 
 function formatDate(value) {
     if(!value){
@@ -38,4 +38,4 @@ function formatUnit(unit){
             return unit;
     }
 }
-export { formatDate, formatTime, formatDateTime, formatUnit }
+export default { formatDate, formatTime, formatDateTime, formatUnit }
