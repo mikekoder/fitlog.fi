@@ -189,6 +189,6 @@
     youHaveVoted: 'Olet äänestänyt'
 }
 
-module.exports = {
+export default {
     fi: fi
 };

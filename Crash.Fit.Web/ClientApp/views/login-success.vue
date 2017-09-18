@@ -4,14 +4,14 @@
 </template>
 
 <script>
-    var constants = require('../store/constants')
-    var api = require('../api');
+    import constants from '../store/constants'
+    import api from '../api'
 
-module.exports = {
+export default {
     data () { return {}},
     components: {},
     methods: {},
-    created: function () {
+    created() {
         var self = this;
 
         var client = self.$route.params.client;
@@ -22,12 +22,12 @@ module.exports = {
             client,
             refreshToken,
             accessToken,
-            success: function () {
+            success() {
                 if(client == 'web'){
                     window.location = '/';
                 }
             },
-            failure: function () {
+            failure() {
                 toaster(self.$t('failed'));
             }
         });

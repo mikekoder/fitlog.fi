@@ -92,13 +92,13 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var utils = require('../../utils');
-    var api = require('../../api');
-    var formatters = require('../../formatters')
-    var toaster = require('../../toaster');
-    var DAYS = require('../../enums/days');
-module.exports = {
+    import constants from '../../store/constants'
+    import utils from '../../utils'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import toaster from '../../toaster'
+    import DAYS from '../../enums/days'
+export default {
     data () {
         return {
             //nutrients: [],
@@ -111,13 +111,13 @@ module.exports = {
         groups: function(){
             return this.$store.state.nutrition.nutrientGroups;
         },
-        nutrients: function () {
+        nutrients() {
             return this.$store.state.nutrition.nutrientsGrouped;
         }
     },
     components: {},
     methods: {
-        addNutrientGoal: function () {
+        addNutrientGoal() {
             var goal = {
                 monday: false,
                 tuesday: false,
@@ -142,13 +142,13 @@ module.exports = {
         deleteNutrientGoal: function(index){
             this.nutrientGoals.splice(index, 1);
         },
-        toggleGroup: function (group) {
+        toggleGroup(group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
         },
         groupIsExpanded(group) {
             return this.groupOpenStates[group] && true;
         },
-        save: function () {
+        save() {
             var self = this;
             var goals = [];
             for (var i in self.nutrientGoals) {
@@ -175,18 +175,18 @@ module.exports = {
             }
             self.$store.dispatch(constants.SAVE_NUTRIENT_TARGETS, {
                 goals,
-                success: function () {
+                success() {
                     toaster.info(self.$t('nutrientGoals.saved'));
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('nutrientGoals.saveFailed'));
                 }
             });
         },
-        selectGoal: function (goal) {
+        selectGoal(goal) {
             this.selectedGoal = goal;
         },
-        daysFormatted: function (goal) {
+        daysFormatted(goal) {
             var text = '';
             var count = 0;
             var days = 0;
@@ -252,17 +252,17 @@ module.exports = {
             }
             return text;
         },
-        mealsFormatted: function (goal) {
+        mealsFormatted(goal) {
             return 'Kaikilla aterioilla';
         },
         unit: formatters.formatUnit
     },
-    created: function () {
+    created() {
         var self = this;
         this.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success: function () {
+            success() {
                 self.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {
-                    success: function (goals) {
+                    success(goals) {
                         var nutrientGoals = [];
                         for (var i in goals) {
                             var goal = {
@@ -292,10 +292,10 @@ module.exports = {
 
                         self.$store.commit(constants.LOADING_DONE);
                     },
-                    failure: function () { }
+                    failure() { }
                 });
             },
-            failure: function () { }
+            failure() { }
         });
         
         this.toggleGroup(this.groups[0].id);

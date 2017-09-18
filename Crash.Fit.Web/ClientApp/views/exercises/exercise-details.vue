@@ -55,11 +55,11 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var formatters = require('../../formatters');
-    var toaster = require('../../toaster');
-module.exports = {
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import toaster from '../../toaster'
+export default {
     data () {
         return {
             id: null,
@@ -68,7 +68,7 @@ module.exports = {
         }
     },
     computed: {
-        muscleGroups: function () {
+        muscleGroups() {
             return this.$store.state.training.muscleGroups;
         }
     },
@@ -79,7 +79,7 @@ module.exports = {
         removeTarget: function(index){
             this.targets.splice(index, 1);
         },
-        save: function () {
+        save() {
             var self = this;
 
             var exercise = {
@@ -90,35 +90,35 @@ module.exports = {
 
             self.$store.dispatch(constants.SAVE_EXERCISE, {
                 exercise,
-                success: function () {
+                success() {
                     self.$router.replace({ name: 'exercises' });
                 },
-                failure: function () {
+                failure() {
                     toaster(self.$t('saveFailed'));
                 }
             });
         },
-        cancel: function () {
+        cancel() {
             this.$router.go(-1);
         },
-        deleteExercise: function () {
+        deleteExercise() {
             var self = this;
             self.$store.dispatch(constants.DELETE_EXERCISE, {
                 exercise: { id: self.id },
-                success: function () {
+                success() {
                     self.$router.push({ name: 'exercises' });
                 },
-                failure: function () {
+                failure() {
                     toaster(self.$t('deleteFailed'));
                 }
             });
         }
     },
-    created: function () {
+    created() {
         var self = this;
         var id = this.$route.params.id;
         self.$store.dispatch(constants.FETCH_MUSCLEGROUPS, {
-            success: function () {
+            success() {
                 if (id == constants.NEW_ID) {
                     self.id = undefined;
                     self.name = undefined;
@@ -128,19 +128,19 @@ module.exports = {
                 else {
                     self.$store.dispatch(constants.FETCH_EXERCISE, {
                         id, 
-                        success: function (exercise) {
+                        success(exercise) {
                             self.id = exercise.id;
                             self.name = exercise.name;
                             self.targets = exercise.targets.map(t => { return self.muscleGroups.find(g => g.id === t); });
                             self.$store.commit(constants.LOADING_DONE);
                         },
-                        failure: function () {
+                        failure() {
                             toaster(self.$t('fetchFailed'));
                         }
                     });
                 }
             },
-            failure: function () {
+            failure() {
                 toaster(self.$t('fetchFailed'));
             }
         });

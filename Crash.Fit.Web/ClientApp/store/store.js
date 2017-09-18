@@ -5,28 +5,23 @@ import nutrition from './nutrition'
 import training from './training'
 import profile from './profile'
 import feedback from './feedback'
-var constants = require('./constants')
+import constants from './constants'
 
 Vue.use(Vuex)
 
-const state = {
-    loading: false
-};
-const actions = {
-};
-const mutations = {
-    [constants.LOADING] (state){
-        state.loading = true;
-    },
-    [constants.LOADING_DONE] (state){
-        state.loading = false;
-    }
-};
-
 export default new Vuex.Store({
-    state,
-    actions,
-    mutations,
+    state: {
+        loading: false
+    },
+    actions: {},
+    mutations: {
+        [constants.LOADING] (state){
+            state.loading = true;
+        },
+        [constants.LOADING_DONE] (state){
+            state.loading = false;
+        }
+    },
     modules: {
         home,
         nutrition,

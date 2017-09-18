@@ -30,6 +30,8 @@
                         <template v-for="group in groups">
                             <button class="btn btn-default" v-bind:class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t(group.id) }}</button>
                         </template>
+                        <button class="btn pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button>
+                        <button class="btn pull-right" @click="saveSettings" v-if="editNutrients">{{ $t('save') }}</button>
                     </div>
 
                     <div class="outer" v-if="days.length > 0">
@@ -39,7 +41,7 @@
                                     <tr>
                                         <th></th>
                                         <template v-for="col in visibleColumns">
-                                            <th class="nutrient" v-if="!col.hideSummary"><div><div>{{ col.title }}</div></div></th>
+                                            <th class="nutrient" v-if="!col.hideSummary"><div><input type="checkbox" v-if="editNutrients" /><div>{{ col.title }}</div></div></th>
                                         </template>
                                         <th></th>
                                     </tr>
@@ -104,14 +106,14 @@
 
 <script>
 
-    var api = require('../../api');
-    var formatters = require('../../formatters')
-    var moment = require('moment');
-    var toaster = require('../../toaster');
-    var utils = require('../../utils');
-    var constants = require('../../store/constants')
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import moment from 'moment'
+    import toaster from '../../toaster'
+    import utils from '../../utils'
+    import constants from '../../store/constants'
 
-module.exports = {
+export default {
     data () {
         return {
             selectedGroup: '',
@@ -121,10 +123,11 @@ module.exports = {
             carbId: constants.CARB_ID,
             fatId: constants.FAT_ID,
             energyDistributionId: constants.ENERGY_DISTRIBUTION_ID,
+            editNutrients: false
         }
     },
     computed: {
-        groups: function () {
+        groups() {
             return this.$store.state.nutrition.nutrientGroups;
         },
         columns: function(){
@@ -151,13 +154,13 @@ module.exports = {
             var self = this;
             return this.$store.state.nutrition.mealDays.filter(md => moment(md.date).isBetween(self.start, self.end, null, '[]'));
         },
-        visibleColumns: function () {
+        visibleColumns() {
             var self = this;
             return this.columns.filter(function (c) {
                 return !c.group || c.group == self.selectedGroup;
             });
         },
-        nutrientTargets: function () {
+        nutrientTargets() {
             return this.$store.state.nutrition.nutrientTargets;
         },
         start: function(){
@@ -200,17 +203,23 @@ module.exports = {
             self.$store.dispatch(constants.SELECT_MEAL_DATE_RANGE, {
                 start: start,
                 end: end,
-                success: function () {
+                success() {
                     self.fetchMeals();
                 }
             });
         },
-        fetchMeals: function () {
+        editSettings() {
+            this.editNutrients = true;
+        },
+        saveSettings() {
+            this.editNutrients = false;
+        },
+        fetchMeals() {
             var self = this;
             self.$store.dispatch(constants.FETCH_MEALS, {
                 start: self.start,
                 end: self.end,
-                success: function () {
+                success() {
                     self.$store.commit(constants.LOADING_DONE);
                 }
             });
@@ -219,21 +228,21 @@ module.exports = {
         selectGroup: function(group){
             this.selectedGroup = group;
         },
-        toggleDay: function (day) {
+        toggleDay(day) {
             this.$set(this.dayStates,day.date.getTime(), !(this.dayStates[day.date.getTime()] && true))
         },
         createMeal: function(){
             this.$router.push({ name: 'meal-details', params: { id: constants.NEW_ID } });
         },
-        deleteMeal: function (meal) {
+        deleteMeal(meal) {
             var self = this;
             this.$store.dispatch(constants.DELETE_MEAL, {
                 meal,
-                success: function () {
+                success() {
                     var restoreUrl = self.$router.resolve({ name: 'meal-details', params: { id: meal.id, action: constants.RESTORE_ACTION } });
                     toaster.info(self.$t('mealDeleted') + ' <a href="' + restoreUrl.href + '">' + self.$t('restore') + '</a>');
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('deleteFailed'));
                 }
             });
@@ -302,13 +311,13 @@ module.exports = {
         time: formatters.formatTime,
         datetime: formatters.formatDateTime,
         unit: formatters.formatUnit,
-        decimal: function (value, precision) {
+        decimal(value, precision) {
             if (!value) {
                 return value;
             }
             return value.toFixed(precision);
         },
-        mealName: function (meal) {
+        mealName(meal) {
             if (meal.definitionId) {
                 var def = this.$store.state.nutrition.mealDefinitions.find(d => d.id == meal.definitionId);
                 if (def) {
@@ -318,7 +327,7 @@ module.exports = {
             return this.time(meal.time);
         }
     },
-    created: function () {
+    created() {
         var self = this;
         //self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
         self.$store.dispatch(constants.FETCH_NUTRIENTS, {});

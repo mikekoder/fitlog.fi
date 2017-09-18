@@ -13,7 +13,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
     data: function() {
         return {
         }
@@ -23,7 +23,7 @@ module.exports = {
         maxValue: function(){
             return Math.max(this.target.min || 0, this.value || 0, this.target.max || 0) * 1.1;
         },/*
-        color: function () {
+        color() {
             
             var diff = 0;
             if (this.value || this.value == 0) {
@@ -44,13 +44,13 @@ module.exports = {
         },
      */
         
-        minLeft: function () {
+        minLeft() {
             return (this.target.min || 0) / this.maxValue * 100;
         },
-        minStyle: function () {
+        minStyle() {
             return 'left: ' + this.minLeft + '%;';
         },
-        minClass: function () {
+        minClass() {
             if (this.target.min && this.value < this.target.min) {
                 return 'bad';
             }
@@ -59,13 +59,13 @@ module.exports = {
             }
             return '';
         },
-        maxLeft: function () {
+        maxLeft() {
             return (this.target.max || 0) / this.maxValue * 100;
         },
-        maxStyle: function () {
+        maxStyle() {
             return 'left: ' + this.maxLeft + '%;';
         },
-        maxClass: function () {
+        maxClass() {
             if (this.target.max && this.value > this.target.max) {
                 return 'bad';
             }
@@ -74,13 +74,13 @@ module.exports = {
             }
             return '';
         },
-        valueLeft: function () {
+        valueLeft() {
             return (this.value || 0) / this.maxValue * 100;
         },
         valueStyle: function(){
             return 'width: ' + this.valueLeft + '%; background-color: #ccc;';
         },
-        title: function () {
+        title() {
             if (this.target.min) {
                 if (this.target.max) {
                     return this.target.min + ' - ' + this.target.max;
@@ -100,11 +100,11 @@ module.exports = {
         value: undefined,
         precision: undefined
     },
-    created: function () {
+    created() {
 
     },
     methods: {
-        decimal: function (value, precision) {
+        decimal(value, precision) {
             if (!value) {
                 return value;
             }

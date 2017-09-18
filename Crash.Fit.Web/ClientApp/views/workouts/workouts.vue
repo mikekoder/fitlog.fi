@@ -74,14 +74,14 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var formatters = require('../../formatters')
-    var moment = require('moment');
-    var toaster = require('../../toaster');
-    var utils = require('../../utils');
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import moment from 'moment'
+    import toaster from '../../toaster'
+    import utils from '../../utils'
 
-module.exports = {
+export default {
     data () {
         return {   
         }
@@ -90,7 +90,7 @@ module.exports = {
         muscleGroups: function(){
             return this.$store.state.training.muscleGroups;
         },
-        exercises: function () {
+        exercises() {
             return this.$store.state.training.exercises;
         },
         workouts: function(){
@@ -133,22 +133,22 @@ module.exports = {
             self.$store.dispatch(constants.SELECT_WORKOUT_DATE_RANGE, {
                 start: start,
                 end: end,
-                success: function () {
+                success() {
                     self.fetchWorkouts();
                 }
             });
         },
-        fetchWorkouts: function () {
+        fetchWorkouts() {
             var self = this;
             this.$store.dispatch(constants.FETCH_WORKOUTS, {
                 start: self.start,
                 end: self.end,
-                success: function () {
+                success() {
                     self.$store.commit(constants.LOADING_DONE);
                 }
             });
         },
-        createWorkout: function (routineId, workoutId) {
+        createWorkout(routineId, workoutId) {
             if (routineId && workoutId) {
                 this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }, query: { [constants.ROUTINE_PARAM]: routineId, [constants.WORKOUT_PARAM]: workoutId }  });
             }
@@ -156,39 +156,39 @@ module.exports = {
                 this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }});
             }
         },
-        deleteWorkout: function (workout) {
+        deleteWorkout(workout) {
             var self = this;
             self.$store.dispatch(constants.DELETE_WORKOUT, {
                 workout,
-                success: function () { },
-                failure: function () {
+                success() { },
+                failure() {
                     toaster(self.$t('deleteFailed'));
                 }
             });
         },
         date: formatters.formatDate,
         datetime: formatters.formatDateTime,
-        decimal: function (value, precision) {
+        decimal(value, precision) {
             if (!value) {
                 return value;
             }
             return value.toFixed(precision);
         }
     },
-    created: function () {
+    created() {
 
         var self = this;
         this.$store.dispatch(constants.FETCH_MUSCLEGROUPS, {
-            success: function () { },
-            failure: function () { }
+            success() { },
+            failure() { }
         });
         this.$store.dispatch(constants.FETCH_EXERCISES, {
-            success: function () { },
-            failure: function () { }
+            success() { },
+            failure() { }
         });
         this.$store.dispatch(constants.FETCH_ROUTINES, {
-            success: function () { },
-            failure: function () { }
+            success() { },
+            failure() { }
         });
         if(self.start && self.end){
             self.fetchWorkouts();

@@ -62,12 +62,12 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var formatters = require('../../formatters');
-    var utils = require('../../utils');
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import utils from '../../utils'
 
-module.exports = {
+export default {
     data () {
         return {
             time: null,
@@ -92,7 +92,7 @@ module.exports = {
         removeMeasurement: function(index){
             this.measurements.splice(index, 1);
         },
-        save: function () {
+        save() {
             var measurements = {
                 time: this.time,
                 measurements: this.measurements.filter(m => m.value).map(m => { return { measureId: m.id, measureName: m.name, value: utils.parseFloat(m.value) } })
@@ -100,14 +100,14 @@ module.exports = {
 
             this.saveCallback(measurements);
         },
-        cancel: function () {
+        cancel() {
             this.cancelCallback();
         },
-        deleteMeasurement: function () {
+        deleteMeasurement() {
             this.deleteCallback(this.exercise);
         }
     },
-    created: function () {
+    created() {
         var self = this;
         this.time = utils.previousHalfHour();
         this.measurements = this.measures.map(m => { return { id: m.id, name: m.name, value: undefined} });

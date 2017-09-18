@@ -55,8 +55,8 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    module.exports = {
+    import constants from '../../store/constants'
+    export default {
         data () {
             return {
                 reps: undefined,
@@ -68,7 +68,7 @@
         },
         components: {},
         methods: {
-            decimal: function (value, precision) {
+            decimal(value, precision) {
                 if (!value) {
                     return value;
                 }
@@ -160,7 +160,7 @@
                 }
             }
         },
-        created: function () {
+        created() {
             this.$store.commit(constants.LOADING_DONE);
         }
     }

@@ -3,10 +3,10 @@
 </template>
 
 <script>
-    var api = require('../../api');
+    import api from '../../api'
     require('bootstrap-3-typeahead');
 
-module.exports = {
+export default {
     data: function() {
         return {
             name: null
@@ -17,32 +17,32 @@ module.exports = {
     },
     methods: {
     },
-    mounted: function () {
+    mounted() {
         if (this.value) {
             $(this.$el).val(this.value.name);
         }
         var self = this;
         $(this.$el).typeahead({
-            source: function (query, process) {
+            source(query, process) {
                 api.searchFoods(query).then(function (results) {
                     process(results);
                 });
             },
             minLength: 2,
             items: 100,
-            highlighter: function (item) { return item; },
-            matcher: function (item) {
+            highlighter(item) { return item; },
+            matcher(item) {
                 return true;
             },
             sorter: function(items){
                 return items;
             },
-            afterSelect: function (food) {
+            afterSelect(food) {
                 api.getFood(food.id).then(function (foodDetails) {
                     self.$emit('change', foodDetails);
                 });
             },
-            displayText: function (data) {
+            displayText(data) {
                 if (data.usageCount > 0) {
                     return '<strong>' + data.name + '</strong>';
                 }
@@ -51,7 +51,7 @@ module.exports = {
         });
     },
     watch: {
-        value: function (newValue) {
+        value(newValue) {
             if (newValue) {
                 this.name = newValue.name;
             } else {

@@ -110,14 +110,14 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var formatters = require('../../formatters');
-    var utils = require('../../utils');
-    var toaster = require('../../toaster');
-    var defaultNutrientPortion = { id: undefined, name: '100g'};
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import utils from '../../utils'
+    import toaster from '../../toaster'
+    var defaultNutrientPortion = { id: undefined, name: '100g' };
     
-module.exports = {
+export default {
     data () {
         return {
             id: null,
@@ -131,10 +131,10 @@ module.exports = {
         }
     },
     computed: {
-        nutrientGroups: function () {
+        nutrientGroups() {
             return this.$store.state.nutrition.nutrientGroups;
         },
-        nutrientsGrouped: function () {
+        nutrientsGrouped() {
             return this.$store.state.nutrition.nutrientsGrouped;
         },
         nutrientPortions: function(){
@@ -178,13 +178,13 @@ module.exports = {
         addPortion : function(){
             this.portions.push({ name: null, weight: null});
         },
-        removePortion: function (index) {
+        removePortion(index) {
             if(this.nutrientPortion == this.portions[index]){
                 this.nutrientPortion = defaultNutrientPortion;
             }
             this.portions.splice(index, 1); 
         },
-        weight: function (quantity, portion) {
+        weight(quantity, portion) {
             if (!quantity) {
                 return '';
             }
@@ -197,7 +197,7 @@ module.exports = {
             }
             return quantity;
         },
-        save: function () {
+        save() {
             var self = this;
             var food = {
                 id: self.id,
@@ -213,37 +213,37 @@ module.exports = {
 
             self.$store.dispatch(constants.SAVE_FOOD, {
                 food,
-                success: function () {
+                success() {
                     self.$router.replace({ name: 'foods' });
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('saveFailed'));
                 }
             });
         },
-        cancel: function () {
+        cancel() {
             this.$router.go(-1);
         },
-        deleteFood: function () {
+        deleteFood() {
             var self = this;
             self.$store.dispatch(constants.DELETE_FOOD, {
                 food: { id: self.id },
-                success: function () {
+                success() {
                     self.$router.push({ name: 'foods' });
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('deleteFailed'));
                 }
             });
         },
         unit: formatters.formatUnit,
-        decimal: function (value, precision) {
+        decimal(value, precision) {
             if (!value) {
                 return value;
             }
             return value.toFixed(precision);
         },
-        toggleGroup: function (group) {
+        toggleGroup(group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
         },
         groupIsExpanded(group) {
@@ -258,7 +258,7 @@ module.exports = {
                 self.nutrientPortion = self.portions.find(p => p.id === food.nutrientPortionId);
             }
             self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-                success: function () {
+                success() {
                     for (var i in self.nutrientsGrouped) {
                         var group = self.nutrientsGrouped[i];
                         for (var j in group) {
@@ -279,13 +279,13 @@ module.exports = {
                     }
                     self.$store.commit(constants.LOADING_DONE);
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('foodDetails.fetchFailed'));
                 }
             });
         }
     },
-    created: function () {
+    created() {
         var self = this;
         var id = self.$route.params.id;
         if (id == constants.NEW_ID) {
@@ -294,10 +294,10 @@ module.exports = {
         else {
             self.$store.dispatch(constants.FETCH_FOOD, {
                 id,
-                success: function (food) {
+                success(food) {
                     self.populate(food);
                 },
-                failure: function () {
+                failure() {
                     toaster(self.$t('foodDetails.fetchFailed'));
                 }
             });

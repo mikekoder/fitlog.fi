@@ -1,4 +1,4 @@
-var Vue = require('vue')
+import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueI18n from 'vue-i18n'
 import VueAnalytics from 'vue-analytics'
@@ -13,8 +13,8 @@ import 'admin-lte/dist/css/skins/skin-blue-light.css'
 import 'font-awesome/css/font-awesome.css'
 import './css/site.css'
 import 'bootstrap-notify'
-var $ = require('jquery');
-var translations = require('./translations')
+import $ from 'jquery';
+import translations from './translations'
 Vue.config.productionTip = false
 
 Vue.use(VueRouter)

@@ -59,12 +59,12 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var formatters = require('../../formatters')
-    var toaster = require('../../toaster');
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import toaster from '../../toaster'
 
-module.exports = {
+export default {
     data () {
         return {
             othersId: '',
@@ -78,32 +78,32 @@ module.exports = {
         'datetime-picker': require('../../components/datetime-picker')
     },
     methods: {
-        addMeal: function () {
+        addMeal() {
             this.definitions.push({start: '01.01.2000 10:00', end: '01.01.2000 13:00'});
         },
-        removeMeal: function (index) {
+        removeMeal(index) {
             this.definitions.splice(index, 1);
         },
-        save: function () {
+        save() {
             var self = this;
             var defs = self.definitions.filter(d => d.name && d.start && d.end).map(d => { return { id: d.id, name: d.name, start: self.formatTime(d.start), end: self.formatTime(d.end) } });
             defs.push({ id: self.othersId, name: self.othersName });
             self.$store.dispatch(constants.SAVE_MEAL_DEFINITIONS, {
                 definitions: defs,
-                success: function () {
+                success() {
                     toaster.info(self.$t('saved'));
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('saveFailed'));
                 }
             });
         },
         formatTime: formatters.formatTime
     },
-    created: function () {
+    created() {
         var self = this;
         self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-            success: function (definitions) {
+            success(definitions) {
                 self.definitions = definitions.filter(d => d.startHour).map(d => { return { id: d.id, name: d.name, start: '01.01.2000 ' + d.startHour + ':' + d.startMinute, end: '01.01.2000 ' + d.endHour + ':' + d.endMinute } });
                 var other = definitions.find(d => !d.startHour);
                 if (other) {
@@ -112,7 +112,7 @@ module.exports = {
                 }
                 self.$store.commit(constants.LOADING_DONE);
             },
-            failure: function () {
+            failure() {
                 toaster.error(self.$t('fetchFailed'));
             }
         });

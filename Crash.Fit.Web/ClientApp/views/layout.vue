@@ -60,10 +60,10 @@
 </template>
 
 <script>
-    var constants = require('../store/constants')
-    var api = require('../api');
+    import constants from '../store/constants'
+    import api from '../api'
 
-module.exports = {
+export default {
     data () {
         return {
         }
@@ -76,22 +76,22 @@ module.exports = {
     methods: {
         logout() {
             this.$store.dispatch(constants.LOGOUT, {
-                success: function () {
+                success() {
                     window.location = '/';
                 },
-                failure: function () { }
+                failure() { }
             });
         },
         refreshTokens() {
             var self = this;
 
             self.$store.dispatch(constants.REFRESH_TOKEN, {
-                success: function () { 
+                success() { 
                     if(!self.isLoggedIn){
                         self.$store.dispatch(constants.FETCH_PROFILE, {});
                     }
                 },
-                failure: function () {
+                failure() {
                     //toaster(self.$t('failed'));
                 }
             });
@@ -101,19 +101,19 @@ module.exports = {
         var self = this;
 
         self.$store.dispatch(constants.FETCH_PROFILE, {
-            success: function () { },
-            failure: function () { }
+            success() { },
+            failure() { }
         });
         
         setInterval(function () {
             self.refreshTokens();
         }, 60000); 
     },
-    beforeRouteUpdate: function (to, from, next) {
+    beforeRouteUpdate(to, from, next) {
         this.$store.commit(constants.LOADING);
         next();
     },
-    beforeRouteLeave: function (to, from, next) {
+    beforeRouteLeave(to, from, next) {
         this.$store.commit(constants.LOADING);
         next();
     }

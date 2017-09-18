@@ -71,12 +71,12 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var formatters = require('../../formatters');
-    var utils = require('../../utils');
-    var toaster = require('../../toaster');
-module.exports = {
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import utils from '../../utils'
+    import toaster from '../../toaster'
+export default {
     data () {
         return {
             id: null,
@@ -95,7 +95,7 @@ module.exports = {
         addSet : function(){
             this.sets.push({exercise: null, reps: null, weights: null});
         },
-        copySet: function (index) {
+        copySet(index) {
             var original = this.sets[index];
             var copy = { exercise: original.exercise, reps: original.reps, weights: original.weights};
             this.sets.splice(index, 0, copy);
@@ -105,15 +105,15 @@ module.exports = {
             this.sets.splice(index, 1);
             this.sets.splice(index - 1, 0, set);
         },
-        moveSetDown: function (index) {
+        moveSetDown(index) {
             var set = this.sets[index];
             this.sets.splice(index, 1);
             this.sets.splice(index + 1, 0, set);
         },
-        removeSet: function (index) {
+        removeSet(index) {
             this.sets.splice(index, 1);
         },
-        processNewExercise: function (set, exerciseName) {
+        processNewExercise(set, exerciseName) {
             if (!exerciseName) {
                 set.exercise = undefined;
             }
@@ -129,7 +129,7 @@ module.exports = {
                 }
             }
         },
-        save: function () {
+        save() {
             var self = this;
             var workout = {
                 id: self.id,
@@ -138,31 +138,31 @@ module.exports = {
             };
             self.$store.dispatch(constants.SAVE_WORKOUT, {
                 workout,
-                success: function () {
+                success() {
                     self.$router.replace({ name: 'workouts' });
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('saveFailed'));
                 }
             })
         },
-        cancel: function () {
+        cancel() {
             this.$router.go(-1);
         },
-        deleteWorkout: function () {
+        deleteWorkout() {
             var self = this;
             self.$store.dispatch(constants.DELETE_WORKOUT, {
                 workout: { id: self.id },
-                success: function () {
+                success() {
                     self.$router.replace({ name: 'workouts' });
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('deleteFailed'));
                 }
             });
         },
         unit: formatters.formatUnit,
-        decimal: function (value, precision) {
+        decimal(value, precision) {
             if (!value) {
                 return value;
             }
@@ -173,7 +173,7 @@ module.exports = {
             self.id = workout.id;
             self.time = workout.time;
             self.$store.dispatch(constants.FETCH_EXERCISES, {
-                success: function (exercises) {
+                success(exercises) {
                     self.exercises = exercises;
                     if (workout.sets) {
                         self.sets = workout.sets.map(s => { return { exercise: self.exercises.filter(e => e.id === s.exerciseId)[0], reps: s.reps, weights: s.weights } });
@@ -183,13 +183,13 @@ module.exports = {
                     }
                     self.$store.commit(constants.LOADING_DONE);
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('routineDetails.fetchFailed'));
                 }
             });
         }
     },
-    created: function () {
+    created() {
         
 
         var self = this;
@@ -205,7 +205,7 @@ module.exports = {
             if(routineId && routineWorkoutId){
                 self.$store.dispatch(constants.FETCH_ROUTINE, {
                     id: routineId,
-                    success: function (routine) {
+                    success(routine) {
                         var routineWorkout = routine.workouts.find(w => w.id === routineWorkoutId);
                         routineWorkout.exercises.forEach(e => {
                             for(var i = 0; i < e.sets; i++){
@@ -214,7 +214,7 @@ module.exports = {
                         });
                         self.populate(workout);
                     },
-                    failure: function () {
+                    failure() {
                         toaster.error(self.$t('fetchFailed'));
                     }
                 });
@@ -226,17 +226,17 @@ module.exports = {
         else {
             self.$store.dispatch(constants.FETCH_WORKOUT, {
                 id,
-                success: function (workout) {
+                success(workout) {
                     self.populate(workout);
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('fetchFailed'));
                 }
             });
         }
 
     },
-    mounted: function () {
+    mounted() {
     }
 }
 </script>

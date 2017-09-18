@@ -182,12 +182,12 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var formatters = require('../../formatters');
-    var utils = require('../../utils');
-    var toaster = require('../../toaster');
-module.exports = {
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import utils from '../../utils'
+    import toaster from '../../toaster'
+export default {
     data () {
         return {
             id: null,
@@ -200,16 +200,16 @@ module.exports = {
         }
     },
     computed: {
-        constants: function () {
+        constants() {
             return constants;
         },
         groups: function(){
             return this.$store.state.nutrition.nutrientGroups;
         },
-        allNutrients: function () {
+        allNutrients() {
             return this.$store.state.nutrition.nutrientsGrouped;
         },
-        recipeNutrients: function () {
+        recipeNutrients() {
             var self = this;
             var nutrients = {};
             for (var i in this.ingredients) {
@@ -252,16 +252,16 @@ module.exports = {
         'food-picker': require('../foods/food-picker')
     },
     methods: {
-        addIngredient: function () {
+        addIngredient() {
             this.ingredients.push({ food: null, quantity: null, portion: undefined });
         },
         addPortion : function(){
             this.portions.push({ name: null, weight: null, number: null});
         },
-        removePortion: function (index) {
+        removePortion(index) {
             this.portions.splice(index, 1);
         },
-        weight: function (quantity, portion) {
+        weight(quantity, portion) {
             if (!quantity) {
                 return '';
             }
@@ -274,7 +274,7 @@ module.exports = {
             }
             return quantity;
         },
-        save: function () {
+        save() {
             var self = this;
             var recipe = {
                 id: self.id,
@@ -285,37 +285,37 @@ module.exports = {
             };
             self.$store.dispatch(constants.SAVE_RECIPE, {
                 recipe,
-                success: function () {
+                success() {
                     self.$router.replace({ name: 'recipes' });
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('recipeDetails.saveFailed'));
                 }
             });
         },
-        cancel: function () {
+        cancel() {
             this.$router.go(-1);
         },
-        deleteRecipe: function () {
+        deleteRecipe() {
             var self = this;
             self.$store.dispatch(constants.DELETE_RECIPE, {
                 recipe: { id: self.id },
-                success: function () {
+                success() {
                     self.$router.push({ name: 'recipes' });
                 },
-                failure: function () {
+                failure() {
                     toaster(self.$t('recipeDetails.deleteFailed'));
                 }
             });
         },
         unit: formatters.formatUnit,
-        decimal: function (value, precision) {
+        decimal(value, precision) {
             if (!value) {
                 return value;
             }
             return value.toFixed(precision);
         },
-        toggleGroup: function (group) {
+        toggleGroup(group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
         },
         groupIsExpanded(group) {
@@ -331,14 +331,14 @@ module.exports = {
             var foodIds = recipe.ingredients.map(i => { return i.foodId });
             self.$store.dispatch(constants.FETCH_FOODS, {
                 ids: foodIds,
-                success: function (foods) {
+                success(foods) {
                     self.ingredients = recipe.ingredients.map(i => {
                         var food = foods.find(f => f.id == i.foodId);
                         return { food: food, quantity: i.quantity, portion: food ? food.portions.find(p => p.id === i.portionId) : undefined };
                     });
                     self.$store.commit(constants.LOADING_DONE);
                 },
-                failure: function () {
+                failure() {
                     toaster(self.$t('recipeDetails.fetchFailed'));
                 }
             });
@@ -346,13 +346,13 @@ module.exports = {
         }
     },
     watch: {
-        copyAllingredients: function (newVal) {
+        copyAllingredients(newVal) {
             for (var i in this.ingredients) {
                 this.ingredients[i].copy = newVal;
             }
         }
     },
-    created: function () {
+    created() {
         var self = this;
         var id = self.$route.params.id;
         if (id == constants.NEW_ID) {
@@ -361,18 +361,18 @@ module.exports = {
         else {
             self.$store.dispatch(constants.FETCH_RECIPE, {
                 id,
-                success: function (recipe) {
+                success(recipe) {
                     self.populate(recipe);
                 },
-                failure: function () {
+                failure() {
                     toaster(self.$t('recipeDetails.fetchFailed'));
                 }
             });
         }
 
         this.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success: function () { },
-            failure: function () { }
+            success() { },
+            failure() { }
         });
         this.toggleGroup(this.groups[0].id);
     }

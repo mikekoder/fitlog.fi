@@ -40,12 +40,12 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var formatters = require('../../formatters')
-    var toaster = require('../../toaster');
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import formatters from '../../formatters'
+    import toaster from '../../toaster'
 
-module.exports = {
+export default {
     data () {
         return {
             food: undefined,
@@ -66,10 +66,10 @@ module.exports = {
         'food-picker': require('../foods/food-picker'),
     },
     methods: {
-        cancel: function () {
+        cancel() {
             this.$emit('close');
         },
-        save: function () {
+        save() {
             var self = this;
             var row = {
                 id: self.row.id,
@@ -86,18 +86,18 @@ module.exports = {
             this.$emit('save', row);
         }
     },
-    mounted: function () {
+    mounted() {
         var self = this;
         if (self.row.foodId) {
             self.$store.dispatch(constants.FETCH_FOOD, {
                 id: self.row.foodId,
-                success: function (food) {
+                success(food) {
                     self.food = food;
                     if (self.row.portionId) {
                         self.portion = food.portions.find(p => p.id == self.row.portionId);
                     }
                 },
-                failure: function () {
+                failure() {
                     toaster.error(self.$t('fetchFailed'));
                 }
             });

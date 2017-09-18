@@ -39,11 +39,11 @@
 </template>
 
 <script>
-    var constants = require('../../store/constants')
-    var api = require('../../api');
-    var toaster = require('../../toaster');
+    import constants from '../../store/constants'
+    import api from '../../api'
+    import toaster from '../../toaster'
 
-module.exports = {
+export default {
     data () {
         return {
             recipes: []
@@ -55,27 +55,27 @@ module.exports = {
         createRecipe: function(){
             this.$router.push({ name: 'recipe-details', params: { id: constants.NEW_ID } });
         },
-        deleteRecipe: function (recipe) {
+        deleteRecipe(recipe) {
             var self = this;
             self.$store.dispatch(constants.DELETE_RECIPE, {
                 recipe,
-                success: function () {
+                success() {
                     self.recipes.splice(self.recipes.findIndex(r => r.id == recipe.id), 1);
                 },
-                failure: function () {
+                failure() {
                     toaster(self.$t('recipes.deleteFailed'));
                 }
             });
         }
     },
-    created: function () {
+    created() {
         var self = this;
         self.$store.dispatch(constants.FETCH_RECIPES, {
-            success: function (recipes) {
+            success(recipes) {
                 self.recipes = recipes;
                 self.$store.commit(constants.LOADING_DONE);
             },
-            failure: function () {
+            failure() {
                 toaster(self.$t('recipes.fetchFailed'));
             }
         });

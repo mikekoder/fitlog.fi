@@ -3,10 +3,10 @@
 </template>
 
 <script>
-    var api = require('../api');
+    import api from '../api'
     require('bootstrap-3-typeahead');
 
-module.exports = {
+export default {
     data: function() {
         return {
             name: null
@@ -17,18 +17,18 @@ module.exports = {
         exercises: null
     },
     methods: {
-        blur: function () {
+        blur() {
             this.$emit('nameChange', this.name);
         }
     },
-    mounted: function () {
+    mounted() {
         if (this.value) {
             this.name = this.value.name;
             //$(this.$el).val(this.value.name);
         }
         var self = this;
         $(this.$el).typeahead({
-            source: function (query, process) {
+            source(query, process) {
                 var results = self.exercises.filter(e => e.name.toLowerCase().indexOf(query.toLowerCase()) >= 0);
                 if (results.length == 0) {
                     results = [{ id: undefined, name: query }];
@@ -37,23 +37,23 @@ module.exports = {
             },
             minLength: 2,
             items: 100,
-            highlighter: function (item) { return item; },
-            matcher: function (item) {
+            highlighter(item) { return item; },
+            matcher(item) {
                 return true;
             },
-            afterSelect: function (exercise) {
+            afterSelect(exercise) {
                 self.name = exercise.name;
                 self.$emit('change', exercise);
             },
             templates: {
-                suggestion: function (data) {
+                suggestion(data) {
                     return '<p><strong>' + data.name + '</strong> - ' + data.userId + '</p>';
                 }
             }
         });
     },
     watch: {
-        value: function (newValue) {
+        value(newValue) {
             if (newValue) {
                 this.name = newValue.name;
                 //$(this.$el).val(newValue.name);

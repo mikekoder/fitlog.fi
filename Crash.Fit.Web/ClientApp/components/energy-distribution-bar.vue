@@ -7,7 +7,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
     data: function() {
         return {
            
@@ -21,13 +21,13 @@ module.exports = {
         energy: function(){
             return 4 * this.protein + 4 * this.carb + 9 * this.fat;
         },
-        proteinWidth: function () {
+        proteinWidth() {
             return (4 * this.protein / this.energy) * 100;
         },
-        carbWidth: function () {
+        carbWidth() {
             return (4 * this.carb / this.energy) * 100;
         },
-        fatWidth: function () {
+        fatWidth() {
             return (9 * this.fat / this.energy) * 100;
         }
     },
@@ -37,10 +37,10 @@ module.exports = {
         carb: 0,
         fat: 0
     },
-    mounted: function () {
+    mounted() {
     },
     methods: {
-        decimal: function (value, precision) {
+        decimal(value, precision) {
             if (!value) {
                 return value;
             }

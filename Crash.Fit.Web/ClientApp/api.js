@@ -1,66 +1,54 @@
-﻿var $ = require('jquery')
+﻿import $ from 'jquery'
+import config from './config'
+import storage from './storage'
 
 $.ajaxSetup({
-    headers: { 'X-CSRF-TOKEN': $('meta[name="X-CSRF-TOKEN"]').attr('content') },
-    beforeSend: function (xhr) {
-        var token = localStorage.getItem("access_token");
+    beforeSend(xhr) {
+        var token = storage.getItem("access_token");
         xhr.setRequestHeader('Authorization', 'bearer ' + token);
     }
-    /*, error: function (x, status, error) {
-        if (x.status == 401) {
-            alert("Istunto on vanhentunut. Kirjaudu sisään ja yritä sitten uudestaan");
-            var loginWindow = new BrowserWindow({ width: 600, height: 300, frame: false, show: false });
-            loginWindow.loadURL('/#/kirjaudu');
-            //loginWindow.on('closed', () => { loginWindow = null; });
-            loginWindow.show();
-        }
-        else {
-            alert("An error occurred: " + status + "nError: " + error);
-        }
-    }*/
 });
-const baseUrl = '/api/'
 
-const api = {
-    baseUrl: baseUrl,
+export default {
+    baseUrl: config.apiBaseUrl,
 
     // Users
-    register: function(registration) {
+    register(registration) {
         return $.ajax({
-            url: baseUrl + 'users/register',
+            url: this.baseUrl + 'users/register',
             type: 'POST',
             contentType: 'text/json',
             data: JSON.stringify(registration)
         });
     },
-    login: function(login) {
+    login(login) {
         return $.ajax({
-            url: baseUrl + 'users/login',
+            url: this.baseUrl + 'users/login',
             type: 'POST',
             contentType: 'text/json',
             data: JSON.stringify(login)
         });
     },
-    getProfile: function(){
-        return $.get(baseUrl + 'users/me/');
+    getProfile(){
+        return $.get(this.baseUrl + 'users/me/');
     },
-    saveProfile: function (profile) {
+    saveProfile (profile) {
         return $.ajax({
-            url: baseUrl + 'users/me/',
+            url: this.baseUrl + 'users/me/',
             type: 'PUT',
             contentType: 'text/json',
             data: JSON.stringify(profile)
         });
     },
-    logout: function(){
+    logout(){
         return $.post(baseUrl+'users/logout');
     },
-    refreshToken: function (refreshToken) {
-        return $.get(baseUrl + 'users/refresh-token/?refreshToken=' + refreshToken);
+    refreshToken(refreshToken) {
+        return $.get(this.baseUrl + 'users/refresh-token/?refreshToken=' + refreshToken);
     },
-    updateLogin: function(login) {
+    updateLogin(login) {
         return $.ajax({
-            url: baseUrl + 'users/login',
+            url: this.baseUrl + 'users/login',
             type: 'PUT',
             contentType: 'text/json',
             data: JSON.stringify(login)
@@ -68,7 +56,7 @@ const api = {
     },
 
     // Meals
-    listMeals: function(start, end) {
+    listMeals(start, end) {
         var query = {};
         if (start) {
             query.start = start.toISOString();
@@ -76,13 +64,13 @@ const api = {
         if (end) {
             query.end = end.toISOString();
         }
-        return $.get(baseUrl + 'meals', query);
+        return $.get(this.baseUrl + 'meals', query);
     },
-    getMeal: function(id){
-        return $.get(baseUrl + 'meals/' + id);
+    getMeal(id){
+        return $.get(this.baseUrl + 'meals/' + id);
     },
-    saveMeal: function (meal) {
-        var url = baseUrl + 'meals/';
+    saveMeal(meal) {
+        var url = this.baseUrl + 'meals/';
         var method = 'POST';
         if (meal.id) {
             url += meal.id;
@@ -96,20 +84,20 @@ const api = {
             data: JSON.stringify(meal)
         });
     },
-    deleteMeal: function(id){
+    deleteMeal(id){
         return $.ajax({
-            url: baseUrl + 'meals/' + id,
+            url: this.baseUrl + 'meals/' + id,
             type: 'DELETE'
         });
     },
-    restoreMeal: function (id) {
+    restoreMeal(id) {
         return $.ajax({
-            url: baseUrl + 'meals/' + id + '/restore/',
+            url: this.baseUrl + 'meals/' + id + '/restore/',
             type: 'POST'
         });
     },
-    saveMealRow: function (row) {
-        var url = baseUrl + 'meals/row/';
+    saveMealRow(row) {
+        var url = this.baseUrl + 'meals/row/';
         var method = 'POST';
         if (row.id) {
             url += row.id;
@@ -122,18 +110,25 @@ const api = {
             data: JSON.stringify(row)
         });
     },
-    // foods
-    searchFoods: function(name){
-        return $.get(baseUrl + 'foods/search', { name });
+
+    // Foods
+    searchFoods(name){
+        return $.get(this.baseUrl + 'foods/search', { name });
     },
-    listFoods: function(){
-        return $.get(baseUrl + 'foods/');
+    getLatestFoods() {
+        return $.get(this.baseUrl + 'foods/latest');
     },
-    getFood: function(id){
-        return $.get(baseUrl + 'foods/' + id);
+    getMostUsedFoods() {
+        return $.get(this.baseUrl + 'foods/most-used');
     },
-    saveFood: function(food){
-        var url = baseUrl + 'foods/';
+    listFoods(){
+        return $.get(this.baseUrl + 'foods/');
+    },
+    getFood(id){
+        return $.get(this.baseUrl + 'foods/' + id);
+    },
+    saveFood(food){
+        var url = this.baseUrl + 'foods/';
         var method = 'POST';
         if (food.id) {
             url += food.id;
@@ -147,22 +142,22 @@ const api = {
             data: JSON.stringify(food)
         });
     },
-    deleteFood: function(id){
+    deleteFood(id){
         return $.ajax({
-            url: baseUrl + 'foods/' + id,
+            url: this.baseUrl + 'foods/' + id,
             type: 'DELETE'
         });
     },
 
     // Recipes
-    listRecipes: function(s) {
-        return $.get(baseUrl + 'recipes');
+    listRecipes(s) {
+        return $.get(this.baseUrl + 'recipes');
     },
-    getRecipe: function (id) {
-        return $.get(baseUrl + 'recipes/' + id);
+    getRecipe(id) {
+        return $.get(this.baseUrl + 'recipes/' + id);
     },
-    saveRecipe: function (recipe) {
-        var url = baseUrl + 'recipes/';
+    saveRecipe(recipe) {
+        var url = this.baseUrl + 'recipes/';
         var method = 'POST';
         if (recipe.id) {
             url += recipe.id;
@@ -176,52 +171,52 @@ const api = {
             data: JSON.stringify(recipe)
         });
     },
-    deleteRecipe: function (id) {
+    deleteRecipe(id) {
         return $.ajax({
-            url: baseUrl + 'recipes/' + id,
+            url: this.baseUrl + 'recipes/' + id,
             type: 'DELETE'
         });
     },
     // Nutrients
-    listNutrients: function(){
-        return $.get(baseUrl + 'nutrients/');
+    listNutrients(){
+        return $.get(this.baseUrl + 'nutrients/');
     },
-    getNutrientTargets: function () {
-        return $.get(baseUrl + 'nutrients/targets');
+    getNutrientTargets() {
+        return $.get(this.baseUrl + 'nutrients/targets');
     },
-    saveNutrientTargets: function (targets) {
+    saveNutrientTargets (targets) {
         return $.ajax({
-            url: baseUrl + 'nutrients/targets',
+            url: this.baseUrl + 'nutrients/targets',
             type: 'PUT',
             contentType: 'text/json',
             data: JSON.stringify(targets)
         });
     },
-    listDailyIntakes: function(gender, dob){
+    listDailyIntakes(gender, dob){
 
     },
-    saveNutrientSettings: function(settings){
+    saveNutrientSettings(settings){
         return $.ajax({
-            url: baseUrl + 'nutrients/settings',
+            url: this.baseUrl + 'nutrients/settings',
             type: 'PUT',
             contentType: 'text/json',
             data: JSON.stringify(settings)
         });
     },
-    saveHomeSettings: function(settings){
+    saveHomeSettings(settings){
         return $.ajax({
-            url: baseUrl + 'settings/home',
+            url: this.baseUrl + 'settings/home',
             type: 'PUT',
             contentType: 'text/json',
             data: JSON.stringify(settings)
         });
     },
     // Meal rhythm
-    getMealDefinitions: function () {
-        return $.get(baseUrl + 'meals/definitions');
+    getMealDefinitions() {
+        return $.get(this.baseUrl + 'meals/definitions');
     },
-    saveMealDefinitions: function (definitions) {
-        var url = baseUrl + 'meals/definitions';
+    saveMealDefinitions(definitions) {
+        var url = this.baseUrl + 'meals/definitions';
         return $.ajax({
             url: url,
             type: 'PUT',
@@ -231,7 +226,7 @@ const api = {
     },
 
     // Workouts
-    listWorkouts: function(start, end){
+    listWorkouts(start, end){
         var query = {};
         if (start) {
             query.start = start.toISOString();
@@ -239,13 +234,13 @@ const api = {
         if (end) {
             query.end = end.toISOString();
         }
-        return $.get(baseUrl + 'workouts', query);
+        return $.get(this.baseUrl + 'workouts', query);
     },
-    getWorkout: function(id){
-        return $.get(baseUrl + 'workouts/' + id);
+    getWorkout(id){
+        return $.get(this.baseUrl + 'workouts/' + id);
     },
-    saveWorkout: function(workout){
-        var url = baseUrl + 'workouts/';
+    saveWorkout(workout){
+        var url = this.baseUrl + 'workouts/';
         var method = 'POST';
         if (workout.id) {
             url += workout.id;
@@ -259,27 +254,27 @@ const api = {
             data: JSON.stringify(workout)
         });
     },
-    deleteWorkout: function(id){
+    deleteWorkout(id){
         return $.ajax({
-            url: baseUrl + 'workouts/' + id,
+            url: this.baseUrl + 'workouts/' + id,
             type: 'DELETE'
         });
     },
 
     // Muscles
-    listMuscleGroups: function(){
-        return $.get(baseUrl + 'muscles/groups');
+    listMuscleGroups(){
+        return $.get(this.baseUrl + 'muscles/groups');
     },
 
     // Exercises
-    listExercises: function(){
-        return $.get(baseUrl + 'exercises/');
+    listExercises(){
+        return $.get(this.baseUrl + 'exercises/');
     },
-    getExercise: function(id){
-        return $.get(baseUrl + 'exercises/' + id);
+    getExercise(id){
+        return $.get(this.baseUrl + 'exercises/' + id);
     },
-    saveExercise: function(exercise){
-        var url = baseUrl + 'exercises/';
+    saveExercise(exercise){
+        var url = this.baseUrl + 'exercises/';
         var method = 'POST';
         if (exercise.id) {
             url += exercise.id;
@@ -293,22 +288,22 @@ const api = {
             data: JSON.stringify(exercise)
         });
     },
-    deleteExercise: function(id){
+    deleteExercise(id){
         return $.ajax({
-            url: baseUrl + 'exercises/' + id,
+            url: this.baseUrl + 'exercises/' + id,
             type: 'DELETE'
         });
     },
 
     // Routines
-    listRoutines: function () {
-        return $.get(baseUrl + 'routines/');
+    listRoutines() {
+        return $.get(this.baseUrl + 'routines/');
     },
-    getRoutine: function(id){
-        return $.get(baseUrl + 'routines/' + id);
+    getRoutine(id){
+        return $.get(this.baseUrl + 'routines/' + id);
     },
-    saveRoutine: function (routine) {
-        var url = baseUrl + 'routines/';
+    saveRoutine (routine) {
+        var url = this.baseUrl + 'routines/';
         var method = 'POST';
         if (routine.id) {
             url += routine.id;
@@ -322,26 +317,26 @@ const api = {
             data: JSON.stringify(routine)
         });
     },
-    deleteRoutine: function(id){
+    deleteRoutine(id){
         return $.ajax({
-            url: baseUrl + 'routines/' + id,
+            url: this.baseUrl + 'routines/' + id,
             type: 'DELETE'
         });
     },
-    activateRoutine: function(id){
+    activateRoutine(id){
         return $.ajax({
-            url: baseUrl + 'routines/' + id + '/activate',
+            url: this.baseUrl + 'routines/' + id + '/activate',
             type: 'POST'
         });
     },
 
     // Measurements
-    listMeasures: function(){
-        return $.get(baseUrl + 'measurements/measures');
+    listMeasures(){
+        return $.get(this.baseUrl + 'measurements/measures');
     },
-    saveMeasurements: function (measurements) {
+    saveMeasurements (measurements) {
         return $.ajax({
-            url: baseUrl + 'measurements/',
+            url: this.baseUrl + 'measurements/',
             type: 'POST',
             contentType: 'text/json',
             data: JSON.stringify(measurements)
@@ -349,8 +344,8 @@ const api = {
     },
 
     // Feedback
-    saveFeedback: function (feedback) {
-        var url = baseUrl + 'feedback/';
+    saveFeedback (feedback) {
+        var url = this.baseUrl + 'feedback/';
         var method = 'POST';
         if (feedback.id) {
             url += feedback.id;
@@ -364,17 +359,17 @@ const api = {
             data: JSON.stringify(feedback)
         });
     },
-    listBugs: function () {
-        return $.get(baseUrl + 'feedback/bugs');
+    listBugs() {
+        return $.get(this.baseUrl + 'feedback/bugs');
     },
-    listImprovements: function () {
-        return $.get(baseUrl + 'feedback/improvements');
+    listImprovements() {
+        return $.get(this.baseUrl + 'feedback/improvements');
     },
-    getVotes: function () {
-        return $.get(baseUrl + 'feedback/votes');
+    getVotes() {
+        return $.get(this.baseUrl + 'feedback/votes');
     },
-    saveVote: function (feedbackId) {
-        var url = baseUrl + 'feedback/' + feedbackId+'/vote';
+    saveVote(feedbackId) {
+        var url = this.baseUrl + 'feedback/' + feedbackId+'/vote';
         return $.ajax({
             url: url,
             type: 'POST',
@@ -382,4 +377,3 @@ const api = {
         });
     }
 };
-module.exports = api

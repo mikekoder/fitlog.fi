@@ -27,7 +27,7 @@ import Profile from './views/profile/profile'
 import Feedback from './views/feedback/feedback'
 import FeedbackDetails from './views/feedback/feedback-details'
 
-const main = [
+export default [
     {
         path: '/',
         component: Layout,
@@ -182,5 +182,3 @@ const main = [
         meta: { anon: true }
     }
 ]
-
-export default main

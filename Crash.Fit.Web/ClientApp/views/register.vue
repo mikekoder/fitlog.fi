@@ -42,11 +42,11 @@
 </template>
 
 <script>
-    var constants = require('../store/constants')
-    var api = require('../api');
-    var toaster = require('../toaster');
+    import constants from '../store/constants'
+    import api from '../api'
+    import toaster from '../toaster'
 
-module.exports = {
+export default {
     data () {
         return {
             email: null,
@@ -102,10 +102,10 @@ module.exports = {
                     client: response.client,
                     refreshToken: response.refreshToken,
                     accessToken: response.accessToken,
-                    success: function () {
+                    success() {
                         window.location = '/';
                     },
-                    failure: function () {
+                    failure() {
                         toaster(self.$t('failed'));
                     }
                 });
@@ -129,7 +129,7 @@ module.exports = {
             window.location = api.baseUrl + 'users/external-login/?provider=Facebook';
         }
     },
-    created: function () {
+    created() {
         this.$store.commit(constants.LOADING_DONE);
     }
 }
