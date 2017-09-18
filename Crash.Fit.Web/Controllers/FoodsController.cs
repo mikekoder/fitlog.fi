@@ -38,6 +38,21 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<FoodSearchResultResponse[]>(foods);
             return Ok(response);
         }
+        [HttpGet("latest")]
+        public IActionResult Latest(int? count)
+        {
+            var foods = nutritionRepository.SearchLatestFoods(CurrentUserId, count ?? 10);
+            var response = AutoMapper.Mapper.Map<FoodSearchResultResponse[]>(foods);
+            return Ok(response);
+        }
+        [HttpGet("most-used")]
+        public IActionResult MostUsed(int? count)
+        {
+            var foods = nutritionRepository.SearchMostUsedFoods(CurrentUserId, count ?? 10);
+            var response = AutoMapper.Mapper.Map<FoodSearchResultResponse[]>(foods);
+            return Ok(response);
+        }
+
         [HttpGet("{id}")]
         public IActionResult Details(Guid id)
         {

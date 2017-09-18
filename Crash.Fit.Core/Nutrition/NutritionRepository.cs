@@ -133,7 +133,7 @@ SELECT RI.*, F.Name AS FoodName, FP.Name AS PortionName FROM RecipeIngredient RI
                 sql += " AND Food.UserId IS NULL";
             }
             sql += " AND Food.Deleted IS NULL";
-            sql = @"SELECT Food.*, FoodUsage.UsageCount
+            sql = @"SELECT Food.*, FoodUsage.UsageCount, FoodUsage.LatestUse
 FROM Food 
 LEFT JOIN FoodUsage ON FoodUsage.FoodId=Food.Id AND FoodUsage.UserId=@UserId
 WHERE " + sql.Substring(5) + " ORDER BY Name";
@@ -694,6 +694,33 @@ SELECT * FROM MealRowNutrient WHERE MRowId=@id";
                 }
             }
         }
+
+        public IEnumerable<FoodSearchResult> SearchLatestFoods(Guid userId, int count)
+        {
+            var sql = @"SELECT TOP (@count) Food.*, FoodUsage.UsageCount, FoodUsage.LatestUse
+FROM Food 
+LEFT JOIN FoodUsage ON FoodUsage.FoodId=Food.Id
+WHERE FoodUsage.UserId=@userId
+ORDER BY FoodUsage.LatestUse DESC";
+            using (var conn = CreateConnection())
+            {
+                return conn.Query<FoodSearchResult>(sql, new { userId, count});
+            }
+        }
+
+        public IEnumerable<FoodSearchResult> SearchMostUsedFoods(Guid userId, int count)
+        {
+            var sql = @"SELECT TOP (@count) Food.*, FoodUsage.UsageCount, FoodUsage.LatestUse
+FROM Food 
+LEFT JOIN FoodUsage ON FoodUsage.FoodId=Food.Id
+WHERE FoodUsage.UserId=@userId
+ORDER BY FoodUsage.UsageCount DESC";
+            using (var conn = CreateConnection())
+            {
+                return conn.Query<FoodSearchResult>(sql, new { userId, count });
+            }
+        }
+
         private class PortionRaw : Portion
         {
             public Guid FoodId { get; set; }
