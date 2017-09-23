@@ -131,7 +131,7 @@ namespace Crash.Fit.Web.Controllers
             nutritionRepository.SaveMealDefinitions(definitions);
             return GetDefinitions();
         }
-        [HttpPost("row")]
+        [HttpPost("rows")]
         public IActionResult AddRow([FromBody]AddMealRowRequest request)
         {
             var dayStart = DateTimeUtils.ToLocal(request.Date).Date;
@@ -197,8 +197,8 @@ namespace Crash.Fit.Web.Controllers
             var result = AutoMapper.Mapper.Map<MealRowModel>(mealRow);
             return Ok(result);
         }
-        [HttpPut("row/{id}")]
-        public IActionResult UpdateRow(Guid id, [FromBody]AddMealRowRequest request)
+        [HttpPut("{mealId}/rows/{id}")]
+        public IActionResult UpdateRow(Guid mealId, Guid id, [FromBody]AddMealRowRequest request)
         {
             if (!request.MealId.HasValue)
             {
@@ -229,6 +229,25 @@ namespace Crash.Fit.Web.Controllers
 
             var result = AutoMapper.Mapper.Map<MealRowModel>(row);
             return Ok(result);
+        }
+        [HttpDelete("{mealId}/rows/{id}")]
+        public IActionResult DeleteRow(Guid mealId, Guid id)
+        {
+            var meal = nutritionRepository.GetMeal(mealId);
+            if (meal == null)
+            {
+                return NotFound();
+            }
+            if (meal.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+
+            meal.Rows = meal.Rows.Where(r => r.Id != id).ToArray();
+            CalculateNutrients(meal);
+            nutritionRepository.UpdateMeal(meal);
+
+            return Ok();
         }
         private void AdjustTime(MealDetails meal)
         {
