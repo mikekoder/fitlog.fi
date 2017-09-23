@@ -97,12 +97,9 @@ export default {
         });
     },
     saveMealRow(row) {
-        var url = this.baseUrl + 'meals/row/';
-        var method = 'POST';
-        if (row.id) {
-            url += row.id;
-            method = 'PUT';
-        }
+        var url = row.id ? `${this.baseUrl}meals/${row.mealId}/rows/${row.id}` : `${this.baseUrl}meals/rows`;
+        var method = row.id ? 'PUT' : 'POST';
+
         return $.ajax({
             url: url,
             type: method,
@@ -110,7 +107,15 @@ export default {
             data: JSON.stringify(row)
         });
     },
-
+    deleteMealRow(row) {
+        var url = `${this.baseUrl}meals/${row.mealId}/rows/${row.id}`;
+        var method = 'DELETE';
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json'
+        });
+    },
     // Foods
     searchFoods(name){
         return $.get(this.baseUrl + 'foods/search', { name });
