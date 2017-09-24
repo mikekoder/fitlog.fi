@@ -150,6 +150,7 @@
     import api from '../../api'
     import formatters from '../../formatters'
     import toaster from '../../toaster'
+    import moment from 'moment'
 export default {
     data () {
         return {
