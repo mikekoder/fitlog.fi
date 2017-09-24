@@ -7,7 +7,7 @@
     require('bootstrap-3-typeahead');
 
 export default {
-    data: function() {
+    data() {
         return {
             name: null
         }
@@ -24,7 +24,7 @@ export default {
         var self = this;
         $(this.$el).typeahead({
             source(query, process) {
-                api.searchFoods(query).then(function (results) {
+                api.searchFoods(query).then((results) => {
                     process(results);
                 });
             },
@@ -34,11 +34,11 @@ export default {
             matcher(item) {
                 return true;
             },
-            sorter: function(items){
+            sorter(items){
                 return items;
             },
             afterSelect(food) {
-                api.getFood(food.id).then(function (foodDetails) {
+                api.getFood(food.id).then((foodDetails) => {
                     self.$emit('change', foodDetails);
                 });
             },

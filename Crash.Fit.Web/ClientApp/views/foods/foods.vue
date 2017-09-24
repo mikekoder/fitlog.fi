@@ -79,7 +79,7 @@ export default {
     computed:{
     },
     methods: {
-        createFood: function(){
+        createFood(){
             this.$router.push({ name: 'food-details', params: { id: constants.NEW_ID } });
         },
         deleteFood(food) {

@@ -116,11 +116,11 @@ export default {
         'exercise-picker': require('../../components/exercise-picker')
     },
     methods: {
-        addWorkout: function(){
+        addWorkout(){
             var count = this.workouts.length;
             this.workouts.push({ name: 'Päivä ' + (count + 1), exercises: [], expanded: true });
         },
-        toggleWorkout: function(workout){
+        toggleWorkout(workout){
             workout.expanded = !workout.expanded;
         },
         moveWorkoutUp(index) {
@@ -136,7 +136,7 @@ export default {
         removeWorkout(index) {
             this.workouts.splice(index, 1);
         },
-        addExercise : function(workout){
+        addExercise(workout){
             workout.exercises.push({exercise: null, sets: null, reps: null});
         },
         copyExercise(workout, index) {

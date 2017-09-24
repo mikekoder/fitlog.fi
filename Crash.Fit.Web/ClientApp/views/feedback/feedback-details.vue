@@ -73,14 +73,14 @@ export default {
       cancel() {
         this.$router.go(-1);
       },
-      deleteFeedback: function(){}
+      deleteFeedback(){}
     },
     created () {
         this.type = this.$route.meta.type;
         this.$store.commit(constants.LOADING_DONE);
     },
     watch: {
-      $route: function(){
+      $route(){
         this.type = this.$route.meta.type;
         this.$store.commit(constants.LOADING_DONE);
       }

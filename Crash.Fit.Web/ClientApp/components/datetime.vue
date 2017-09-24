@@ -5,7 +5,7 @@
 <script>
 import moment from 'moment'
 export default {
-    data: function() {
+    data() {
         return {
             str: null
         }

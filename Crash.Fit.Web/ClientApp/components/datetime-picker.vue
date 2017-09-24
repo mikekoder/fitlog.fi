@@ -18,7 +18,7 @@ require('eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.cs
 import moment from 'moment'
 
 export default {
-    data: function() {
+    data() {
         return { }
     },
     props:{
@@ -48,12 +48,12 @@ export default {
             this.control.date(m.format(format));
         }
         var self = this;
-        element.on("dp.change", function () {
+        element.on("dp.change", () => {
             var m = moment(self.control.date(), format);
             self.$emit('change', m.toDate());
             //self.model = m.toDate();
         });
-        element.on("dp.show", function () {
+        element.on("dp.show", () => {
             var m = moment(self.control.date(), format);
             self.$emit('click', m.toDate());
             //self.model = m.toDate();

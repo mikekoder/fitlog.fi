@@ -87,24 +87,24 @@ export default {
         }
     },
     computed: {
-        muscleGroups: function(){
+        muscleGroups(){
             return this.$store.state.training.muscleGroups;
         },
         exercises() {
             return this.$store.state.training.exercises;
         },
-        workouts: function(){
+        workouts(){
             var self = this;
             return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
         },
-        activeRoutine: function(){
+        activeRoutine(){
             return this.$store.state.training.activeRoutine;
         },
-        start: function(){
+        start(){
             var self = this;
             return this.$store.state.training.workoutsDisplayStart;
         },
-        end: function(){
+        end(){
             var self = this;
             return this.$store.state.training.workoutsDisplayEnd;
         },
@@ -128,7 +128,7 @@ export default {
             var start = moment().subtract(days - 1, 'days').startOf('day').toDate();
             this.showDateRange(start, end);
         },
-        showDateRange: function(start, end){
+        showDateRange(start, end){
           var self = this;
             self.$store.dispatch(constants.SELECT_WORKOUT_DATE_RANGE, {
                 start: start,

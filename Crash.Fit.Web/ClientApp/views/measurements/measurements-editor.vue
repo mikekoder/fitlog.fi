@@ -86,10 +86,10 @@ export default {
         'datetime-picker': require('../../components/datetime-picker'),
     },
     methods: {
-        addMeasurement: function(){
+        addMeasurement(){
             this.measurements.push({name: undefined, value:undefined});
         },
-        removeMeasurement: function(index){
+        removeMeasurement(index){
             this.measurements.splice(index, 1);
         },
         save() {

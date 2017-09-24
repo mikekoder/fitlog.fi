@@ -130,7 +130,7 @@ export default {
         groups() {
             return this.$store.state.nutrition.nutrientGroups;
         },
-        columns: function(){
+        columns(){
             var columns = [];
             //columns.push(this.energyDistributionColumn);
             for(var i in this.$store.state.nutrition.nutrients){
@@ -142,32 +142,30 @@ export default {
             }
             return columns;
         },
-        meals: function(){
+        meals(){
             var self = this;
             return this.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(self.start, self.end));
         },
-        workouts: function(){
+        workouts(){
             var self = this;
             return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
         },
-        days: function(){
+        days(){
             var self = this;
             return this.$store.state.nutrition.mealDays.filter(md => moment(md.date).isBetween(self.start, self.end, null, '[]'));
         },
         visibleColumns() {
             var self = this;
-            return this.columns.filter(function (c) {
-                return !c.group || c.group == self.selectedGroup;
-            });
+            return this.columns.filter(c => !c.group || c.group == self.selectedGroup);
         },
         nutrientTargets() {
             return this.$store.state.nutrition.nutrientTargets;
         },
-        start: function(){
+        start(){
             var self = this;
             return this.$store.state.nutrition.mealsDisplayStart;
         },
-        end: function(){
+        end(){
             var self = this;
             return this.$store.state.nutrition.mealsDisplayEnd;
         }
@@ -198,7 +196,7 @@ export default {
             var start = moment().subtract(days - 1, 'days').startOf('day').toDate();
             this.showDateRange(start, end);
         },
-        showDateRange: function(start, end){
+        showDateRange(start, end){
           var self = this;
             self.$store.dispatch(constants.SELECT_MEAL_DATE_RANGE, {
                 start: start,
@@ -225,13 +223,13 @@ export default {
             });
             self.$store.dispatch(constants.FETCH_WORKOUTS, { start: self.start, end: self.end });
         },
-        selectGroup: function(group){
+        selectGroup(group){
             this.selectedGroup = group;
         },
         toggleDay(day) {
             this.$set(this.dayStates,day.date.getTime(), !(this.dayStates[day.date.getTime()] && true))
         },
-        createMeal: function(){
+        createMeal(){
             this.$router.push({ name: 'meal-details', params: { id: constants.NEW_ID } });
         },
         deleteMeal(meal) {

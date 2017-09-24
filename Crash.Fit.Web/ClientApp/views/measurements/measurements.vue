@@ -70,7 +70,7 @@ export default {
     methods: {
         loadMeasures() {
             var self = this;
-            api.listMeasures().then(function (measures) {
+            api.listMeasures().then((measures) => {
                 self.measures = measures;
                 self.$store.commit(constants.LOADING_DONE);
             });
@@ -80,7 +80,7 @@ export default {
         },
         saveMeasurements(measurements) {
             var self = this;
-            api.saveMeasurements(measurements).then(function () {
+            api.saveMeasurements(measurements).then(() => {
                 self.loadMeasures();
                 self.create = false;
             });

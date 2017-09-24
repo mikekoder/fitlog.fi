@@ -203,7 +203,7 @@ export default {
         constants() {
             return constants;
         },
-        groups: function(){
+        groups(){
             return this.$store.state.nutrition.nutrientGroups;
         },
         allNutrients() {
@@ -255,7 +255,7 @@ export default {
         addIngredient() {
             this.ingredients.push({ food: null, quantity: null, portion: undefined });
         },
-        addPortion : function(){
+        addPortion(){
             this.portions.push({ name: null, weight: null, number: null});
         },
         removePortion(index) {

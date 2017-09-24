@@ -97,7 +97,7 @@ export default {
                 password: this.password,
                 password2:this.password2
             };
-            api.register(data).then(function (response) {
+            api.register(data).then((response) => {
                 self.$store.dispatch(constants.STORE_TOKENS, {
                     client: response.client,
                     refreshToken: response.refreshToken,
@@ -109,7 +109,7 @@ export default {
                         toaster(self.$t('failed'));
                     }
                 });
-            }).fail(function (response) {
+            }).fail((response) => {
                 toaster.error(self.$t('register.fixErrors'));
                 if (response.responseJSON && response.responseJSON.errorCodes) {
                     var errorCodes = response.responseJSON.errorCodes;

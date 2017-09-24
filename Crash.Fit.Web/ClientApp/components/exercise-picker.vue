@@ -7,7 +7,7 @@
     require('bootstrap-3-typeahead');
 
 export default {
-    data: function() {
+    data() {
         return {
             name: null
         }

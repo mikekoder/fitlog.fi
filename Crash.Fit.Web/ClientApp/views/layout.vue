@@ -105,7 +105,7 @@ export default {
             failure() { }
         });
         
-        setInterval(function () {
+        setInterval(() => {
             self.refreshTokens();
         }, 60000); 
     },
