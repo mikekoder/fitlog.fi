@@ -128,7 +128,7 @@ namespace Crash.Fit.Web.Controllers
                     */
                 });
             }
-            nutritionRepository.SaveMealDefinitions(definitions);
+            nutritionRepository.SaveMealDefinitions(CurrentUserId, definitions);
             return GetDefinitions();
         }
         [HttpPost("rows")]
