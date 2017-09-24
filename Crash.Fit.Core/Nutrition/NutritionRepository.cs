@@ -593,7 +593,7 @@ WHEN NOT MATCHED THEN
                 }
             }
         }
-        public void SaveMealDefinitions(IEnumerable<MealDefinition> definitions)
+        public void SaveMealDefinitions(Guid userId, IEnumerable<MealDefinition> definitions)
         {
             foreach (var definition in definitions)
             {
@@ -615,7 +615,7 @@ WHEN NOT MATCHED THEN
             {
                 try
                 {
-                    conn.Execute(@"DELETE FROM MealDefinition WHERE Id NOT IN @ids", new { ids = definitions.Select(d => d.Id) }, tran);
+                    conn.Execute(@"DELETE FROM MealDefinition WHERE UserId=@userId AND Id NOT IN @ids", new {userId, ids = definitions.Select(d => d.Id) }, tran);
                     conn.Execute(sql, definitions, tran);
                     tran.Commit();
                 }
