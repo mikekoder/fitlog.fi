@@ -8,7 +8,7 @@
 
 <script>
 export default {
-    data: function() {
+    data() {
         return {
            
             /* energy: 0
@@ -18,7 +18,7 @@ export default {
         }
     },
     computed: {
-        energy: function(){
+        energy(){
             return 4 * this.protein + 4 * this.carb + 9 * this.fat;
         },
         proteinWidth() {

@@ -53,7 +53,7 @@ export default {
                 password: this.password,
                 client: this.client
             };
-            api.login(data).then(function (response) {
+            api.login(data).then((response) => {
                 self.$store.dispatch(constants.STORE_TOKENS, {
                     client: response.client,
                     refreshToken: response.refreshToken,
@@ -83,7 +83,7 @@ export default {
     },
     mounted() {
         var self = this;
-        window.closeDialog = function () {
+        window.closeDialog = () => {
             console.log(self.dialog);
             self.dialog.close();
             window.location = '/';

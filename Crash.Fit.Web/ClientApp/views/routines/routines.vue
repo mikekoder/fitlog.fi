@@ -53,7 +53,7 @@ export default {
         }
     },
     computed: {
-        routines: function(){
+        routines(){
             return this.$store.state.training.routines;
         },
         exercises() {
@@ -61,10 +61,10 @@ export default {
         }
     },
     methods: {
-        createRoutine: function(){
+        createRoutine(){
             this.$router.push({ name: 'routine-details', params: { id: constants.NEW_ID } });
         },
-        activate: function(routine){
+        activate(routine){
             var self = this;
             this.$store.dispatch(constants.ACTIVATE_ROUTINE, {
                 routine,

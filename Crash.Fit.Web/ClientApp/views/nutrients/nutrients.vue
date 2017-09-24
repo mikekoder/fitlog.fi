@@ -92,7 +92,7 @@ export default {
         }
     },
     computed: {
-        groups: function(){
+        groups(){
             return this.$store.state.nutrition.nutrientGroups;
         }
     },

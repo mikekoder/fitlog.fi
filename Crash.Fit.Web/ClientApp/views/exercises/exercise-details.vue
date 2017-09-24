@@ -73,10 +73,10 @@ export default {
         }
     },
     methods: {
-        addTarget: function(){
+        addTarget(){
             this.targets.push(undefined);
         },
-        removeTarget: function(index){
+        removeTarget(index){
             this.targets.splice(index, 1);
         },
         save() {

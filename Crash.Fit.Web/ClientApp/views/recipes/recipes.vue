@@ -52,7 +52,7 @@ export default {
     computed:{
     },
     methods: {
-        createRecipe: function(){
+        createRecipe(){
             this.$router.push({ name: 'recipe-details', params: { id: constants.NEW_ID } });
         },
         deleteRecipe(recipe) {

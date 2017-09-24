@@ -14,13 +14,13 @@
 
 <script>
 export default {
-    data: function() {
+    data() {
         return {
         }
     },
     computed: {
         
-        maxValue: function(){
+        maxValue(){
             return Math.max(this.target.min || 0, this.value || 0, this.target.max || 0) * 1.1;
         },/*
         color() {
@@ -77,7 +77,7 @@ export default {
         valueLeft() {
             return (this.value || 0) / this.maxValue * 100;
         },
-        valueStyle: function(){
+        valueStyle(){
             return 'width: ' + this.valueLeft + '%; background-color: #ccc;';
         },
         title() {

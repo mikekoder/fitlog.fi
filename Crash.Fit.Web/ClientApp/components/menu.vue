@@ -79,7 +79,7 @@
     import constants from '../store/constants'
 export default {
     //name: 'toolbar',
-    data: function() {
+    data() {
         return {
             constants
         }

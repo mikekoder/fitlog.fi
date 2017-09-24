@@ -31,7 +31,7 @@ Vue.mixin({
         isLoggedIn(){
             return this.$store.state.profile.profile && true;
         },
-        loading: function() {
+        loading() {
             return this.$store.state.loading;
         }
     },

@@ -137,7 +137,7 @@ export default {
         nutrientsGrouped() {
             return this.$store.state.nutrition.nutrientsGrouped;
         },
-        nutrientPortions: function(){
+        nutrientPortions(){
             var portions = [];
             portions.push(defaultNutrientPortion);
             if(this.portions.length === 0){
@@ -148,7 +148,7 @@ export default {
             }
             return portions;
         },
-        errors: function(){
+        errors(){
             var errors = [];
             if(!this.name){
                 errors.push('Nimi puuttuu');
@@ -163,19 +163,19 @@ export default {
             });
             return errors;
         },
-        isValid: function(){
+        isValid(){
             return this.errors.length === 0;
         }
     },
     components: {
     },
     methods: {
-        changeNutrientPortion: function(){
+        changeNutrientPortion(){
             if(this.nutrientPortion.nutrientPortion && this.portions.length === 0){
                 this.portions.push(this.nutrientPortion);
             }
         },
-        addPortion : function(){
+        addPortion(){
             this.portions.push({ name: null, weight: null});
         },
         removePortion(index) {

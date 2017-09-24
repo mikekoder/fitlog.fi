@@ -191,7 +191,7 @@ export default {
         constants() {
             return constants;
         },
-        groups: function(){
+        groups(){
             return this.$store.state.nutrition.nutrientGroups;
         },
         allNutrients() {
@@ -224,13 +224,13 @@ export default {
         'food-picker': require('../foods/food-picker')
     },
     methods: {
-        toggleNutrients: function(show){
+        toggleNutrients(show){
             this.showNutrients = show;
         },
-        addRow : function(){
+        addRow(){
             this.rows.push({food: null, quantity: 1, portion: undefined});
         },
-        setRowFood: function(row, food){
+        setRowFood(row, food){
             row.food = food;
         },
         removeRow(index) {

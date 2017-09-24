@@ -92,7 +92,7 @@ export default {
         'exercise-picker': require('../../components/exercise-picker')
     },
     methods: {
-        addSet : function(){
+        addSet(){
             this.sets.push({exercise: null, reps: null, weights: null});
         },
         copySet(index) {
@@ -100,7 +100,7 @@ export default {
             var copy = { exercise: original.exercise, reps: original.reps, weights: original.weights};
             this.sets.splice(index, 0, copy);
         },
-        moveSetUp: function(index){
+        moveSetUp(index){
             var set = this.sets[index];
             this.sets.splice(index, 1);
             this.sets.splice(index - 1, 0, set);

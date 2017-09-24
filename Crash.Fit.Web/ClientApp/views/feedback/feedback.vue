@@ -78,7 +78,7 @@ export default {
     },
     components: {},
     methods: {
-      loadItems: function(){
+      loadItems(){
         var self = this;
         self.type = self.$route.meta.type;
         if(self.type === 'Bug'){
@@ -104,7 +104,7 @@ export default {
           });
         }
       },
-      createFeedback: function(){
+      createFeedback(){
         if(this.type === 'Bug'){
           this.$router.push({ name: 'bug-details', params: { id: constants.NEW_ID } });
         }
@@ -140,7 +140,7 @@ export default {
         self.loadItems();
     },
     watch: {
-      $route: function(){
+      $route(){
         this.loadItems();
       }
     }

@@ -108,7 +108,7 @@ export default {
         }
     },
     computed: {
-        groups: function(){
+        groups(){
             return this.$store.state.nutrition.nutrientGroups;
         },
         nutrients() {
@@ -139,7 +139,7 @@ export default {
             this.nutrientGoals.push(goal);
             this.selectedGoal = goal;
         },
-        deleteNutrientGoal: function(index){
+        deleteNutrientGoal(index){
             this.nutrientGoals.splice(index, 1);
         },
         toggleGroup(group) {
