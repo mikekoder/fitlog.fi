@@ -242,11 +242,16 @@ namespace Crash.Fit.Web.Controllers
             {
                 return Unauthorized();
             }
-
             meal.Rows = meal.Rows.Where(r => r.Id != id).ToArray();
-            CalculateNutrients(meal);
-            nutritionRepository.UpdateMeal(meal);
-
+            if (meal.Rows.Length == 0)
+            {
+                nutritionRepository.DeleteMeal(meal);
+            }
+            else
+            {
+                CalculateNutrients(meal);
+                nutritionRepository.UpdateMeal(meal);
+            }
             return Ok();
         }
         private void AdjustTime(MealDetails meal)
