@@ -4,5 +4,8 @@
     },
     setItem(key, value) {
         localStorage.setItem(key, value);
+    },
+    removeItem(key) {
+        localStorage.removeItem(key);
     }
 }
