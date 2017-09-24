@@ -213,7 +213,7 @@ namespace Crash.Fit.Web.Controllers
                 }
             };
 
-            _nutritionRepository.SaveMealDefinitions(mealDefinitions);
+            _nutritionRepository.SaveMealDefinitions(user.Id, mealDefinitions);
         }
 
         [HttpPost("logout")]
