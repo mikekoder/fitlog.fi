@@ -564,7 +564,6 @@ WHEN NOT MATCHED THEN
                 }
             }
         }
-        public IEnumerable<NutrientGoal> GetNutrientTargets(Guid userId)
         public IEnumerable<NutrientGoal> GetNutritionGoals(Guid userId)
         {
             var sql = @"SELECT * FROM NutrientTargets WHERE UserId=@userId";
