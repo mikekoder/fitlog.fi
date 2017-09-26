@@ -565,6 +565,7 @@ WHEN NOT MATCHED THEN
             }
         }
         public IEnumerable<NutrientGoal> GetNutrientTargets(Guid userId)
+        public IEnumerable<NutrientGoal> GetNutritionGoals(Guid userId)
         {
             var sql = @"SELECT * FROM NutrientTargets WHERE UserId=@userId";
             using (var conn = CreateConnection())
@@ -572,7 +573,7 @@ WHEN NOT MATCHED THEN
                 return conn.Query<NutrientGoal>(sql, new { userId }).ToList();
             }
         }
-        public bool SaveNutrientTargets(Guid userId, IEnumerable<NutrientGoal> targets)
+        public bool SaveNutritionGoals(Guid userId, IEnumerable<NutrientGoal> goals)
         {
             var sql = @"INSERT(UserId,NutrientId,Days,Min,Max) VALUES(@UserId,@NutrientId,@Days,@Min,@Max)";
 
@@ -582,7 +583,7 @@ WHEN NOT MATCHED THEN
                 try
                 {
                     conn.Execute(@"DELETE FROM NutrientTargets WHERE UserId=@userId", new { userId }, tran);
-                    conn.Execute(@"INSERT NutrientTargets(UserId,NutrientId,Days,Min,Max) VALUES(@UserId,@NutrientId,@Days,@Min,@Max)", targets, tran);
+                    conn.Execute(@"INSERT NutrientTargets(UserId,NutrientId,Days,Min,Max) VALUES(@UserId,@NutrientId,@Days,@Min,@Max)", goals, tran);
                     tran.Commit();
                     return true;
                 }

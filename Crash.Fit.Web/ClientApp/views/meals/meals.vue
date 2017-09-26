@@ -329,7 +329,7 @@ export default {
         var self = this;
         //self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
         self.$store.dispatch(constants.FETCH_NUTRIENTS, {});
-        self.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {});
+        self.$store.dispatch(constants.FETCH_NUTRITION_GOALS, {});
         self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {});
         if(self.start && self.end){
           self.fetchMeals();
