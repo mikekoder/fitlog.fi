@@ -17,7 +17,7 @@ namespace Crash.Fit.Training
         bool DeleteExercise(Exercise exercise);
         bool RestoreExercise(Guid id, out ExerciseDetails exercise);
 
-        IEnumerable<WorkoutSummary> SearchWorkouts(Guid userId, DateTimeOffset start, DateTimeOffset end);
+        IEnumerable<WorkoutDetails> SearchWorkouts(Guid userId, DateTimeOffset start, DateTimeOffset end);
         WorkoutDetails GetWorkout(Guid id);
         bool CreateWorkout(WorkoutDetails workout);
         bool UpdateWorkout(WorkoutDetails workout);
