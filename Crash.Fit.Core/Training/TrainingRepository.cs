@@ -337,25 +337,32 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
             }
         }
     
-        public IEnumerable<WorkoutSummary> SearchWorkouts(Guid userId, DateTimeOffset start, DateTimeOffset end)
+        public IEnumerable<WorkoutDetails> SearchWorkouts(Guid userId, DateTimeOffset start, DateTimeOffset end)
         {
             var filter = "UserId=@userId AND Time >= @start AND Time <= @end AND Deleted IS NULL";
             var sql = $@"
 SELECT * FROM Workout WHERE {filter};
+
 SELECT S.WorkoutId, T.MuscleGroupId, COUNT(S.ExerciseId) as [Count] FROM WorkoutSet S
 JOIN Exercise E ON E.Id = S.ExerciseId
 JOIN ExerciseTarget T ON T.ExerciseId=E.Id
 WHERE S.WorkoutId IN(SELECT Id FROM Workout WHERE {filter})
-GROUP BY S.WorkoutId, T.MuscleGroupId";
+GROUP BY S.WorkoutId, T.MuscleGroupId;
+
+SELECT WS.*, E.Name as ExerciseName FROM WorkoutSet WS
+JOIN Exercise E ON E.Id = WS.ExerciseId
+WHERE WS.WorkoutId IN (SELECT Id FROM Workout WHERE {filter}) ORDER BY [Index];";
 
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, new { userId, start, end }))
             {
-                var workouts = multi.Read<WorkoutSummary>().ToList();
+                var workouts = multi.Read<WorkoutDetails>().ToList();
                 var targets = multi.Read<WorkoutTargetRaw>().ToList();
+                var sets = multi.Read<WorkoutSetRaw>().ToList();
                 foreach(var workout in workouts)
                 {
                     workout.MuscleGroupSets = targets.Where(t => t.WorkoutId == workout.Id).ToDictionary(t => t.MuscleGroupId, t => t.Count);
+                    workout.Sets = sets.Where(s => s.WorkoutId == workout.Id).ToArray();
                 }
                 return workouts;
             }
@@ -364,14 +371,25 @@ GROUP BY S.WorkoutId, T.MuscleGroupId";
         {
             var sql = @"
 SELECT * FROM Workout WHERE Id=@id;
-SELECT * FROM WorkoutSet WHERE WorkoutId=@id ORDER BY [Index];";
+
+SELECT S.WorkoutId, T.MuscleGroupId, COUNT(S.ExerciseId) as [Count] FROM WorkoutSet S
+JOIN Exercise E ON E.Id = S.ExerciseId
+JOIN ExerciseTarget T ON T.ExerciseId=E.Id
+WHERE S.WorkoutId=@id
+GROUP BY S.WorkoutId, T.MuscleGroupId;
+
+SELECT WS.*, E.Name as ExerciseName FROM WorkoutSet WS
+JOIN Exercise E ON E.Id = WS.ExerciseId
+WHERE WorkoutId=@id ORDER BY [Index];";
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, new { id }))
             {
                 var workout = multi.Read<WorkoutDetails>().SingleOrDefault();
                 if(workout != null)
                 {
+                    workout.MuscleGroupSets = multi.Read<WorkoutTargetRaw>().ToDictionary(t => t.MuscleGroupId, t => t.Count);
                     workout.Sets = multi.Read<WorkoutSet>().ToArray();
+
                 }
                 return workout;
             }
@@ -462,13 +480,15 @@ SELECT * FROM WorkoutSet WHERE WorkoutId=@id ORDER BY [Index];";
             public Guid MuscleGroupId { get; set; }
             public int Count { get; set; }
         }
-        class RoutineExerciseRaw
+        class WorkoutSetRaw : WorkoutSet
+        {
+            public Guid WorkoutId { get; set; }
+            public int Index { get; set; }
+        }
+        class RoutineExerciseRaw : RoutineExercise
         {
             public Guid RoutineWorkoutId { get; set; }
             public int Index { get; set; }
-            public Guid ExerciseId { get; set; }
-            public int Sets { get; set; }
-            public int Reps { get; set; }
         }
         class ExerciseTargetRaw
         {

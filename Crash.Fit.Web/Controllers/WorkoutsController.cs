@@ -25,7 +25,7 @@ namespace Crash.Fit.Web.Controllers
         {
             var workouts = trainingRepository.SearchWorkouts(CurrentUserId, start, end ?? DateTimeOffset.Now).OrderByDescending(w => w.Time);
 
-            var response = AutoMapper.Mapper.Map<WorkoutSummaryResponse[]>(workouts);
+            var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse[]>(workouts);
             return Ok(response);
         }
         [HttpGet("{id}")]

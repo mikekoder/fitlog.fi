@@ -15,7 +15,7 @@ namespace Crash.Fit.Training
     {
         public Dictionary<Guid, int> MuscleGroupSets { get; set; }
     }
-    public class WorkoutDetails : Workout
+    public class WorkoutDetails : WorkoutSummary
     {
         public WorkoutSet[] Sets { get; set; }
     }

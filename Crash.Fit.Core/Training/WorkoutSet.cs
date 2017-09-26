@@ -10,6 +10,7 @@ namespace Crash.Fit.Training
     {
         //public int Index { get; set; }
         public Guid ExerciseId { get; set; }
+        public string ExerciseName { get; set; }
         public int Reps { get; set; }
         public decimal Weights { get; set; }
     }
