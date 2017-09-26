@@ -32,14 +32,14 @@ namespace Crash.Fit.Api.Models.Nutrition
 
         public int? HomeOrder { get; set; }
 
-        public NutrientTargets Targets { get; set; }
+        public NutrientGoals Goals { get; set; }
 
         public NutrientResponse()
         {
-            Targets = new NutrientTargets();
+            Goals = new NutrientGoals();
         }
 
-        public class NutrientTargets
+        public class NutrientGoals
         {
             public decimal? Min { get; set; }
             public decimal? Max { get; set; }

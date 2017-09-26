@@ -173,7 +173,7 @@ export default {
                 }
                 goals.push(goal);
             }
-            self.$store.dispatch(constants.SAVE_NUTRIENT_TARGETS, {
+            self.$store.dispatch(constants.SAVE_NUTRITION_GOALS, {
                 goals,
                 success() {
                     toaster.info(self.$t('nutrientGoals.saved'));
@@ -261,7 +261,7 @@ export default {
         var self = this;
         this.$store.dispatch(constants.FETCH_NUTRIENTS, {
             success() {
-                self.$store.dispatch(constants.FETCH_NUTRIENT_TARGETS, {
+                self.$store.dispatch(constants.FETCH_NUTRITION_GOALS, {
                     success(goals) {
                         var nutrientGoals = [];
                         for (var i in goals) {

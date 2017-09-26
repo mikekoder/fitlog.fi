@@ -22,8 +22,8 @@ export default {
         nutrientsLoaded: false,
         nutrients: [],
         nutrientsGrouped: {},
-        nutrientTargetsLoaded: false,
-        nutrientTargets: [],
+        nutritionGoalsLoaded: false,
+        nutritionGoals: [],
 
         mealDefinitionsLoaded: false,
         mealDefinitions: [],
@@ -305,18 +305,18 @@ export default {
                 }
             });
         },
-        // Nutrient targets
-        [constants.FETCH_NUTRIENT_TARGETS]({ commit, state }, { forceRefresh, success, failure }) {
-            if (state.nutrientTargetsLoaded && !forceRefresh) {
+        // Nutrition goals
+        [constants.FETCH_NUTRITION_GOALS]({ commit, state }, { forceRefresh, success, failure }) {
+            if (state.nutritionGoalsLoaded && !forceRefresh) {
                 if (success) {
-                    success(state.nutrientTargets);
+                    success(state.nutritionGoals);
                 }
                 return;
             }
-            api.getNutrientTargets().then(function (targets) {
-                commit(constants.FETCH_NUTRIENT_TARGETS_SUCCESS, { targets })
+            api.getNutritionGoals().then(function (goals) {
+                commit(constants.FETCH_NUTRITION_GOALS_SUCCESS, { goals })
                 if (success) {
-                    success(targets);
+                    success(goals);
                 }
             }).fail(function () {
                 if (failure) {
@@ -324,11 +324,11 @@ export default {
                 }
             });
         },
-        [constants.SAVE_NUTRIENT_TARGETS]({ commit, state }, { targets, success, failure }) {
-            api.saveNutrientTargets(targets).then(function (savedTargets) {
-                commit(constants.FETCH_NUTRIENT_TARGETS_SUCCESS, { targets: savedTargets })
+        [constants.SAVE_NUTRITION_GOALS]({ commit, state }, { goals, success, failure }) {
+            api.saveNutritionGoals(goals).then(function (savedGoals) {
+                commit(constants.FETCH_NUTRITION_GOALS_SUCCESS, { goals: savedGoals })
                 if (success) {
-                    success(savedTargets);
+                    success(savedGoals);
                 }
             }).fail(function () {
                 if (failure) {
@@ -391,9 +391,9 @@ export default {
             state.nutrientsLoaded = true;
         },
 
-        [constants.FETCH_NUTRIENT_TARGETS_SUCCESS](state, { targets }) {
-            state.nutrientTargets = targets;
-            state.nutrientTargetsLoaded = true;
+        [constants.FETCH_NUTRITION_GOALS_SUCCESS](state, { goals }) {
+            state.nutritionGoals = goals;
+            state.nutritionGoalsLoaded = true;
         },
         [constants.FETCH_MEALS_STARTED](state) {
             state.mealsLoading = true;

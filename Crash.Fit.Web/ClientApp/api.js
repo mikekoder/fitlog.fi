@@ -186,15 +186,15 @@ export default {
     listNutrients(){
         return $.get(this.baseUrl + 'nutrients/');
     },
-    getNutrientTargets() {
-        return $.get(this.baseUrl + 'nutrients/targets');
+    getNutritionGoals() {
+        return $.get(this.baseUrl + 'nutrients/goals');
     },
-    saveNutrientTargets (targets) {
+    saveNutritionGoals (goals) {
         return $.ajax({
-            url: this.baseUrl + 'nutrients/targets',
+            url: this.baseUrl + 'nutrients/goals',
             type: 'PUT',
             contentType: 'text/json',
-            data: JSON.stringify(targets)
+            data: JSON.stringify(goals)
         });
     },
     listDailyIntakes(gender, dob){
