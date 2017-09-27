@@ -51,6 +51,18 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
+        [HttpPost("start")]
+        public IActionResult StartWorkout(WorkoutStartModel request)
+        {
+            var workout = new WorkoutDetails
+            {
+                UserId = CurrentUserId,
+                Time = request.Time
+            };
+            trainingRepository.CreateWorkout(workout);
+            var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
+            return Ok(response);
+        }
 
         [HttpPut("{id}")]
         public IActionResult Update(Guid id, [FromBody]WorkoutRequest request)

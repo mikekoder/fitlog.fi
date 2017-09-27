@@ -9,9 +9,7 @@
             <q-btn round :flat="true" @click="()=> {datepickerVisible=true; $refs.datepicker.open();}">{{ dateText }}</q-btn>
             </div>
           <div class="col col-lg-2"><q-btn round  @click="changeDate(1)"><q-icon name="fa-chevron-right" /></q-btn></div>
-          <!--
-          <q-btn round class="pull-right" icon="fa-gear" @click="showMealSettings"></q-btn>
-          -->
+          <q-btn round class="pull-right" icon="fa-plus" @click="createWorkout"></q-btn>
         </div>
       </q-card-title>
     </q-card>
@@ -80,6 +78,9 @@ export default {
     }
   },
   methods: {
+    createWorkout(){
+      this.$store.dispatch(constants.START_WORKOUT, { time: new Date() });
+    },
     addSet(workout){
       workout.sets.push({ exerciseId: undefined, exerciseName: undefined, reps: undefined, weights: undefined });
     },

@@ -231,6 +231,14 @@ export default {
     },
 
     // Workouts
+    startWorkout(time){
+        return $.ajax({
+            url: this.baseUrl + 'workouts/start',
+            type: 'POST',
+            contentType: 'text/json',
+            data: JSON.stringify({time})
+        });
+    },
     listWorkouts(start, end){
         var query = {};
         if (start) {
