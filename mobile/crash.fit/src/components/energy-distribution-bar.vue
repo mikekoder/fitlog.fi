@@ -7,8 +7,8 @@
 </template>
 
 <script>
-module.exports = {
-    data: function() {
+export default {
+    data() {
         return {
            
             /* energy: 0
@@ -18,16 +18,16 @@ module.exports = {
         }
     },
     computed: {
-        energy: function(){
+        energy(){
             return 4 * this.protein + 4 * this.carb + 9 * this.fat;
         },
-        proteinWidth: function () {
+        proteinWidth() {
             return (4 * this.protein / this.energy) * 100;
         },
-        carbWidth: function () {
+        carbWidth() {
             return (4 * this.carb / this.energy) * 100;
         },
-        fatWidth: function () {
+        fatWidth() {
             return (9 * this.fat / this.energy) * 100;
         }
     },
@@ -37,10 +37,10 @@ module.exports = {
         carb: 0,
         fat: 0
     },
-    mounted: function () {
+    mounted() {
     },
     methods: {
-        decimal: function (value, precision) {
+        decimal(value, precision) {
             if (!value) {
                 return value;
             }
