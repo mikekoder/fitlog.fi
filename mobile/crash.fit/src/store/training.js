@@ -53,6 +53,17 @@ export default {
             });
         },
         // Workouts
+        [constants.START_WORKOUT]({commit, state},{time, success, failure}){
+            api.startWorkout(time).then(workout => {
+                if (success) {
+                    success(workout);
+                }
+            }).fail(() => {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
         [constants.SELECT_WORKOUT_DATE_RANGE]({ commit, state }, { start, end, success, failure }) {
             commit(constants.SELECT_WORKOUT_DATE_RANGE_SUCCESS, { start, end });
             if (success) {
