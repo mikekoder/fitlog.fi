@@ -408,7 +408,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Workout(Id, UserId, Time,Created) VALUES(@Id, @UserId, @Time,@Created)", workout, tran);
+                    conn.Execute("INSERT INTO Workout(Id, UserId, Time) VALUES(@Id, @UserId, @Time)", workout, tran);
                     if (workout.Sets != null)
                     {
                         conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights)", workout.Sets.Select((s, i) => new

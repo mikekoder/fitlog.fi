@@ -32,7 +32,7 @@ namespace Crash.Fit.Web.Controllers
         public IActionResult Details(Guid id)
         {
             var workout = trainingRepository.GetWorkout(id);
-            if(workout.UserId != CurrentUserId)
+            if (workout.UserId != CurrentUserId)
             {
                 return NotFound();
             }
@@ -45,14 +45,14 @@ namespace Crash.Fit.Web.Controllers
         {
             CreateExercises(request.Sets);
             var workout = AutoMapper.Mapper.Map<WorkoutDetails>(request);
-            workout.UserId = CurrentUserId;     
+            workout.UserId = CurrentUserId;
             trainingRepository.CreateWorkout(workout);
 
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
         [HttpPost("start")]
-        public IActionResult StartWorkout(WorkoutStartModel request)
+        public IActionResult Start([FromBody]WorkoutStartModel request)
         {
             var workout = new WorkoutDetails
             {
