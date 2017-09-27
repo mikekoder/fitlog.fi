@@ -23,9 +23,14 @@ export default
             //var client = storage.getItem('client');
             var refreshToken = storage.getItem('refresh_token');
             api.refreshToken(refreshToken).then(function (response) {
-                storage.setItem('access_token', response.accessToken);
-                if (success) {
-                    success();
+                if(response.accessToken){
+                    storage.setItem('access_token', response.accessToken);
+                    if (success) {
+                        success();
+                    }
+                }
+                else if (failure) {
+                    failure();
                 }
             }).fail(function () {
                 if (failure) {

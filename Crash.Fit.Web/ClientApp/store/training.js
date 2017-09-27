@@ -5,6 +5,8 @@ import moment from 'moment'
 export default {
     state: {
 
+        diaryDate: new Date(),
+
         muscleGroupsLoaded: false,
         muscleGroups: [],
 
@@ -27,7 +29,10 @@ export default {
         workoutsDisplayEnd: null
     },
     actions: {
-
+        // Diary
+        [constants.SELECT_WORKOUT_DIARY_DATE]({ commit, state }, { date, success, failure }) {
+            state.diaryDate = date;
+        },
         // MuscleGroups 
         [constants.FETCH_MUSCLEGROUPS]({ commit, state }, { forceRefresh, success, failure }) {
             if (state.muscleGroupsLoaded && !forceRefresh) {
