@@ -398,26 +398,39 @@ WHERE WorkoutId=@id ORDER BY [Index];";
         public bool CreateWorkout(WorkoutDetails workout)
         {
             workout.Id = Guid.NewGuid();
+            workout.Created = DateTimeOffset.Now;
+            foreach(var set in workout.Sets ?? Enumerable.Empty<WorkoutSet>())
+            {
+                set.Id = Guid.NewGuid();
+            }
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Workout(Id, UserId, Time) VALUES(@Id, @UserId, @Time)", workout, tran);
-                    conn.Execute("INSERT INTO WorkoutSet(WorkoutId,[Index],ExerciseId,Reps,Weights) VALUES(@WorkoutId,@Index,@ExerciseId,@Reps,@Weights)", workout.Sets.Select((s,i) => new
+                    conn.Execute("INSERT INTO Workout(Id, UserId, Time,Created) VALUES(@Id, @UserId, @Time,@Created)", workout, tran);
+                    if (workout.Sets != null)
                     {
-                        WorkoutId=workout.Id,
-                        Index = i,
-                        s.ExerciseId,
-                        s.Reps,
-                        s.Weights
-                    }), tran);
+                        conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights)", workout.Sets.Select((s, i) => new
+                        {
+                            s.Id,
+                            WorkoutId = workout.Id,
+                            Index = i,
+                            s.ExerciseId,
+                            s.Reps,
+                            s.Weights
+                        }), tran);
+                    }
                     tran.Commit();
                     return true;
                 }
                 catch (Exception ex)
                 {
                     workout.Id = Guid.Empty;
+                    foreach (var set in workout.Sets ?? Enumerable.Empty<WorkoutSet>())
+                    {
+                        set.Id = Guid.Empty;
+                    }
                     tran.Rollback();
                     throw;
                 }
@@ -425,6 +438,10 @@ WHERE WorkoutId=@id ORDER BY [Index];";
         }
         public bool UpdateWorkout(WorkoutDetails workout)
         {
+            foreach (var set in workout.Sets.Where(r => r.Id == Guid.Empty))
+            {
+                set.Id = Guid.NewGuid();
+            }
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
@@ -433,8 +450,9 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                     conn.Execute("DELETE FROM WorkoutSet WHERE WorkoutId=@Id", new { workout.Id }, tran);
 
                     conn.Execute("UPDATE Workout SET Time=@Time WHERE Id=@Id", workout, tran);
-                    conn.Execute("INSERT INTO WorkoutSet(WorkoutId,[Index],ExerciseId,Reps,Weights) VALUES(@WorkoutId,@Index,@ExerciseId,@Reps,@Weights)", workout.Sets.Select((s, i) => new
+                    conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights)", workout.Sets.Select((s, i) => new
                     {
+                        s.Id,
                         WorkoutId = workout.Id,
                         Index = i,
                         s.ExerciseId,
