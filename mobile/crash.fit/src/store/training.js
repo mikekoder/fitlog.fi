@@ -56,6 +56,7 @@ export default {
         [constants.START_WORKOUT]({commit, state},{time, success, failure}){
             api.startWorkout(time).then(workout => {
                 if (success) {
+                    commit(constants.START_WORKOUT_SUCCESS,{workout});
                     success(workout);
                 }
             }).fail(() => {
@@ -291,6 +292,9 @@ export default {
         [constants.SELECT_WORKOUT_DATE_RANGE_SUCCESS](state, { start, end }) {
             state.workoutsDisplayStart = start;
             state.workoutsDisplayEnd = end;
+        },
+        [constants.START_WORKOUT_SUCCESS](state, { workout }){
+            state.workouts.push(workout);
         },
         [constants.FETCH_WORKOUTS_SUCCESS](state, { start, end, workouts }) {
             for (var i in workouts) {
