@@ -5,6 +5,8 @@ import moment from 'moment'
 export default {
     state: {
 
+        diaryDate: new Date(),
+
         mealsStart: null,
         mealsEnd: null,
         mealDays: [],
@@ -29,10 +31,25 @@ export default {
         mealDefinitions: [],
 
         latestFoods: [],
-        mostUsedFoods: []
+        mostUsedFoods: [],
+        ownFoods: []
     },
     actions: {
-
+        [constants.SELECT_MEAL_DIARY_DATE]({ commit, state }, { date, success, failure }) {
+            state.diaryDate = date;
+        },
+        [constants.SAVE_MEAL_DIARY_SETTINGS]({ commit, state }, { settings, success, failure }) {
+            api.saveHomeSettings(settings).then(function () {
+                commit(constants.SAVE_MEAL_DIARY_NUTRIENTS_SUCCESS, { nutrients: settings.nutrients })
+                if (success) {
+                    success();
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
         // Meals
         [constants.SELECT_MEAL_DATE_RANGE]({ commit, state }, { start, end, success, failure }) {
             commit(constants.SELECT_MEAL_DATE_RANGE_SUCCESS, { start, end });
@@ -135,11 +152,23 @@ export default {
                     failure();
                 }
             });
-
+        },
+        [constants.DELETE_MEAL_ROW]({ commit, state }, { row, success, failure }) {
+            api.deleteMealRow(row).then(function () {
+                commit(constants.DELETE_MEAL_ROW_SUCCESS, { row });
+                if(success){
+                    success();
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
         },
         // Foods
         [constants.FETCH_MY_FOODS]({ commit, state }, { success, failure }) {
             api.listFoods().then(function (foods) {
+                commit(constants.FETCH_MY_FOODS_SUCCESS, { foods });
                 if (success) {
                     success(foods);
                 }
@@ -469,7 +498,10 @@ export default {
 
             updateMealRow(row, state);
         },
-        [constants.SAVE_HOME_NUTRIENTS_SUCCESS](state, { nutrients }) {
+        [constants.DELETE_MEAL_ROW_SUCCESS](state, { row }) {
+            deleteMealRow(row, state);
+        },
+        [constants.SAVE_MEAL_DIARY_NUTRIENTS_SUCCESS](state, { nutrients }) {
             state.nutrients.forEach(n => {
                 var index = nutrients.findIndex(id => n.id == id);
                 if (index >= 0) {
@@ -485,6 +517,9 @@ export default {
         },
         [constants.FETCH_MOST_USED_FOODS_SUCCESS](state, { foods }) {
             state.mostUsedFoods = foods;
+        },
+        [constants.FETCH_MY_FOODS_SUCCESS](state, { foods }) {
+            state.ownFoods = foods;
         }
     }
 }
@@ -551,4 +586,20 @@ export default {
         for (var i in row.nutrients) {
             meal.nutrients[i] += row.nutrients[i];
         }
+    }
+    function deleteMealRow(row, state) {
+        var meal = state.meals.find(m => m.id == row.mealId);
+        var rowIndex = meal.rows.findIndex(r => r.id == row.id);
+        if(rowIndex < 0){
+            return;
+        }
+        if(meal.rows.length == 1){
+            removeMeal(meal, state);
+            return;
+        }
+        var oldRow = meal.rows[rowIndex];
+        for (var i in oldRow.nutrients) {
+            meal.nutrients[i] -= oldRow.nutrients[i];
+        }
+        meal.rows.splice(rowIndex, 1);
     }
