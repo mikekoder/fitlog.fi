@@ -41,7 +41,7 @@ export default {
         });
     },
     logout(){
-        return $.post(baseUrl+'users/logout');
+        return $.post(this.baseUrl+'users/logout');
     },
     refreshToken(refreshToken) {
         return $.get(this.baseUrl + 'users/refresh-token/?refreshToken=' + refreshToken);

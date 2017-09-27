@@ -20,7 +20,6 @@ export default
             }
         },
         [constants.REFRESH_TOKEN]({ commit, state }, { success, failure }) {
-            //storage.setItem('refresh_token','545943f8-7740-451f-ae72-0e4dacdb53c896e76166-7ac5-4ed3-e32b-08d4e9214b98');
             //var client = storage.getItem('client');
             var refreshToken = storage.getItem('refresh_token');
             api.refreshToken(refreshToken).then(function (response) {

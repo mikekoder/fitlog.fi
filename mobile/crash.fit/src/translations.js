@@ -25,7 +25,10 @@
     characters: 'merkkiä',
     chooseDateInterval: 'Valitse aikaväli',
     confirmCopy: 'Vahvista kopiointi',
+    confirmNewPassword: 'Salasana uudestaan',
     confirmPassword: 'Vahvista salasana',
+    connectFacebook: 'Yhdistä Facebook',
+    connectGoogle: 'Yhdistä Google',
     cookedWeight: 'Valmispaino',
     copy: 'Kopioi',
     create: 'Lisää',
@@ -110,6 +113,7 @@
     mondayShort: 'M',
     muscleGroups: 'Lihasryhmät',
     name: 'Nimi',
+    newPassword: 'Salasana',
     noExercises: 'Ei liikkeitä',
     noFoods: 'Ei ruoka-aineita',
     noMeals: 'Ei aterioita',
@@ -139,6 +143,7 @@
     profile: 'Profiili',
     protein: 'Proteiini',
     proteinAbbr: 'P',
+    quantity: 'Määrä',
     rawWeight: 'Raakapaino',
     recipe: 'Resepti',
     recipeDetails: 'Reseptin tiedot',
@@ -204,6 +209,6 @@
     youHaveVoted: 'Olet äänestänyt'
 }
 
-module.exports = {
+export default {
     fi: fi
 };

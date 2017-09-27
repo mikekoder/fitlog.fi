@@ -334,7 +334,7 @@ export default {
                 }
             });
         },
-        // Nutrient goals
+        // Nutrition goals
         [constants.FETCH_NUTRITION_GOALS]({ commit, state }, { forceRefresh, success, failure }) {
             if (state.nutritionGoalsLoaded && !forceRefresh) {
                 if (success) {
