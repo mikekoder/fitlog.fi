@@ -161,7 +161,7 @@ export default {
     },
     computed: {
         selectedDate() {
-            return this.$store.state.home.date;
+            return this.$store.state.nutrition.diaryDate;
         },
         dateText() {
             if (moment().isSame(this.selectedDate, 'd')) {
