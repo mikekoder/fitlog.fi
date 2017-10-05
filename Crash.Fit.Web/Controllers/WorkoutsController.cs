@@ -79,7 +79,65 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
+        [HttpPut("{id}/time")]
+        public IActionResult UpdateTime(Guid id, DateTimeOffset time)
+        {
+            // TODO: optimate
+            var workout = trainingRepository.GetWorkout(id);
+            if(workout.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+            workout.Time = time;
+            trainingRepository.UpdateWorkout(workout);
 
+            return Ok();
+        }
+        [HttpPost("{id}")]
+        public IActionResult AddSet(Guid id, [FromBody]WorkoutSetRequest request)
+        {
+            var workout = trainingRepository.GetWorkout(id);
+            if (workout.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+            CreateExercises(new[] { request });
+            var set = AutoMapper.Mapper.Map<WorkoutSet>(request);
+            workout.Sets = workout.Sets.Union(new[] { set }).ToArray();
+            trainingRepository.UpdateWorkout(workout);
+
+            var result = AutoMapper.Mapper.Map<WorkoutSetResponse>(set);
+            return Ok(result);
+        }
+        [HttpPut("{id}/sets/{setId}")]
+        public IActionResult UpdateSet(Guid id, Guid setId, [FromBody]WorkoutSetRequest request)
+        {
+            var workout = trainingRepository.GetWorkout(id);
+            if (workout.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+            var set = workout.Sets.FirstOrDefault(s => s.Id == setId);
+            CreateExercises(new[] { request });
+            set.ExerciseId = request.ExerciseId.Value;
+            set.ExerciseName = request.ExerciseName;
+            set.Reps = request.Reps;
+            set.Weights = request.Weights;
+            trainingRepository.UpdateWorkout(workout);
+            return Ok();
+        }
+        [HttpDelete("{id}/sets/{setId}")]
+        public IActionResult DeleteSet(Guid id, Guid setId)
+        {
+            var workout = trainingRepository.GetWorkout(id);
+            if (workout.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+            workout.Sets = workout.Sets.Where(s => s.Id != setId).ToArray();
+            trainingRepository.UpdateWorkout(workout);
+            return Ok();
+        }
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
