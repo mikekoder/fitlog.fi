@@ -19,6 +19,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Crash.Fit.Nutrition;
+using System.Net.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -320,6 +323,57 @@ namespace Crash.Fit.Web.Controllers
             }
 
             return await TokenResult(userId.Value);
+        }
+        [HttpGet("token-login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginWithToken(string provider, string token)
+        {
+            if (provider.Equals("google", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return await LoginWithGoogleToken(token);
+            }
+            return NotFound();
+        }
+        private async Task<IActionResult> LoginWithGoogleToken(string idToken)
+        {
+            string userId;
+            string email;
+            using (var client = new HttpClient())
+            {
+                var url = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + idToken;
+                var response = client.GetStringAsync(url).Result;
+                var data = JObject.Parse(response);
+                userId = data.GetValue("sub").ToString();
+                email = data.GetValue("email").ToString();
+            }
+            var user = await _userManager.FindByLoginAsync("Google", userId);
+            if (user == null)
+            {
+                
+                user = new User { Email = email, UserName = "Google_" + userId };
+                var creationResult = await _userManager.CreateAsync(user);
+                if (!creationResult.Succeeded)
+                {
+                }
+                InitProfile(user);
+                
+              
+
+                var addLoginResult = await _userManager.AddLoginAsync(user, new UserLoginInfo("Google", userId, null));
+                if (!addLoginResult.Succeeded)
+                {
+                }
+            }
+
+            var refreshToken = _profileRepository.GetRefreshToken(user.Id);
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                refreshToken = _profileRepository.UpdateRefreshToken(user.Id);
+            }
+            var jwtToken = await GetJwtSecurityToken(user.Id);
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+
+            return await TokenResult(user.Id);
         }
 
         private async Task<IActionResult> TokenResult(Guid userId)
