@@ -17,6 +17,10 @@
       <q-btn @click="fbLogin" icon="fa-facebook-official">Facebook</q-btn>
       <q-btn @click="googleLogin" icon="fa-google-plus-official">Google</q-btn>
     </div>
+    <div class="q-tab-pane">
+      {{ url }}<br />
+      {{ debugInfo }}
+    </div>
   </div>
 </template>
 
@@ -25,6 +29,7 @@ import { openURL, QBtn, QField, QInput, QSideLink } from 'quasar'
 import config from '../config'
 import constants from '../store/constants'
 import { Toast } from 'quasar'
+import api from '../api'
 
 export default {
   components: {
@@ -36,7 +41,8 @@ export default {
       refreshToken: undefined,
       accessToken: undefined,
       username: undefined,
-      password: undefined
+      password: undefined,
+      debugInfo: ''
     }
   },
   computed: {
@@ -54,39 +60,76 @@ export default {
     socialLogin(provider){
       var self = this;
       if(self.$q.platform.is.cordova){
-        var ref = cordova.InAppBrowser.open(config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile', '_blank', 'location=no');
-        ref.addEventListener('loadstop', function(event){
-          if(event.url.includes('login-success')){
-            var parts = event.url.split('/');
-            self.refreshToken = parts[parts.length - 2];
-            self.accessToken = parts[parts.length - 1];
-            self.url = event.url;
-            ref.close();
-          }
-        });
+        if(provider == 'Google'){
+          window.plugins.googleplus.login(
+            {
+              'webClientId': config.googleWebClientId
+            },
+            function (obj) {
+              self.debugInfo = JSON.stringify(obj);
+              if(obj.idToken){
+                self.debugInfo = obj.idToken;
+                api.loginWithToken('Google', obj.idToken).then(response => {
+                  self.debugInfo = 'done: ' + JSON.stringify(response) +' '+ response.refreshToken + ' ' + response.accessToken;
+                  self.finishLogin(response.refreshToken, response.accessToken);
+                }).fail(xhr => {
+                  self.debugInfo = 'fail: ' + JSON.stringify(xhr);
+                });
+              }
+            },
+            function (msg) {
+              alert('error: ' + msg);
+            }
+          );
+        }
+        else {
+          var ref = cordova.InAppBrowser.open(config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile', '_blank', 'location=no');
+          ref.addEventListener('loadstop', function(event){
+            if(event.url.includes('login-success')){
+              var parts = event.url.split('/');
+              var refreshToken = parts[parts.length - 2];
+              var accessToken = parts[parts.length - 1];
+              self.url = event.url;
+
+              ref.close();
+              if(refreshToken && accessToken){
+                self.finishLogin(refreshToken, accessToken);
+              }
+            }
+          });
+        }
       }
       else {
         window.location = config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile&returnUrl='+ window.location.href;
       }
     },
+    finishLogin(refreshToken, accessToken){
+      var self = this;
+      if(refreshToken && accessToken){
+        self.$store.dispatch(constants.STORE_TOKENS, {
+          refreshToken,
+          accessToken,
+          success() {
+            self.$store.dispatch(constants.FETCH_PROFILE, {
+              success(){
+                self.$router.replace({name: 'meals'});
+              }
+            });
+          },
+          failure() {
+            Toast.create(self.$t('failed'));
+          }
+        });
+      }
+    }
   },
   created () {
     var self = this;
     self.$store.commit(constants.LOADING_DONE);
-    var accessToken = self.$route.params.accessToken;
     var refreshToken = self.$route.params.refreshToken;
-    if(accessToken && refreshToken){
-      self.$store.dispatch(constants.STORE_TOKENS, {
-            client,
-            refreshToken,
-            accessToken,
-            success() {
-                self.$router.replace({name: 'meals'});
-            },
-            failure() {
-                Toast.create(self.$t('failed'));
-            }
-        });
+    var accessToken = self.$route.params.accessToken;
+    if(refreshToken && accessToken){
+      self.finishLogin(refreshToken, accessToken);
     }
   },
   beforeDestroy () {

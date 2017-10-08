@@ -12,7 +12,13 @@ export default {
   },
   methods: {
   },
-  mounted () {
+  created () {
+    var self = this;
+    setInterval(function () {
+          if(!self.isLoggedIn){
+            self.$router.push({name: 'login'});
+          }
+      }, 1000); 
   },
   beforeDestroy () {
 

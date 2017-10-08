@@ -11,13 +11,13 @@
     </q-toolbar>
 
     <div slot="left">
-      <!--
-        Use <q-side-link> component
-        instead of <q-item> for
-        internal vue-router navigation
-      -->
-
-      <q-list no-border link inset-delimiter>
+      <q-list no-border link inset-delimiter v-if="!isLoggedIn">
+        <q-side-link item :to="{ name: 'login' }">  
+          <q-item-side icon="fa-key" />
+          <q-item-main :label="$t('login')" />
+        </q-side-link>
+      </q-list>
+      <q-list no-border link inset-delimiter v-if="isLoggedIn">
 
         <q-list-header>{{ $t('nutrition') }}</q-list-header>
         <q-side-link item :to="{ name: 'meals' }">  
@@ -67,7 +67,10 @@
 
 
         <q-list-header>{{ $t('profile') }}</q-list-header>
-
+        <q-item @click="logout">
+          <q-item-side icon="fa-key" />
+          <q-item-main :label="$t('logout')" />
+        </q-item>
         <q-list-header>Debug</q-list-header>
         <q-item v-if="profile">{{ profile.username }}</q-item>
         <q-item>{{ token }}</q-item>
@@ -122,13 +125,20 @@ export default {
               }
           },
           failure: function () {
-              //self.$router.push({name: 'login'});
+              self.$router.push({name: 'login'});
           }
       });
     },
     updateTitle(){
       var title = this.$route.meta.title;
       this.title = this.$t(title);
+    },
+    logout(){
+      var self = this;
+      self.$store.dispatch(constants.LOGOUT, {
+          success: function () { },
+          failure: function () { }
+      });
     }
   },
   created(){

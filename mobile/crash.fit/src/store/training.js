@@ -55,9 +55,21 @@ export default {
         // Workouts
         [constants.START_WORKOUT]({commit, state},{time, success, failure}){
             api.startWorkout(time).then(workout => {
+                commit(constants.START_WORKOUT_SUCCESS, { workout });
                 if (success) {
-                    commit(constants.START_WORKOUT_SUCCESS,{workout});
                     success(workout);
+                }
+            }).fail(() => {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.UPDATE_WORKOUT_TIME]({commit, state},{id, time, success, failure}){
+            api.updateWorkoutTime(id, time).then(() => {
+                commit(constants.UPDATE_WORKOUT_TIME + constants.SUCCESS, { id, time });
+                if (success) {
+                    success();
                 }
             }).fail(() => {
                 if (failure) {
@@ -295,6 +307,12 @@ export default {
         },
         [constants.START_WORKOUT_SUCCESS](state, { workout }){
             state.workouts.push(workout);
+        },
+        [constants.UPDATE_WORKOUT_TIME + constants.SUCCESS](state, {id, time }){
+            var workout = state.workouts.find(w => w.id == id);
+            if(workout){
+                workout.time = time;
+            }
         },
         [constants.FETCH_WORKOUTS_SUCCESS](state, { start, end, workouts }) {
             for (var i in workouts) {
