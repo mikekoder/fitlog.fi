@@ -1,8 +1,8 @@
 ﻿<template>
     <div>
-        <div class="bar-container" v-if="target.min || target.max" :title="title">
-            <div class="line min" :style="minStyle" :class="minClass" v-if="target.min"><div></div><div></div><div></div></div>
-            <div class="line max" :style="maxStyle" :class="maxClass" v-if="target.max"><div></div><div></div><div></div></div>
+        <div class="bar-container" v-if="goal.min || goal.max" :title="title">
+            <div class="line min" :style="minStyle" :class="minClass" v-if="goal.min"><div></div><div></div><div></div></div>
+            <div class="line max" :style="maxStyle" :class="maxClass" v-if="goal.max"><div></div><div></div><div></div></div>
             <div class="bar value" :style="valueStyle"></div>
             <div class="text">{{ decimal(value, precision) }}</div>
         </div>
@@ -21,17 +21,17 @@ export default {
     computed: {
         
         maxValue(){
-            return Math.max(this.target.min || 0, this.value || 0, this.target.max || 0) * 1.1;
+            return Math.max(this.goal.min || 0, this.value || 0, this.goal.max || 0) * 1.1;
         },/*
         color() {
             
             var diff = 0;
             if (this.value || this.value == 0) {
-                if (this.target.min && this.value < this.target.min) {
-                    diff = (this.target.min - this.value) / this.target.min;
+                if (this.goal.min && this.value < this.goal.min) {
+                    diff = (this.goal.min - this.value) / this.goal.min;
                 }
-                if (this.target.max && this.value > this.target.max) {
-                    diff = (this.value - this.target.max) / this.target.max;
+                if (this.goal.max && this.value > this.goal.max) {
+                    diff = (this.value - this.goal.max) / this.goal.max;
                 }
             }
             if (diff == 0) {
@@ -45,31 +45,31 @@ export default {
      */
         
         minLeft() {
-            return (this.target.min || 0) / this.maxValue * 100;
+            return (this.goal.min || 0) / this.maxValue * 100;
         },
         minStyle() {
             return 'left: ' + this.minLeft + '%;';
         },
         minClass() {
-            if (this.target.min && this.value < this.target.min) {
+            if (this.goal.min && this.value < this.goal.min) {
                 return 'bad';
             }
-            if (this.target.min && this.value > this.target.min) {
+            if (this.goal.min && this.value > this.goal.min) {
                 return 'good';
             }
             return '';
         },
         maxLeft() {
-            return (this.target.max || 0) / this.maxValue * 100;
+            return (this.goal.max || 0) / this.maxValue * 100;
         },
         maxStyle() {
             return 'left: ' + this.maxLeft + '%;';
         },
         maxClass() {
-            if (this.target.max && this.value > this.target.max) {
+            if (this.goal.max && this.value > this.goal.max) {
                 return 'bad';
             }
-            if (this.target.max && this.value < this.target.max) {
+            if (this.goal.max && this.value < this.goal.max) {
                 return 'good';
             }
             return '';
@@ -81,22 +81,22 @@ export default {
             return 'width: ' + this.valueLeft + '%; background-color: #ccc;';
         },
         title() {
-            if (this.target.min) {
-                if (this.target.max) {
-                    return this.target.min + ' - ' + this.target.max;
+            if (this.goal.min) {
+                if (this.goal.max) {
+                    return this.goal.min + ' - ' + this.goal.max;
                 }
                 else {
-                    return '> ' + this.target.min;
+                    return '> ' + this.goal.min;
                 }
             }
-            if (this.target.max) {
-                return '< ' + this.target.max;
+            if (this.goal.max) {
+                return '< ' + this.goal.max;
             }
             return '';
         }
     },
     props: {
-        target: undefined,
+        goal: undefined,
         value: undefined,
         precision: undefined
     },

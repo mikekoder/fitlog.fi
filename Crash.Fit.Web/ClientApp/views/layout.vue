@@ -54,7 +54,7 @@
             </transition>
         </div>
         <footer class="main-footer">
-            <strong>Copyright &copy; 2017 <a href="http://mikakolari.fi">Mika Kolari</a></strong>
+            <strong>&copy; <a href="http://mikakolari.fi">Mika Kolari</a></strong>
         </footer>
     </div>
 </template>

@@ -50,7 +50,6 @@ namespace Crash.Fit.Web.Controllers
         }
 
         [HttpPost("")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromBody]FeedbackRequest model)
         {
             if (!ModelState.IsValid)
@@ -66,7 +65,6 @@ namespace Crash.Fit.Web.Controllers
             return Ok(result);
         }
         [HttpPut("{id}")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(Guid id, [FromBody]FeedbackRequest model)
         {
             if (!ModelState.IsValid)

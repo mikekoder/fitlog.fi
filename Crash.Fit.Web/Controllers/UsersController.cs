@@ -215,8 +215,20 @@ namespace Crash.Fit.Web.Controllers
                     End = null
                 }
             };
-
             _nutritionRepository.SaveMealDefinitions(user.Id, mealDefinitions);
+
+            /*
+            var nutrients = _nutritionRepository.GetNutrients();
+            var nutrientSettings = nutrients.Select(n => new NutrientSetting
+            {
+                NutrientId = n.Id,
+                UserId = CurrentUserId,
+                HideDetails = n.DefaultHideDetails,
+                HideSummary = n.DefaultHideSummary,
+                Order = n.DefaultOrder ?? 0
+            });
+            _nutritionRepository.SaveNutrientSettings(user.Id, nutrientSettings);
+            */
         }
 
         [HttpPost("logout")]

@@ -125,6 +125,7 @@
     noWorkouts: 'Ei treenejä',
     nutrientCount: 'Ravintoarvoja',
     nutrients: 'Ravintoaineet',
+    nutrientsToShow: 'Näytettävät ravintoaineet',
     nutrition: 'Ravinto',
     nutritionGoals: 'Tavoitteet',
     nutritionGoalsInfo: '',
