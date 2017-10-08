@@ -10,8 +10,7 @@ export default
         profile: undefined
     },
     actions: {
-        [constants.STORE_TOKENS]({ commit, state }, { client, refreshToken, accessToken, success, failure }) {
-            storage.setItem('client', client);
+        [constants.STORE_TOKENS]({ commit, state }, { refreshToken, accessToken, success, failure }) {
             storage.setItem('refresh_token', refreshToken);
             storage.setItem('access_token', accessToken);
 
@@ -20,7 +19,6 @@ export default
             }
         },
         [constants.REFRESH_TOKEN]({ commit, state }, { success, failure }) {
-            //var client = storage.getItem('client');
             var refreshToken = storage.getItem('refresh_token');
             api.refreshToken(refreshToken).then(function (response) {
                 if(response.accessToken){
@@ -74,18 +72,12 @@ export default
             });
         },
         [constants.LOGOUT]({ commit, state }, { success, failure }) {
-            api.logout().then(function () {
-                storage.removeItem('refresh_token');
-                storage.removeItem('access_token');
-                commit(constants.LOGOUT_SUCCESS);
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
-            });
+            storage.removeItem('refresh_token');
+            storage.removeItem('access_token');
+            commit(constants.LOGOUT_SUCCESS);
+            if (success) {
+                success();
+            }
         },
         [constants.UPDATE_LOGIN]({ commit, state }, { login, success, failure }) {
             api.updateLogin(login).then(function () {

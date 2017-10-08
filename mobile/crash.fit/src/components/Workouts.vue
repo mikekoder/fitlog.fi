@@ -79,10 +79,9 @@ export default {
   },
   methods: {
     createWorkout(){
-      this.$store.dispatch(constants.START_WORKOUT, 
-      { 
+      this.$store.dispatch(constants.START_WORKOUT, { 
         time: this.selectedDate 
-        });
+      });
     },
     addSet(workout){
       workout.sets.push({ exerciseId: undefined, exerciseName: undefined, reps: undefined, weights: undefined });

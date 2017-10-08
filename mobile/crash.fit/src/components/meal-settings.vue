@@ -4,7 +4,7 @@
       <q-list>
           <q-item v-for="(id,index) in selectedNutrients" :key="index">
               <q-item-main>
-                <select v-model="selectedNutrients[i]">
+                <select v-model="selectedNutrients[index]">
                     <option v-bind:value="undefined"></option>
                     <template v-for="(group,index_g) in nutrientGroups">
                         <option disabled :key="index_g">{{ group.name }}</option>
