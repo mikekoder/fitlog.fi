@@ -30,13 +30,16 @@
                             <div class="box-body">
                                 <template v-if="!editNutrients">
                                     <div class="row">
+                                        <div class="col-xs-12"><button class="btn pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button></div>
+                                    </div>
+                                    <div class="row day-nutrients">
                                         <div class="col-xs-2" v-for="nutrient in visibleNutrients">
                                             <span class="hidden-md hidden-lg">{{ nutrient.shortName }}</span>
                                             <span class="hidden-xs hidden-sm">{{ nutrient.name }}</span>
                                         </div>
-                                        <button class="btn pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button>
+                                        
                                     </div>
-                                    <div class="row" v-if="meals.find(m => m.meal)">
+                                    <div class="row day-nutrients" v-if="meals.find(m => m.meal)">
                                         <div class="col-xs-2" v-for="nutrient in visibleNutrients">
                                             <div v-if="nutrient.id == energyDistributionId">
                                                 <chart-pie-energy v-bind:protein="nutrients[proteinId]" v-bind:carb="nutrients[carbId]" v-bind:fat="nutrients[fatId]"></chart-pie-energy>
@@ -47,7 +50,12 @@
                                 </template>
                                 <template v-else>
                                     <div class="row">
-                                        <div class="col-xs-2" v-for="(id,i) in selectedNutrients">
+                                        <div class="col-xs-12">
+                                            <h4>{{ $t('nutrientsToShow') }}</h4>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2" v-for="(id,i) in selectedNutrients">
                                             <select class="form-control" v-model="selectedNutrients[i]">
                                                 <option v-bind:value="undefined"></option>
                                                 <template v-for="group in nutrientGroups">
@@ -81,6 +89,8 @@
                             <div class="box-body" v-if="meal.meal">
                                 <div class="row meal-nutrients" v-if="meal.meal.nutrients">
                                     <div class="col-xs-2" v-for="nutrient in visibleNutrients">
+                                            <span class="hidden-md hidden-lg">{{ nutrient.shortName }}</span>
+                                            <span class="hidden-xs hidden-sm">{{ nutrient.name }}</span>
                                         <div v-if="nutrient.id == energyDistributionId">
                                             <chart-pie-energy v-bind:protein="meal.meal.nutrients[proteinId]" v-bind:carb="meal.meal.nutrients[carbId]" v-bind:fat="meal.meal.nutrients[fatId]"></chart-pie-energy>
                                         </div>
@@ -253,7 +263,7 @@ export default {
                 newDate = date;
             }
             if (!moment(newDate).isSame(this.selectedDate, 'd')) {
-                this.$store.dispatch(constants.SELECT_HOME_DATE, { date: newDate });
+                this.$store.dispatch(constants.SELECT_MEAL_DIARY_DATE, { date: newDate });
                 this.fetchMeals();
             }
         },
@@ -302,7 +312,7 @@ export default {
                 nutrients: self.selectedNutrients
             };
             
-            this.$store.dispatch(constants.SAVE_HOME_SETTINGS, {
+            this.$store.dispatch(constants.SAVE_MEAL_DIARY_SETTINGS, {
                 settings,
                 success() {},
                 failure() { }
@@ -346,7 +356,7 @@ export default {
 </script>
 
 <style scoped>
-    .meal-nutrients{font-weight: bold; }
+    .day-nutrients, .meal-nutrients{font-weight: bold; }
     table.nutrition{width: auto;}
     table.nutrition td{ width: 50px;}
     div.food{ padding-top:5px;}
