@@ -105,7 +105,7 @@ namespace Crash.Fit.Web.Controllers
         [HttpPut("goals")]
         public IActionResult UpdateGoals([FromBody] NutritionGoalsRequest[] request)
         {
-            var goals = new List<NutrientGoal>();
+            var goals = new List<NutritionGoal>();
             foreach(var goalDay in request)
             {
                 var days = Days.None;
@@ -149,7 +149,7 @@ namespace Crash.Fit.Web.Controllers
                 {
                     if (nutrientValue.Min.HasValue || nutrientValue.Max.HasValue)
                     {
-                        goals.Add(new NutrientGoal
+                        goals.Add(new NutritionGoal
                         {
                             UserId = CurrentUserId,
                             NutrientId = nutrientValue.NutrientId,
