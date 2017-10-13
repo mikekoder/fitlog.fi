@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Crash.Fit.Logging;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Crash.Fit.Web.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ApiControllerBase : Controller
     {
         protected Guid CurrentUserId
