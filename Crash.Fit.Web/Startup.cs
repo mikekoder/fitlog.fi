@@ -26,6 +26,10 @@ using Crash.Fit.Api.Models.Profile;
 using Crash.Fit.Api.Models.Measurements;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Crash.Fit.Web
 {
@@ -46,13 +50,63 @@ namespace Crash.Fit.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(o => 
+            {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddFacebook(o =>
+            {
+                o.AppId = Configuration["Authentication:Facebook:AppId"];
+                o.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            }).AddGoogle(o =>
+            {
+                o.ClientId = Configuration["Authentication:Google:ClientId"];
+                o.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            }).AddJwtBearer(o => 
+            {
+                /*
+                  app.UseJwtBearerAuthentication(new JwtBearerOptions
+                {
+                    AutomaticAuthenticate = true,
+                    AutomaticChallenge = true,
+                    TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("Authentication:Jwt:Key").Value)),
+                        ValidAudience = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value,
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        ValidIssuer = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value
+                    }
+                });
+            */
+                o.Audience = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value;
+                //o.Authority = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value;
+                o.ClaimsIssuer = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value;
+                o.RequireHttpsMetadata = false;
+                o.IncludeErrorDetails = true;
+                o.SaveToken = true;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    //ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("Authentication:Jwt:Key").Value)),
+
+                    //ValidateIssuer = true,
+                    ValidIssuer = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value,
+
+                    //ValidateAudience = true,
+                    ValidAudience = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value,
+                    
+                    //ValidateLifetime = true,
+                    //ClockSkew = TimeSpan.FromMinutes(1)
+                };
+            });
             services.AddDbContext<UserContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("Crash.Fit"));
             });
 
             services.AddIdentity<User, Role>()
-                .AddEntityFrameworkStores<UserContext, Guid>()
+                .AddEntityFrameworkStores<UserContext>()
                 .AddDefaultTokenProviders();
             services.Configure<IdentityOptions>(options =>
             {
@@ -62,7 +116,7 @@ namespace Crash.Fit.Web
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
-                options.Cookies.ApplicationCookie.CookieHttpOnly = false;
+                //options.Cookies.ApplicationCookie.CookieHttpOnly = false;
             });
 
             services.AddCors();
@@ -99,24 +153,32 @@ namespace Crash.Fit.Web
             AutoMapper.Mapper.Initialize(m => {
 
                 // Nutrients
-                m.CreateMap<Nutrient, NutrientResponse>().AfterMap((source, target) =>
+                m.CreateMap<Nutrient, NutrientResponse>().AfterMap((model, response) =>
                 {
-                    target.HideSummary = source.DefaultHideSummary;
-                    target.HideDetails = source.DefaultHideDetails;
+                    response.HideSummary = model.DefaultHideSummary;
+                    response.HideDetails = model.DefaultHideDetails;
                 });
-                m.CreateMap<UserNutrient, NutrientResponse>().AfterMap((source, target) => 
+                m.CreateMap<UserNutrient, NutrientResponse>().AfterMap((model, response) => 
                 {
-                    target.HideSummary = source.UserHideSummary ?? source.DefaultHideSummary;
-                    target.HideDetails = source.UserHideDetails ?? source.DefaultHideDetails;
+                    response.HideSummary = model.UserHideSummary ?? model.DefaultHideSummary;
+                    response.HideDetails = model.UserHideDetails ?? model.DefaultHideDetails;
                 });
-                m.CreateMap<NutrientSettingRequest, NutrientSetting>().AfterMap((source, target) => 
+                m.CreateMap<NutrientSettingRequest, NutrientSetting>().AfterMap((request, model) => 
                 {
-                    target.HideDetails = source.UserHideDetails;
-                    target.HideSummary = source.UserHideSummary;
+                    model.HideDetails = request.UserHideDetails;
+                    model.HideSummary = request.UserHideSummary;
                 });
                 m.CreateMap<IEnumerable<NutrientAmount>, Dictionary<Guid, decimal>>().ConvertUsing(na => na.ToDictionary(n => n.NutrientId, n => n.Amount));
                 m.CreateMap<NutrientAmount, NutrientAmountModel>();
                 m.CreateMap<NutrientAmountModel, NutrientAmount>();
+
+                m.CreateMap<NutritionGoalDetails, NutritionGoalResponse>();
+                m.CreateMap<NutritionGoalPeriod, NutritionGoalPeriodResponse>();
+                m.CreateMap<NutritionGoalValue, NutritionGoalPeriodResponse.NutrientValue>();
+
+                m.CreateMap<NutritionGoalRequest, NutritionGoalDetails>();
+                m.CreateMap<NutritionGoalPeriodRequest, NutritionGoalPeriod>();
+                m.CreateMap<NutritionGoalPeriodRequest.NutrientValue, NutritionGoalValue>();
                 // Foods
                 m.CreateMap<FoodSearchResult, FoodSearchResultResponse>();
                 m.CreateMap<FoodSummary, FoodSummaryResponse>();
@@ -149,17 +211,17 @@ namespace Crash.Fit.Web
                 m.CreateMap<MealRowModel, MealRow>();
 
                 // Meal rhythm
-                m.CreateMap<MealDefinition, MealDefinitionResponse>().AfterMap((source, target) => 
+                m.CreateMap<MealDefinition, MealDefinitionResponse>().AfterMap((model, response) => 
                 {
-                    if (source.Start.HasValue)
+                    if (model.Start.HasValue)
                     {
-                        target.StartHour = source.Start.Value.Hours;
-                        target.StartMinute = source.Start.Value.Minutes;
+                        response.StartHour = model.Start.Value.Hours;
+                        response.StartMinute = model.Start.Value.Minutes;
                     }
-                    if (source.End.HasValue)
+                    if (model.End.HasValue)
                     {
-                        target.EndHour = source.End.Value.Hours;
-                        target.EndMinute = source.End.Value.Minutes;
+                        response.EndHour = model.End.Value.Hours;
+                        response.EndMinute = model.End.Value.Minutes;
                     }
                 });
                 // Recipes
@@ -177,9 +239,9 @@ namespace Crash.Fit.Web
                 m.CreateMap<WorkoutSummary, WorkoutSummaryResponse>();
                 m.CreateMap<WorkoutDetails, WorkoutDetailsResponse>();
                 m.CreateMap<WorkoutSet, WorkoutSetResponse>();
-                m.CreateMap<WorkoutRequest, WorkoutDetails>().AfterMap((source, target) => 
+                m.CreateMap<WorkoutRequest, WorkoutDetails>().AfterMap((request, model) => 
                 {
-                    target.Time = DateTimeUtils.ToLocal(target.Time);
+                    model.Time = DateTimeUtils.ToLocal(model.Time);
                 });
                 m.CreateMap<WorkoutSetRequest, WorkoutSet>();
 
@@ -200,6 +262,12 @@ namespace Crash.Fit.Web
 
                 // MuscleGroups
                 m.CreateMap<MuscleGroup, MuscleGroupResponse>();
+
+                // Training goals
+                m.CreateMap<TrainingGoalDetails, TrainingGoalResponse>();
+                m.CreateMap<TrainingGoalExercise, TrainingGoalExerciseResponse>();
+                m.CreateMap<TrainingGoalRequest, TrainingGoalDetails>();
+                m.CreateMap<TrainingGoalExerciseRequest, TrainingGoalExercise>();
 
                 // Measurements
                 m.CreateMap<MeasureSummary, MeasureSummaryResponse>();
@@ -238,30 +306,9 @@ namespace Crash.Fit.Web
             app.UseStaticFiles();
 
             app.UseCors(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            app.UseIdentity();
-            app.UseGoogleAuthentication(new GoogleOptions()
-            {
-                ClientId = Configuration["Authentication:Google:ClientId"],
-                ClientSecret = Configuration["Authentication:Google:ClientSecret"]
-            });
-            app.UseFacebookAuthentication(new FacebookOptions()
-            {
-                AppId = Configuration["Authentication:Facebook:AppId"],
-                AppSecret = Configuration["Authentication:Facebook:AppSecret"]
-            });
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
-            {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-                TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("Authentication:Jwt:Key").Value)),
-                    ValidAudience = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    ValidIssuer = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value
-                }
-            });
+
+            app.UseAuthentication();
+
             app.Use(async (context, next) =>
             {
                 context.Request.EnableRewind();
