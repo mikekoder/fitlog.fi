@@ -60,11 +60,8 @@ namespace Crash.Fit.Web.Controllers
             AutoMapper.Mapper.Map(request, meal);
             AdjustTime(meal);
             CalculateNutrients(meal);
-            if(!nutritionRepository.UpdateMeal(meal))
-            {
-                return BadRequest();
-            }
-           
+            nutritionRepository.UpdateMeal(meal);
+
             var result = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
             return Ok(result);
         }
@@ -128,7 +125,7 @@ namespace Crash.Fit.Web.Controllers
                     */
                 });
             }
-            nutritionRepository.SaveMealDefinitions(CurrentUserId, definitions);
+            nutritionRepository.SaveMealDefinitions(definitions);
             return GetDefinitions();
         }
         [HttpPost("rows")]

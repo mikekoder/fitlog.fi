@@ -26,7 +26,12 @@ export default {
         workouts: [],
         workoutDays: {},
         workoutsDisplayStart: null,
-        workoutsDisplayEnd: null
+        workoutsDisplayEnd: null,
+
+        activeTrainingGoalLoaded: false,
+        activeTrainingGoal: {},
+        trainingGoalsLoaded: false,
+        trainingGoals: {}
     },
     actions: {
         // Diary
@@ -256,6 +261,90 @@ export default {
                     failure();
                 }
             });
+        },
+        // Training goals
+        [constants.FETCH_TRAINING_GOALS]({ commit, state }, { forceRefresh, success, failure }) {
+            if (state.trainingGoalsLoaded && !forceRefresh) {
+                if (success) {
+                    success(state.trainingGoals);
+                }
+                return;
+            }
+            api.getTrainingGoals().then(function (goals) {
+                commit(constants.FETCH_TRAINING_GOALS_SUCCESS, { goals })
+                if (success) {
+                    success(goals);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.FETCH_TRAINING_GOAL]({ commit, state }, { id, success, failure }) {
+            api.getTrainingGoal(id).then(function (goal) {
+                if (success) {
+                    success(goal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.FETCH_ACTIVE_TRAINING_GOAL]({ commit, state }, { forceRefresh, success, failure }) {
+            if (state.trainingGoalLoaded && !forceRefresh) {
+                if (success) {
+                    success(state.trainingGoal);
+                }
+                return;
+            }
+            api.getActiveTrainingGoal().then(function (goal) {
+                commit(constants.FETCH_ACTIVE_TRAINING_GOAL_SUCCESS, { goal })
+                if (success) {
+                    success(goal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.SAVE_TRAINING_GOAL]({ commit, state }, { goal, success, failure }) {
+            api.saveTrainingGoal(goal).then(function (savedGoal) {
+                commit(constants.FETCH_TRAINING_GOAL_SUCCESS, { goal: savedGoal })
+                if (success) {
+                    success(savedGoal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.ACTIVATE_TRAINING_GOAL]({ commit, state }, { goal, success, failure }) {
+            api.activateTrainingGoal(goal.id).then(function () {
+                commit(constants.ACTIVATE_TRAINING_GOAL_SUCCESS, { goal })
+                if (success) {
+                    success(savedGoal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.DELETE_TRAINING_GOAL]({ commit, state }, { goal, success, failure }) {
+            api.deleteTrainingGoal(goal.id).then(function () {
+                commit(constants.DELETE_TRAINING_GOAL_SUCCESS, { goal })
+                if (success) {
+                    success();
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
         }
     },
 
@@ -302,7 +391,7 @@ export default {
             if (id) {
                 var old = state.exercises.find(x => x.id == id);
                 if (old) {
-                    removeExercise(old, state);
+                    deleteExercise(old, state);
                 }
             }
             state.exercises.push(exercise);
@@ -311,7 +400,7 @@ export default {
             if (id) {
                 var old = state.routines.find(x => x.id == id);
                 if (old) {
-                    removeRoutine(old, state);
+                    deleteRoutine(old, state);
                 }
             }
             state.routines.push(routine);
@@ -320,7 +409,7 @@ export default {
             if (id) {
                 var old = state.workouts.find(x => x.id == id);
                 if (old) {
-                    removeWorkout(old, state)
+                    deleteWorkout(old, state)
                 }
             }
             workout.muscleGroupSets = {};
@@ -343,10 +432,10 @@ export default {
             state.workouts.push(workout);
         },
         [constants.DELETE_EXERCISE_SUCCESS](state, { exercise }) {
-            removeExercise(exercise, state)
+            deleteExercise(exercise, state)
         },
         [constants.DELETE_ROUTINE_SUCCESS](state, { routine }) {
-            removeRoutine(routine, state)
+            deleteRoutine(routine, state)
         },
         [constants.ACTIVATE_ROUTINE_SUCCESS](state, { routine }) {
             state.routines.forEach(r => {
@@ -361,19 +450,42 @@ export default {
             });
         },
         [constants.DELETE_WORKOUT_SUCCESS](state, { workout }) {
-            removeWorkout(workout, state)
+            deleteWorkout(workout, state)
+        },
+        [constants.FETCH_TRAINING_GOALS_SUCCESS](state, { goals }) {
+            state.trainingGoals = goals;
+            state.trainingGoalsLoaded = true;
+        },
+        [constants.FETCH_ACTIVE_TRAINING_GOAL_SUCCESS](state, { goal }) {
+            state.activeTrainingGoal = goal;
+            state.activeTrainingGoalLoaded = true;
+        },
+        [constants.ACTIVATE_TRAINING_GOAL_SUCCESS](state, { goal }) {
+            state.trainingGoals.forEach(g => {
+                if (g.id === goal.id) {
+                    g.active = true;
+                    state.activeTrainingGoal = g;
+                    state.activeTrainingGoalLoaded = true;
+                }
+                else {
+                    g.active = false;
+                }
+            });
+        },
+        [constants.DELETE_TRAINING_GOAL_SUCCESS](state, { goal }) {
+            deleteTrainingGoal(goal, state)
         },
         [constants.LOGOUT_SUCCESS](state) {
             // TODO: clear state
         }
     }
 }
-function removeExercise(exercise, state){
+function deleteExercise(exercise, state){
     state.exercises.splice(state.exercises.findIndex(x => x.id == exercise.id), 1);
 }
-function removeRoutine(routine, state){
+function deleteRoutine(routine, state){
     state.routines.splice(state.routines.findIndex(x => x.id == routine.id), 1);
 }
-function removeWorkout(workout, state){
+function deleteWorkout(workout, state){
     state.workouts.splice(state.workouts.findIndex(x => x.id == workout.id), 1);
 }

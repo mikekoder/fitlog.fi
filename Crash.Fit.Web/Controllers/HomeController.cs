@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Crash.Fit.Nutrition;
 using Crash.Fit.Api.Models.Home;
 using Crash.Fit.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -16,6 +17,7 @@ namespace Crash.Fit.Web.Controllers
         public HomeController(ILogRepository logger):base(logger)
         {
         }
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();

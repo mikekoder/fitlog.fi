@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Crash.Fit.Nutrition
+namespace Crash.Fit.Training
 {
-    public class NutritionGoal : Entity
+    public class TrainingGoal : Entity
     {
         public Guid UserId { get; set; }
         public string Name { get; set; }
         public bool Active { get; set; }
     }
-    public class NutritionGoalDetails : NutritionGoal
+    public class TrainingGoalDetails : TrainingGoal
     {
-        public NutritionGoalPeriod[] Periods { get; set; }
+        public TrainingGoalExercise[] Exercises { get; set; }
     }
 }

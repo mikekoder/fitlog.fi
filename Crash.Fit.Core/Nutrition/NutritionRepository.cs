@@ -22,17 +22,14 @@ namespace Crash.Fit.Nutrition
                 return conn.Query<Nutrient>(sql);
             }
         }
-        public IEnumerable<UserNutrient> GetUserNutrients(Guid userId)
+        public IEnumerable<NutrientSetting> GetNutrientSettings(Guid userId)
         {
-            var sql = @"SELECT Nutrient.*, NS.[Order] AS UserOrder, NS.HideSummary AS UserHideSummary, NS.HideDetails AS UserHideDetails, NS.HomeOrder FROM Nutrient
-LEFT JOIN NutrientSettings NS ON NS.NutrientId = Nutrient.Id AND NS.UserId=@userId
-WHERE Nutrient.DELETED IS NULL";
             using (var conn = CreateConnection())
             {
-                return conn.Query<UserNutrient>(sql, new { userId });
+                return conn.Query<NutrientSetting>("SELECT * FROM NutrientSetting WHERE UserId=@userId", new { userId });
             }
         }
-        public bool CreateNutrient(Nutrient nutrient)
+        public void CreateNutrient(Nutrient nutrient)
         {
             nutrient.Id = Guid.NewGuid();
             using (var conn = CreateConnection())
@@ -42,16 +39,14 @@ WHERE Nutrient.DELETED IS NULL";
                 {
                     conn.Execute("INSERT INTO Nutrient(Id,Name,ShortName,Unit,FineliId,FineliClass,FineliGroup,DefaultOrder,DefaultHideSummary,DefaultHideDetails) VALUES(@Id,@Name,@ShortName,@Unit,@FineliId,@FineliClass,@FineliGroup,@DefaultOrder,@DefaultHideSummary,@DefaultHideDetails)", nutrient, tran);
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
-                    nutrient.Id = Guid.Empty;
                     throw;
                 }
             }
         }
-        public bool UpdateNutrient(Nutrient nutrient)
+        public void UpdateNutrient(Nutrient nutrient)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -60,7 +55,6 @@ WHERE Nutrient.DELETED IS NULL";
                 {
                     conn.Execute("UPDATE Nutrient SET Name=@Name, ShortName=@ShortName, Unit=@Unit, FineliId=@FineliId, FineliClass=@FineliClass, FineliGroup=@FineliGroup, DefaultOrder=@DefaultOrder,DefaultHideSummary=@DefaultHideSummary,DefaultHideDetails=@DefaultHideDetails WHERE Id=@Id", nutrient, tran);
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
@@ -180,7 +174,7 @@ GROUP BY R.FoodId;";
                 return foods;
             }
         }
-        public bool CreateFood(FoodDetails food)
+        public void CreateFood(FoodDetails food)
         {
             food.Id = Guid.NewGuid();
             food.Created = DateTimeOffset.Now;
@@ -213,17 +207,15 @@ GROUP BY R.FoodId;";
                         }), tran);
                     }
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
-                    food.Id = Guid.Empty;
                     tran.Rollback();
                     throw;
                 }
             }
         }
-        public bool UpdateFood(FoodDetails food)
+        public void UpdateFood(FoodDetails food)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -264,7 +256,6 @@ GROUP BY R.FoodId;";
                         }), tran);
                     }
                     tran.Commit();
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -273,7 +264,7 @@ GROUP BY R.FoodId;";
                 }
             }
         }
-        public bool DeleteFood(Food food)
+        public void DeleteFood(Food food)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -282,7 +273,6 @@ GROUP BY R.FoodId;";
                 {
                     conn.Execute("UPDATE Food SET Deleted=@Deleted WHERE Id=@Id", new { Id = food.Id, Deleted = DateTimeOffset.Now }, tran);
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
@@ -291,7 +281,7 @@ GROUP BY R.FoodId;";
                 }
             }
         }
-        public bool RestoreFood(Guid id, out FoodDetails food)
+        public void RestoreFood(Guid id, out FoodDetails food)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -301,7 +291,6 @@ GROUP BY R.FoodId;";
                     conn.Execute("UPDATE Food SET Deleted=NULL WHERE Id=@Id", new { Id = id }, tran);
                     tran.Commit();
                     food = GetFood(id);
-                    return true;
                 }
                 catch
                 {
@@ -321,7 +310,7 @@ SELECT MR.*, F.Name AS FoodName, FP.Name AS PortionName FROM MealRow MR
     JOIN Food F ON F.Id=MR.FoodId 
     LEFT JOIN FoodPortion FP ON FP.Id=MR.PortionId
     WHERE MR.MealId=@id ORDER BY [Index];
-SELECT * FROM MealRowNutrient WHERE MealId=@id";
+SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE MealId=@id);";
             var parameters = new { id };
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, parameters))
@@ -350,7 +339,7 @@ SELECT MR.*, F.Name AS FoodName, FP.Name AS PortionName FROM MealRow MR
     JOIN Food F ON F.Id=MR.FoodId 
     LEFT JOIN FoodPortion FP ON FP.Id=MR.PortionId
     WHERE MR.MealId IN(SELECT Id FROM Meal WHERE {filter}) ORDER BY [Index];
-SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter})";
+SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE MealId IN (SELECT Id FROM Meal WHERE {filter}))";
             var parameters = new { userId, start, end };
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, parameters))
@@ -371,7 +360,7 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
                 return meals;
             }
         }
-        public bool CreateMeal(MealDetails meal)
+        public void CreateMeal(MealDetails meal)
         {
             meal.Id = Guid.NewGuid();
             foreach(var row in meal.Rows)
@@ -384,7 +373,7 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Meal(Id,UserId,Time,DefinitionId) VALUES(@Id,@UserId,@Time,@DefinitionId)", meal, tran);
+                    conn.Execute("INSERT INTO Meal(Id,UserId,Time,DefinitionId,Created) VALUES(@Id,@UserId,@Time,@DefinitionId,@Created)", meal, tran);
                     conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
                         meal.Nutrients.Select(n => new { MealId = meal.Id, n.NutrientId, n.Amount }), tran);
                     conn.Execute("INSERT INTO MealRow(Id,MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@Id,@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select((r, i) => new
@@ -396,30 +385,22 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
                         r.Quantity,
                         r.PortionId,
                         r.Weight }), tran);
-                    conn.Execute("INSERT INTO MealRowNutrient(MealId,RowId,NutrientId,Amount) VALUES(@MealId,@RowId,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
+                    conn.Execute("INSERT INTO MealRowNutrient(MealRowId,NutrientId,Amount) VALUES(@Id,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
                     {
-                        r.MealId,
-                        RowId = r.Id,
+                        r.Id,
                         n.NutrientId,
                         n.Amount
                     })), tran);
                     tran.Commit();
-                    return true;
                 }
                 catch (Exception ex)
                 {
-                    meal.Id = Guid.Empty;
-                    foreach (var row in meal.Rows)
-                    {
-                        row.Id = Guid.Empty;
-                        row.MealId = Guid.Empty;
-                    }
                     tran.Rollback();
                     throw;
                 }
             }
         }
-        public bool UpdateMeal(MealDetails meal)
+        public void UpdateMeal(MealDetails meal)
         {
             foreach(var row in meal.Rows.Where(r => r.Id == Guid.Empty))
             {
@@ -430,9 +411,9 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
             {
                 try
                 {
-                    conn.Execute("DELETE FROM MealNutrient WHERE MealId=@Id", new { Id = meal.Id }, tran);
-                    conn.Execute("DELETE FROM MealRow WHERE MealId=@Id", new { Id = meal.Id }, tran);
-                    conn.Execute("DELETE FROM MealRowNutrient WHERE MealId=@Id", new { Id = meal.Id }, tran);
+                    conn.Execute("DELETE FROM MealNutrient WHERE MealId=@Id", new { meal.Id }, tran);
+                    conn.Execute("DELETE FROM MealRow WHERE MealId=@Id", new { meal.Id }, tran);
+                    conn.Execute("DELETE FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE MealId=@Id)", new { meal.Id }, tran);
 
                     conn.Execute("UPDATE Meal SET Time=@Time,DefinitionId=@DefinitionId WHERE Id=@Id", meal, tran);
                     conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
@@ -446,29 +427,22 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
                         r.Quantity,
                         r.PortionId,
                         r.Weight }), tran);
-                    conn.Execute("INSERT INTO MealRowNutrient(MealId,RowId,NutrientId,Amount) VALUES(@MealId,@RowId,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
+                    conn.Execute("INSERT INTO MealRowNutrient(MealRowId,NutrientId,Amount) VALUES(@Id,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
                     {
-                        MealId = meal.Id,
-                        RowId = r.Id,
+                        r.Id,
                         n.NutrientId,
                         n.Amount
                     })), tran);
                     tran.Commit();
-
-                    return true;
                 }
                 catch (Exception ex)
                 {
                     tran.Rollback();
-                    foreach (var row in meal.Rows)
-                    {
-                        row.Id = Guid.Empty;
-                    }
                     throw;
                 }
             }
         }
-        public bool DeleteMeal(Meal meal)
+        public void DeleteMeal(Meal meal)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -477,7 +451,6 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
                 {
                     conn.Execute("UPDATE Meal SET Deleted=@Deleted WHERE Id=@Id", new { Id = meal.Id, Deleted = DateTimeOffset.Now }, tran);
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
@@ -486,7 +459,7 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
                 }
             }
         }
-        public bool RestoreMeal(Guid id, out MealDetails meal)
+        public void RestoreMeal(Guid id, out MealDetails meal)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -496,7 +469,6 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
                     conn.Execute("UPDATE Meal SET Deleted=NULL WHERE Id=@Id", new { Id = id }, tran);
                     tran.Commit();
                     meal = GetMeal(id);
-                    return true;
                 }
                 catch
                 {
@@ -506,7 +478,7 @@ SELECT * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter}
                 }
             }
         }
-        public bool SaveNutrientSettings(Guid userId, IEnumerable<NutrientSetting> settings)
+        public void SaveNutrientSettings(IEnumerable<NutrientSetting> settings)
         {
             var sql = @"MERGE INTO NutrientSettings
 USING(select @NutrientId AS NutrientId, @UserId AS UserId) AS Source
@@ -523,7 +495,6 @@ WHEN NOT MATCHED THEN
                     conn.Execute(sql, settings, tran);
 
                     tran.Commit();
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -564,25 +535,84 @@ WHEN NOT MATCHED THEN
                 }
             }
         }
-        public IEnumerable<NutritionGoal> GetNutritionGoals(Guid userId)
+        public IEnumerable<NutritionGoalDetails> GetNutritionGoals(Guid userId)
         {
-            var sql = @"SELECT * FROM NutrientTargets WHERE UserId=@userId";
+            return GetNutritionGoals("UserId=@userId AND Deleted IS NULL", new { userId });
+        }
+        public NutritionGoalDetails GetNutritionGoal(Guid id)
+        {
+            return GetNutritionGoals("Id=@id", new { id }).FirstOrDefault();
+        }
+        private IEnumerable<NutritionGoalDetails> GetNutritionGoals(string filter, object parameters)
+        {
+            var sql = $@"
+SELECT * FROM NutritionGoal WHERE {filter};
+SELECT * FROM NutritionGoalPeriod WHERE NutritionGoalId IN (SELECT Id FROM NutritionGoal WHERE {filter}) ORDER By [Index];
+SELECT * FROM NutritionGoalMeal WHERE NutritionGoalPeriodId IN (SELECT Id FROM NutritionGoalPeriod WHERE NutritionGoalId IN (SELECT Id FROM NutritionGoal WHERE {filter}));
+SELECT * FROM NutritionGoalValue WHERE NutritionGoalPeriodId IN (SELECT Id FROM NutritionGoalPeriod WHERE NutritionGoalId IN (SELECT Id FROM NutritionGoal WHERE {filter}))";
+
             using (var conn = CreateConnection())
+            using (var multi = conn.QueryMultiple(sql, parameters))
             {
-                return conn.Query<NutritionGoal>(sql, new { userId }).ToList();
+                var goals = multi.Read<NutritionGoalDetails>().ToList();
+                var periods = multi.Read<NutritionGoalPeriodRaw>().ToList();
+                var meals = multi.Read<NutritionGoalMealRaw>().ToList();
+                var nutrients = multi.Read<NutritionGoalValueRaw>().ToList();
+                foreach (var goal in goals)
+                {
+                    goal.Periods = periods.Where(p => p.NutritionGoalId == goal.Id).ToArray();
+                    foreach (var period in goal.Periods)
+                    {
+                        period.MealDefinitions = meals.Where(m => m.NutritionGoalPeriodId == period.Id).Select(m => m.MealDefinitionId).ToArray();
+                        period.Nutrients = nutrients.Where(n => n.NutritionGoalPeriodId == period.Id).ToArray();
+                    }
+                }
+                return goals;
             }
         }
-        public bool SaveNutritionGoals(Guid userId, IEnumerable<NutritionGoal> goals)
+        public void CreateNutritionGoal(NutritionGoalDetails goal)
         {
+            goal.Id = Guid.NewGuid();
+            foreach(var period in goal.Periods)
+            {
+                period.Id = Guid.NewGuid();
+            }
+
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
                 try
                 {
-                    conn.Execute(@"DELETE FROM NutritionGoals WHERE UserId=@userId", new { userId }, tran);
-                    conn.Execute(@"INSERT NutritionGoals(UserId,NutrientId,Days,Min,Max) VALUES(@UserId,@NutrientId,@Days,@Min,@Max)", goals, tran);
+                    conn.Execute("INSERT INTO NutritionGoal(Id,UserId,Name,Created) VALUES(@Id,@UserId,@Name,@Created)", goal, tran);
+                    conn.Execute("INSERT NutritionGoalPeriod(Id,NutritionGoalId,[Index],Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,ExerciseDay,RestDay,WholeDay) VALUES (@Id,@NutritionGoalId,@index,@Monday,@Tuesday,@Wednesday,@Thursday,@Friday,@Saturday,@Sunday,@ExerciseDay,@RestDay,@WholeDay)", goal.Periods.Select((p,index) => new
+                    {
+                        p.Id,
+                        NutritionGoalId = goal.Id,
+                        index,
+                        p.Monday,
+                        p.Tuesday,
+                        p.Wednesday,
+                        p.Thursday,
+                        p.Friday,
+                        p.Saturday,
+                        p.Sunday,
+                        p.ExerciseDay,
+                        p.RestDay,
+                        p.WholeDay
+                    }), tran);
+                    conn.Execute("INSERT INTO NutritionGoalMeal(NutritionGoalPerionId,MealDefitionId) VALUES(@Id,MealDefitionId)", goal.Periods.SelectMany(p => p.MealDefinitions.Select(m => new
+                    {
+                        p.Id,
+                        MealDefinitionId = m
+                    })), tran);
+                    conn.Execute("INSERT INTO NutritionGoalValue(NutritionGoalPeriodId,NutrientId, Min,Max) VALUES(@Id,@NutrientId,@Min,@Max)", goal.Periods.SelectMany(p => p.Nutrients.Select(n => new
+                    {
+                        p.Id,
+                        n.NutrientId,
+                        n.Min,
+                        n.Max
+                    })), tran);
                     tran.Commit();
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -591,7 +621,97 @@ WHEN NOT MATCHED THEN
                 }
             }
         }
-        public void SaveMealDefinitions(Guid userId, IEnumerable<MealDefinition> definitions)
+        public void UpdateNutritionGoal(NutritionGoalDetails goal)
+        {
+            foreach (var period in goal.Periods.Where(p => p.Id == Guid.Empty))
+            {
+                period.Id = Guid.NewGuid();
+            }
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    var periodFilter = "SELECT Id FROM NutritionGoalPeriod WHERE NutritionGoalId=@Id";
+                    conn.Execute($"DELETE FROM NutritionGoalValue WHERE NutritionGoalPeriodId IN ({periodFilter})", new { goal.Id }, tran);
+                    conn.Execute($"DELETE FROM NutritionGoalMeal WHERE NutritionGoalPeriodId IN ({periodFilter})", new { goal.Id }, tran);
+                    conn.Execute("DELETE FROM NutritionGoalPeriod WHERE NutritionGoalId=@Id", new { goal.Id }, tran);
+
+                    conn.Execute("UPDATE NutritionGoal SET Name=@Name WHERE Id=@Id", goal, tran);
+                    conn.Execute("INSERT NutritionGoalPeriod(Id,NutritionGoalId,[Index],Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,ExerciseDay,RestDay,WholeDay) VALUES (@Id,@NutritionGoalId,@index,@Monday,@Tuesday,@Wednesday,@Thursday,@Friday,@Saturday,@Sunday,@ExerciseDay,@RestDay,@WholeDay)", goal.Periods.Select((p, index) => new
+                    {
+                        p.Id,
+                        NutritionGoalId = goal.Id,
+                        index,
+                        p.Monday,
+                        p.Tuesday,
+                        p.Wednesday,
+                        p.Thursday,
+                        p.Friday,
+                        p.Saturday,
+                        p.Sunday,
+                        p.ExerciseDay,
+                        p.RestDay,
+                        p.WholeDay
+                    }), tran);
+                    conn.Execute("INSERT INTO NutritionGoalMeal(NutritionGoalPerionId,MealDefitionId) VALUES(@Id,MealDefitionId)", goal.Periods.SelectMany(p => p.MealDefinitions.Select(m => new
+                    {
+                        p.Id,
+                        MealDefinitionId = m
+                    })), tran);
+                    conn.Execute("INSERT INTO NutritionGoalValue(NutritionGoalPeriodId,NutrientId, Min,Max) VALUES(@Id,@NutrientId,@Min,@Max)", goal.Periods.SelectMany(p => p.Nutrients.Select(n => new
+                    {
+                        p.Id,
+                        n.NutrientId,
+                        n.Min,
+                        n.Max
+                    })), tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+
+        }
+        public void ActivateNutritionGoal(NutritionGoal goal)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE NutritionGoal SET Active=0 WHERE UserId=@UserId", new { goal.UserId }, tran);
+                    conn.Execute("UPDATE NutritionGoal SET Active=1 WHERE Id=@Id", new {  goal.Id }, tran);
+                    tran.Commit();
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+        public void DeleteNutritionGoal(NutritionGoal goal)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE NutritionGoal SET Deleted=@Deleted WHERE Id=@Id", new { goal.Id, Deleted = DateTimeOffset.Now }, tran);
+                    tran.Commit();
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+        public void SaveMealDefinitions(IEnumerable<MealDefinition> definitions)
         {
             foreach (var definition in definitions)
             {
@@ -613,7 +733,7 @@ WHEN NOT MATCHED THEN
             {
                 try
                 {
-                    conn.Execute(@"DELETE FROM MealDefinition WHERE UserId=@userId AND Id NOT IN @ids", new {userId, ids = definitions.Select(d => d.Id) }, tran);
+                    conn.Execute(@"DELETE FROM MealDefinition WHERE UserId IN @userIds AND Id NOT IN @ids", new {userIds = definitions.Select(d => d.UserId), ids = definitions.Select(d => d.Id) }, tran);
                     conn.Execute(sql, definitions, tran);
                     tran.Commit();
                 }
@@ -686,7 +806,6 @@ SELECT * FROM MealRowNutrient WHERE MRowId=@id";
                 }
                 catch (Exception ex)
                 {
-                    row.Id = Guid.Empty;
                     tran.Rollback();
                     throw;
                 }
@@ -740,6 +859,19 @@ ORDER BY FoodUsage.UsageCount DESC";
         {
             public Guid MealId { get; set; }
             public Guid RowId { get; set; }
+        }
+        private class NutritionGoalPeriodRaw : NutritionGoalPeriod
+        {
+            public Guid NutritionGoalId { get; set; }
+        }
+        private class NutritionGoalMealRaw
+        {
+            public Guid NutritionGoalPeriodId { get; set; }
+            public Guid MealDefinitionId { get; set; }
+        }
+        private class NutritionGoalValueRaw : NutritionGoalValue
+        {
+            public Guid NutritionGoalPeriodId { get; set; }
         }
     }
 }

@@ -12,5 +12,7 @@ namespace Crash.Fit.Training
         public Guid ExerciseId { get; set; }
         public int Sets { get; set; }
         public int Reps { get; set; }
+        public decimal? LoadFrom { get; set; }
+        public decimal? LoadTo { get; set; }
     }
 }

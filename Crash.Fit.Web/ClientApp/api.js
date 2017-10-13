@@ -184,17 +184,43 @@ export default {
     },
     // Nutrients
     listNutrients(){
-        return $.get(this.baseUrl + 'nutrients/');
+        return $.get(this.baseUrl + 'nutrition/nutrients');
     },
+
     getNutritionGoals() {
-        return $.get(this.baseUrl + 'nutrients/goals');
+        return $.get(this.baseUrl + 'nutrition/goals');
     },
-    saveNutritionGoals (goals) {
+    getNutritionGoal(id) {
+        return $.get(this.baseUrl + 'nutrition/goals/' + id);
+    },
+    getActiveNutritionGoal() {
+        return $.get(this.baseUrl + 'nutrition/goals/active');
+    },
+    saveNutritionGoal(goal) {
+        var url = this.baseUrl + 'nutrition/goals/';
+        var method = 'POST';
+        if (goal.id) {
+            url += goal.id;
+            method = 'PUT';
+        }
+
         return $.ajax({
-            url: this.baseUrl + 'nutrients/goals',
-            type: 'PUT',
+            url: url,
+            type: method,
             contentType: 'text/json',
-            data: JSON.stringify(goals)
+            data: JSON.stringify(goal)
+        });
+    },
+    activateNutritionGoal(id){
+        return $.ajax({
+            url: this.baseUrl + 'nutrition/goals/' + id + '/activate',
+            type: 'POST'
+        });
+    },
+    deleteNutritionGoal(id){
+        return $.ajax({
+            url: this.baseUrl + 'nutrition/goals/' + id,
+            type: 'DELETE'
         });
     },
     listDailyIntakes(gender, dob){
@@ -202,7 +228,7 @@ export default {
     },
     saveNutrientSettings(settings){
         return $.ajax({
-            url: this.baseUrl + 'nutrients/settings',
+            url: this.baseUrl + 'nutrition/settings',
             type: 'PUT',
             contentType: 'text/json',
             data: JSON.stringify(settings)
@@ -332,6 +358,42 @@ export default {
         return $.ajax({
             url: this.baseUrl + 'routines/' + id + '/activate',
             type: 'POST'
+        });
+    },
+    getTrainingGoals() {
+        return $.get(this.baseUrl + 'training/goals');
+    },
+    getTrainingGoal(id) {
+        return $.get(this.baseUrl + 'training/goals/' + id);
+    },
+    getActiveTrainingGoal() {
+        return $.get(this.baseUrl + 'training/goals/active');
+    },
+    saveTrainingGoal(goal) {
+        var url = this.baseUrl + 'training/goals/';
+        var method = 'POST';
+        if (goal.id) {
+            url += goal.id;
+            method = 'PUT';
+        }
+
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(goal)
+        });
+    },
+    activateTrainingGoal(id){
+        return $.ajax({
+            url: this.baseUrl + 'training/goals/' + id + '/activate',
+            type: 'POST'
+        });
+    },
+    deleteTrainingGoal(id){
+        return $.ajax({
+            url: this.baseUrl + 'training/goals/' + id,
+            type: 'DELETE'
         });
     },
 

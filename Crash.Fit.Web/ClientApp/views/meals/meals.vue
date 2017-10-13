@@ -66,7 +66,7 @@
                                                         <chart-pie-energy v-bind:protein="day.nutrients[proteinId]" v-bind:carb="day.nutrients[carbId]" v-bind:fat="day.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
                                                     <div v-else>
-                                                        <nutrient-bar v-bind:goal="nutrientValues(col.key, day.date)" v-bind:value="day.nutrients[col.key]" v-bind:precision="col.precision"></nutrient-bar>
+                                                        <nutrient-bar v-bind:goal="nutrientGoal(col.key, day.date)" v-bind:value="day.nutrients[col.key]" v-bind:precision="col.precision"></nutrient-bar>
                                                     </div>
                                                 </td>
                                             </template>
@@ -79,7 +79,9 @@
                                                     <div class="chart" v-if="col.key === energyDistributionId">
                                                         <chart-pie-energy v-bind:protein="meal.nutrients[proteinId]" v-bind:carb="meal.nutrients[carbId]" v-bind:fat="meal.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
-                                                    <span v-else>{{ decimal(meal.nutrients[col.key], col.precision) }}</span>
+                                                    <div v-else>
+                                                        <nutrient-bar v-bind:goal="nutrientGoal(col.key, day.date, meal)" v-bind:value="meal.nutrients[col.key]" v-bind:precision="col.precision"></nutrient-bar>
+                                                    </div>
                                                 </td>
                                             </template>
                                             <td><button class="btn btn-danger btn-xs" @click="deleteMeal(meal)">{{ $t("delete") }}</button></td>
@@ -158,8 +160,8 @@ export default {
             var self = this;
             return this.columns.filter(c => !c.group || c.group == self.selectedGroup);
         },
-        nutritionGoals() {
-            return this.$store.state.nutrition.nutritionGoals;
+        nutritionGoal() {
+            return this.$store.state.nutrition.activeNutritionGoal;
         },
         start(){
             var self = this;
@@ -248,55 +250,58 @@ export default {
         dayIsExpanded(day){
             return this.dayStates[day.date.getTime()] && true;
         },
-        nutrientValues(nutrientId, day) {
-            var nutritionGoal;
-
-            // exercise/rest day
-            var start = moment(day).startOf('day)');
-            var end = moment(day).endOf('day');
-            var workouts = this.workouts.filter(w => moment(w.time).isBetween(start, end));
-            if (workouts.length > 0) {
-                nutritionGoal = this.nutritionGoals.find(t => t.exerciseDay && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+        nutrientGoal(nutrientId, day, meal) {
+            var goals;
+            if (meal) {
+                goals = this.nutritionGoal.periods.filter(g => !g.wholeDay && (g.mealDefinitions == null || g.mealDefinitions.length == 0 || g.mealDefinitions.contains(meal.mealDefinitionId)) && g.nutrients.find(v => v.nutrientId === nutrientId));
             }
             else {
-                nutritionGoal = this.nutritionGoals.find(t => t.restDay && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+                goals = this.nutritionGoal.periods.filter(g => g.wholeDay && g.nutrients.find(v => v.nutrientId === nutrientId));
             }
 
+            // exercise/rest day
+            var start = moment(day).startOf('day');
+            var end = moment(day).endOf('day');
+            var workouts = this.workouts.filter(w => moment(w.time).isBetween(start, end));
+            var hasWorkout = workouts.length > 0;
+
+            var goal = goals.find(g => (hasWorkout && g.exerciseDay) || (!hasWorkout && g.restday));
+
             // weekday
-            if (!nutritionGoal) {
+            if (!goal) {
+                var dayNumber = day.getDay();
                 switch (day.getDay()) {
                     case 0:
-                        nutritionGoal = this.nutritionGoals.find(t => t.sunday && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+                        goal = goals.find(g => g.sunday);
                         break;
                     case 1:
-                        nutritionGoal = this.nutritionGoals.find(t => t.monday && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+                        goal = goals.find(g => g.monday);
                         break;
                     case 2:
-                        nutritionGoal = this.nutritionGoals.find(t => t.tuesday && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+                        goal = goals.find(g => g.tuesday);
                         break;
                     case 3:
-                        nutritionGoal = this.nutritionGoals.find(t => t.wednesday && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+                        goal = goals.find(g => g.wednesday);
                         break;
                     case 4:
-                        nutritionGoal = this.nutritionGoals.find(t => t.thursday && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+                        goal = goals.find(g => g.thursday);
                         break;
                     case 5:
-                        nutritionGoal = this.nutritionGoals.find(t => t.friday && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+                        goal = goals.find(g => g.friday);
                         break;
                     case 6:
-                        nutritionGoal = this.nutritionGoals.find(t => t.saturday && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+                        goal = goals.find(g => g.saturday);
                         break;
-
                 }
             }
            
             // default
-            if (!nutritionGoal) {
-                nutritionGoal = this.nutritionGoals.find(t => !t.monday && !t.tuesday && !t.wednesday && !t.thursday && !t.friday && !t.saturday && !t.sunday && !t.exerciseDay && !t.restday && t.nutrientValues.find(v => v.nutrientId === nutrientId));
+            if (!goal) {
+                goal = goals.find(g => !g.monday && !g.tuesday && !g.wednesday && !g.thursday && !g.friday && !g.saturday && !g.sunday && !g.exerciseDay && !g.restday);
             }
 
-            if (nutritionGoal) {
-                var values = nutritionGoal.nutrientValues.find(v => v.nutrientId === nutrientId);
+            if (goal) {
+                var values = goal.nutrients.find(n => n.nutrientId === nutrientId);
                 if (values) {
                     return values;
                 }
@@ -329,7 +334,7 @@ export default {
         var self = this;
         //self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
         self.$store.dispatch(constants.FETCH_NUTRIENTS, {});
-        self.$store.dispatch(constants.FETCH_NUTRITION_GOALS, {});
+        self.$store.dispatch(constants.FETCH_ACTIVE_NUTRITION_GOAL, {});
         self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {});
         if(self.start && self.end){
           self.fetchMeals();

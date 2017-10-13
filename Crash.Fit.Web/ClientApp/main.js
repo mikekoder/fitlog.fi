@@ -51,7 +51,7 @@ router.beforeEach((to, from, next) =>{
     }
 });
 router.afterEach((to, from) => {
-    if (window.matchMedia('(max-width: 767px)').matches) {
+    if (window.matchMedia('(max-width: 900px)').matches) {
         $('body').addClass('sidebar-collapse').removeClass('sidebar-open');
     }
 })

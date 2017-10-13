@@ -8,6 +8,7 @@ using Crash.Fit.Nutrition;
 using Crash.Fit.Api.Models.Nutrition;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Crash.Fit.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -29,6 +30,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(response);
         }
         [HttpGet("search")]
+        [AllowAnonymous]
         public IActionResult Search(string name)
         {
             var foods = nutritionRepository.SearchFoods(name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries), CurrentUserId);
