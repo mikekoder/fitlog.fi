@@ -47,10 +47,7 @@ namespace Crash.Fit.Web.Controllers
             
             CalculateNutrients(recipe);
             CalculatePortionWeights(recipe);
-            if(!nutritionRepository.CreateFood(recipe))
-            {
-                return BadRequest();
-            }
+            nutritionRepository.CreateFood(recipe);
 
             var result = AutoMapper.Mapper.Map<RecipeDetailsResponse>(recipe);
             return Ok(result);
@@ -72,10 +69,7 @@ namespace Crash.Fit.Web.Controllers
             AutoMapper.Mapper.Map(request, recipe);
             CalculateNutrients(recipe);
             CalculatePortionWeights(recipe);
-            if (!nutritionRepository.UpdateFood(recipe))
-            {
-                return BadRequest();
-            }
+            nutritionRepository.UpdateFood(recipe);
            
             var result = AutoMapper.Mapper.Map<RecipeDetailsResponse>(recipe);
             return Ok(result);

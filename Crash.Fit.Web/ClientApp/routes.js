@@ -10,6 +10,7 @@ import Recipes from './views/recipes/recipes'
 import RecipeDetails from './views/recipes/recipe-details'
 import Nutrients from './views/nutrients/nutrients'
 import NutritionGoals from './views/nutrition-goals/nutrition-goals'
+import NutritionGoalDetails from './views/nutrition-goals/nutrition-goal-details'
 
 import Workouts from './views/workouts/workouts'
 import WorkoutDetails from './views/workouts/workout-details'
@@ -17,15 +18,21 @@ import Exercises from './views/exercises/exercises'
 import ExerciseDetails from './views/exercises/exercise-details'
 import Routines from './views/routines/routines'
 import RoutineDetails from './views/routines/routine-details'
+import RepCalculator from './views/rep-calculator/rep-calculator'
+import TrainingGoals from './views/training-goals/training-goals'
+import TrainingGoalDetails from './views/training-goals/training-goal-details'
+
+import Profile from './views/profile/profile'
 import Login from './views/login'
 import LoginSuccess from './views/login-success'
 import Register from './views/register'
-import NotFound from './views/notfound'
-import RepCalculator from './views/rep-calculator/rep-calculator'
+
 import Measurements from './views/measurements/measurements'
-import Profile from './views/profile/profile'
+
 import Feedback from './views/feedback/feedback'
 import FeedbackDetails from './views/feedback/feedback-details'
+
+import NotFound from './views/notfound'
 
 export default [
     {
@@ -84,6 +91,11 @@ export default [
                 component: NutritionGoals
             },
             {
+                path: '/ravintotavoitteet/:id',
+                name: 'nutrition-goal-details',
+                component: NutritionGoalDetails
+            },
+            {
                 path: '/treenit',
                 name: 'workouts',
                 component: Workouts
@@ -118,6 +130,16 @@ export default [
                 name: 'rep-calculator',
                 component: RepCalculator,
                 meta: { anon: true }
+            },
+            {
+                path: '/treenitavoitteet',
+                name: 'training-goals',
+                component: TrainingGoals
+            },
+            {
+                path: '/treenitavoitteet/:id',
+                name: 'training-goal-details',
+                component: TrainingGoalDetails
             },
             {
                 path: '/mitat',

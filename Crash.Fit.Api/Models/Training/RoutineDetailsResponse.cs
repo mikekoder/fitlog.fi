@@ -13,6 +13,7 @@ namespace Crash.Fit.Api.Models.Training
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public decimal? Frequency { get; set; }
         public RoutineExerciseResponse[] Exercises { get; set; }
     }
     public class RoutineExerciseResponse
@@ -20,5 +21,7 @@ namespace Crash.Fit.Api.Models.Training
         public Guid ExerciseId { get; set; }
         public int Sets { get; set; }
         public int Reps { get; set; }
+        public decimal? LoadFrom { get; set; }
+        public decimal? LoadTo { get; set; }
     }
 }

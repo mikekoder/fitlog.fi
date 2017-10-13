@@ -3,7 +3,7 @@
         <section class="content-header"><h1>{{ $t("mealDetails") }}</h1></section>
         <section class="content">
             <div class="row" v-if="isLoggedIn">
-                <div class="col-sm-4 col-md-3 col-lg-3">                  
+                <div class="col-xs-12">                  
                         <label>{{ $t("time") }}</label><br />
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ formatDate(date) }} <span class="caret"></span></button>
@@ -49,36 +49,36 @@
                     </ul>
                     <div v-if="!showNutrients">
                         <div class="row hidden-xs">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 col-text-40">
                               <label>{{ $t("food") }}</label>
                               <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createFood") }}</router-link>
                               <span v-if="!copyMode && isLoggedIn">|</span>
                               <router-link :to="{ name: 'recipe-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createRecipe") }}</router-link>
                             </div>
-                            <div class="col-sm-2"><label>{{ $t("amount") }}</label></div>
-                            <div class="col-sm-3 col-lg-2"><label>{{ $t("portion") }}</label></div>
-                            <div class="col-sm-1"><label>{{ $t("weight") }} (g)</label></div>
-                            <div class="col-sm-1">&nbsp;</div>
+                            <div class="col-sm-2 col-number-5"><label>{{ $t("amount") }}</label></div>
+                            <div class="col-sm-3 col-text-20"><label>{{ $t("portion") }}</label></div>
+                            <div class="col-sm-1 col-number-5"><label>{{ $t("weight") }} (g)</label></div>
+                            <div class="col-sm-1 col-actions-1">&nbsp;</div>
                         </div>
                         <template v-for="(row,index) in rows">
-                            <div class="meal-row row">
-                                <div class="food col-sm-4">
+                            <div class="row">
+                                <div class="col-sm-4 col-text-40">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t('food') }}</label>
-                                  <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createFood") }}</router-link>
-                                  <span class="hidden-sm hidden-md hidden-lg" v-if="!copyMode && isLoggedIn">|</span>
-                                  <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'recipe-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createRecipe") }}</router-link>
+                                    <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createFood") }}</router-link>
+                                    <span class="hidden-sm hidden-md hidden-lg" v-if="!copyMode && isLoggedIn">|</span>
+                                    <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'recipe-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createRecipe") }}</router-link>
                                     <div v-if="copyMode">
                                         <input type="checkbox" v-model="row.copy" />
                                         <span>{{ row.food ? row.food.name : '' }}</span>
                                     </div>
                                     <food-picker v-else v-bind:value="row.food" v-on:change="setRowFood(row, arguments[0])" />
                                 </div>
-                                <div class="quantity col-xs-3 col-sm-2">
+                                <div class="col-xs-5 col-sm-2 col-number-5">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("amount") }}</label>
                                     <span v-if="copyMode">{{ row.quantity }}</span>
                                     <input v-else type="number" class="form-control" v-model="row.quantity" />
                                 </div>
-                                <div class="portion col-xs-7 col-sm-3 col-lg-2">
+                                <div class="col-xs-7 col-sm-3 col-text-20">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("portion") }}</label>
                                     <div v-if="row.food">
                                         <span v-if="copyMode">{{ row.portion ? row.portion.name : '' }}</span>
@@ -89,26 +89,23 @@
                                             </option>
                                         </select>
                                     </div>
-                                    <!--
-                                <div v-if="!row.food"><select class="form-control" disabled></select></div>
-                                    -->
+                                    <select v-else class="form-control" disabled></select>
                                 </div>
-                                <div class="weight col-sm-1 col-xs-2">
+                                <div class="col-xs-6 col-sm-1 col-number-5">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("weight") }}</label>
                                     <div v-if="row.food">{{ weight(row.quantity, row.portion) }}</div>
                                     <div v-if="!row.food">&nbsp;</div>
                                 </div>
-                                <div class="actions col-sm-1 col-xs-12">
-                                    <div>
-                                        <button v-if="!copyMode" class="btn btn-danger btn-sm" @click="removeRow(index)">{{ $t("delete") }}</button>
-                                    </div>
+                                <div class="col-xs-12 col-sm-1 col-actions-1">
+                                    <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
+                                    <button v-if="!copyMode" class="btn btn-danger btn-sm" @click="deleteRow(index)">{{ $t("delete") }}</button>
                                 </div>
                             </div>
-                            <div class="meal-row-separator row hidden-sm hidden-md hidden-lg">
+                            <div class="separator row hidden-sm hidden-md hidden-lg">
                                 <div class="col-sm-12"><hr /></div>
                             </div>
                         </template>
-                        <div class="row">
+                        <div class="row table-actions">
                             <div class="col-sm-12">
                                 <div v-if="copyMode"><input type="checkbox" v-model="copyAllRows" /> <strong>{{ $t("all") }}</strong></div>
                                 <button v-else class="btn" @click="addRow">{{ $t("add") }}</button>
@@ -233,7 +230,7 @@ export default {
         setRowFood(row, food){
             row.food = food;
         },
-        removeRow(index) {
+        deleteRow(index) {
             this.rows.splice(index, 1);
         },
         weight(quantity, portion) {
@@ -366,7 +363,8 @@ export default {
         var id = self.$route.params.id;
         var action = self.$route.params.action;
         if (id == constants.NEW_ID) {
-            self.populate({ id: undefined, time: utils.previousHalfHour(), rows: [{ food: undefined, quantity: undefined, portion: undefined }] });
+            self.populate({ id: undefined, time: utils.previousHalfHour(), rows: [] });
+            self.addRow();
         }
         else {
             if (action == constants.RESTORE_ACTION) {
@@ -399,41 +397,4 @@ export default {
 }
 </script>
 <style scoped>
-    div.meal-row
-    {
-        margin-bottom:5px;
-    }
-    div.meal-row-separator
-    {
-        padding: 0px;
-    }
-    div.meal-row-separator hr
-    {
-        border: 1px solid #00c0ef;
-    }
-    div.food, div.quantity, div.portion, div.weight, div.actions
-    {
-        padding-right:2px;
-    }
-    div.weight 
-    {
-        padding-top:5px;
-    }
-    
-    @media (max-width: 767px) {
-        div.food, div.quantity, div.portion, div.weight, div.actions
-        {
-            padding-right:15px;
-        }
-        div.actions
-        {
-            text-align:right;
-        }
-        div.actions button
-        {
-            margin-top:10px;
-            margin-right:0px;
-        }
-    }
-    
 </style>

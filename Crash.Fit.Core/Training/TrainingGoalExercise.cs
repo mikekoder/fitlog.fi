@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Crash.Fit.Training
 {
-    public class WorkoutSet
+    public class TrainingGoalExercise
     {
         public Guid Id { get; set; }
-        //public int Index { get; set; }
         public Guid ExerciseId { get; set; }
         public string ExerciseName { get; set; }
+        public int Sets { get; set; }
         public int Reps { get; set; }
-        public decimal Weights { get; set; }
-        public decimal? OneRepMax { get; set; }
-
+        public decimal Frequency { get; set; }
     }
 }

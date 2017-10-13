@@ -3,7 +3,7 @@
         <section class="content-header"><h1>{{ $t("foodDetails") }}</h1></section>
         <section class="content">
             <div class="row">
-                <div class="col-sm-6 col-md-6 col-lg-4">
+                <div class="col-sm-6 col-text-40">
                     <div class="form-group">
                         <label>{{ $t("name") }}</label>
                         <input class="form-control" v-model="name" />
@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-6 col-md-6 col-lg-4">
+                <div class="col-sm-6 col-text-40">
                     <div class="form-group">
                         <label>{{ $t("manufacturer") }}</label>
                         <input class="form-control" v-model="manufacturer" />
@@ -29,31 +29,30 @@
                     </ul>
                     <div v-if="tab === 'portions'">
                         <div class="row hidden-xs">
-                            <div class="col-sm-4"><label>{{ $t("name") }}</label></div>
-                            <div class="col-sm-2"><label>{{ $t("weight") }} (g)</label></div>
-                            <div class="col-sm-1">&nbsp;</div>
+                            <div class="col-sm-4 col-text-30"><label>{{ $t("name") }}</label></div>
+                            <div class="col-sm-2 col-number-8"><label>{{ $t("weight") }} (g)</label></div>
+                            <div class="col-sm-1 col-actions-1">&nbsp;</div>
                         </div>
                         <template v-for="(portion,index) in portions">
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-4 col-text-30">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("name") }}</label>
                                     <input type="text" class="form-control" v-model="portion.name" />
                                 </div>
-                                <div class="quantity col-sm-2 col-xs-3">
+                                <div class="col-xs-3 col-number-8">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("weight") }} (g)</label>
                                     <input type="number" class="form-control" v-model="portion.weight" />
                                 </div>
-                                <div class="actions col-sm-1 col-xs-12">
-                                    <div>
-                                        <button class="btn btn-danger btn-sm" @click="removePortion(index)">{{ $t("delete") }}</button>
-                                    </div>
+                                <div class="col-xs-12 col-actions-1">
+                                    <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
+                                    <button class="btn btn-danger btn-sm" @click="deletePortion(index)">{{ $t("delete") }}</button>
                                 </div>
                             </div>
                             <div class="recipe-row-separator row hidden-sm hidden-md hidden-lg">
                                 <div class="col-sm-12"><hr /></div>
                             </div>
                         </template>
-                        <div class="row">
+                        <div class="row table-actions">
                             <div class="col-sm-12"><button class="btn" @click="addPortion">{{ $t("add") }}</button></div>
                         </div>
                     </div>
@@ -80,8 +79,8 @@
                                 </tr>
                                 <tr v-for="nutrient in nutrientsGrouped[group.id]" v-if="groupOpenStates[group.id]">
                                     <template v-if="!nutrient.computed">
-                                        <td>{{ nutrient.name }}</td>
-                                        <td><input type="number" v-model="nutrients[nutrient.id]" /></td>
+                                        <td class="col-text-30">{{ nutrient.name }}</td>
+                                        <td class="col-number-8"><input type="number" class="form-control" v-model="nutrients[nutrient.id]" /></td>
                                         <td>{{ unit(nutrient.unit)}}</td>
                                     </template>
                                 </tr>
@@ -178,7 +177,7 @@ export default {
         addPortion(){
             this.portions.push({ name: null, weight: null});
         },
-        removePortion(index) {
+        deletePortion(index) {
             if(this.nutrientPortion == this.portions[index]){
                 this.nutrientPortion = defaultNutrientPortion;
             }

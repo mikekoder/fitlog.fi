@@ -14,10 +14,10 @@ using Microsoft.AspNetCore.Antiforgery;
 using Crash.Fit.Logging;
 using Crash.Fit.Feedback;
 using Crash.Fit.Api.Models.Feedback;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Crash.Fit.Web.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     public class FeedbackController : ApiControllerBase
     {

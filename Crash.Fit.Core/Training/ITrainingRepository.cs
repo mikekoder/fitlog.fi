@@ -31,5 +31,11 @@ namespace Crash.Fit.Training
         bool DeleteRoutine(Routine routine);
         bool RestoreRoutine(Guid id, out RoutineDetails routine);
         bool ActivateRoutine(Guid userId, Guid routineId);
+        IEnumerable<TrainingGoalDetails> GetTrainingGoals(Guid userId);
+        TrainingGoalDetails GetTrainingGoal(Guid id);
+        void CreateTrainingGoal(TrainingGoalDetails goal);
+        void UpdateTrainingGoal(TrainingGoalDetails goal);
+        void ActivateTrainingGoal(TrainingGoal goal);
+        void DeleteTrainingGoal(TrainingGoal goal);
     }
 }

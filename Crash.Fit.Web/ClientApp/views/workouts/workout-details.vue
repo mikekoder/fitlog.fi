@@ -3,7 +3,7 @@
         <section class="content-header"><h1>{{ $t("workoutDetails") }}</h1></section>
         <section class="content">
             <div class="row">
-                <div class="col-sm-5 col-md-3 col-lg-2">
+                <div class="col-sm-5 col-datetime">
                     <div class="form-group">
                         <label>{{ $t("time") }}</label>
                         <datetime-picker class="vue-picker1" name="picker1" v-bind:value="time" v-on:change="time=arguments[0]"></datetime-picker>
@@ -15,30 +15,31 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="row hidden-xs">
-                        <div class="col-sm-4 col-md-4 col-lg-2"><label>{{ $t("exercise") }}</label></div>
-                        <div class="col-sm-2 col-md-2 col-lg-1"><label>{{ $t("reps") }}</label></div>
-                        <div class="col-sm-3 col-md-2 col-lg-1"><label>{{ $t("weights") }}</label></div>
-                        <div class="col-sm-3">&nbsp;</div>
+                        <div class="col-sm-4 col-text-40"><label>{{ $t("exercise") }}</label></div>
+                        <div class="col-sm-2 col-number-5"><label>{{ $t("reps") }}</label></div>
+                        <div class="col-sm-3 col-number-5"><label>{{ $t("weights") }}</label></div>
+                        <div class="col-sm-3 col-actions-4">&nbsp;</div>
                     </div>
                     <template v-for="(set,index) in sets">
                         <div class="row">
-                            <div class="col-sm-4 col-md-4 col-lg-2">
+                            <div class="col-sm-4 col-text-40">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
                                 <exercise-picker v-bind:exercises="exercises" v-bind:value="set.exercise" v-on:change="set.exercise=arguments[0]" v-on:nameChange="processNewExercise(set, arguments[0])" />
                             </div>
-                            <div class="quantity col-sm-2 col-xs-4 col-md-2 col-lg-1">
+                            <div class="col-xs-4 col-number-5">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("reps") }}</label>
                                 <input type="number" min="0" class="form-control" v-model="set.reps" />
                             </div>
-                            <div class="portion col-sm-3 col-xs-4 col-md-2 col-lg-1">
+                            <div class="col-xs-4 col-number-5">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("weights") }}</label>
                                 <input type="number" min="0" step="2.5" class="form-control" v-model="set.weights" />
                             </div>
-                            <div class="actions col-sm-3 col-xs-4">
+                            <div class="col-xs-4 col-actions-4">
+                                <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
                                 <button class="btn btn-sm" @click="moveSetUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
                                 <button class="btn btn-sm" @click="moveSetDown(index)" :disabled="index === (sets.length - 1)"><i class="fa fa-arrow-down"></i></button>
                                 <button class="btn btn-primary" @click="copySet(index)">{{ $t("copy") }}</button>
-                                <button class="btn btn-danger btn-sm" @click="removeSet(index)">{{ $t("delete") }}</button>
+                                <button class="btn btn-danger btn-sm" @click="deleteSet(index)">{{ $t("delete") }}</button>
                             </div>
                         </div>
                         <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
@@ -110,7 +111,7 @@ export default {
             this.sets.splice(index, 1);
             this.sets.splice(index + 1, 0, set);
         },
-        removeSet(index) {
+        deleteSet(index) {
             this.sets.splice(index, 1);
         },
         processNewExercise(set, exerciseName) {
@@ -175,7 +176,7 @@ export default {
             self.$store.dispatch(constants.FETCH_EXERCISES, {
                 success(exercises) {
                     self.exercises = exercises;
-                    if (workout.sets) {
+                    if (workout.sets && workout.sets.length > 0) {
                         self.sets = workout.sets.map(s => { return { exercise: self.exercises.filter(e => e.id === s.exerciseId)[0], reps: s.reps, weights: s.weights } });
                     }
                     else {

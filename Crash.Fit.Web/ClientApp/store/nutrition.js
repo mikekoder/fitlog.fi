@@ -24,8 +24,10 @@ export default {
         nutrientsLoaded: false,
         nutrients: [],
         nutrientsGrouped: {},
+        activeNutritionGoalLoaded: false,
+        activeNutritionGoal: {},
         nutritionGoalsLoaded: false,
-        nutritionGoals: [],
+        nutritionGoals: {},
 
         mealDefinitionsLoaded: false,
         mealDefinitions: [],
@@ -353,11 +355,10 @@ export default {
                 }
             });
         },
-        [constants.SAVE_NUTRITION_GOALS]({ commit, state }, { goals, success, failure }) {
-            api.saveNutritionGoals(goals).then(function (savedGoals) {
-                commit(constants.FETCH_NUTRITION_GOALS_SUCCESS, { goals: savedGoals })
+        [constants.FETCH_NUTRITION_GOAL]({ commit, state }, { id, success, failure }) {
+            api.getNutritionGoal(id).then(function (goal) {
                 if (success) {
-                    success(savedGoals);
+                    success(goal);
                 }
             }).fail(function () {
                 if (failure) {
@@ -365,7 +366,60 @@ export default {
                 }
             });
         },
-
+        [constants.FETCH_ACTIVE_NUTRITION_GOAL]({ commit, state }, { forceRefresh, success, failure }) {
+            if (state.nutritionGoalLoaded && !forceRefresh) {
+                if (success) {
+                    success(state.nutritionGoal);
+                }
+                return;
+            }
+            api.getActiveNutritionGoal().then(function (goal) {
+                commit(constants.FETCH_ACTIVE_NUTRITION_GOAL_SUCCESS, { goal })
+                if (success) {
+                    success(goal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.SAVE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
+            api.saveNutritionGoal(goal).then(function (savedGoal) {
+                commit(constants.FETCH_NUTRITION_GOAL_SUCCESS, { goal: savedGoal })
+                if (success) {
+                    success(savedGoal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.ACTIVATE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
+            api.activateNutritionGoal(goal.id).then(function () {
+                commit(constants.ACTIVATE_NUTRITION_GOAL_SUCCESS, { goal })
+                if (success) {
+                    success(savedGoal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.DELETE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
+            api.deleteNutritionGoal(goal.id).then(function () {
+                commit(constants.DELETE_NUTRITION_GOAL_SUCCESS, { goal })
+                if (success) {
+                    success();
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
         // Meal rhythm
         [constants.FETCH_MEAL_DEFINITIONS]({ commit, state }, { forceRefresh, success, failure }) {
             if (state.mealDefinitionsLoaded && !forceRefresh) {
@@ -424,6 +478,25 @@ export default {
             state.nutritionGoals = goals;
             state.nutritionGoalsLoaded = true;
         },
+        [constants.FETCH_ACTIVE_NUTRITION_GOAL_SUCCESS](state, { goal }) {
+            state.activeNutritionGoal = goal;
+            state.activeNutritionGoalLoaded = true;
+        },
+        [constants.ACTIVATE_NUTRITION_GOAL_SUCCESS](state, { goal }) {
+            state.nutritionGoals.forEach(g => {
+                if (g.id === goal.id) {
+                    g.active = true;
+                    state.activeNutritionGoal = g;
+                    state.activeNutritionGoalLoaded = true;
+                }
+                else {
+                    g.active = false;
+                }
+            });
+        },
+        [constants.DELETE_NUTRITION_GOAL_SUCCESS](state, { goal }) {
+            deleteNutritionGoal(goal, state)
+        },
         [constants.FETCH_MEALS_STARTED](state) {
             state.mealsLoading = true;
         },
@@ -461,7 +534,7 @@ export default {
             if (id) {
                 var old = state.meals.find(m => m.id == id);
                 if (old) {
-                    removeMeal(old, state)
+                    deleteMeal(old, state)
                 }
             }
             addMeal(meal, state);
@@ -473,7 +546,7 @@ export default {
 
         },
         [constants.DELETE_MEAL_SUCCESS](state, { meal }) {
-            removeMeal(meal, state)
+            deleteMeal(meal, state)
         },
         [constants.RESTORE_MEAL_SUCCESS](state, { meal }) {
             meal.time = new Date(meal.time);
@@ -524,7 +597,7 @@ export default {
     }
 }
 
-    function removeMeal(meal, state){
+    function deleteMeal(meal, state){
         var date = moment(meal.time).startOf('day');
         var day = state.mealDays.find(d => moment(d.date).isSame(date, 'day'));
         if(day){
@@ -594,7 +667,7 @@ export default {
             return;
         }
         if(meal.rows.length == 1){
-            removeMeal(meal, state);
+            deleteMeal(meal, state);
             return;
         }
         var oldRow = meal.rows[rowIndex];
@@ -602,4 +675,7 @@ export default {
             meal.nutrients[i] -= oldRow.nutrients[i];
         }
         meal.rows.splice(rowIndex, 1);
+    }
+    function deleteNutritionGoal(goal, state) {
+        state.nutritionGoals.splice(state.nutritionGoals.findIndex(x => x.id == goal.id), 1);
     }

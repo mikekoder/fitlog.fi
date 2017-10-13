@@ -1,6 +1,6 @@
 <template>
     <div v-if="!loading">
-        <section class="content-header"><h1>{{ $t("nutritionGoals") }}</h1></section>
+        <section class="content-header"><h1>{{ $t("trainingGoals") }}</h1></section>
         <section class="content">
             <div class="row">
                 <div class="col-sm-12">
@@ -12,14 +12,14 @@
                     <table class="table" id="goal-list">
                         <thead>
                             <tr>
-                                <th class="name col-text-30">{{ $t("name") }}</th>
-                                <th class="col-text-10"></th>
+                                <th class="name">{{ $t("name") }}</th>
+                                <th></th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="routine" v-for="goal in goals">
-                                <td><router-link :to="{ name: 'nutrition-goal-details', params: { id: goal.id } }">{{ goal.name }}</router-link></td>
+                                <td><router-link :to="{ name: 'training-goal-details', params: { id: goal.id } }">{{ goal.name }}</router-link></td>
                                 <td>
                                     <span v-if="goal.active">{{ $t("active") }}</span>
                                     <button class="btn btn-primary" v-if="!goal.active" @click="activate(goal)">{{ $t("activate") }}</button>
@@ -33,7 +33,7 @@
             <div class="row" v-if="goals.length == 0">
                 <div class="col-sm-12">
                     <br />
-                    {{ $t("noNutritionGoals") }}
+                    {{ $t("notrainingGoals") }}
                 </div>
             </div>
         </section>
@@ -56,11 +56,11 @@ export default {
     components: {},
     methods: {
         createGoal(){
-            this.$router.push({ name: 'nutrition-goal-details', params: { id: constants.NEW_ID } });
+            this.$router.push({ name: 'training-goal-details', params: { id: constants.NEW_ID } });
         },
         activate(goal){
             var self = this;
-            this.$store.dispatch(constants.ACTIVATE_NUTRITION_GOAL, {
+            this.$store.dispatch(constants.ACTIVATE_TRAINING_GOAL, {
                 goal,
                 success() { },
                 failure() {
@@ -70,7 +70,7 @@ export default {
         },
         deleteGoal(goal) {
             var self = this;
-            this.$store.dispatch(constants.DELETE_NUTRITION_GOAL, {
+            this.$store.dispatch(constants.DELETE_TRAINING_GOAL, {
                 goal,
                 success() { },
                 failure() {
@@ -82,7 +82,7 @@ export default {
     created() {
         var self = this;
        
-        self.$store.dispatch(constants.FETCH_NUTRITION_GOALS, {
+        self.$store.dispatch(constants.FETCH_TRAINING_GOALS, {
             success(goals) {
                 self.goals = goals;
                 self.$store.commit(constants.LOADING_DONE);

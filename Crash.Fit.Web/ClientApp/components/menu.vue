@@ -36,6 +36,11 @@
             <router-link tag="li" :to="{ name: 'routines'}" v-if="isLoggedIn">
                 <a><i class="fa fa-calendar"></i> <span>{{ $t("routines") }}</span></a>
             </router-link>
+            <!--
+            <router-link tag="li" :to="{ name: 'training-goals'}" v-if="isLoggedIn">
+                <a><i class="fa fa-crosshairs"></i> <span>{{ $t("trainingGoals") }}</span></a>
+            </router-link>
+                -->
             <router-link tag="li" :to="{ name: 'rep-calculator'}">
                 <a><i class="fa fa-calculator"></i> <span>{{ $t("repCalculator") }}</span></a>
             </router-link>

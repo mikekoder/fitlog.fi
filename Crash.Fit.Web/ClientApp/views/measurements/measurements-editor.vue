@@ -29,7 +29,7 @@
                         </div>
                         <div class="col-xs-4 col-sm-2">
                             <div>
-                                <button class="btn btn-danger btn-sm" v-if="!measurement.id" @click="removeMeasurement(index)">{{ $t("delete") }}</button>
+                                <button class="btn btn-danger btn-sm" v-if="!measurement.id" @click="deleteMeasurement(index)">{{ $t("delete") }}</button>
                             </div>
                         </div>
                     </div>
@@ -89,7 +89,7 @@ export default {
         addMeasurement(){
             this.measurements.push({name: undefined, value:undefined});
         },
-        removeMeasurement(index){
+        deleteMeasurement(index){
             this.measurements.splice(index, 1);
         },
         save() {

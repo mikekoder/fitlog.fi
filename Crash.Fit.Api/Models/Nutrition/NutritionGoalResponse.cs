@@ -5,7 +5,14 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Api.Models.Nutrition
 {
-    public class NutritionGoalsResponse
+    public class NutritionGoalResponse
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public bool Active { get; set; }
+        public NutritionGoalPeriodResponse[] Periods { get; set; }
+    }
+    public class NutritionGoalPeriodResponse
     {
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }
@@ -16,14 +23,10 @@ namespace Crash.Fit.Api.Models.Nutrition
         public bool Sunday { get; set; }
         public bool ExerciseDay { get; set; }
         public bool RestDay { get; set; }
-        public MealDefinition[] Definitions { get; set; }
-        public NutrientValue[] NutrientValues { get; set; }
+        public bool WholeDay { get; set; }
+        public Guid[] MealDefinitions { get; set; }
+        public NutrientValue[] Nutrients { get; set; }
 
-        public class MealDefinition
-        {
-            public Guid Id { get; set; }
-            public string Name { get; set; }
-        }
         public class NutrientValue
         {
             public Guid NutrientId { get; set; }

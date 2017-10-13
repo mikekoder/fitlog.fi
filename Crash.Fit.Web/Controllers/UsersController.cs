@@ -22,10 +22,10 @@ using Crash.Fit.Nutrition;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Crash.Fit.Web.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     public class UsersController : ApiControllerBase
     {
@@ -90,7 +90,6 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpPost("login")]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody]LoginRequest model)
         {
             if (!ModelState.IsValid)
@@ -149,7 +148,6 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpPost("register")]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([FromBody]RegisterRequest model)
         {
             if(!ModelState.IsValid)
@@ -215,7 +213,7 @@ namespace Crash.Fit.Web.Controllers
                     End = null
                 }
             };
-            _nutritionRepository.SaveMealDefinitions(user.Id, mealDefinitions);
+            _nutritionRepository.SaveMealDefinitions(mealDefinitions);
 
             /*
             var nutrients = _nutritionRepository.GetNutrients();
@@ -232,7 +230,6 @@ namespace Crash.Fit.Web.Controllers
         }
 
         [HttpPost("logout")]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();

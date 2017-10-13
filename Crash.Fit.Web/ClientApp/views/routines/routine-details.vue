@@ -3,7 +3,7 @@
         <section class="content-header"><h1>{{ $t('routineDetails') }}</h1></section>
         <section class="content">
             <div class="row">
-                <div class="col-sm-5 col-md-3 col-lg-2">
+                <div class="col-sm-12 col-text-30">
                     <div class="form-group">
                         <label>{{ $t("name") }}</label>
                         <input type="text" class="form-control" v-model="name" />
@@ -16,50 +16,81 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-12 col-md-10">
+                <div class="col-sm-12">
                     <template v-for="(workout,index) in workouts">
-                        <div class="box box-info box-solid">
+                        <div class="box box-solid">
                             <div class="box-header with-border">
+                                <div class="row hidden-xs">
+                                    <div class="col-xs-6 col-text-30">{{ $t('name') }}</div>
+                                    <div class="col-xs-6 col-text-20">{{ $t('frequency') }}</div>
+                                    <div class="col-xs-6 col-actions-3"></div>
+                                </div>
                                 <div class="row">
-                                    <div class="col-xs-6"><input type="text" class="form-control" v-model="workout.name" /></div>
-                                    <div class="col-xs-6">
+                                    <div class="col-xs-6 col-text-30">
+                                        <label class="hidden-sm hidden-md hidden-lg">{{ $t("name") }}</label>
+                                        <input type="text" class="form-control" v-model="workout.name" />
+                                    </div>
+                                    <div class="col-xs-6 col-text-20">
+                                        <label class="hidden-sm hidden-md hidden-lg">{{ $t("frequency") }}</label>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ frequencyText(workout.frequency) }} <span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <li v-for="frequency in frequencyPresets">
+                                                    <a @click="workout.frequency = frequency.value">{{ frequency.text }}</a>
+                                                </li>
+                                                <li>
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control" v-model="workout.frequency" />
+                                                        <span class="input-group-addon">
+                                                            {{ $t('timesAbbr') }} / {{ $t('weekAbbr') }}
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                    <div class="col-xs-6 col-actions-3">
+                                        <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
                                         <button class="btn btn-sm" @click="moveWorkoutUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
                                         <button class="btn btn-sm" @click="moveWorkoutDown(index)" :disabled="index === (workouts.length - 1)"><i class="fa fa-arrow-down"></i></button>
-                                        <button class="btn btn-danger pull-right btn-sm" @click="removeWorkout(index)">Poista</button>
+                                        <button class="btn btn-danger pull-right btn-sm" @click="deleteWorkout(index)">Poista</button>
                                     </div>
                                 </div>
                             </div>
                             <div class="box-body">
                                 <div class="workout-details">
                                     <div class="row hidden-xs">
-                                        <div class="col-sm-4 col-md-4"><label>{{ $t("exercise") }}</label></div>
-                                        <div class="col-sm-2 col-md-2"><label>{{ $t("sets") }}</label></div>
-                                        <div class="col-sm-2 col-md-2"><label>{{ $t("reps") }}</label></div>
-                                        <div class="col-sm-4">&nbsp;</div>
+                                        <div class="col-sm-4 col-text-30"><label>{{ $t("exercise") }}</label></div>
+                                        <div class="col-sm-2 col-number-5"><label>{{ $t("sets") }}</label></div>
+                                        <div class="col-sm-2 col-number-5"><label>{{ $t("reps") }}</label></div>
+                                        <div class="col-sm-2 col-load"><label>{{ $t("load") }} (%)</label></div>
+                                        <div class="col-sm-4 col-actions-3">&nbsp;</div>
                                     </div>
                                     <template v-for="(exercise,index) in workout.exercises">
                                         <div class="row">
-                                            <div class="col-sm-4 col-md-4">
+                                            <div class="col-sm-4 col-text-30">
                                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
                                                 <exercise-picker v-bind:exercises="exercises" v-bind:value="exercise.exercise" v-on:change="exercise.exercise=arguments[0]" v-on:nameChange="processNewExercise(exercise, arguments[0])" />
                                             </div>
-                                            <div class="quantity col-sm-2 col-xs-4 col-md-2">
+                                            <div class="col-xs-4 col-number-5">
                                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("sets") }}</label>
                                                 <input type="number" min="1" step="1" class="form-control" v-model="exercise.sets" />
                                             </div>
-                                            <div class="portion col-sm-2 col-xs-4 col-md-2">
+                                            <div class="col-xs-4 col-number-5">
                                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("reps") }}</label>
                                                 <input type="number" min="1" step="1" class="form-control" v-model="exercise.reps" />
                                             </div>
-                                            <div class="actions col-sm-4 col-xs-4">
-                                                <div>
-                                                    <button class="btn btn-sm" @click="moveExerciseUp(workout,index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
-                                                    <button class="btn btn-sm" @click="moveExerciseDown(workout,index)" :disabled="index === (workout.exercises.length - 1)"><i class="fa fa-arrow-down"></i></button>
-                                                    <!--
-                                                <button class="btn btn-primary" @click="copyExercise(workout,index)">Kopioi</button>
-                                                -->
-                                                    <button class="btn btn-danger pull-right btn-sm" @click="removeExercise(workout,index)">{{ $t("delete") }}</button>
-                                                </div>
+                                            <div class="col-xs-4 col-load">
+                                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("load") }}</label>
+                                                <input type="number" min="0" step="5" class="form-control" v-model="exercise.loadFrom" />
+                                                <i class="fa fa-arrow-right"></i>
+                                                <input type="number" min="0" step="5" class="form-control" v-model="exercise.loadTo" />
+                                            </div>
+                                            <div class="actions col-sm-4 col-xs-4 col-actions-3">
+                                                <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
+                                                <button class="btn btn-sm" @click="moveExerciseUp(workout,index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
+                                                <button class="btn btn-sm" @click="moveExerciseDown(workout,index)" :disabled="index === (workout.exercises.length - 1)"><i class="fa fa-arrow-down"></i></button>
+                                                <button class="btn btn-danger btn-sm" @click="deleteExercise(workout,index)">{{ $t("delete") }}</button>
                                             </div>
                                         </div>
                                         <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
@@ -87,7 +118,7 @@
                 <div class="col-sm-12">
                     <button class="btn btn-primary" @click="save">{{ $t("save") }}</button>
                     <button class="btn" @click="cancel">{{ $t("cancel") }}</button>
-                    <button class="btn btn-danger btn-sm" v-if="id" @click="removeWorkout">{{ $t("delete") }}</button>
+                    <button class="btn btn-danger btn-sm" v-if="id" @click="deleteWorkout">{{ $t("delete") }}</button>
                 </div>
             </div>
         </section>
@@ -107,7 +138,8 @@ export default {
             name: undefined,
             workouts: [{ name: 'Päivä 1', exercises: [] }],
             exercises: [],
-            selectedWorkout: undefined
+            selectedWorkout: undefined,
+            frequencyPresets:[]
         }
     },
     computed: {
@@ -116,9 +148,19 @@ export default {
         'exercise-picker': require('../../components/exercise-picker')
     },
     methods: {
+        frequencyText(value) {
+            if (!value) {
+                return '';
+            }
+            var option = this.frequencyPresets.find(f => f.value == value);
+            if (option) {
+                return option.text;
+            }
+            return `${value} ${this.$t('timesAbbr')} / ${this.$t('weekAbbr')}`;
+        },
         addWorkout(){
             var count = this.workouts.length;
-            this.workouts.push({ name: 'Päivä ' + (count + 1), exercises: [], expanded: true });
+            this.workouts.push({ name: 'Päivä ' + (count + 1), exercises: [], expanded: true, frequency: 1 });
         },
         toggleWorkout(workout){
             workout.expanded = !workout.expanded;
@@ -133,11 +175,11 @@ export default {
             this.workouts.splice(index, 1);
             this.workouts.splice(index + 1, 0, workout);
         },
-        removeWorkout(index) {
+        deleteWorkout(index) {
             this.workouts.splice(index, 1);
         },
         addExercise(workout){
-            workout.exercises.push({exercise: null, sets: null, reps: null});
+            workout.exercises.push({exercise: null, sets: null, reps: null, loadFrom: null, loadTo: null});
         },
         copyExercise(workout, index) {
             var original = workout.exercises[index];
@@ -147,14 +189,14 @@ export default {
         moveExerciseUp(workout, index) {
             var exercise = workout.exercises[index];
             workout.exercises.splice(index, 1);
-            workout.exercises.splice(index - 1, 0, set);
+            workout.exercises.splice(index - 1, 0, exercise);
         },
         moveExerciseDown(workout, index) {
             var exercise = workout.exercises[index];
             workout.exercises.splice(index, 1);
-            workout.exercises.splice(index + 1, 0, set);
+            workout.exercises.splice(index + 1, 0, exercise);
         },
-        removeExercise(workout, index) {
+        deleteExercise(workout, index) {
             workout.exercises.splice(index, 1);
         },
         processNewExercise(workoutExercise, exerciseName) {
@@ -178,7 +220,23 @@ export default {
             var routine = {
                 id: self.id,
                 name: self.name,
-                workouts: self.workouts.map(w => { return { id: w.id, name: w.name, exercises: w.exercises.filter(e => e.exercise).map(e => { return { exerciseId: e.exercise.id, exerciseName: e.exercise.name, sets: utils.parseFloat(e.sets), reps: utils.parseFloat(e.reps) } }) } })
+                workouts: self.workouts.map(w => {
+                    return {
+                        id: w.id,
+                        name: w.name,
+                        frequency: w.frequency,
+                        exercises: w.exercises.filter(e => e.exercise).map(e => {
+                            return {
+                                exerciseId: e.exercise.id,
+                                exerciseName: e.exercise.name,
+                                sets: utils.parseFloat(e.sets),
+                                reps: utils.parseFloat(e.reps),
+                                loadFrom: e.loadFrom ? utils.parseFloat(e.loadFrom) : null,
+                                loadTo: e.loadTo ? utils.parseFloat(e.loadTo) : null
+                            }
+                        })
+                    }
+                })
             };
             self.$store.dispatch(constants.SAVE_ROUTINE, {
                 routine,
@@ -224,12 +282,22 @@ export default {
                             return {
                                 id: w.id,
                                 name: w.name,
-                                exercises: w.exercises.map(we => { return { exercise: exercises.filter(e => e.id === we.exerciseId)[0], sets: we.sets, reps: we.reps } })
+                                frequency: w.frequency,
+                                exercises: w.exercises.map(we => {
+                                    return {
+                                        exercise: exercises.filter(e => e.id === we.exerciseId)[0],
+                                        sets: we.sets,
+                                        reps: we.reps,
+                                        loadFrom: we.loadFrom,
+                                        loadTo: we.loadTo
+                                    }
+                                })
                             }
                         });
                     }
                     else {
-                        self.workouts = [{ name: 'Päivä 1', exercises: [{}] }]
+                        self.workouts = [];
+                        self.addWorkout();
                     }
                     self.$store.commit(constants.LOADING_DONE);
                 },
@@ -242,9 +310,18 @@ export default {
     },
     created() {
         var self = this;
+         self.frequencyPresets = [
+            { value: 1, text: `1 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
+            { value: 2, text: `2 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
+            { value: 3, text: `3 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
+            { value: 4, text: `4 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
+            { value: 1/2, text: `1 ${self.$t('timesAbbr')} / 2 ${this.$t('weekAbbr')}` },
+            { value: 3/2, text: `3 ${self.$t('timesAbbr')} / 2 ${this.$t('weekAbbr')}` },
+            { value: 5/2, text: `5 ${self.$t('timesAbbr')} / 2 ${this.$t('weekAbbr')}` },
+        ];
         var id = self.$route.params.id;
         if (id == constants.NEW_ID) {
-            self.populate({ id: undefined, name: undefined, ingredients: [{ food: undefined, quantity: undefined, portion: undefined }] });
+            self.populate({ id: undefined, name: undefined });
         }
         else {
             self.$store.dispatch(constants.FETCH_ROUTINE, {
@@ -276,4 +353,7 @@ export default {
     {
         max-width: 1000px;
     }
+
+    label{ display:block;}
+    input{ padding: 6px;}
 </style>

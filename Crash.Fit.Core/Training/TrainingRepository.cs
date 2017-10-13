@@ -86,12 +86,13 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId=@id;";
         public bool CreateExercise(ExerciseDetails exercise)
         {
             exercise.Id = Guid.NewGuid();
+            exercise.Created = DateTimeOffset.Now;
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Exercise(Id, UserId, Name) VALUES(@Id, @UserId, @Name)", exercise, tran);
+                    conn.Execute("INSERT INTO Exercise(Id, UserId, Name,Created) VALUES(@Id, @UserId, @Name,@Created)", exercise, tran);
                     if (exercise.Targets != null && exercise.Targets.Length > 0)
                     {
                         conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId) VALUES(@ExerciseId,@MuscleGroupId)", exercise.Targets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
@@ -178,12 +179,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                     var exercises = multi.Read<RoutineExerciseRaw>().ToList();
                     foreach (var workout in routine.Workouts)
                     {
-                        workout.Exercises = exercises.Where(e => e.RoutineWorkoutId == workout.Id).Select(e => new RoutineExercise
-                        {
-                            ExerciseId = e.ExerciseId,
-                            Sets = e.Sets,
-                            Reps = e.Reps
-                        }).ToArray();
+                        workout.Exercises = exercises.Where(e => e.RoutineWorkoutId == workout.Id).ToArray();
                     }
                 }
                 return routine;
@@ -192,6 +188,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
         public bool CreateRoutine(RoutineDetails routine)
         {
             routine.Id = Guid.NewGuid();
+            routine.Created = DateTimeOffset.Now;
             foreach(var workout in routine.Workouts)
             {
                 workout.Id = Guid.NewGuid();
@@ -201,21 +198,24 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Routine(Id, UserId, Name) VALUES(@Id, @UserId, @Name)", routine, tran);
-                    conn.Execute("INSERT INTO RoutineWorkout(Id,RoutineId,[Index],Name) VALUES(@Id,@RoutineId,@Index,@Name)", routine.Workouts.Select((w, i) => new
+                    conn.Execute("INSERT INTO Routine(Id, UserId, Name,Created) VALUES(@Id, @UserId, @Name,@Created)", routine, tran);
+                    conn.Execute("INSERT INTO RoutineWorkout(Id,RoutineId,[Index],Name,Frequency) VALUES(@Id,@RoutineId,@Index,@Name,@Frequency)", routine.Workouts.Select((w, i) => new
                     {
                         w.Id,
                         RoutineId = routine.Id,
                         Index = i,
-                        w.Name
+                        w.Name,
+                        w.Frequency
                     }), tran);
-                    conn.Execute("INSERT INTO RoutineExercise(RoutineWorkoutId,[Index],ExerciseId,Sets,Reps) VALUES(@RoutineWorkoutId,@Index,@ExerciseId,@Sets,@Reps)", routine.Workouts.SelectMany(w => w.Exercises.Select((e,i) => new
+                    conn.Execute("INSERT INTO RoutineExercise(RoutineWorkoutId,[Index],ExerciseId,Sets,Reps,LoadFrom,LoadTo) VALUES(@RoutineWorkoutId,@Index,@ExerciseId,@Sets,@Reps,@LoadFrom,@LoadTo)", routine.Workouts.SelectMany(w => w.Exercises.Select((e,i) => new
                     {
                         RoutineWorkoutId = w.Id,
                         Index = i,
                         e.ExerciseId,
                         e.Sets,
-                        e.Reps
+                        e.Reps,
+                        e.LoadFrom,
+                        e.LoadTo
                     })), tran);
 
                     tran.Commit();
@@ -251,12 +251,13 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                         if(workout.Id == Guid.Empty)
                         {
                             workout.Id = Guid.NewGuid();
-                            conn.Execute("INSERT INTO RoutineWorkout(Id,RoutineId,[Index],Name) VALUES(@Id,@RoutineId,@Index,@Name)", new
+                            conn.Execute("INSERT INTO RoutineWorkout(Id,RoutineId,[Index],Name,Frequency) VALUES(@Id,@RoutineId,@Index,@Name,@Frequency)", new
                             {
                                 workout.Id,
                                 RoutineId = routine.Id,
                                 Index = i,
-                                workout.Name
+                                workout.Name,
+                                workout.Frequency
                             }, tran);
                         }
                         else
@@ -272,13 +273,15 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
 
                     conn.Execute("UPDATE Routine SET Name=@Name WHERE Id=@Id", routine, tran);
                     
-                    conn.Execute("INSERT INTO RoutineExercise(RoutineWorkoutId,[Index],ExerciseId,Sets,Reps) VALUES(@RoutineWorkoutId,@Index,@ExerciseId,@Sets,@Reps)", routine.Workouts.SelectMany(w => w.Exercises.Select((e, i) => new
+                    conn.Execute("INSERT INTO RoutineExercise(RoutineWorkoutId,[Index],ExerciseId,Sets,Reps,LoadFrom,LoadTo) VALUES(@RoutineWorkoutId,@Index,@ExerciseId,@Sets,@Reps,@LoadFrom,@LoadTo)", routine.Workouts.SelectMany(w => w.Exercises.Select((e, i) => new
                     {
                         RoutineWorkoutId = w.Id,
                         Index = i,
                         e.ExerciseId,
                         e.Sets,
-                        e.Reps
+                        e.Reps,
+                        e.LoadFrom,
+                        e.LoadTo
                     })), tran);
 
                     tran.Commit();
@@ -491,7 +494,136 @@ WHERE WorkoutId=@id ORDER BY [Index];";
         {
             throw new NotImplementedException();
         }
+        public IEnumerable<TrainingGoalDetails> GetTrainingGoals(Guid userId)
+        {
+            return GetTrainingGoals("UserId=@userId AND Deleted IS NULL", new { userId });
+        }
+        public TrainingGoalDetails GetTrainingGoal(Guid id)
+        {
+            return GetTrainingGoals("Id=@id", new { id }).FirstOrDefault();
+        }
+        private IEnumerable<TrainingGoalDetails> GetTrainingGoals(string filter, object parameters)
+        {
+            var sql = $@"
+SELECT * FROM TrainingGoal WHERE {filter};
+SELECT TGE.*, E.Name AS ExerciseName FROM TrainingGoalExercise TGE 
+JOIN Exercise E ON E.Id=TGE.ExerciseId 
+WHERE TGE.TrainingGoalId IN (SELECT Id FROM TrainingGoal WHERE {filter}) ORDER By TGE.[Index];";
 
+            using (var conn = CreateConnection())
+            using (var multi = conn.QueryMultiple(sql, parameters))
+            {
+                var goals = multi.Read<TrainingGoalDetails>().ToList();
+                var exercises = multi.Read<TrainingGoalExerciseRaw>().ToList();
+                foreach (var goal in goals)
+                {
+                    goal.Exercises = exercises.Where(p => p.TrainingGoalId == goal.Id).ToArray();
+                }
+                return goals;
+            }
+        }
+        public void CreateTrainingGoal(TrainingGoalDetails goal)
+        {
+            goal.Id = Guid.NewGuid();
+            foreach (var exercise in goal.Exercises)
+            {
+                exercise.Id = Guid.NewGuid();
+            }
+
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("INSERT INTO TrainingGoal(Id,UserId,Name,Created) VALUES(@Id,@UserId,@Name,@Created)", goal, tran);
+                    conn.Execute("INSERT TrainingGoalExercise(Id,TrainingGoalId,[Index],ExerciseId,Sets,Reps,Frequency) VALUES (@Id,@TrainingGoalId,@index,@ExerciseId,@Sets,@Reps,@Frequency)", goal.Exercises.Select((e,index) => new
+                    {
+                        e.Id,
+                        TrainingGoalId = goal.Id,
+                        index,
+                        e.ExerciseId,
+                        e.Sets,
+                        e.Reps,
+                        e.Frequency
+                    }), tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+        public void UpdateTrainingGoal(TrainingGoalDetails goal)
+        {
+            foreach (var exercise in goal.Exercises)
+            {
+                exercise.Id = Guid.NewGuid();
+            }
+
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("DELETE FROM TrainingGoalExercise WHERE TrainingGoalId=@Id", goal, tran);
+
+                    conn.Execute("UPDATE TrainingGoal SET Name=@Name WHERE Id=@Id", goal, tran);
+                    conn.Execute("INSERT TrainingGoalExercise(Id,TrainingGoalId,[Index],ExerciseId,Sets,Reps,Frequency) VALUES (@Id,@TrainingGoalId,@index,@ExerciseId,@Sets,@Reps,@Frequency)", goal.Exercises.Select((e, index) => new
+                    {
+                        e.Id,
+                        TrainingGoalId = goal.Id,
+                        index,
+                        e.ExerciseId,
+                        e.Sets,
+                        e.Reps,
+                        e.Frequency
+                    }), tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+        public void ActivateTrainingGoal(TrainingGoal goal)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE TrainingGoal SET Active=0 WHERE UserId=@UserId", new { goal.UserId }, tran);
+                    conn.Execute("UPDATE TrainingGoal SET Active=1 WHERE Id=@Id", new { goal.Id }, tran);
+                    tran.Commit();
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+        public void DeleteTrainingGoal(TrainingGoal goal)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE TrainingGoal SET Deleted=@Deleted WHERE Id=@Id", new { goal.Id, Deleted = DateTimeOffset.Now }, tran);
+                    tran.Commit();
+                }
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
         class WorkoutTargetRaw
         {
             public Guid WorkoutId { get; set; }
@@ -512,6 +644,10 @@ WHERE WorkoutId=@id ORDER BY [Index];";
         {
             public Guid ExerciseId { get; set; }
             public Guid MuscleGroupId { get; set; }
+        }
+        class TrainingGoalExerciseRaw : TrainingGoalExercise
+        {
+            public Guid TrainingGoalId { get; set; }
         }
     }
 }

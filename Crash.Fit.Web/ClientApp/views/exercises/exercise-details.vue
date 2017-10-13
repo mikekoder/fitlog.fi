@@ -29,7 +29,7 @@
                             </div>
                             <div class="col-xs-4 col-sm-2">
                                 <div>
-                                    <button class="btn btn-danger btn-sm" @click="removeTarget(index)">{{ $t("delete") }}</button>
+                                    <button class="btn btn-danger btn-sm" @click="deleteTarget(index)">{{ $t("delete") }}</button>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +76,7 @@ export default {
         addTarget(){
             this.targets.push(undefined);
         },
-        removeTarget(index){
+        deleteTarget(index){
             this.targets.splice(index, 1);
         },
         save() {

@@ -9,9 +9,9 @@ namespace Crash.Fit.Nutrition
     public interface INutritionRepository
     {
         IEnumerable<Nutrient> GetNutrients();
-        IEnumerable<UserNutrient> GetUserNutrients(Guid userId);
-        bool CreateNutrient(Nutrient nutrient);
-        bool UpdateNutrient(Nutrient nutrient);
+        IEnumerable<NutrientSetting> GetNutrientSettings(Guid userId);
+        void CreateNutrient(Nutrient nutrient);
+        void UpdateNutrient(Nutrient nutrient);
         IEnumerable<DailyIntake> GetDailyIntakes(string gender, TimeSpan age);
 
 
@@ -20,25 +20,26 @@ namespace Crash.Fit.Nutrition
         IEnumerable<FoodSummary> SearchRecipes(Guid userId);
         FoodDetails GetFood(Guid id);
         IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids);
-        //IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids);
-        bool CreateFood(FoodDetails food);
-        bool UpdateFood(FoodDetails food);
-        bool DeleteFood(Food food);
-        bool RestoreFood(Guid id, out FoodDetails food);
-
-        //IEnumerable<Portion> GetPortions(IEnumerable<Guid> ids);
+        void CreateFood(FoodDetails food);
+        void UpdateFood(FoodDetails food);
+        void DeleteFood(Food food);
+        void RestoreFood(Guid id, out FoodDetails food);
 
         IEnumerable<MealDetails> SearchMeals(Guid userId, DateTimeOffset start, DateTimeOffset end);
         MealDetails GetMeal(Guid id);
-        bool CreateMeal(MealDetails meal);
-        bool UpdateMeal(MealDetails meal);
-        bool DeleteMeal(Meal meal);
-        bool RestoreMeal(Guid id, out MealDetails meal);
+        void CreateMeal(MealDetails meal);
+        void UpdateMeal(MealDetails meal);
+        void DeleteMeal(Meal meal);
+        void RestoreMeal(Guid id, out MealDetails meal);
 
-        bool SaveNutrientSettings(Guid userId, IEnumerable<NutrientSetting> settings);
-        IEnumerable<NutritionGoal> GetNutritionGoals(Guid userId);
-        bool SaveNutritionGoals(Guid userId, IEnumerable<NutritionGoal> goals);
-        void SaveMealDefinitions(Guid userId, IEnumerable<MealDefinition> definitions);
+        void SaveNutrientSettings(IEnumerable<NutrientSetting> settings);
+        IEnumerable<NutritionGoalDetails> GetNutritionGoals(Guid userId);
+        NutritionGoalDetails GetNutritionGoal(Guid id);
+        void CreateNutritionGoal(NutritionGoalDetails goal);
+        void UpdateNutritionGoal(NutritionGoalDetails goal);
+        void ActivateNutritionGoal(NutritionGoal goal);
+        void DeleteNutritionGoal(NutritionGoal goal);
+        void SaveMealDefinitions(IEnumerable<MealDefinition> definitions);
         IEnumerable<FoodSearchResult> SearchLatestFoods(Guid userId, int count);
         IEnumerable<MealDefinition> GetMealDefinitions(Guid userId);
         MealRow GetMealRow(Guid id);

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace Crash.Fit.Api.Models.Nutrition
+namespace Crash.Fit.Nutrition
 {
-    public class NutritionGoalsRequest
+    public class NutritionGoalPeriod
     {
+        public Guid Id { get; set; }
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }
         public bool Wednesday { get; set; }
@@ -16,13 +16,8 @@ namespace Crash.Fit.Api.Models.Nutrition
         public bool Sunday { get; set; }
         public bool ExerciseDay { get; set; }
         public bool RestDay { get; set; }
-        public NutrientValue[] NutrientValues { get; set; }
-
-        public class NutrientValue
-        {
-            public Guid NutrientId { get; set; }
-            public decimal? Min { get; set; }
-            public decimal? Max { get; set; }
-        }
+        public bool WholeDay { get; set; }
+        public Guid[] MealDefinitions { get; set; }
+        public NutritionGoalValue[] Nutrients { get; set; }
     }
 }

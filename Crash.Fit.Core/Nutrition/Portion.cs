@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Nutrition
 {
-    public class Portion : Entity
+    public class Portion
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         /// <summary>
         /// How many portions in a recipe

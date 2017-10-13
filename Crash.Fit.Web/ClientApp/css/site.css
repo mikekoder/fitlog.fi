@@ -1,3 +1,4 @@
+
 .layout-boxed .wrapper {
     max-width: 1400px;
 }
@@ -20,8 +21,52 @@ select.input-20 { width: 190px;}
 select.input-25 { width: 210px;}
 section.content { min-height: 700px;}
 
+
+
+
+.col-load { width: 150px;}
+.col-load input { width: 50px;display: inline-block;}
+
+.col-text-10 { width: 120px; }
+.col-text-20 { width: 180px; }
+.col-text-30 { width: 240px; }
+.col-text-40 { width: 310px;}
+.col-number-5 { width: 80px; }
+.col-number-8 {  width: 100px; }
+.col-date { width: 120px; }
+.col-time{ width: 70px;}
+.col-datetime{ width: 160px;}
+.col-text-10, .col-text-20, .col-text-30, .col-text-40, .col-number-5, .col-number-8, .col-date, .col-time { padding-right: 1px; }
+.col-text-10 input, .col-text-20 input, .col-text-30 input, .col-text-40 input, .col-number-5 input, .col-number-8 input, .col-date input, .col-time input,.col-datetime input { padding: 6px;}
+
+.col-actions-1 { width: 100px;}
+.col-actions-2 { width: 150px;}
+.col-actions-3 { width: 180px; }
+.col-actions-4 { width: 230px; }
+.col-actions-1 label, .col-actions-2 label, .col-actions-3 label, .col-actions-4 label{width: 100%; }
+
+.row.separator { padding: 0px; }
+.row.separator hr { border: 1px solid #00c0ef; }
+
+.table-actions{ margin-top: 10px;}
+.box-header .dropdown-menu { color: #777; }
+
+/*
 @media (min-width: 768px){
+    
     .sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > a > span:not(.pull-right){
         display: none !important;
+    }
+    .layout-boxed .wrapper {
+        min-width: 1000px;
+    }
+}*/
+@media (min-width: 992px) {
+    /*
+    .sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > a > span:not(.pull-right){
+        display: none !important;
+    }*/
+    .layout-boxed .wrapper {
+        min-width: 1000px;
     }
 }
