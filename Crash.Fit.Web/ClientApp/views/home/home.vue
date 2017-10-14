@@ -333,7 +333,7 @@ export default {
     created() {
         var self = this;
         self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success() {},
+            success() { },
             failure() { }
         });
         self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {

@@ -23,6 +23,7 @@ namespace Crash.Fit.Nutrition
         public bool DefaultHideSummary { get; set; }
         public bool DefaultHideDetails { get; set; }
     }
+    /*
     public class UserNutrient : Nutrient
     {
         public int? UserOrder { get; set; }
@@ -31,4 +32,5 @@ namespace Crash.Fit.Nutrition
         public int? HomeOrder { get; set; }
 
     }
+    */
 }

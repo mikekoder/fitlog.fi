@@ -251,6 +251,9 @@ export default {
             return this.dayStates[day.date.getTime()] && true;
         },
         nutrientGoal(nutrientId, day, meal) {
+            if (!this.nutritionGoal || !this.nutritionGoal.periods || this.nutritionGoal.periods.length == 0) {
+                return { min: undefined, max: undefined };
+            }
             var goals;
             if (meal) {
                 goals = this.nutritionGoal.periods.filter(g => !g.wholeDay && (g.mealDefinitions == null || g.mealDefinitions.length == 0 || g.mealDefinitions.contains(meal.mealDefinitionId)) && g.nutrients.find(v => v.nutrientId === nutrientId));

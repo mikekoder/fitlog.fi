@@ -158,11 +158,14 @@ namespace Crash.Fit.Web
                     response.HideSummary = model.DefaultHideSummary;
                     response.HideDetails = model.DefaultHideDetails;
                 });
+                /*
                 m.CreateMap<UserNutrient, NutrientResponse>().AfterMap((model, response) => 
                 {
                     response.HideSummary = model.UserHideSummary ?? model.DefaultHideSummary;
                     response.HideDetails = model.UserHideDetails ?? model.DefaultHideDetails;
                 });
+                */
+                m.CreateMap<NutrientSetting, NutrientSettingResponse>();
                 m.CreateMap<NutrientSettingRequest, NutrientSetting>().AfterMap((request, model) => 
                 {
                     model.HideDetails = request.UserHideDetails;

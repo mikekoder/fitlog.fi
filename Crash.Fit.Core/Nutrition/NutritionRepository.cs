@@ -26,7 +26,7 @@ namespace Crash.Fit.Nutrition
         {
             using (var conn = CreateConnection())
             {
-                return conn.Query<NutrientSetting>("SELECT * FROM NutrientSetting WHERE UserId=@userId", new { userId });
+                return conn.Query<NutrientSetting>("SELECT * FROM NutrientSettings WHERE UserId=@userId", new { userId });
             }
         }
         public void CreateNutrient(Nutrient nutrient)
