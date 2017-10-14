@@ -186,7 +186,9 @@ export default {
     listNutrients(){
         return $.get(this.baseUrl + 'nutrition/nutrients');
     },
-
+    getNutrientSettings(){
+        return $.get(this.baseUrl + 'nutrition/settings');
+    },
     getNutritionGoals() {
         return $.get(this.baseUrl + 'nutrition/goals');
     },

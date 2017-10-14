@@ -29,7 +29,13 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<NutrientResponse[]>(nutrients);
             return Ok(response);
         }
-        
+        [HttpGet("settings")]
+        public IActionResult NutrientSettings()
+        {
+            var nutrients = nutritionRepository.GetNutrientSettings(CurrentUserId);
+            var response = AutoMapper.Mapper.Map<NutrientSettingResponse[]>(nutrients);
+            return Ok(response);
+        }
         [HttpGet("goals/active")]
         public IActionResult ActiveGoal()
         {
@@ -119,7 +125,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok();
         }
         [HttpPut("settings")]
-        public IActionResult Settings([FromBody] NutrientSettingRequest[] request)
+        public IActionResult UpdateSettings([FromBody] NutrientSettingRequest[] request)
         {
             var settings = request.Select((s, index) => 
             {

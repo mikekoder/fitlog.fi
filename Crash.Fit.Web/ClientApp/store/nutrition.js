@@ -313,12 +313,32 @@ export default {
                 }
                 return;
             }
-            api.listNutrients().then(function (nutrients) {
-                commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients })
+            Promise.all([api.listNutrients(), api.getNutrientSettings()]).then(function (results) {
+                var nutrients = results[0];
+                var settings = results[1];
+
+                settings.forEach(s => {
+                    var nutrient = nutrients.find(n => n.id == s.nutrientId);
+                    if (nutrient) {
+                        if (s.hideSummary != null) {
+                            nutrient.hideSummary = s.hideSummary;
+                        }
+                        if (s.hideDetails != null) {
+                            nutrient.hideDetails = s.hideDetails;
+                        }
+                        if (s.order != null) {
+                            nutrient.order = s.order;
+                        }
+                        if (s.homeOrder != null) {
+                            nutrient.homeOrder = s.homeOrder;
+                        }
+                    }
+                });
+                commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients });
                 if (success) {
                     success(nutrients);
                 }
-            }).fail(function () {
+            }).catch(function (reason) {
                 if (failure) {
                     failure();
                 }
@@ -473,7 +493,6 @@ export default {
             state.nutrientsGrouped = grouped;
             state.nutrientsLoaded = true;
         },
-
         [constants.FETCH_NUTRITION_GOALS_SUCCESS](state, { goals }) {
             state.nutritionGoals = goals;
             state.nutritionGoalsLoaded = true;
