@@ -80,7 +80,7 @@
                                                         <chart-pie-energy v-bind:protein="meal.nutrients[proteinId]" v-bind:carb="meal.nutrients[carbId]" v-bind:fat="meal.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
                                                     <div v-else>
-                                                        <nutrient-bar v-bind:goal="nutrientGoal(col.key, day.date, meal)" v-bind:value="meal.nutrients[col.key]" v-bind:precision="col.precision"></nutrient-bar>
+                                                        <nutrient-bar :goal="nutrientGoal(col.key, day.date, meal)" :value="meal.nutrients[col.key]" :precision="col.precision"></nutrient-bar>
                                                     </div>
                                                 </td>
                                             </template>
@@ -114,8 +114,11 @@
     import toaster from '../../toaster'
     import utils from '../../utils'
     import constants from '../../store/constants'
+    import nutrientsMixin from '../../mixins/nutrients'
+    import mealDefinitionsMixin from '../../mixins/meal-definitions'
 
 export default {
+    mixins:[nutrientsMixin, mealDefinitionsMixin],
     data () {
         return {
             selectedGroup: '',
@@ -256,7 +259,7 @@ export default {
             }
             var goals;
             if (meal) {
-                goals = this.nutritionGoal.periods.filter(g => !g.wholeDay && (g.mealDefinitions == null || g.mealDefinitions.length == 0 || g.mealDefinitions.contains(meal.mealDefinitionId)) && g.nutrients.find(v => v.nutrientId === nutrientId));
+                goals = this.nutritionGoal.periods.filter(g => !g.wholeDay && (g.mealDefinitions == null || g.mealDefinitions.length == 0 || g.mealDefinitions.includes(meal.definitionId)) && g.nutrients.find(v => v.nutrientId === nutrientId));
             }
             else {
                 goals = this.nutritionGoal.periods.filter(g => g.wholeDay && g.nutrients.find(v => v.nutrientId === nutrientId));
@@ -336,9 +339,7 @@ export default {
     created() {
         var self = this;
         //self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
-        self.$store.dispatch(constants.FETCH_NUTRIENTS, {});
         self.$store.dispatch(constants.FETCH_ACTIVE_NUTRITION_GOAL, {});
-        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {});
         if(self.start && self.end){
           self.fetchMeals();
         }

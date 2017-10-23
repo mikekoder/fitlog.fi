@@ -34,8 +34,6 @@ Vue.mixin({
         loading() {
             return this.$store.state.loading;
         }
-    },
-    created(){
     }
 });
 

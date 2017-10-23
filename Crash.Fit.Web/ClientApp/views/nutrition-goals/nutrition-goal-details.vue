@@ -71,7 +71,7 @@
                             <tr>
                                 <td colspan="2"><label>{{ $t('onlyMeals') }}</label></td>
                             </tr>
-                            <tr v-for="mealdef in mealDefinitions">
+                            <tr v-for="mealdef in $mealDefinitions">
                                 <td><input type="checkbox" v-model="selectedPeriod.mealDefinitions[mealdef.id]"/></td>
                                 <td>{{ mealdef.name }}</td>
                             </tr>
@@ -79,7 +79,7 @@
                         </tbody>
                     </table>
                      <table class="nutrient-goals">
-                        <tbody v-for="group in groups">
+                        <tbody v-for="group in $nutrientGroups">
                             <tr>
                                 <th class="clickable" @click="toggleGroup(group.id)">
                                     <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
@@ -128,7 +128,12 @@
     import formatters from '../../formatters'
     import toaster from '../../toaster'
     import DAYS from '../../enums/days'
+    import nutrientsMixin from '../../mixins/nutrients'
+    import nutrientGroupsMixin from '../../mixins/nutrient-groups'
+    import mealDefinitionsMixin from '../../mixins/meal-definitions'
+
 export default {
+    mixins:[nutrientsMixin, nutrientGroupsMixin, mealDefinitionsMixin],
     data () {
         return {
             id: undefined,
@@ -139,18 +144,34 @@ export default {
         }
     },
     computed: {
-        groups(){
-            return this.$store.state.nutrition.nutrientGroups;
-        },
         nutrients() {
             return this.$store.state.nutrition.nutrientsGrouped;
-        },
-        mealDefinitions() {
-            return this.$store.state.nutrition.mealDefinitions;
         }
     },
     components: {},
     methods: {
+        $nutrientsLoaded() {
+            var self = this;
+            var id = self.$route.params.id;
+            if (id == constants.NEW_ID) {
+                self.populate({ id: undefined, name: undefined, periods: [] });
+                self.addPeriod();
+                self.$store.commit(constants.LOADING_DONE);
+            }
+            else {
+                self.$store.dispatch(constants.FETCH_NUTRITION_GOAL, {
+                    id,
+                    success(goal) {
+                        self.populate(goal);
+                        self.$store.commit(constants.LOADING_DONE);
+                    },
+                    failure() {
+                        toaster.error(self.$t('routineDetails.fetchFailed'));
+                    }
+                });
+            }
+            self.toggleGroup(self.$nutrientGroups[0].id);
+        },
         addPeriod() {
             var period = {
                 monday: false,
@@ -311,12 +332,12 @@ export default {
             var count = 0;
             for (var id in period.mealDefinitions) {
                 if (period.mealDefinitions[id]) {
-                    var mealdef = self.mealDefinitions.find(d => d.id == id);
+                    var mealdef = self.$mealDefinitions.find(d => d.id == id);
                     text += ', ' + mealdef.name;
                     count++;
                 }
             }
-            if (text.length == 0 || count == self.mealDefinitions.length) {
+            if (text.length == 0 || count == self.$mealDefinitions.length) {
                 return this.$t('everyMeal');
             }
             return text.substr(1);
@@ -324,21 +345,20 @@ export default {
         unit: formatters.formatUnit,
         populate(goal) {
             var self = this;
-            var allNutrients = self.$store.state.nutrition.nutrients;
             self.id = goal.id;
             self.name = goal.name;
             if (goal.periods) {
                 goal.periods.forEach(period => {
                     var mealDefs = period.mealDefinitions;
                     period.mealDefinitions = {};
-                    for (var j in mealDefs) {
-                        period.mealDefinitions[j] = true;
-                    }
+                    mealDefs.forEach(defId => {
+                        period.mealDefinitions[defId] = true;
+                    });
 
                     var nutrients = period.nutrients;
                     period.nutrients = {};
 
-                    allNutrients.forEach(nutrient => {
+                    self.$nutrients.forEach(nutrient => {
                         var value = nutrients.find(n => n.nutrientId == nutrient.id);
                         if (value) {
                             period.nutrients[nutrient.id] = { min: value.min, max: value.max };
@@ -357,42 +377,7 @@ export default {
         }
     },
     created() {
-        var self = this;
-        self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success() {
-                var firstGroup = self.groups[0];
-                self.toggleGroup(firstGroup.id);
-            },
-            failure() {
-                toaster.error(self.$t('fetchFailed'));
-            }
-        });
-        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-            success() {
-            },
-            failure() {
-                toaster.error(self.$t('fetchFailed'));
-            }
-        });
-
-        var id = self.$route.params.id;
-        if (id == constants.NEW_ID) {
-            self.populate({ id: undefined, name: undefined, periods: [] });
-            self.addPeriod();
-            self.$store.commit(constants.LOADING_DONE);
-        }
-        else {
-            self.$store.dispatch(constants.FETCH_NUTRITION_GOAL, {
-                id,
-                success(goal) {
-                    self.populate(goal);
-                    self.$store.commit(constants.LOADING_DONE);
-                },
-                failure() {
-                    toaster.error(self.$t('routineDetails.fetchFailed'));
-                }
-            });
-        }
+        
     }
 }
 </script>

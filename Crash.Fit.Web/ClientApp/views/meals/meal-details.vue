@@ -157,7 +157,11 @@
     import formatters from '../../formatters'
     import utils from '../../utils'
     import toaster from '../../toaster'
+    import nutrientsMixin from '../../mixins/nutrients'
+    import mealDefinitionsMixin from '../../mixins/meal-definitions'
+
 export default {
+    mixins:[nutrientsMixin, mealDefinitionsMixin],
     data () {
         return {
             id: null,
@@ -354,11 +358,6 @@ export default {
     },
     created() {
         var self = this;
-        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {});
-        this.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success() { },
-            failure() { }
-        });
         
         var id = self.$route.params.id;
         var action = self.$route.params.action;

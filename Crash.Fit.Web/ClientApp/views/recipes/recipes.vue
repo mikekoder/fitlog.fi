@@ -42,8 +42,10 @@
     import constants from '../../store/constants'
     import api from '../../api'
     import toaster from '../../toaster'
+    import nutrientsMixin from '../../mixins/nutrients'
 
 export default {
+    mixins:[nutrientsMixin],
     data () {
         return {
             recipes: []

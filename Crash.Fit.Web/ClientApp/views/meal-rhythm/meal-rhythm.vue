@@ -64,8 +64,10 @@
     import api from '../../api'
     import formatters from '../../formatters'
     import toaster from '../../toaster'
+    import mealDefinitionsMixin from '../../mixins/meal-definitions'
 
 export default {
+    mixins:[mealDefinitionsMixin],
     data () {
         return {
             othersId: '',
@@ -79,6 +81,16 @@ export default {
         'datetime-picker': require('../../components/datetime-picker')
     },
     methods: {
+        $mealDefinitionsLoaded(definitions) {
+            var self = this;
+            self.definitions = definitions.filter(d => d.startHour).map(d => { return { id: d.id, name: d.name, start: '01.01.2000 ' + d.startHour + ':' + d.startMinute, end: '01.01.2000 ' + d.endHour + ':' + d.endMinute } });
+                var other = definitions.find(d => !d.startHour);
+                if (other) {
+                    self.othersId = other.id;
+                    self.othersName = other.name;
+                }
+                self.$store.commit(constants.LOADING_DONE);
+        },
         addMeal() {
             this.definitions.push({start: '01.01.2000 10:00', end: '01.01.2000 13:00'});
         },
@@ -102,22 +114,6 @@ export default {
         formatTime: formatters.formatTime
     },
     created() {
-        var self = this;
-        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-            success(definitions) {
-                self.definitions = definitions.filter(d => d.startHour).map(d => { return { id: d.id, name: d.name, start: '01.01.2000 ' + d.startHour + ':' + d.startMinute, end: '01.01.2000 ' + d.endHour + ':' + d.endMinute } });
-                var other = definitions.find(d => !d.startHour);
-                if (other) {
-                    self.othersId = other.id;
-                    self.othersName = other.name;
-                }
-                self.$store.commit(constants.LOADING_DONE);
-            },
-            failure() {
-                toaster.error(self.$t('fetchFailed'));
-            }
-        });
-        
     }
 }
 </script>

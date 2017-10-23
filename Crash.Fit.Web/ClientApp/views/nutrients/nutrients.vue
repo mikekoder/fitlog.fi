@@ -84,7 +84,10 @@
     import api from '../../api'
     import formatters from '../../formatters'
     import toaster from '../../toaster'
+    import nutrientsMixin from '../../mixins/nutrients'
+
 export default {
+    mixins:[nutrientsMixin],
     data () {
         return {
             nutrientSettings: {},
@@ -98,6 +101,22 @@ export default {
     },
     components: {},
     methods: {
+        $nutrientsLoaded(nutrients) {
+            var self = this;
+            var grouped = {};
+            for (var i in nutrients) {
+                var nutrient = nutrients[i];
+                if (grouped[nutrient.fineliGroup]) {
+                    grouped[nutrient.fineliGroup].push(nutrient);
+                }
+                else {
+                    grouped[nutrient.fineliGroup] = [nutrient];
+                }
+
+            }
+            self.nutrientSettings = grouped;
+            self.$store.commit(constants.LOADING_DONE);
+        },
         toggleGroup(group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
         },
@@ -135,24 +154,6 @@ export default {
         unit: formatters.formatUnit
     },
     created() {
-        var self = this;
-        this.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success(nutrients) {
-                var grouped = {};
-                for (var i in nutrients) {
-                    var nutrient = nutrients[i];
-                    if (grouped[nutrient.fineliGroup]) {
-                        grouped[nutrient.fineliGroup].push(nutrient);
-                    }
-                    else {
-                        grouped[nutrient.fineliGroup] = [nutrient];
-                    }
-
-                }
-                self.nutrientSettings = grouped;
-                self.$store.commit(constants.LOADING_DONE);
-            }, failure() { }
-        });
     }
 }
 </script>

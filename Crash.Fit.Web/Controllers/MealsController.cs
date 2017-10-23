@@ -113,6 +113,7 @@ namespace Crash.Fit.Web.Controllers
                 var endParts = (model.End ?? "").Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
                 definitions.Add(new MealDefinition
                 {
+                    Id = model.Id.HasValue ? model.Id.Value : Guid.Empty,
                     UserId = CurrentUserId,
                     Name = model.Name,
                     Start = startParts.Length > 0 ? new TimeSpan(int.Parse(startParts[0]), startParts.Length > 1 ? int.Parse(startParts[1]) : 0,0) : null as TimeSpan?,

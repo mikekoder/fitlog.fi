@@ -96,9 +96,9 @@ export default {
         }
     },
     props: {
-        goal: undefined,
-        value: undefined,
-        precision: undefined
+        goal: Object,
+        value: Number,
+        precision: Number
     },
     created() {
 

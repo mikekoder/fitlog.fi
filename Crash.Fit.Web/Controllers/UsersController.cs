@@ -215,18 +215,14 @@ namespace Crash.Fit.Web.Controllers
             };
             _nutritionRepository.SaveMealDefinitions(mealDefinitions);
 
-            /*
-            var nutrients = _nutritionRepository.GetNutrients();
-            var nutrientSettings = nutrients.Select(n => new NutrientSetting
+            _nutritionRepository.SaveHomeNutrients(user.Id, new[] 
             {
-                NutrientId = n.Id,
-                UserId = CurrentUserId,
-                HideDetails = n.DefaultHideDetails,
-                HideSummary = n.DefaultHideSummary,
-                Order = n.DefaultOrder ?? 0
+                Constants.EnergyDistributionId,
+                Constants.EnergyId,
+                Constants.ProteinId,
+                Constants.CarbId,
+                Constants.FatId
             });
-            _nutritionRepository.SaveNutrientSettings(user.Id, nutrientSettings);
-            */
         }
 
         [HttpPost("logout")]

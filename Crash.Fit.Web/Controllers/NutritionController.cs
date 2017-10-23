@@ -79,6 +79,11 @@ namespace Crash.Fit.Web.Controllers
             var goal = AutoMapper.Mapper.Map<NutritionGoalDetails>(request);
             goal.UserId = CurrentUserId;
 
+            var goals = nutritionRepository.GetNutritionGoals(CurrentUserId);
+            if (!goals.Any())
+            {
+                goal.Active = true;
+            }
             nutritionRepository.CreateNutritionGoal(goal);
 
             var result = AutoMapper.Mapper.Map<NutritionGoalResponse>(goal);

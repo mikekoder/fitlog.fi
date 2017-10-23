@@ -42,58 +42,49 @@
 <script>
     import constants from '../../store/constants'
     import toaster from '../../toaster'
+    import exercisesMixin from '../../mixins/exercises'
 
-export default {
-    data () {
-        return { }
-    },
-    computed: {
-        exercises() {
-            return this.$store.state.training.exercises;
-        }
-    },
-    methods: {
-        createExercise() {
-            this.$router.push({ name: 'exercise-details', params: { id: constants.NEW_ID } });
+    export default {
+        mixins: [exercisesMixin],
+        data() {
+            return {}
         },
-        deleteExercise(exercise) {
-            var self = this;
-            self.$store.dispatch(constants.DELETE_EXERCISE, {
-                exercise,
-                success() {
-                },
-                failure() {
-                    toaster(self.$t('deleteFailed'));
-                }
-            });
-        }
-    },
-    created() {
-        var self = this;
-
-        self.$store.dispatch(constants.FETCH_EXERCISES, {
-            forceRefresh: true,
-            success() {
-                self.$store.commit(constants.LOADING_DONE);
+        computed: {
+        },
+        methods: {
+            createExercise() {
+                this.$router.push({ name: 'exercise-details', params: { id: constants.NEW_ID } });
             },
-            failure() {
-                toaster(self.$t('efetchFailed'));
+            deleteExercise(exercise) {
+                var self = this;
+                self.$store.dispatch(constants.DELETE_EXERCISE, {
+                    exercise,
+                    success() {
+                    },
+                    failure() {
+                        toaster(self.$t('deleteFailed'));
+                    }
+                });
             }
-        });
+        },
+        created() {
+            this.$store.commit(constants.LOADING_DONE);
+        }
     }
-}
 </script>
 
 <style scoped>
-    #exercise-list{
+    #exercise-list {
         width: auto;
-        table-layout: fixed; 
+        table-layout: fixed;
         /*width: 100%;*/
     }
-    #exercise-list td {
-        padding-bottom: 0px;
-    }
-    #exercise-list td span{
-        margin: 5px;
-    }
+
+        #exercise-list td {
+            padding-bottom: 0px;
+        }
+
+            #exercise-list td span {
+                margin: 5px;
+            }
 </style>
