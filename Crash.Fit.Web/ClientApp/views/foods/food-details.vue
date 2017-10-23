@@ -11,6 +11,7 @@
 
                 </div>
             </div>
+            <!--
             <div class="row">
                 <div class="col-sm-6 col-text-40">
                     <div class="form-group">
@@ -20,6 +21,7 @@
 
                 </div>
             </div>
+                -->
             <div class="row">&nbsp;</div>
             <div class="row">
                 <div class="col-sm-12">
@@ -69,7 +71,7 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody v-for="group in nutrientGroups">
+                            <tbody v-for="group in $nutrientGroups">
                                 <tr>
                                     <th class="clickable" colspan="2" @click="toggleGroup(group.id)">
                                         <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
@@ -115,8 +117,11 @@
     import utils from '../../utils'
     import toaster from '../../toaster'
     var defaultNutrientPortion = { id: undefined, name: '100g' };
-    
+    import nutrientsMixin from '../../mixins/nutrients'
+    import nutrientGroupsMixin from '../../mixins/nutrient-groups'
+
 export default {
+    mixins: [nutrientsMixin, nutrientGroupsMixin],
     data () {
         return {
             id: null,
@@ -130,9 +135,6 @@ export default {
         }
     },
     computed: {
-        nutrientGroups() {
-            return this.$store.state.nutrition.nutrientGroups;
-        },
         nutrientsGrouped() {
             return this.$store.state.nutrition.nutrientsGrouped;
         },
@@ -302,7 +304,7 @@ export default {
             });
         }
 
-        self.toggleGroup(self.nutrientGroups[0].id);
+        self.toggleGroup(self.$nutrientGroups[0].id);
     }
 }
 </script>

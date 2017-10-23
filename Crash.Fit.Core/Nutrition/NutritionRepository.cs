@@ -323,7 +323,7 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
                     var rowNutrients = multi.Read<MealRowNutrientRaw>().ToArray();
                     foreach(var row in meal.Rows)
                     {
-                        row.Nutrients = rowNutrients.Where(r => r.RowId == row.Id).ToArray();
+                        row.Nutrients = rowNutrients.Where(r => r.MealRowId == row.Id).ToArray();
                     }
                 }
                 return meal;
@@ -354,7 +354,7 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
                     meal.Rows = rows.Where(r => r.MealId == meal.Id).ToArray();
                     foreach(var row in meal.Rows)
                     {
-                        row.Nutrients = rowNutrients.Where(r => r.MealId == row.MealId && r.RowId == row.Id).ToArray();
+                        row.Nutrients = rowNutrients.Where(r => r.MealRowId == row.Id).ToArray();
                     }
                 }
                 return meals;
@@ -583,7 +583,7 @@ SELECT * FROM NutritionGoalValue WHERE NutritionGoalPeriodId IN (SELECT Id FROM 
             {
                 try
                 {
-                    conn.Execute("INSERT INTO NutritionGoal(Id,UserId,Name,Created) VALUES(@Id,@UserId,@Name,@Created)", goal, tran);
+                    conn.Execute("INSERT INTO NutritionGoal(Id,UserId,Name,Active,Created) VALUES(@Id,@UserId,@Name,@Active,@Created)", goal, tran);
                     conn.Execute("INSERT NutritionGoalPeriod(Id,NutritionGoalId,[Index],Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,ExerciseDay,RestDay,WholeDay) VALUES (@Id,@NutritionGoalId,@index,@Monday,@Tuesday,@Wednesday,@Thursday,@Friday,@Saturday,@Sunday,@ExerciseDay,@RestDay,@WholeDay)", goal.Periods.Select((p,index) => new
                     {
                         p.Id,
@@ -654,7 +654,7 @@ SELECT * FROM NutritionGoalValue WHERE NutritionGoalPeriodId IN (SELECT Id FROM 
                         p.RestDay,
                         p.WholeDay
                     }), tran);
-                    conn.Execute("INSERT INTO NutritionGoalMeal(NutritionGoalPerionId,MealDefitionId) VALUES(@Id,MealDefitionId)", goal.Periods.SelectMany(p => p.MealDefinitions.Select(m => new
+                    conn.Execute("INSERT INTO NutritionGoalMeal(NutritionGoalPeriodId,MealDefinitionId) VALUES(@Id,@MealDefinitionId)", goal.Periods.SelectMany(p => p.MealDefinitions.Select(m => new
                     {
                         p.Id,
                         MealDefinitionId = m
@@ -724,9 +724,9 @@ SELECT * FROM NutritionGoalValue WHERE NutritionGoalPeriodId IN (SELECT Id FROM 
 USING(select @Id AS Id) AS Source
 ON(MealDefinition.Id = Source.Id)
 WHEN MATCHED THEN
-    UPDATE SET Name = @Name, Start=@Start, [End]=@End, Updated=GETDATE()
+    UPDATE SET Name = @Name, Start=@Start, [End]=@End
 WHEN NOT MATCHED THEN
-    INSERT(Id,UserId, Name, Start,[End], Created,Updated) VALUES(@Id,@UserId, @Name, @Start,@End,GETDATE(),GETDATE());";
+    INSERT(Id,UserId, Name, Start,[End], Created) VALUES(@Id,@UserId, @Name, @Start,@End,GETDATE());";
 
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -857,8 +857,7 @@ ORDER BY FoodUsage.UsageCount DESC";
         }
         private class MealRowNutrientRaw : NutrientAmount
         {
-            public Guid MealId { get; set; }
-            public Guid RowId { get; set; }
+            public Guid MealRowId { get; set; }
         }
         private class NutritionGoalPeriodRaw : NutritionGoalPeriod
         {

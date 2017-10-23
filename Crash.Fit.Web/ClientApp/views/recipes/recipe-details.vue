@@ -147,7 +147,7 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody v-for="group in groups">
+                            <tbody v-for="group in $nutrientGroups">
                                 <tr>
                                     <th class="clickable" colspan="2" @click="toggleGroup(group.id)">
                                         <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
@@ -187,7 +187,11 @@
     import formatters from '../../formatters'
     import utils from '../../utils'
     import toaster from '../../toaster'
+    import nutrientsMixin from '../../mixins/nutrients'
+    import nutrientGroupsMixin from '../../mixins/nutrient-groups'
+
 export default {
+    mixins:[nutrientsMixin,nutrientGroupsMixin],
     data () {
         return {
             id: null,
@@ -202,9 +206,6 @@ export default {
     computed: {
         constants() {
             return constants;
-        },
-        groups(){
-            return this.$store.state.nutrition.nutrientGroups;
         },
         allNutrients() {
             return this.$store.state.nutrition.nutrientsGrouped;
@@ -256,7 +257,7 @@ export default {
             this.ingredients.push({ food: null, quantity: null, portion: undefined });
         },
         addPortion(){
-            this.portions.push({ name: null, weight: null, number: null});
+            this.portions.push({ name: null, weight: null, amount: null});
         },
         deletePortion(index) {
             this.portions.splice(index, 1);
@@ -371,11 +372,7 @@ export default {
             });
         }
 
-        this.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success() { },
-            failure() { }
-        });
-        this.toggleGroup(this.groups[0].id);
+        this.toggleGroup(this.$nutrientGroups[0].id);
     }
 }
 </script>

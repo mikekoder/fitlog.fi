@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!loading">     
+    <div v-if="!loading">
         <section class="content-header"><h1>{{ $t("workouts") }}</h1></section>
         <section class="content">
             <div class="row">
@@ -80,206 +80,198 @@
     import moment from 'moment'
     import toaster from '../../toaster'
     import utils from '../../utils'
+    import exercisesMixin from '../../mixins/exercises'
 
-export default {
-    data () {
-        return {   
-        }
-    },
-    computed: {
-        muscleGroups(){
-            return this.$store.state.training.muscleGroups;
+    export default {
+        mixins: [exercisesMixin],
+        data() {
+            return {
+            }
         },
-        exercises() {
-            return this.$store.state.training.exercises;
+        computed: {
+            muscleGroups() {
+                return this.$store.state.training.muscleGroups;
+            },
+            workouts() {
+                var self = this;
+                return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
+            },
+            activeRoutine() {
+                return this.$store.state.training.activeRoutine;
+            },
+            start() {
+                var self = this;
+                return this.$store.state.training.workoutsDisplayStart;
+            },
+            end() {
+                var self = this;
+                return this.$store.state.training.workoutsDisplayEnd;
+            },
         },
-        workouts(){
-            var self = this;
-            return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
+        components: {
+            'datetime-picker': require('../../components/datetime-picker')
         },
-        activeRoutine(){
-            return this.$store.state.training.activeRoutine;
-        },
-        start(){
-            var self = this;
-            return this.$store.state.training.workoutsDisplayStart;
-        },
-        end(){
-            var self = this;
-            return this.$store.state.training.workoutsDisplayEnd;
-        },
-    },
-    components: {
-        'datetime-picker': require('../../components/datetime-picker')
-    },
-    methods: {
-        showWeek(){
-            var end = moment().endOf('day').toDate();
-            var start = moment().startOf('isoWeek').toDate();
-            this.showDateRange(start, end);
-        },
-        showMonth(){
-            var end = moment().endOf('day').toDate();
-            var start = moment().startOf('month').toDate();
-            this.showDateRange(start, end);
-        },
-        showDays(days) {
-            var end = moment().endOf('day').toDate();
-            var start = moment().subtract(days - 1, 'days').startOf('day').toDate();
-            this.showDateRange(start, end);
-        },
-        showDateRange(start, end){
-          var self = this;
-            self.$store.dispatch(constants.SELECT_WORKOUT_DATE_RANGE, {
-                start: start,
-                end: end,
-                success() {
-                    self.fetchWorkouts();
+        methods: {
+            showWeek() {
+                var end = moment().endOf('day').toDate();
+                var start = moment().startOf('isoWeek').toDate();
+                this.showDateRange(start, end);
+            },
+            showMonth() {
+                var end = moment().endOf('day').toDate();
+                var start = moment().startOf('month').toDate();
+                this.showDateRange(start, end);
+            },
+            showDays(days) {
+                var end = moment().endOf('day').toDate();
+                var start = moment().subtract(days - 1, 'days').startOf('day').toDate();
+                this.showDateRange(start, end);
+            },
+            showDateRange(start, end) {
+                var self = this;
+                self.$store.dispatch(constants.SELECT_WORKOUT_DATE_RANGE, {
+                    start: start,
+                    end: end,
+                    success() {
+                        self.fetchWorkouts();
+                    }
+                });
+            },
+            fetchWorkouts() {
+                var self = this;
+                this.$store.dispatch(constants.FETCH_WORKOUTS, {
+                    start: self.start,
+                    end: self.end,
+                    success() {
+                        self.$store.commit(constants.LOADING_DONE);
+                    }
+                });
+            },
+            createWorkout(routineId, workoutId) {
+                if (routineId && workoutId) {
+                    this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }, query: { [constants.ROUTINE_PARAM]: routineId, [constants.WORKOUT_PARAM]: workoutId } });
                 }
-            });
-        },
-        fetchWorkouts() {
-            var self = this;
-            this.$store.dispatch(constants.FETCH_WORKOUTS, {
-                start: self.start,
-                end: self.end,
-                success() {
-                    self.$store.commit(constants.LOADING_DONE);
+                else {
+                    this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID } });
                 }
-            });
+            },
+            deleteWorkout(workout) {
+                var self = this;
+                self.$store.dispatch(constants.DELETE_WORKOUT, {
+                    workout,
+                    success() { },
+                    failure() {
+                        toaster(self.$t('deleteFailed'));
+                    }
+                });
+            },
+            date: formatters.formatDate,
+            datetime: formatters.formatDateTime,
+            decimal(value, precision) {
+                if (!value) {
+                    return value;
+                }
+                return value.toFixed(precision);
+            }
         },
-        createWorkout(routineId, workoutId) {
-            if (routineId && workoutId) {
-                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }, query: { [constants.ROUTINE_PARAM]: routineId, [constants.WORKOUT_PARAM]: workoutId }  });
+        created() {
+
+            var self = this;
+            this.$store.dispatch(constants.FETCH_MUSCLEGROUPS, {
+                success() { },
+                failure() { }
+            });
+            this.$store.dispatch(constants.FETCH_ROUTINES, {
+                success() { },
+                failure() { }
+            });
+            if (self.start && self.end) {
+                self.fetchWorkouts();
             }
             else {
-                this.$router.push({ name: 'workout-details', params: { id: constants.NEW_ID }});
+                self.showDays(7);
             }
-        },
-        deleteWorkout(workout) {
-            var self = this;
-            self.$store.dispatch(constants.DELETE_WORKOUT, {
-                workout,
-                success() { },
-                failure() {
-                    toaster(self.$t('deleteFailed'));
-                }
-            });
-        },
-        date: formatters.formatDate,
-        datetime: formatters.formatDateTime,
-        decimal(value, precision) {
-            if (!value) {
-                return value;
-            }
-            return value.toFixed(precision);
-        }
-    },
-    created() {
 
-        var self = this;
-        this.$store.dispatch(constants.FETCH_MUSCLEGROUPS, {
-            success() { },
-            failure() { }
-        });
-        this.$store.dispatch(constants.FETCH_EXERCISES, {
-            success() { },
-            failure() { }
-        });
-        this.$store.dispatch(constants.FETCH_ROUTINES, {
-            success() { },
-            failure() { }
-        });
-        if(self.start && self.end){
-            self.fetchWorkouts();
         }
-        else {
-            self.showDays(7);
-        }
-        
     }
-}
 </script>
 
 <style scoped>
-    li.custom-date
-    {
+    li.custom-date {
         padding: 3px 10px;
     }
-    li.custom-date button
-    {
-        margin-top: 3px;
+
+        li.custom-date button {
+            margin-top: 3px;
+        }
+
+    .outer {
+        position: relative;
     }
-    .outer 
-    {
-      position: relative;
+
+    .inner {
+        overflow-x: auto;
+        overflow-y: visible;
+        margin-left: 100px;
     }
-    .inner 
-    {
-      overflow-x: auto;
-      overflow-y: visible;
-      margin-left: 100px;
-    } 
-    #workout-list
-    {
+
+    #workout-list {
         width: auto;
-        table-layout: fixed; 
+        table-layout: fixed;
     }
-    th.time
-    {
+
+    th.time {
         width: 120px;
         white-space: nowrap;
-        border-width:0px;
+        border-width: 0px;
     }
-    
-    th.time > div
-    {
-        transform: translate(86px, 29px) rotate(-45deg);
+
+        th.time > div {
+            transform: translate(86px, 29px) rotate(-45deg);
+        }
+
+            th.time > div > div {
+                border-bottom: 1px solid #ccc;
+                padding: 5px 10px;
+                width: 100px;
+            }
+
+    .freeze {
+        position: absolute;
+        margin-left: -120px;
+        width: 120px;
+        text-align: right;
     }
-    th.time > div > div
-    {
-      border-bottom: 1px solid #ccc;
-      padding: 5px 10px;
-      width:100px;
+
+    th.time {
     }
-    .freeze 
-    {
-      position: absolute;
-      margin-left: -120px;
-      width: 120px;
-      text-align: right;
-    }
-    th.time
-    {
-        
-    }
-   
-    #workout-list  td:nth-child(1)
-    {
+
+    #workout-list td:nth-child(1) {
         border-right: 1px solid #ccc;
     }
-    th.muscle-group
-    {
+
+    th.muscle-group {
         height: 100px;
         white-space: nowrap;
     }
-    th.muscle-group > div
-    {
-       transform: translate(15px, 8px) rotate(-45deg);
-       width: 20px;
+
+        th.muscle-group > div {
+            transform: translate(15px, 8px) rotate(-45deg);
+            width: 20px;
+        }
+
+            th.muscle-group > div > div {
+                border-bottom: 1px solid #ccc;
+                padding: 5px 10px;
+                width: 100px;
+            }
+
+    td.muscle-group {
+        border-right: 1px solid #ccc;
+        text-align: center;
     }
-    th.muscle-group > div > div 
-    {
-      border-bottom: 1px solid #ccc;
-      padding: 5px 10px;
-      width:100px;
-    }
-    td.muscle-group
-    {
-        border-right:1px solid #ccc;
-        text-align:center;
-    }
-     td.freeze, td.muscle-group {
+
+    td.freeze, td.muscle-group {
         padding-top: 12px;
     }
 </style>

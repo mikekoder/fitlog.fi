@@ -322,12 +322,15 @@ export default {
                     if (nutrient) {
                         if (s.hideSummary != null) {
                             nutrient.hideSummary = s.hideSummary;
+                            nutrient.userHideSummary = s.hideSummary;
                         }
                         if (s.hideDetails != null) {
                             nutrient.hideDetails = s.hideDetails;
+                            nutrient.userHideDetails = s.hideDetails;
                         }
                         if (s.order != null) {
                             nutrient.order = s.order;
+                            nutrient.userOrder = s.order;
                         }
                         if (s.homeOrder != null) {
                             nutrient.homeOrder = s.homeOrder;
@@ -497,6 +500,13 @@ export default {
             state.nutritionGoals = goals;
             state.nutritionGoalsLoaded = true;
         },
+        [constants.FETCH_NUTRITION_GOAL_SUCCESS](state, { goal }) {
+            var old = state.nutritionGoals.find(g => g.id == goal.id);
+            if (old) {
+                 state.nutritionGoals.splice(state.nutritionGoals.findIndex(g => g.id == old.id), 1);
+            }
+            state.nutritionGoals.push(goal);
+        },
         [constants.FETCH_ACTIVE_NUTRITION_GOAL_SUCCESS](state, { goal }) {
             state.activeNutritionGoal = goal;
             state.activeNutritionGoalLoaded = true;
@@ -544,6 +554,10 @@ export default {
             state.mealsLoading = false;
         },
         [constants.FETCH_MEAL_SUCCESS](state, { meal }) {
+            var old = state.meals.find(m => m.id == meal.id);
+            if (old) {
+                deleteMeal(old, state)
+            }
             addMeal(meal, state);
         },
         [constants.SAVE_MEAL_STARTED](state) {
@@ -676,6 +690,9 @@ export default {
             meal.rows.push(row);
         }
         for (var i in row.nutrients) {
+            if (!meal.nutrients[i]) {
+                meal.nutrients[i] = 0;
+            }
             meal.nutrients[i] += row.nutrients[i];
         }
     }

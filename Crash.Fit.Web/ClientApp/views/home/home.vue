@@ -153,8 +153,11 @@
     import formatters from '../../formatters'
     import toaster from '../../toaster'
     import moment from 'moment'
+    import nutrientsMixin from '../../mixins/nutrients'
+    import mealDefinitionsMixin from '../../mixins/meal-definitions'
 
 export default {
+    mixins:[nutrientsMixin, mealDefinitionsMixin],
     data () {
         return {
             proteinId: constants.PROTEIN_ID,
@@ -183,13 +186,13 @@ export default {
             return this.date(this.selectedDate);
         },
         visibleNutrients() {
-            return this.$store.state.nutrition.nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1,n2) => n1.homeOrder - n2.homeOrder);
+            return this.$nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1,n2) => n1.homeOrder - n2.homeOrder);
         },
         meals() {
             var self = this;
             var start = moment(self.selectedDate).startOf('day');
             var end = moment(self.selectedDate).endOf('day');
-            var defs = self.$store.state.nutrition.mealDefinitions;
+            var defs = self.$mealDefinitions;
             var meals = self.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(start, end));
             var result = defs.map(d => { return { definition: d, meal: meals.find(m => m.definitionId == d.id) } });
             meals.filter(m => !m.definitionId).forEach(m => {
@@ -216,14 +219,12 @@ export default {
             return result;
         },
         nutrientGroups() {
-            var nutrients = this.$store.state.nutrition.nutrients;
             return this.$store.state.nutrition.nutrientGroups.map(g => {
                 return {
                     name: g.name,
-                    nutrients: nutrients.filter(n => n.fineliGroup == g.id).sort((n1, n2) => n1.name < n2.name ? -1 : 1)
+                    nutrients: this.$nutrients.filter(n => n.fineliGroup == g.id).sort((n1, n2) => n1.name < n2.name ? -1 : 1)
                 }
             });
-            return 
         }
     },
     components: {
@@ -332,16 +333,6 @@ export default {
     },
     created() {
         var self = this;
-        self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-            success() { },
-            failure() { }
-        });
-        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-            success() {
-                self.fetchMeals();
-            },
-            failure() { }
-        });
         self.$store.dispatch(constants.FETCH_LATEST_FOODS, {
             success() { },
             failure() { }
@@ -350,6 +341,7 @@ export default {
             success() { },
             failure() { }
         });
+        self.fetchMeals();
         this.$store.commit(constants.LOADING_DONE);
     }
 }
