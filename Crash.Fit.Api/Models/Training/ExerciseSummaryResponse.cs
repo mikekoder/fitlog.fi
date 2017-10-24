@@ -8,5 +8,6 @@ namespace Crash.Fit.Api.Models.Training
     public class ExerciseSummaryResponse : ExerciseResponse
     {
         public int UsageCount { get; set; }
+        public decimal? OneRepMax { get; set; }
     }
 }

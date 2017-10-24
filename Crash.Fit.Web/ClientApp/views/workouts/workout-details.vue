@@ -177,7 +177,16 @@ export default {
                 success(exercises) {
                     self.exercises = exercises;
                     if (workout.sets && workout.sets.length > 0) {
-                        self.sets = workout.sets.map(s => { return { exercise: self.exercises.filter(e => e.id === s.exerciseId)[0], reps: s.reps, weights: s.weights } });
+                        
+                        self.sets = workout.sets.map(s =>
+                        {
+                            var exercise = self.exercises.find(e => e.id === s.exerciseId);
+                            var weights = (s.load || s.load == 0) && exercise.oneRepMax ? s.load / 100 * exercise.oneRepMax : undefined;
+                            if (weights) {
+                                weights = utils.roundToNearest(weights, 2.5);
+                            }
+                            return { exercise, reps: s.reps, weights };
+                        });
                     }
                     else {
                         self.sets = [{ exercise: null, reps: null, weights: null }];
@@ -209,8 +218,11 @@ export default {
                     success(routine) {
                         var routineWorkout = routine.workouts.find(w => w.id === routineWorkoutId);
                         routineWorkout.exercises.forEach(e => {
-                            for(var i = 0; i < e.sets; i++){
-                                workout.sets.push({ exerciseId: e.exerciseId, reps: e.reps });
+                            var loadFrom = e.loadFrom || e.loadFrom == 0 ? e.loadFrom : e.loadTo;
+                            var loadTo = e.loadTo || e.loadTo == 0 ? e.loadTo : e.loadFrom;
+                            var step = (loadFrom || loadFrom == 0) && (loadTo || loadTo == 0) ? (loadTo - loadFrom) / (e.sets - 1) : undefined;
+                            for (var i = 0; i < e.sets; i++){
+                                workout.sets.push({ exerciseId: e.exerciseId, reps: e.reps, load: (step || step == 0) ? loadFrom + i * step : undefined });
                             }
                         });
                         self.populate(workout);

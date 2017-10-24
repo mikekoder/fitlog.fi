@@ -50,13 +50,14 @@ namespace Crash.Fit.Training
                 return conn.Query<Exercise>(sql, parameters);
             }
         }
-        public IEnumerable<ExerciseDetails> SearchUserExercises(Guid userId)
+        public IEnumerable<ExerciseDetails> SearchUserExercises(Guid userId, DateTimeOffset start1RM)
         {
-            var sql = @"
-SELECT Exercise.*,(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount FROM Exercise WHERE UserId=@userId AND Deleted IS NULL;
-SELECT * FROM ExerciseTarget";
+            var filter = "UserId=@userId AND Deleted IS NULL";
+            var sql = $@"
+SELECT Exercise.*,(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount, (SELECT MAX (S.OneRepMax) FROM WorkoutSet S JOIN Workout W ON W.Id=S.WorkoutId WHERE S.ExerciseId=Exercise.Id AND W.Time > @time AND W.UserId=@userId) AS OneRepMax FROM Exercise WHERE {filter};
+SELECT * FROM ExerciseTarget WHERE ExerciseId IN (SELECT Id FROM Exercise WHERE {filter})";
             using (var conn = CreateConnection())
-            using (var multi = conn.QueryMultiple(sql, new { userId }))
+            using (var multi = conn.QueryMultiple(sql, new { userId, time = start1RM }))
             {
                 var exercises = multi.Read<ExerciseDetails>().ToList();
                 var targets = multi.Read<ExerciseTargetRaw>().ToList();
@@ -414,14 +415,15 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                     conn.Execute("INSERT INTO Workout(Id, UserId, Time) VALUES(@Id, @UserId, @Time)", workout, tran);
                     if (workout.Sets != null)
                     {
-                        conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights)", workout.Sets.Select((s, i) => new
+                        conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,OneRepMax) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@OneRepMax)", workout.Sets.Select((s, i) => new
                         {
                             s.Id,
                             WorkoutId = workout.Id,
                             Index = i,
                             s.ExerciseId,
                             s.Reps,
-                            s.Weights
+                            s.Weights,
+                            s.OneRepMax
                         }), tran);
                     }
                     tran.Commit();
@@ -453,14 +455,15 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                     conn.Execute("DELETE FROM WorkoutSet WHERE WorkoutId=@Id", new { workout.Id }, tran);
 
                     conn.Execute("UPDATE Workout SET Time=@Time WHERE Id=@Id", workout, tran);
-                    conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights)", workout.Sets.Select((s, i) => new
+                    conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,OneRepMax) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@OneRepMax)", workout.Sets.Select((s, i) => new
                     {
                         s.Id,
                         WorkoutId = workout.Id,
                         Index = i,
                         s.ExerciseId,
                         s.Reps,
-                        s.Weights
+                        s.Weights,
+                        s.OneRepMax
                     }), tran);
                     tran.Commit();
                     return true;

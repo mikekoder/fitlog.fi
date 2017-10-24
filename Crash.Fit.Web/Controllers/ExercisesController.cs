@@ -23,7 +23,7 @@ namespace Crash.Fit.Web.Controllers
         [HttpGet("")]
         public IActionResult List()
         {
-            var exercises = trainingRepository.SearchUserExercises(CurrentUserId).OrderBy(e => e.Name);
+            var exercises = trainingRepository.SearchUserExercises(CurrentUserId, DateTimeOffset.Now.AddMonths(-1)).OrderBy(e => e.Name);
 
             var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse[]>(exercises);
             return Ok(response);
