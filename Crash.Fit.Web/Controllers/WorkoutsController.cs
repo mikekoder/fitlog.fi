@@ -46,6 +46,7 @@ namespace Crash.Fit.Web.Controllers
             CreateExercises(request.Sets);
             var workout = AutoMapper.Mapper.Map<WorkoutDetails>(request);
             workout.UserId = CurrentUserId;
+            Calculate1RMs(workout.Sets);
             trainingRepository.CreateWorkout(workout);
 
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
@@ -74,6 +75,7 @@ namespace Crash.Fit.Web.Controllers
             }
             CreateExercises(request.Sets);
             AutoMapper.Mapper.Map(request, workout);
+            Calculate1RMs(workout.Sets);
             trainingRepository.UpdateWorkout(workout);
 
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
@@ -159,7 +161,7 @@ namespace Crash.Fit.Web.Controllers
             }
 
             var exercises = new List<Exercise>();
-            exercises.AddRange(trainingRepository.SearchUserExercises(CurrentUserId));
+            exercises.AddRange(trainingRepository.SearchUserExercises(CurrentUserId, DateTimeOffset.Now));
             foreach (var set in sets.Where(s => s.ExerciseId == null && !string.IsNullOrWhiteSpace(s.ExerciseName)))
             {
                 var exercise = exercises.FirstOrDefault(e => e.Name.Equals(set.ExerciseName, StringComparison.CurrentCultureIgnoreCase));
@@ -178,6 +180,13 @@ namespace Crash.Fit.Web.Controllers
                     exercises.Add(newExercise);
                     set.ExerciseId = newExercise.Id;
                 }
+            }
+        }
+        private void Calculate1RMs(IEnumerable<WorkoutSet> sets)
+        {
+            foreach(var set in sets.Where(s => s.Reps > 0 && s.Reps <= 10 && s.Weights > 0))
+            {
+                set.OneRepMax = TrainingUtils.Calculate1RM(set.Reps, set.Weights);
             }
         }
     }

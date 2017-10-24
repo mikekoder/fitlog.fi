@@ -7,20 +7,22 @@
                     <button class="btn btn-primary" @click="createExercise">{{ $t("create") }}</button>
                 </div>
             </div>
-            <div class="row" v-if="exercises.length > 0">
+            <div class="row" v-if="$exercises.length > 0">
                 <div class="col-sm-12">
                     <table class="table" id="exercise-list">
                         <thead>
                             <tr>
                                 <th>{{ $t("name") }}</th>
                                 <th>{{ $t("sets") }}</th>
+                                <th>{{ $t("1rm") }}</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="exercise in exercises">
+                            <tr v-for="exercise in $exercises">
                                 <td><router-link :to="{ name: 'exercise-details', params: { id: exercise.id } }">{{ exercise.name }}</router-link></td>
                                 <td>{{ exercise.usageCount }}</td>
+                                <td>{{ exercise.oneRepMax }}</td>
                                 <td>
                                     <button class="btn btn-danger btn-xs" @click="deleteExercise(exercise)">{{ $t("delete") }}</button>
                                 </td>
@@ -29,7 +31,7 @@
                     </table>
                 </div>
             </div>
-            <div class="row" v-if="exercises.length == 0">
+            <div class="row" v-if="$exercises.length == 0">
                 <div class="col-sm-12">
                     <br />
                     {{ $t("noExercises") }}

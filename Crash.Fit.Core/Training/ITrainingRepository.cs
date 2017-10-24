@@ -10,7 +10,7 @@ namespace Crash.Fit.Training
         IEnumerable<MuscleGroup> GetMuscleGroups();
 
         IEnumerable<Exercise> SearchExercises(string[] nameTokens, Guid? userId);
-        IEnumerable<ExerciseDetails> SearchUserExercises(Guid userId);
+        IEnumerable<ExerciseDetails> SearchUserExercises(Guid userId, DateTimeOffset start1RM);
         ExerciseDetails GetExercise(Guid id);
         bool CreateExercise(ExerciseDetails exercise);
         bool UpdateExercise(ExerciseDetails exercise);

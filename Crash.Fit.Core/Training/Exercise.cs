@@ -14,6 +14,7 @@ namespace Crash.Fit.Training
     public class ExerciseSummary : Exercise
     {
         public int UsageCount { get; set; }
+        public decimal? OneRepMax { get; set; }
     }
     public class ExerciseDetails : ExerciseSummary
     {

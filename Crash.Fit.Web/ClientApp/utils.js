@@ -6,6 +6,10 @@ export default {
         }
         return parseFloat((value || '0').replace(',', '.'));
     },
+    roundToNearest(value, step) {
+        var inv = 1.0 / step;
+        return Math.round(value * inv) / inv;
+    },
     previousHalfHour(value){
         if (!value) {
             value = new Date();
