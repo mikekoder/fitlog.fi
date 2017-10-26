@@ -77,8 +77,9 @@ export default {
         valueLeft() {
             return (this.value || 0) / this.maxValue * 100;
         },
-        valueStyle(){
-            return 'width: ' + this.valueLeft + '%; background-color: #ccc;';
+        valueStyle() {
+            var color = (this.goal.max && this.value > this.goal.max) || (this.goal.min && this.value < this.goal.min) ? '#F08080' : '#90EE90';
+            return 'width: ' + this.valueLeft + '%; background-color: ' + color + ';';
         },
         title() {
             if (this.goal.min) {
@@ -117,7 +118,7 @@ export default {
     .bar-container {
         width: 100%;
         height: 20px;
-        /*background-color: #f5f5f5;*/
+        background-color: #f5f5f5;
         position:relative;
         cursor: default;
     }
@@ -135,10 +136,10 @@ export default {
         z-index: 2;
     }
     .line.bad > div {
-        background-color: #FF0000;
+        background-color: #DC143C;
     }
     .line.good > div {
-        background-color: green;
+        background-color: #006400;
     }
     .min > div, .max > div {
         position:absolute;
