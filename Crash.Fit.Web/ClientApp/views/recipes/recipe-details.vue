@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="actions col-sm-1 col-xs-12">
                                     <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
-                                    <button class="btn btn-danger btn-sm" @click="deleteRow(index)">{{ $t("delete") }}</button>
+                                    <button class="btn btn-danger btn-sm" @click="deleteIngredient(index)">{{ $t("delete") }}</button>
                                 </div>
                             </div>
                             <div class="separator row hidden-sm hidden-md hidden-lg">
@@ -255,6 +255,9 @@ export default {
     methods: {
         addIngredient() {
             this.ingredients.push({ food: null, quantity: null, portion: undefined });
+        },
+        deleteIngredient(index) {
+            this.ingredients.splice(index, 1);
         },
         addPortion(){
             this.portions.push({ name: null, weight: null, amount: null});
