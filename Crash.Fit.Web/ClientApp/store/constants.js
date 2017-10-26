@@ -12,7 +12,10 @@
     FAT_ID: '9fa87e51-46af-4ca9-8c7d-98176cfa8b78',
     CARB_ID: 'fa5f03f8-6aeb-4d5f-9100-f41cd606d36b',
     ENERGY_ID: '14cbc692-34c3-4f02-ae56-6599c132a794',
-    ENERGY_DISTRIBUTION_ID:'bdc0b05d-38ac-48e5-a048-67cb5ec1ae66',
+    ENERGY_DISTRIBUTION_ID: 'bdc0b05d-38ac-48e5-a048-67cb5ec1ae66',
+    PROTEIN_ENERGY_ID: 'c04b0066-7c2d-4b6c-8f3c-b248fec34a9a',
+    FAT_ENERGY_ID: '6e2a3101-5d3a-44ae-a622-14bd43dafa30',
+    CARB_ENERGY_ID: '0d0d71d6-e770-4e16-a53f-fdca0bcfcca6',
 
     // Profile / User
     STORE_TOKENS: 'STORE_TOKENS',
