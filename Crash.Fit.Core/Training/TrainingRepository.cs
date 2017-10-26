@@ -199,7 +199,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Routine(Id, UserId, Name,Created) VALUES(@Id, @UserId, @Name,@Created)", routine, tran);
+                    conn.Execute("INSERT INTO Routine(Id, UserId, Name,Created,Active) VALUES(@Id, @UserId, @Name,@Created,@Active)", routine, tran);
                     conn.Execute("INSERT INTO RoutineWorkout(Id,RoutineId,[Index],Name,Frequency) VALUES(@Id,@RoutineId,@Index,@Name,@Frequency)", routine.Workouts.Select((w, i) => new
                     {
                         w.Id,
