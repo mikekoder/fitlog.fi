@@ -25,7 +25,7 @@
                             </li>
                         </ul>
                     </div>
-                    <button class="btn btn-primary" @click="createMeal()">{{ $t("log") }}</button> 
+                    <button class="btn btn-primary" @click="createMeal()">{{ $t("log") }}</button>
                     <div class="btn-group" role="group" aria-label="...">
                         <template v-for="group in groups">
                             <button class="btn btn-default" v-bind:class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t(group.id) }}</button>
@@ -59,7 +59,8 @@
                                             <td class="freeze clickable">
                                                 <i v-if="!dayStates[day.date.getTime()]" class="fa fa-chevron-down"></i>
                                                 <i v-if="dayStates[day.date.getTime()]" class="fa fa-chevron-up"></i>
-                                                {{ date(day.date) }}</td>
+                                                {{ date(day.date) }}
+                                            </td>
                                             <template v-for="col in visibleColumns">
                                                 <td class="nutrient" v-if="!col.hideSummary">
                                                     <div class="chart" v-if="col.key === energyDistributionId">
@@ -95,11 +96,11 @@
                         <br />
                         {{ $t("noMeals") }}
                     </div>
-                       
+
                     <div v-for="meal in meals">
                         <div class="alert alert-info" role="alert" v-if="meal.deleted">Ateria {{ datetime(meal.time) }} poistettu. <button class="btn btn-link" @click="restoreMeal(meal)">{{ $t("restore") }}</button></div>
                     </div>
-                        
+
                 </div>
             </div>
         </section>
@@ -116,325 +117,260 @@
     import constants from '../../store/constants'
     import nutrientsMixin from '../../mixins/nutrients'
     import mealDefinitionsMixin from '../../mixins/meal-definitions'
+    import nutritionGoalMixin from '../../mixins/nutrition-goal'
 
-export default {
-    mixins:[nutrientsMixin, mealDefinitionsMixin],
-    data () {
-        return {
-            selectedGroup: '',
-            dayStates: {},
-            selectedMeal: null,
-            proteinId: constants.PROTEIN_ID,
-            carbId: constants.CARB_ID,
-            fatId: constants.FAT_ID,
-            energyDistributionId: constants.ENERGY_DISTRIBUTION_ID,
-            editNutrients: false
-        }
-    },
-    computed: {
-        groups() {
-            return this.$store.state.nutrition.nutrientGroups;
-        },
-        columns(){
-            var columns = [];
-            //columns.push(this.energyDistributionColumn);
-            for(var i in this.$store.state.nutrition.nutrients){
-                var nutrient = this.$store.state.nutrition.nutrients[i];
-                if (nutrient.hideSummary) {
-                    continue;
-                }
-                columns.push({ title: nutrient.name, unit: nutrient.unit, precision: nutrient.precision, key: nutrient.id, hideSummary: nutrient.hideSummary, hideDetails: nutrient.hideDetails, group: nutrient.fineliGroup });
+    export default {
+        mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin],
+        data() {
+            return {
+                selectedGroup: '',
+                dayStates: {},
+                selectedMeal: null,
+                proteinId: constants.PROTEIN_ID,
+                carbId: constants.CARB_ID,
+                fatId: constants.FAT_ID,
+                energyDistributionId: constants.ENERGY_DISTRIBUTION_ID,
+                editNutrients: false
             }
-            return columns;
         },
-        meals(){
-            var self = this;
-            return this.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(self.start, self.end));
-        },
-        workouts(){
-            var self = this;
-            return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
-        },
-        days(){
-            var self = this;
-            return this.$store.state.nutrition.mealDays.filter(md => moment(md.date).isBetween(self.start, self.end, null, '[]'));
-        },
-        visibleColumns() {
-            var self = this;
-            return this.columns.filter(c => !c.group || c.group == self.selectedGroup);
-        },
-        nutritionGoal() {
-            return this.$store.state.nutrition.activeNutritionGoal;
-        },
-        start(){
-            var self = this;
-            return this.$store.state.nutrition.mealsDisplayStart;
-        },
-        end(){
-            var self = this;
-            return this.$store.state.nutrition.mealsDisplayEnd;
-        }
-    },
-    components: {
-        'datetime-picker': require('../../components/datetime-picker'),
-        'chart-pie-energy': require('../../components/energy-distribution-bar'),
-        'nutrient-bar': require('./nutrient-bar')
-    },
-    methods: {
-        showDay() {
-            var end = moment().endOf('day').toDate();
-            var start = moment().startOf('day').toDate();
-            this.showDateRange(start, end);
-        },
-        showWeek(){
-            var end = moment().endOf('day').toDate();
-            var start = moment().startOf('isoWeek').toDate();
-            this.showDateRange(start, end);
-        },
-        showMonth(){
-            var end = moment().endOf('day').toDate();
-            var start = moment().startOf('month').toDate();
-            this.showDateRange(start, end);
-        },
-        showDays(days) {
-            var end = moment().endOf('day').toDate();
-            var start = moment().subtract(days - 1, 'days').startOf('day').toDate();
-            this.showDateRange(start, end);
-        },
-        showDateRange(start, end){
-          var self = this;
-            self.$store.dispatch(constants.SELECT_MEAL_DATE_RANGE, {
-                start: start,
-                end: end,
-                success() {
-                    self.fetchMeals();
+        computed: {
+            groups() {
+                return this.$store.state.nutrition.nutrientGroups;
+            },
+            columns() {
+                var columns = [];
+                //columns.push(this.energyDistributionColumn);
+                for (var i in this.$store.state.nutrition.nutrients) {
+                    var nutrient = this.$store.state.nutrition.nutrients[i];
+                    if (nutrient.hideSummary) {
+                        continue;
+                    }
+                    columns.push({ title: nutrient.name, unit: nutrient.unit, precision: nutrient.precision, key: nutrient.id, hideSummary: nutrient.hideSummary, hideDetails: nutrient.hideDetails, group: nutrient.fineliGroup });
                 }
-            });
-        },
-        editSettings() {
-            this.editNutrients = true;
-        },
-        saveSettings() {
-            this.editNutrients = false;
-        },
-        fetchMeals() {
-            var self = this;
-            self.$store.dispatch(constants.FETCH_MEALS, {
-                start: self.start,
-                end: self.end,
-                success() {
-                    self.$store.commit(constants.LOADING_DONE);
-                }
-            });
-            self.$store.dispatch(constants.FETCH_WORKOUTS, { start: self.start, end: self.end });
-        },
-        selectGroup(group){
-            this.selectedGroup = group;
-        },
-        toggleDay(day) {
-            this.$set(this.dayStates,day.date.getTime(), !(this.dayStates[day.date.getTime()] && true))
-        },
-        createMeal(){
-            this.$router.push({ name: 'meal-details', params: { id: constants.NEW_ID } });
-        },
-        deleteMeal(meal) {
-            var self = this;
-            this.$store.dispatch(constants.DELETE_MEAL, {
-                meal,
-                success() {
-                    var restoreUrl = self.$router.resolve({ name: 'meal-details', params: { id: meal.id, action: constants.RESTORE_ACTION } });
-                    toaster.info(self.$t('mealDeleted') + ' <a href="' + restoreUrl.href + '">' + self.$t('restore') + '</a>');
-                },
-                failure() {
-                    toaster.error(self.$t('deleteFailed'));
-                }
-            });
-        },
-        dayIsExpanded(day){
-            return this.dayStates[day.date.getTime()] && true;
-        },
-        nutrientGoal(nutrientId, day, meal) {
-            if (!this.nutritionGoal || !this.nutritionGoal.periods || this.nutritionGoal.periods.length == 0) {
-                return { min: undefined, max: undefined };
+                return columns;
+            },
+            meals() {
+                var self = this;
+                return this.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(self.start, self.end));
+            },
+            workouts() {
+                var self = this;
+                return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
+            },
+            days() {
+                var self = this;
+                return this.$store.state.nutrition.mealDays.filter(md => moment(md.date).isBetween(self.start, self.end, null, '[]'));
+            },
+            visibleColumns() {
+                var self = this;
+                return this.columns.filter(c => !c.group || c.group == self.selectedGroup);
+            },
+            start() {
+                var self = this;
+                return this.$store.state.nutrition.mealsDisplayStart;
+            },
+            end() {
+                var self = this;
+                return this.$store.state.nutrition.mealsDisplayEnd;
             }
-            var goals;
-            if (meal) {
-                goals = this.nutritionGoal.periods.filter(g => !g.wholeDay && (g.mealDefinitions == null || g.mealDefinitions.length == 0 || g.mealDefinitions.includes(meal.definitionId)) && g.nutrients.find(v => v.nutrientId === nutrientId));
+        },
+        components: {
+            'datetime-picker': require('../../components/datetime-picker'),
+            'chart-pie-energy': require('../../components/energy-distribution-bar'),
+            'nutrient-bar': require('../../components/nutrient-bar')
+        },
+        methods: {
+            showDay() {
+                var end = moment().endOf('day').toDate();
+                var start = moment().startOf('day').toDate();
+                this.showDateRange(start, end);
+            },
+            showWeek() {
+                var end = moment().endOf('day').toDate();
+                var start = moment().startOf('isoWeek').toDate();
+                this.showDateRange(start, end);
+            },
+            showMonth() {
+                var end = moment().endOf('day').toDate();
+                var start = moment().startOf('month').toDate();
+                this.showDateRange(start, end);
+            },
+            showDays(days) {
+                var end = moment().endOf('day').toDate();
+                var start = moment().subtract(days - 1, 'days').startOf('day').toDate();
+                this.showDateRange(start, end);
+            },
+            showDateRange(start, end) {
+                var self = this;
+                self.$store.dispatch(constants.SELECT_MEAL_DATE_RANGE, {
+                    start: start,
+                    end: end,
+                    success() {
+                        self.fetchMeals();
+                    }
+                });
+            },
+            editSettings() {
+                this.editNutrients = true;
+            },
+            saveSettings() {
+                this.editNutrients = false;
+            },
+            fetchMeals() {
+                var self = this;
+                self.$store.dispatch(constants.FETCH_MEALS, {
+                    start: self.start,
+                    end: self.end,
+                    success() {
+                        self.$store.commit(constants.LOADING_DONE);
+                    }
+                });
+                self.$store.dispatch(constants.FETCH_WORKOUTS, { start: self.start, end: self.end });
+            },
+            selectGroup(group) {
+                this.selectedGroup = group;
+            },
+            toggleDay(day) {
+                this.$set(this.dayStates, day.date.getTime(), !(this.dayStates[day.date.getTime()] && true))
+            },
+            createMeal() {
+                this.$router.push({ name: 'meal-details', params: { id: constants.NEW_ID } });
+            },
+            deleteMeal(meal) {
+                var self = this;
+                this.$store.dispatch(constants.DELETE_MEAL, {
+                    meal,
+                    success() {
+                        var restoreUrl = self.$router.resolve({ name: 'meal-details', params: { id: meal.id, action: constants.RESTORE_ACTION } });
+                        toaster.info(self.$t('mealDeleted') + ' <a href="' + restoreUrl.href + '">' + self.$t('restore') + '</a>');
+                    },
+                    failure() {
+                        toaster.error(self.$t('deleteFailed'));
+                    }
+                });
+            },
+            dayIsExpanded(day) {
+                return this.dayStates[day.date.getTime()] && true;
+            },
+            nutrientGoal(nutrientId, day, meal) {
+                return utils.nutrientGoal(this.$nutritionGoal, this.workouts, nutrientId, day, meal);
+            },
+            date: formatters.formatDate,
+            time: formatters.formatTime,
+            datetime: formatters.formatDateTime,
+            unit: formatters.formatUnit,
+            decimal(value, precision) {
+                if (!value) {
+                    return value;
+                }
+                return value.toFixed(precision);
+            },
+            mealName(meal) {
+                if (meal.definitionId) {
+                    var def = this.$store.state.nutrition.mealDefinitions.find(d => d.id == meal.definitionId);
+                    if (def) {
+                        return def.name;
+                    }
+                }
+                return this.time(meal.time);
+            }
+        },
+        created() {
+            var self = this;
+            if (self.start && self.end) {
+                self.fetchMeals();
             }
             else {
-                goals = this.nutritionGoal.periods.filter(g => g.wholeDay && g.nutrients.find(v => v.nutrientId === nutrientId));
+                self.showWeek();
             }
-
-            // exercise/rest day
-            var start = moment(day).startOf('day');
-            var end = moment(day).endOf('day');
-            var workouts = this.workouts.filter(w => moment(w.time).isBetween(start, end));
-            var hasWorkout = workouts.length > 0;
-
-            var goal = goals.find(g => (hasWorkout && g.exerciseDay) || (!hasWorkout && g.restday));
-
-            // weekday
-            if (!goal) {
-                var dayNumber = day.getDay();
-                switch (day.getDay()) {
-                    case 0:
-                        goal = goals.find(g => g.sunday);
-                        break;
-                    case 1:
-                        goal = goals.find(g => g.monday);
-                        break;
-                    case 2:
-                        goal = goals.find(g => g.tuesday);
-                        break;
-                    case 3:
-                        goal = goals.find(g => g.wednesday);
-                        break;
-                    case 4:
-                        goal = goals.find(g => g.thursday);
-                        break;
-                    case 5:
-                        goal = goals.find(g => g.friday);
-                        break;
-                    case 6:
-                        goal = goals.find(g => g.saturday);
-                        break;
-                }
-            }
-           
-            // default
-            if (!goal) {
-                goal = goals.find(g => !g.monday && !g.tuesday && !g.wednesday && !g.thursday && !g.friday && !g.saturday && !g.sunday && !g.exerciseDay && !g.restday);
-            }
-
-            if (goal) {
-                var values = goal.nutrients.find(n => n.nutrientId === nutrientId);
-                if (values) {
-                    return values;
-                }
-               
-            }
-
-            return { min: undefined, max: undefined };
-        },
-        date: formatters.formatDate,
-        time: formatters.formatTime,
-        datetime: formatters.formatDateTime,
-        unit: formatters.formatUnit,
-        decimal(value, precision) {
-            if (!value) {
-                return value;
-            }
-            return value.toFixed(precision);
-        },
-        mealName(meal) {
-            if (meal.definitionId) {
-                var def = this.$store.state.nutrition.mealDefinitions.find(d => d.id == meal.definitionId);
-                if (def) {
-                    return def.name;
-                }
-            }
-            return this.time(meal.time);
+            self.selectGroup(self.groups[0].id);
         }
-    },
-    created() {
-        var self = this;
-        //self.energyDistributionColumn = { title: this.$t('energyDistribution'), unit: 'P/HH/R', hideSummary: false, hideDetails:true, group: 'MACROCMP'},
-        self.$store.dispatch(constants.FETCH_ACTIVE_NUTRITION_GOAL, {});
-        if(self.start && self.end){
-          self.fetchMeals();
-        }
-        else {
-          self.showWeek();    
-        }
-        self.selectGroup(self.groups[0].id);
     }
-}
 </script>
 
 <style scoped>
-    li.custom-date
-    {
+    li.custom-date {
         padding: 3px 10px;
     }
-    li.custom-date button
-    {
-        margin-top: 3px;
+
+        li.custom-date button {
+            margin-top: 3px;
+        }
+
+    .outer {
+        position: relative;
     }
-    .outer 
-    {
-      position: relative;
+
+    .inner {
+        overflow-x: auto;
+        overflow-y: visible;
+        margin-left: 100px;
     }
-    .inner 
-    {
-      overflow-x: auto;
-      overflow-y: visible;
-      margin-left: 100px;
-    }
-    #meal-list
-    {
+
+    #meal-list {
         width: auto;
-        table-layout: fixed; 
+        table-layout: fixed;
         /*width: 100%;*/
     }
-    #meal-list td 
-    {
-        padding-bottom: 0px;
+
+        #meal-list td {
+            padding-bottom: 0px;
+        }
+
+            #meal-list td span {
+                margin: 5px;
+            }
+
+    .freeze {
+        position: absolute;
+        margin-left: -100px;
+        width: 100px;
+        text-align: right;
     }
-    #meal-list td span
-    {
-        margin: 5px;
-    }
-    .freeze 
-    {
-      position: absolute;
-      margin-left: -100px;
-      width: 100px;
-      text-align: right;
-    }
-    th.time
-    {
+
+    th.time {
         top: 112px;
-        border-width:0px;
+        border-width: 0px;
         width: 100px;
     }
-    #meal-list a
-    {
+
+    #meal-list a {
         cursor: pointer;
     }
-    th.nutrient
-    {
+
+    th.nutrient {
         height: 120px;
         white-space: nowrap;
-    }   
-    th.nutrient > div
-    {
-       transform: translate(32px, 0px) rotate(-45deg);
-       width: 40px;
     }
-    th.nutrient > div > div 
-    {
-      border-bottom: 1px solid #ccc;
-      padding: 5px 10px;
-      width: 100px;
+
+        th.nutrient > div {
+            transform: translate(32px, 0px) rotate(-45deg);
+            width: 40px;
+        }
+
+            th.nutrient > div > div {
+                border-bottom: 1px solid #ccc;
+                padding: 5px 10px;
+                width: 100px;
+            }
+
+        th.nutrient:nth-child(2) > div {
+            transform: translate(50px, -5px) rotate(-45deg);
+            width: 60px;
+        }
+
+    th.unit {
+        padding: 0px;
+        text-align: center;
+        border-right: 1px solid #ccc;
     }
-    th.nutrient:nth-child(2) > div
-    {
-        transform: translate(50px, -5px) rotate(-45deg);
-        width: 60px;
-    }
-    th.unit
-    {
-        padding:0px;
-        text-align:center;
-        border-right:1px solid #ccc;
-    }
-    td.nutrient
-    {
+
+    td.nutrient {
         padding-left: 1px;
         padding-right: 1px;
-        border-right:1px solid #ccc;
-        text-align:center;
-        width:40px;
+        border-right: 1px solid #ccc;
+        text-align: center;
+        width: 40px;
         overflow: visible;
     }
 </style>
