@@ -46,6 +46,10 @@ namespace Crash.Fit.Web.Controllers
             CreateExercises(request.Workouts.SelectMany(w => w.Exercises));
             var routine = AutoMapper.Mapper.Map<RoutineDetails>(request);
             routine.UserId = CurrentUserId;
+            if (!trainingRepository.SearchRoutines(CurrentUserId).Any())
+            {
+                routine.Active = true;
+            }
             trainingRepository.CreateRoutine(routine);
 
             var response = AutoMapper.Mapper.Map<RoutineDetailsResponse>(routine);
