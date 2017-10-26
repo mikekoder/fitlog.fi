@@ -601,7 +601,6 @@ export default {
             state.mealDefinitions = definitions;
         },
         [constants.SAVE_MEAL_ROW_SUCCESS](state, { row }) {
-
             updateMealRow(row, state);
         },
         [constants.DELETE_MEAL_ROW_SUCCESS](state, { row }) {
@@ -630,9 +629,12 @@ export default {
     }
 }
 
-    function deleteMeal(meal, state){
+    function findDay(meal, state) {
         var date = moment(meal.time).startOf('day');
-        var day = state.mealDays.find(d => moment(d.date).isSame(date, 'day'));
+        return state.mealDays.find(d => moment(d.date).isSame(date, 'day'));
+    }
+    function deleteMeal(meal, state){
+        var day = findDay(meal, state);
         if(day){
             for (var nutrientId in meal.nutrients) {
                 if (day.nutrients[nutrientId]) {
@@ -643,12 +645,13 @@ export default {
             if(day.meals.length == 0){
                 state.mealDays.splice(state.mealDays.findIndex(d => d == day), 1);
             }
+            calculateEnergyDistribution(day);
         }
         state.meals.splice(state.meals.findIndex(m => m.id == meal.id), 1);
     }
-    function addMeal(meal, state){
+    function addMeal(meal, state) {
         var date = moment(meal.time).startOf('day');
-        var day = state.mealDays.find(d => moment(d.date).isSame(date, 'day'));
+        var day = findDay(meal, state);
         if (!day) {
             day = { date: date.toDate(), meals: [], nutrients: {}};
             state.mealDays.push(day);
@@ -675,14 +678,42 @@ export default {
             day.nutrients[nutrientId] += meal.nutrients[nutrientId];
         }
         state.meals.push(meal);
+        calculateEnergyDistribution(day);
+    }
+    function calculateEnergyDistribution(item) {
+        if (!item || !item.nutrients) {
+            return;
+        }
+        var energy = item.nutrients[constants.ENERGY_ID];
+        var protein = item.nutrients[constants.PROTEIN_ID];
+        var carbs = item.nutrients[constants.CARB_ID];
+        var fat = item.nutrients[constants.FAT_ID];
+
+        var calculatedEnergy = 4 * protein + 4 * carbs + 9 * fat;
+
+        if (energy || calculatedEnergy) {
+            if (protein) {
+                item.nutrients[constants.PROTEIN_ENERGY_ID] = (4 * protein) / (calculatedEnergy || energy) * 100;
+            }
+            if (carbs) {
+                item.nutrients[constants.CARB_ENERGY_ID] = (4 * carbs) / (calculatedEnergy || energy) * 100;
+            }
+            if (fat) {
+                item.nutrients[constants.FAT_ENERGY_ID] = (9 * fat) / (calculatedEnergy || energy) * 100;
+            }
+        }
     }
     function updateMealRow(row, state) {
         var meal = state.meals.find(m => m.id == row.mealId);
+        var day = findDay(meal, state);
         var rowIndex = meal.rows.findIndex(r => r.id == row.id);
         if (rowIndex >= 0) {
             var oldRow = meal.rows[rowIndex];
             for (var i in oldRow.nutrients) {
                 meal.nutrients[i] -= oldRow.nutrients[i];
+                if (day) {
+                    day.nutrients[i] -= oldRow.nutrients[i];
+                }
             }
             meal.rows.splice(rowIndex, 1, row);
         }
@@ -694,10 +725,17 @@ export default {
                 meal.nutrients[i] = 0;
             }
             meal.nutrients[i] += row.nutrients[i];
+            if (day) {
+                day.nutrients[i] += row.nutrients[i];
+            }
         }
+
+        calculateEnergyDistribution(meal);
+        calculateEnergyDistribution(day);
     }
     function deleteMealRow(row, state) {
         var meal = state.meals.find(m => m.id == row.mealId);
+        var day = findDay(meal, state);
         var rowIndex = meal.rows.findIndex(r => r.id == row.id);
         if(rowIndex < 0){
             return;
@@ -709,8 +747,13 @@ export default {
         var oldRow = meal.rows[rowIndex];
         for (var i in oldRow.nutrients) {
             meal.nutrients[i] -= oldRow.nutrients[i];
+            day.nutrients[i] -= oldRow.nutrients[i];
         }
+        
         meal.rows.splice(rowIndex, 1);
+
+        calculateEnergyDistribution(meal);
+        calculateEnergyDistribution(day);
     }
     function deleteNutritionGoal(goal, state) {
         state.nutritionGoals.splice(state.nutritionGoals.findIndex(x => x.id == goal.id), 1);
