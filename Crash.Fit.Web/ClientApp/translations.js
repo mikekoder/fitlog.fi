@@ -46,6 +46,7 @@
     defineMealRhythm: 'Määritä ateriarytmi',
     'delete': 'Poista',
     deleteFailed: 'Poistaminen epäonnistui',
+    deleteSelectedPeriod: 'Poista valittu ajanjakso',
     description: 'Kuvaus',
     details: 'Yksityiskohdat',
     diary: 'Päiväkirja',
