@@ -218,7 +218,7 @@ namespace Crash.Fit.Web.Controllers
             _nutritionRepository.SaveHomeNutrients(user.Id, new[] 
             {
                 Constants.EnergyDistributionId,
-                Constants.EnergyId,
+                Constants.EnergyKcalId,
                 Constants.ProteinId,
                 Constants.CarbId,
                 Constants.FatId
