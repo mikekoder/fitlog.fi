@@ -14,6 +14,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <button class="btn btn-primary" @click="addPeriod">{{ $t("addPeriod") }}</button>
+                    <button class="btn btn-danger" @click="deletePeriod" v-if="selectedPeriod">{{ $t("deleteSelectedPeriod") }}</button>
                 </div>
             </div>
             <br />
@@ -196,8 +197,10 @@ export default {
             this.periods.push(period);
             this.selectedPeriod = period;
         },
-        deletePariod(index){
-            this.periods.splice(index, 1);
+        deletePeriod(period) {
+            var self = this;
+            self.periods.splice(self.periods.findIndex(p => p == self.selectedPeriod), 1);
+            self.selectedPeriod = undefined;
         },
         toggleGroup(group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
