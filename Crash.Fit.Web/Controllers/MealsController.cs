@@ -283,17 +283,48 @@ namespace Crash.Fit.Web.Controllers
                 {
                     row.Weight = row.Quantity;
                 }
-                row.Nutrients = food.Nutrients.Select(n => new NutrientAmount
+                row.Nutrients  = AppendCalculatedNutrients(food.Nutrients.Where(n => !Constants.ComputedNutrientIds.Contains(n.NutrientId)).Select(n => new NutrientAmount
                 {
                     NutrientId = n.NutrientId,
                     Amount = row.Weight * n.Amount / 100m
-                }).ToArray();
+                })).ToArray();
             }
-            meal.Nutrients = meal.Rows.SelectMany(r => r.Nutrients).GroupBy(n => n.NutrientId, n => n.Amount).Select(n => new NutrientAmount
+
+
+            meal.Nutrients = AppendCalculatedNutrients(meal.Rows.SelectMany(r => r.Nutrients.Where(n => !Constants.ComputedNutrientIds.Contains(n.NutrientId))).GroupBy(n => n.NutrientId, n => n.Amount).Select(n => new NutrientAmount
             {
                 NutrientId = n.Key,
                 Amount = n.Sum()
-            }).ToArray();
+            })).ToArray();
+
+        }
+        private IEnumerable<NutrientAmount> AppendCalculatedNutrients(IEnumerable<NutrientAmount> nutrients)
+        {
+            var energy = nutrients.FirstOrDefault(n => n.NutrientId == Constants.EnergyKcalId)?.Amount;
+            var protein = nutrients.FirstOrDefault(n => n.NutrientId == Constants.ProteinId)?.Amount;
+            var carbs = nutrients.FirstOrDefault(n => n.NutrientId == Constants.CarbId)?.Amount;
+            var fat = nutrients.FirstOrDefault(n => n.NutrientId == Constants.FatId)?.Amount;
+            var calculatedEnergy = 4 * protein + 4 * carbs + 9 * fat;
+
+            var newNutrients = new List<NutrientAmount>(nutrients);
+
+            if (energy.HasValue || calculatedEnergy.HasValue)
+            {
+                if (protein.HasValue)
+                {
+                    newNutrients.Add(new NutrientAmount { NutrientId = Constants.ProteinEnergyId, Amount = (4 * protein.Value) / (calculatedEnergy ?? energy).Value * 100 });
+                }
+                if (carbs.HasValue)
+                {
+                    newNutrients.Add(new NutrientAmount { NutrientId = Constants.CarbEnergyId, Amount = (4 * carbs.Value) / (calculatedEnergy ?? energy).Value * 100 });
+                }
+                if (fat.HasValue)
+                {
+                    newNutrients.Add(new NutrientAmount { NutrientId = Constants.FatEnergyId, Amount = (9 * fat.Value) / (calculatedEnergy ?? energy).Value * 100 });
+                }
+            }
+
+            return newNutrients;
         }
     }
 }
