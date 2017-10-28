@@ -404,6 +404,7 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
         {
             foreach(var row in meal.Rows.Where(r => r.Id == Guid.Empty))
             {
+                row.MealId = meal.Id;
                 row.Id = Guid.NewGuid();
             }
             using (var conn = CreateConnection())
