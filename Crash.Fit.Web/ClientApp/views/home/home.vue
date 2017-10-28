@@ -87,6 +87,8 @@
                         <div class="box box-solid box-primary" v-for="meal in meals">
                             <div class="box-header with-border">
                                 <h3 class="box-title">{{ mealName(meal) }}</h3>
+                                <button class="btn btn-sm btn-primary pull-right" @click="copyMeal(meal.meal)" :title="$t('copy')" v-if="meal.meal"><i class="fa fa-copy"></i></button>
+                                <button class="btn btn-sm btn-primary pull-right" @click="pasteMeal(meal)" :title="$t('paste')" v-if="mealCopy"><i class="fa fa-paste"></i></button>
                             </div>
                             <div class="box-body" v-if="meal.meal">
                                 <div class="row meal-nutrients" v-if="meal.meal.nutrients">
@@ -110,9 +112,11 @@
                                     <div class="row">
                                         <div class="col-xs-8 col-sm-10 food"><span>{{ row.foodName }} {{ row.quantity }} {{ row.portionName || 'g' }}</span></div>
                                         <div class="col-xs-4 col-sm-2">
-                                            <button class="btn pull-right" @click="deleteFood(row)"><i class="fa fa-trash-o"></i></button>
+                                            <button class="btn pull-right icon-sm" @click="deleteRow(row)" :title="$t('delete')"><i class="fa fa-trash-o"></i></button>
                                             <span class="pull-right">&nbsp;</span>
-                                            <button class="btn pull-right" @click="editFood(row)"><i class="fa fa-edit"></i></button>
+                                            <button class="btn pull-right icon-sm" @click="copyRow(row)" :title="$t('copy')"><i class="fa fa-files-o"></i></button>
+                                            <span class="pull-right">&nbsp;</span>
+                                            <button class="btn pull-right icon-sm" @click="editRow(row)" :title="$t('edit')"><i class="fa fa-edit"></i></button>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -134,7 +138,8 @@
                             <div class="box-footer">
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <button class="btn" @click="addFood(meal)">{{ $t('addFood') }}</button>
+                                        <button class="btn" @click="addRow(meal)">{{ $t('addFood') }}</button>
+                                        <button class="btn btn-sm icon-sm" @click="pasteRows(meal)" :title="$t('paste')" v-if="rowCopy"><i class="fa fa-paste"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -147,223 +152,12 @@
             </div>
         </section>
         <section v-if="showAddFood">
-            <add-food v-bind:show="showAddFood" v-bind:row="row" v-on:save="saveFood(arguments[0])" v-on:close="showAddFood=false"></add-food>
+            <add-food v-bind:show="showAddFood" v-bind:row="row" v-on:save="saveRow(arguments[0])" v-on:close="showAddFood=false"></add-food>
         </section>
     </div>
 </template>
 
-<script>
-    import constants from '../../store/constants'
-    import formatters from '../../formatters'
-    import toaster from '../../toaster'
-    import moment from 'moment'
-    import utils from '../../utils'
-    import nutrientsMixin from '../../mixins/nutrients'
-    import mealDefinitionsMixin from '../../mixins/meal-definitions'
-    import nutritionGoalMixin from '../../mixins/nutrition-goal'
-
-    export default {
-        mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin],
-        data() {
-            return {
-                proteinId: constants.PROTEIN_ID,
-                carbId: constants.CARB_ID,
-                fatId: constants.FAT_ID,
-                energyId: constants.ENERGY_ID,
-                energyDistributionId: constants.ENERGY_DISTRIBUTION_ID,
-                showAddFood: false,
-                row: undefined,
-                selectedNutrients: [],
-                editNutrients: false,
-
-            }
-        },
-        computed: {
-            selectedDate() {
-                return this.$store.state.nutrition.diaryDate;
-            },
-            dateText() {
-                if (moment().isSame(this.selectedDate, 'd')) {
-                    return this.$t('today');
-                }
-                else if (moment().subtract(1, 'day').isSame(this.selectedDate, 'd')) {
-                    return this.$t('yesterday');
-                }
-                return this.date(this.selectedDate);
-            },
-            visibleNutrients() {
-                return this.$nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1, n2) => n1.homeOrder - n2.homeOrder);
-            },
-            mealDay() {
-                var date = moment(this.selectedDate).startOf('day');     
-                return this.$store.state.nutrition.mealDays.find(d => moment(d.date).isSame(date, 'day'));
-            },
-            meals() {
-                var self = this;
-                var start = moment(self.selectedDate).startOf('day');
-                var end = moment(self.selectedDate).endOf('day');
-                var defs = self.$mealDefinitions;
-                var meals = self.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(start, end));
-                var result = defs.map(d => { return { definition: d, meal: meals.find(m => m.definitionId == d.id) } });
-                meals.filter(m => !m.definitionId).forEach(m => {
-                    var index = result.findIndex(r => r.definition && r.definition.startHour && r.definition.startHour > m.time.getHours());
-                    if (index == -1) {
-                        result.push({ meal: m });
-                    }
-                    else
-                        result.splice(index, 0, { meal: m });
-                }
-                );
-                return result;
-            },
-            workouts() {
-                var self = this;
-                return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
-            },
-            nutritionGoal() {
-                return this.$store.state.nutrition.activeNutritionGoal;
-            },
-            dayNutrients() {
-                var day = this.$store.state.nutrition.mealDays.find(d => moment(d.date).isSame(this.selectedDate, 'day'));
-                return day.nutrients;
-            },
-            nutrientGroups() {
-                return this.$store.state.nutrition.nutrientGroups.map(g => {
-                    return {
-                        name: g.name,
-                        nutrients: this.$nutrients.filter(n => n.fineliGroup == g.id).sort((n1, n2) => n1.name < n2.name ? -1 : 1)
-                    }
-                });
-            }
-        },
-        components: {
-            'datetime-picker': require('../../components/datetime-picker'),
-            'add-food': require('./add-food'),
-            'chart-pie-energy': require('../../components/energy-distribution-bar'),
-            'nutrient-bar': require('../../components/nutrient-bar')
-        },
-        methods: {
-            fetchData() {
-                var self = this;
-                var start = moment(self.selectedDate).startOf('day');
-                var end = moment(self.selectedDate).endOf('day');
-                self.$store.dispatch(constants.FETCH_MEALS, {
-                    start,
-                    end,
-                    success() {
-
-                    },
-                    failure() { }
-                });
-                self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
-            },
-            changeDate(date) {
-                var newDate;
-                if (date == 'today') {
-                    newDate = new Date();
-                }
-                else if (date == 'yesterday') {
-                    newDate = moment().subtract(1, 'days').toDate();
-                }
-                else if (date === -1) {
-                    newDate = moment(this.selectedDate).subtract(1, 'days').toDate();
-                }
-                else if (date === 1) {
-                    newDate = moment(this.selectedDate).add(1, 'days').toDate();
-                }
-                else {
-                    newDate = date;
-                }
-                if (!moment(newDate).isSame(this.selectedDate, 'd')) {
-                    this.$store.dispatch(constants.SELECT_MEAL_DIARY_DATE, { date: newDate });
-                    this.fetchData();
-
-                }
-            },
-            mealName(defMeal) {
-                if (defMeal.definition) {
-                    return defMeal.definition.name;
-                }
-                return this.time(defMeal.meal.time);
-            },
-            addFood(defMeal) {
-                this.row = {
-                    mealDefinitionId: defMeal.definition ? defMeal.definition.id : undefined,
-                    mealId: defMeal.meal ? defMeal.meal.id : undefined
-                };
-                this.showAddFood = true;
-            },
-            editFood(row) {
-                this.row = row;
-                this.showAddFood = true;
-            },
-            saveFood(row) {
-                row.date = this.selectedDate;
-                this.$store.dispatch(constants.SAVE_MEAL_ROW, {
-                    row,
-                    success() { },
-                    failure() { }
-                });
-                this.row = {};
-                this.showAddFood = false;
-            },
-            deleteFood(row) {
-                this.$store.dispatch(constants.DELETE_MEAL_ROW, {
-                    row,
-                    success() { },
-                    failure() { }
-                });
-            },
-            editSettings() {
-                var selectedNutrients = [];
-                this.visibleNutrients.forEach(n => { selectedNutrients.push(n.id); });
-                for (var i = selectedNutrients.length; i < 6; i++) {
-                    selectedNutrients.push(undefined);
-                }
-                this.selectedNutrients = selectedNutrients;
-                this.editNutrients = true;
-            },
-            saveSettings() {
-                var self = this;
-                var settings = {
-                    nutrients: self.selectedNutrients
-                };
-
-                this.$store.dispatch(constants.SAVE_MEAL_DIARY_SETTINGS, {
-                    settings,
-                    success() { },
-                    failure() { }
-                });
-                this.editNutrients = false;
-            },
-            nutrientGoal(nutrientId, meal) {
-                return utils.nutrientGoal(this.$nutritionGoal, this.workouts, nutrientId, this.selectedDate, meal);
-            },
-            date: formatters.formatDate,
-            time: formatters.formatTime,
-            unit: formatters.formatUnit,
-            decimal(value, precision) {
-                if (!value) {
-                    return value;
-                }
-
-                return value.toFixed(precision);
-            }
-        },
-        created() {
-            var self = this;
-            self.$store.dispatch(constants.FETCH_LATEST_FOODS, {
-                success() { },
-                failure() { }
-            });
-            self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, {
-                success() { },
-                failure() { }
-            });
-            self.fetchData();
-            this.$store.commit(constants.LOADING_DONE);
-        }
-    }
+<script src="./home.js">
 </script>
 
 <style scoped>
@@ -375,9 +169,9 @@
         width: auto;
     }
 
-        table.nutrition td {
-            width: 50px;
-        }
+    table.nutrition td {
+        width: 50px;
+    }
 
     div.food {
         padding-top: 5px;

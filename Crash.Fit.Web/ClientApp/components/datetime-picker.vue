@@ -33,6 +33,9 @@ export default {
                 var m = moment(this.value);
                 this.control.date(m.format(format));
             }
+            else {
+                this.control.date('');
+            }
         }
     },
     methods: {
