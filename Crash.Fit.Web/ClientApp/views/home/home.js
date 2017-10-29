@@ -63,7 +63,7 @@ export default {
         },
         workouts() {
             var self = this;
-            return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end));
+            return this.$store.state.training.workouts.filter(w => moment(w.time).isSame(self.selectedDate, 'day'));
         },
         nutritionGoal() {
             return this.$store.state.nutrition.activeNutritionGoal;

@@ -39,7 +39,7 @@ export default {
         var workouts = allWorkouts.filter(w => moment(w.time).isBetween(start, end));
         var hasWorkout = workouts.length > 0;
 
-        var goal = goals.find(g => (hasWorkout && g.exerciseDay) || (!hasWorkout && g.restday));
+        var goal = goals.find(g => (hasWorkout && g.exerciseDay) || (!hasWorkout && g.restDay));
 
         // weekday
         if (!goal) {
@@ -71,7 +71,7 @@ export default {
 
         // default
         if (!goal) {
-            goal = goals.find(g => !g.monday && !g.tuesday && !g.wednesday && !g.thursday && !g.friday && !g.saturday && !g.sunday && !g.exerciseDay && !g.restday);
+            goal = goals.find(g => !g.monday && !g.tuesday && !g.wednesday && !g.thursday && !g.friday && !g.saturday && !g.sunday && !g.exerciseDay && !g.restDay);
         }
 
         if (goal) {
