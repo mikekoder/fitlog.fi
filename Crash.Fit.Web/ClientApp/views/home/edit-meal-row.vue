@@ -39,7 +39,7 @@
     </div>
 </template>
 
-<script src="./add-food.js">
+<script src="./edit-meal-row.js">
 </script>
 
 <style scoped>
