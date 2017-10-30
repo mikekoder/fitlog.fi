@@ -16,7 +16,7 @@ export default {
             fatId: constants.FAT_ID,
             energyId: constants.ENERGY_ID,
             energyDistributionId: constants.ENERGY_DISTRIBUTION_ID,
-            showAddFood: false,
+            showEditMealRow: false,
             row: undefined,
             selectedNutrients: [],
             editNutrients: false,
@@ -95,7 +95,7 @@ export default {
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
-        'add-food': require('./add-food.vue'),
+        'edit-meal-row': require('./edit-meal-row.vue'),
         'chart-pie-energy': require('../../components/energy-distribution-bar'),
         'nutrient-bar': require('../../components/nutrient-bar')
     },
@@ -148,11 +148,11 @@ export default {
                 mealDefinitionId: defMeal.definition ? defMeal.definition.id : undefined,
                 mealId: defMeal.meal ? defMeal.meal.id : undefined
             };
-            this.showAddFood = true;
+            this.showEditMealRow = true;
         },
         editRow(row) {
             this.row = row;
-            this.showAddFood = true;
+            this.showEditMealRow = true;
         },
         saveRow(row) {
             row.date = this.selectedDate;
@@ -162,7 +162,7 @@ export default {
                 failure() { }
             });
             this.row = {};
-            this.showAddFood = false;
+            this.showEditMealRow = false;
         },
         copyMeal(meal) {
             this.$store.dispatch(constants.CLIPBOARD_COPY, {

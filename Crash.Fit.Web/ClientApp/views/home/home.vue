@@ -151,8 +151,8 @@
                 Fitlog on ilmainen ruoka- ja treenipäiväkirja.
             </div>
         </section>
-        <section v-if="showAddFood">
-            <add-food v-bind:show="showAddFood" v-bind:row="row" v-on:save="saveRow(arguments[0])" v-on:close="showAddFood=false"></add-food>
+        <section v-if="showEditMealRow">
+            <edit-meal-row v-bind:show="showEditMealRow" v-bind:row="row" v-on:save="saveRow(arguments[0])" v-on:close="showEditMealRow=false"></edit-meal-row>
         </section>
     </div>
 </template>
