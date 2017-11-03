@@ -12,6 +12,7 @@ namespace Crash.Fit.Training
         IEnumerable<Exercise> SearchExercises(string[] nameTokens, Guid? userId);
         IEnumerable<ExerciseDetails> SearchUserExercises(Guid userId, DateTimeOffset start1RM);
         ExerciseDetails GetExercise(Guid id);
+        IEnumerable<ExerciseDetails> GetExercises(IEnumerable<Guid> ids);
         bool CreateExercise(ExerciseDetails exercise);
         bool UpdateExercise(ExerciseDetails exercise);
         bool DeleteExercise(Exercise exercise);
@@ -37,5 +38,8 @@ namespace Crash.Fit.Training
         void UpdateTrainingGoal(TrainingGoalDetails goal);
         void ActivateTrainingGoal(TrainingGoal goal);
         void DeleteTrainingGoal(TrainingGoal goal);
+
+        void SaveOneRepMaxs(IEnumerable<OneRepMax> maxs);
+        IEnumerable<OneRepMax> GetOneRepMaxs(Guid userId, DateTimeOffset start);
     }
 }
