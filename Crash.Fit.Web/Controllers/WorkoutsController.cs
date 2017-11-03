@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Training;
 using Crash.Fit.Api.Models.Training;
 using Crash.Fit.Logging;
+using Crash.Fit.Measurements;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -15,9 +16,11 @@ namespace Crash.Fit.Web.Controllers
     public class WorkoutsController : ApiControllerBase
     {
         private readonly ITrainingRepository trainingRepository;
-        public WorkoutsController(ITrainingRepository trainingRepository, ILogRepository logger) : base(logger)
+        private readonly IMeasurementRepository measurementRepository;
+        public WorkoutsController(ITrainingRepository trainingRepository, IMeasurementRepository measurementRepository, ILogRepository logger) : base(logger)
         {
             this.trainingRepository = trainingRepository;
+            this.measurementRepository = measurementRepository;
         }
 
         [HttpGet("")]
@@ -43,15 +46,20 @@ namespace Crash.Fit.Web.Controllers
         [HttpPost("")]
         public IActionResult Create([FromBody]WorkoutRequest request)
         {
-            CreateExercises(request.Sets);
+            var exercises = CreateExercises(request.Sets);
             var workout = AutoMapper.Mapper.Map<WorkoutDetails>(request);
             workout.UserId = CurrentUserId;
-            Calculate1RMs(workout.Sets);
+            var maxs = Calculate1RMs(workout, exercises);
+            trainingRepository.SaveOneRepMaxs(maxs);
+            CalculateLoads(workout.Sets, exercises);
             trainingRepository.CreateWorkout(workout);
 
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
+
+        
+
         [HttpPost("start")]
         public IActionResult Start([FromBody]WorkoutStartModel request)
         {
@@ -73,9 +81,11 @@ namespace Crash.Fit.Web.Controllers
             {
                 return Unauthorized();
             }
-            CreateExercises(request.Sets);
+            var exercises = CreateExercises(request.Sets);
             AutoMapper.Mapper.Map(request, workout);
-            Calculate1RMs(workout.Sets);
+            var maxs = Calculate1RMs(workout, exercises);
+            trainingRepository.SaveOneRepMaxs(maxs);
+            CalculateLoads(workout.Sets, exercises);
             trainingRepository.UpdateWorkout(workout);
 
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
@@ -152,16 +162,15 @@ namespace Crash.Fit.Web.Controllers
 
             return Ok();
         }
-
-        private void CreateExercises(IEnumerable<WorkoutSetRequest> sets)
+        private decimal? GetUserWeight()
         {
-            if(!sets.Any(s => s.ExerciseId == null))
-            {
-                return;
-            }
-
+            return measurementRepository.GetMeasures(CurrentUserId).FirstOrDefault(m => m.Id == Constants.Measurements.WeightId)?.LatestValue;
+        }
+        private IEnumerable<Exercise> CreateExercises(IEnumerable<WorkoutSetRequest> sets)
+        {
+            var exerciseIds = sets.Where(s => s.ExerciseId.HasValue).Select(s => s.ExerciseId.Value);
             var exercises = new List<Exercise>();
-            exercises.AddRange(trainingRepository.SearchUserExercises(CurrentUserId, DateTimeOffset.Now));
+            exercises.AddRange(trainingRepository.GetExercises(exerciseIds));
             foreach (var set in sets.Where(s => s.ExerciseId == null && !string.IsNullOrWhiteSpace(s.ExerciseName)))
             {
                 var exercise = exercises.FirstOrDefault(e => e.Name.Equals(set.ExerciseName, StringComparison.CurrentCultureIgnoreCase));
@@ -181,12 +190,45 @@ namespace Crash.Fit.Web.Controllers
                     set.ExerciseId = newExercise.Id;
                 }
             }
+            return exercises;
         }
-        private void Calculate1RMs(IEnumerable<WorkoutSet> sets)
+        private IEnumerable<OneRepMax> Calculate1RMs(WorkoutDetails workout, IEnumerable<Exercise> exercises)
         {
-            foreach(var set in sets.Where(s => s.Reps > 0 && s.Reps <= 10 && s.Weights > 0))
+            var userWeight = GetUserWeight();
+            var maxs = new List<OneRepMax>();
+            foreach (var set in workout.Sets.Where(s => s.Reps > 0 && s.Reps <= 10 && s.Weights > 0))
             {
-                set.OneRepMax = TrainingUtils.Calculate1RM(set.Reps, set.Weights);
+                var exercise = exercises.FirstOrDefault(e => e.Id == set.ExerciseId);
+                maxs.Add(new OneRepMax
+                {
+                    UserId = CurrentUserId,
+                    ExerciseId = set.ExerciseId,
+                    Time = workout.Time,
+                    Max = TrainingUtils.Calculate1RM(set.Reps, set.Weights),
+                    MaxBW = (userWeight.HasValue && exercise.BodyWeightPercentage.HasValue) ? 
+                        TrainingUtils.Calculate1RM(set.Reps, set.Weights + userWeight.Value * (exercise.BodyWeightPercentage.Value/100)) : 
+                        null as decimal?,
+                });
+            }
+            return maxs.GroupBy(m => m.ExerciseId).Select(m => m.OrderByDescending(m2 => m2.Max).First());
+        }
+        private void CalculateLoads(IEnumerable<WorkoutSet> sets, IEnumerable<Exercise> exercises)
+        {
+            var userWeight = GetUserWeight();
+            var maxs = trainingRepository.GetOneRepMaxs(CurrentUserId, DateTimeOffset.Now.AddDays(-30));
+            foreach(var set in sets.Where(s => s.Weights > 0))
+            {
+                var exercise = exercises.FirstOrDefault(e => e.Id == set.ExerciseId);
+                var max = maxs.FirstOrDefault(m => m.ExerciseId == set.ExerciseId);
+                if(max != null)
+                {
+                    set.Load = set.Weights / max.Max * 100;
+                    if (userWeight.HasValue && exercise.BodyWeightPercentage.HasValue && max.MaxBW.HasValue)
+                    {
+                        set.LoadBW = (set.Weights + userWeight.Value * (exercise.BodyWeightPercentage.Value / 100)) / max.MaxBW * 100;
+                    }
+                }
+                
             }
         }
     }

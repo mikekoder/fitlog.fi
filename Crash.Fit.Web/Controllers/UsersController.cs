@@ -217,11 +217,11 @@ namespace Crash.Fit.Web.Controllers
 
             _nutritionRepository.SaveHomeNutrients(user.Id, new[] 
             {
-                Constants.EnergyDistributionId,
-                Constants.EnergyKcalId,
-                Constants.ProteinId,
-                Constants.CarbId,
-                Constants.FatId
+                Constants.Nutrition.EnergyDistributionId,
+                Constants.Nutrition.EnergyKcalId,
+                Constants.Nutrition.ProteinId,
+                Constants.Nutrition.CarbId,
+                Constants.Nutrition.FatId
             });
         }
 
