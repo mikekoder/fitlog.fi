@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Crash.Fit.Api\Crash.Fit.Api.csproj" />
     <ProjectReference Include="..\Crash.Fit.Core\Crash.Fit.Core.csproj" />
+    <ProjectReference Include="..\Crash.Fit.EF\Crash.Fit.EF.csproj" />
   </ItemGroup>
 
   <ItemGroup>

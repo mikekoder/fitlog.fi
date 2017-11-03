@@ -30,6 +30,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Crash.Fit.EF;
 
 namespace Crash.Fit.Web
 {
@@ -50,6 +51,11 @@ namespace Crash.Fit.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<Context>(options => 
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("Crash.Fit"));
+            });
+
             services.AddAuthentication(o => 
             {
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
