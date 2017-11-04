@@ -49,16 +49,22 @@ namespace Crash.Fit.Web.Controllers
             var exercises = CreateExercises(request.Sets);
             var workout = AutoMapper.Mapper.Map<WorkoutDetails>(request);
             workout.UserId = CurrentUserId;
-            var maxs = Calculate1RMs(workout, exercises);
-            trainingRepository.SaveOneRepMaxs(maxs);
-            CalculateLoads(workout.Sets, exercises);
+            var userWeight = GetUserWeight();
+            var maxs = Calculate1RMs(workout, exercises, userWeight);
+            Update1RMs(maxs);
+            CalculateLoads(workout.Sets, exercises, userWeight);
             trainingRepository.CreateWorkout(workout);
 
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
 
-        
+        private void Update1RMs(IEnumerable<OneRepMax> maxs)
+        {
+            var oldMaxs = trainingRepository.GetOneRepMaxs(CurrentUserId, DateTimeOffset.Now.AddDays(-30));
+            var newRecords = maxs.Where(m => oldMaxs.Where(o => o.ExerciseId == m.ExerciseId).All(o => o.Max < m.Max));
+            trainingRepository.SaveOneRepMaxs(newRecords);
+        }
 
         [HttpPost("start")]
         public IActionResult Start([FromBody]WorkoutStartModel request)
@@ -83,9 +89,10 @@ namespace Crash.Fit.Web.Controllers
             }
             var exercises = CreateExercises(request.Sets);
             AutoMapper.Mapper.Map(request, workout);
-            var maxs = Calculate1RMs(workout, exercises);
-            trainingRepository.SaveOneRepMaxs(maxs);
-            CalculateLoads(workout.Sets, exercises);
+            var userWeight = GetUserWeight();
+            var maxs = Calculate1RMs(workout, exercises, userWeight);
+            Update1RMs(maxs);
+            CalculateLoads(workout.Sets, exercises, userWeight);
             trainingRepository.UpdateWorkout(workout);
 
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
@@ -192,9 +199,8 @@ namespace Crash.Fit.Web.Controllers
             }
             return exercises;
         }
-        private IEnumerable<OneRepMax> Calculate1RMs(WorkoutDetails workout, IEnumerable<Exercise> exercises)
+        private IEnumerable<OneRepMax> Calculate1RMs(WorkoutDetails workout, IEnumerable<Exercise> exercises, decimal? userWeight)
         {
-            var userWeight = GetUserWeight();
             var maxs = new List<OneRepMax>();
             foreach (var set in workout.Sets.Where(s => s.Reps > 0 && s.Reps <= 10 && s.Weights > 0))
             {
@@ -204,17 +210,19 @@ namespace Crash.Fit.Web.Controllers
                     UserId = CurrentUserId,
                     ExerciseId = set.ExerciseId,
                     Time = workout.Time,
-                    Max = TrainingUtils.Calculate1RM(set.Reps, set.Weights),
-                    MaxBW = (userWeight.HasValue && exercise.BodyWeightPercentage.HasValue) ? 
-                        TrainingUtils.Calculate1RM(set.Reps, set.Weights + userWeight.Value * (exercise.BodyWeightPercentage.Value/100)) : 
+                    Max = Math.Round(TrainingUtils.Calculate1RM(set.Reps, set.Weights), 3),
+                    MaxBW = (userWeight.HasValue && exercise.PercentageBW.HasValue) ?
+                        Math.Round(TrainingUtils.Calculate1RM(set.Reps, set.Weights + userWeight.Value * (exercise.PercentageBW.Value/100)) - (userWeight.Value * (exercise.PercentageBW.Value / 100)),3) : 
+                        null as decimal?,
+                    MaxInclBW = (userWeight.HasValue && exercise.PercentageBW.HasValue) ?
+                        Math.Round(TrainingUtils.Calculate1RM(set.Reps, set.Weights + userWeight.Value * (exercise.PercentageBW.Value / 100)), 3) :
                         null as decimal?,
                 });
             }
             return maxs.GroupBy(m => m.ExerciseId).Select(m => m.OrderByDescending(m2 => m2.Max).First());
         }
-        private void CalculateLoads(IEnumerable<WorkoutSet> sets, IEnumerable<Exercise> exercises)
+        private void CalculateLoads(IEnumerable<WorkoutSet> sets, IEnumerable<Exercise> exercises, decimal? userWeight)
         {
-            var userWeight = GetUserWeight();
             var maxs = trainingRepository.GetOneRepMaxs(CurrentUserId, DateTimeOffset.Now.AddDays(-30));
             foreach(var set in sets.Where(s => s.Weights > 0))
             {
@@ -223,9 +231,13 @@ namespace Crash.Fit.Web.Controllers
                 if(max != null)
                 {
                     set.Load = set.Weights / max.Max * 100;
-                    if (userWeight.HasValue && exercise.BodyWeightPercentage.HasValue && max.MaxBW.HasValue)
+                    if (userWeight.HasValue && exercise.PercentageBW.HasValue)
                     {
-                        set.LoadBW = (set.Weights + userWeight.Value * (exercise.BodyWeightPercentage.Value / 100)) / max.MaxBW * 100;
+                        set.WeightsBW = set.Weights + userWeight.Value * (exercise.PercentageBW.Value / 100);
+                        if (max.MaxInclBW.HasValue)
+                        {
+                            set.LoadBW = set.WeightsBW / max.MaxInclBW * 100;
+                        }
                     }
                 }
                 

@@ -27,7 +27,7 @@ namespace Crash.Fit.Web
         }
         public static class Measurements
         {
-            public static readonly Guid WeightId = Guid.Parse("");
+            public static readonly Guid WeightId = Guid.Parse("A86E5B0C-AB63-4CFF-B192-EE68BB99AF84");
         }
     }
 }
