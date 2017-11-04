@@ -14,7 +14,7 @@ namespace Crash.Fit.Training
         public string ExerciseName { get; set; }
         public int Reps { get; set; }
         public decimal Weights { get; set; }
-        //public decimal? OneRepMax { get; set; }
+        public decimal? WeightsBW { get; set; }
         public decimal? Load { get; set; }
         public decimal? LoadBW { get; set; }
     }

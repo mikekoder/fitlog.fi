@@ -10,7 +10,7 @@ namespace Crash.Fit.Training
     {
         public Guid? UserId { get; set; }
         public string Name { get; set; }
-        public decimal? BodyWeightPercentage { get; set; }
+        public decimal? PercentageBW { get; set; }
     }
     public class ExerciseSummary : Exercise
     {

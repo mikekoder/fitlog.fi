@@ -104,16 +104,21 @@ export default {
                 success(exercises) {
                     self.exercises = exercises;
                     if (workout.sets && workout.sets.length > 0) {
-                        
-                        self.sets = workout.sets.map(s =>
-                        {
+       
+                        self.sets = workout.sets.map(s => {
                             var exercise = self.exercises.find(e => e.id === s.exerciseId);
+                            
+                            if (workout.id) {
+                                 return { exercise, reps: s.reps, weights: s.weights };
+                            }
+                            // template
                             var weights = (s.load || s.load == 0) && exercise.oneRepMax ? s.load / 100 * exercise.oneRepMax : undefined;
                             if (weights) {
                                 weights = utils.roundToNearest(weights, 2.5);
                             }
                             return { exercise, reps: s.reps, weights };
                         });
+                        
                     }
                     else {
                         self.sets = [{ exercise: null, reps: null, weights: null }];

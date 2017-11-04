@@ -371,15 +371,15 @@ export default {
             state.workoutsDisplayEnd = end;
         },
         [constants.FETCH_WORKOUTS_SUCCESS](state, { start, end, workouts }) {
-            for (var i in workouts) {
-                var workout = workouts[i];
-                workout.time = new Date(workout.time);
-                var day = moment(workout.time).startOf('day').toDate();
-                state.workoutDays[day.getTime()] = true;
-                if (!state.workoutsStart || !state.workoutEnd || moment(workout.time).isBefore(state.workoutsStart) || moment(workout.time).isAfter(state.workoutsEnd)) {
+            workouts.forEach(workout => {
+                var existing = state.workouts.find(w => w.id == workout.id);
+                if (!existing) {
+                    workout.time = new Date(workout.time);
+                    var day = moment(workout.time).startOf('day').toDate();
+                    state.workoutDays[day.getTime()] = true;
                     state.workouts.push(workout);
                 }
-            }
+            });
             if (!state.workoutsStart || moment(start).isBefore(state.workoutsStart)) {
                 state.workoutsStart = start;
             }

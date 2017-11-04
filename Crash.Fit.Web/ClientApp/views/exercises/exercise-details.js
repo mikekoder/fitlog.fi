@@ -7,6 +7,7 @@ export default {
         return {
             id: null,
             name: null,
+            percentageBW: null,
             targets: []
         }
     },
@@ -28,6 +29,7 @@ export default {
             var exercise = {
                 id: self.id,
                 name: self.name,
+                percentageBW: self.percentageBW,
                 targets: self.targets.map(t => t.id)
             };
 
@@ -74,6 +76,7 @@ export default {
                         success(exercise) {
                             self.id = exercise.id;
                             self.name = exercise.name;
+                            self.percentageBW = exercise.percentageBW;
                             self.targets = exercise.targets.map(t => { return self.muscleGroups.find(g => g.id === t); });
                             self.$store.commit(constants.LOADING_DONE);
                         },

@@ -20,7 +20,7 @@ FROM
   SELECT Measure.*,Measurement.Time AS LatestTime,Measurement.Value AS LatestValue, ROW_NUMBER() OVER(PARTITION BY Measure.Id ORDER BY Measurement.Time DESC) rownumber
   FROM Measure
   LEFT JOIN Measurement ON Measurement.MeasureId=Measure.Id
-  WHERE UserId=@userId
+  WHERE Measure.UserId=@userId OR Measure.UserId IS NULL
 ) x
 WHERE rownumber=1;";
             using (var conn = CreateConnection())
@@ -58,7 +58,7 @@ WHERE rownumber=1;";
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Measurement(Id,MeasureId,Time,Value) VALUES(@Id,@MeasureId,@Time,@Value)", measurement, tran);
+                    conn.Execute("INSERT INTO Measurement(Id,UserId,MeasureId,Time,Value) VALUES(@Id,@UserId,@MeasureId,@Time,@Value)", measurement, tran);
                     tran.Commit();
                     return true;
                 }

@@ -10,6 +10,8 @@ export default {
     mixins: [exercisesMixin],
     data() {
         return {
+            tab: 'workouts',
+            progress: []
         }
     },
     computed: {
@@ -30,7 +32,7 @@ export default {
         end() {
             var self = this;
             return this.$store.state.training.workoutsDisplayEnd;
-        },
+        }
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker')
@@ -53,6 +55,7 @@ export default {
         },
         showDateRange(start, end) {
             var self = this;
+            self.progress = [];
             self.$store.dispatch(constants.SELECT_WORKOUT_DATE_RANGE, {
                 start: start,
                 end: end,
@@ -89,13 +92,105 @@ export default {
                 }
             });
         },
+        changeStart(date) {
+            this.showDateRange(date, this.end);
+        },
+        changeEnd(date) {
+            this.showDateRange(this.start, date);
+        },
+        calculateProgress() {
+            var self = this;
+            self.progress = [];
+            var goals = [];
+            var sets = [];
+            if (self.activeRoutine) {
+                var weeks = moment(self.end).diff(moment(self.start), 'weeks', true);
+                self.activeRoutine.workouts.forEach(w =>
+                {
+                    w.exercises.forEach(e =>
+                    {
+                        var exercise = self.$exercises.find(e2 => e2.id == e.exerciseId);
+                        var loadFrom = e.loadFrom || e.loadFrom == 0 ? e.loadFrom : e.loadTo;
+                        var loadTo = e.loadTo || e.loadTo == 0 ? e.loadTo : e.loadFrom;
+                        var step = (loadFrom || loadFrom == 0) && (loadTo || loadTo == 0) ? (loadTo - loadFrom) / (e.sets - 1) : undefined;
+
+                        if (loadFrom == loadTo) {
+                            goals.push({
+                                index: goals.length,
+                                exerciseId: e.exerciseId,
+                                exercise,
+                                reps: e.reps,
+                                load: loadFrom,
+                                times: utils.roundToNearest(e.sets * w.frequency * weeks, 0.1),
+                                sets: []
+                            });
+                        }
+                        else {
+                            for (var i = 0; i < e.sets; i++) {
+                                goals.push({
+                                    index: goals.length,
+                                    exerciseId: e.exerciseId,
+                                    exercise,
+                                    reps: e.reps,
+                                    load: (step || step == 0) ? loadFrom + i * step : undefined,
+                                    times: utils.roundToNearest(w.frequency * weeks, 0.1),
+                                    sets: []
+                                });
+                            }
+                        }
+                    });
+                });
+
+                goals.sort((a, b) => b.load - a.load);
+
+                var leftOverSets = [];
+                var loadMargin = 2.5;
+                self.workouts.forEach(w =>
+                {
+                    w.sets.forEach(s =>
+                    {
+                        var set = {
+                            exerciseId: s.exerciseId,
+                            reps: s.reps,
+                            weights: s.weights,
+                            load: s.load,
+                            loadBW: s.loadBW
+                        };
+                        var candidates = goals.filter(g => g.exerciseId == s.exerciseId && g.reps <= s.reps && g.load <= (s.load + loadMargin) && g.sets.length < g.times).sort((a,b) => b.load - a.load);
+                        if (candidates.length > 0) {
+                            candidates[0].sets.push(set);
+                        }
+                        else {
+                            leftOverSets.push(set);
+                        }
+                    });
+                });
+
+                
+            }
+            self.progress = goals.sort((a,b) => a.index - b.index);
+        },
         date: formatters.formatDate,
         datetime: formatters.formatDateTime,
         decimal(value, precision) {
             if (!value) {
                 return value;
             }
-            return value.toFixed(precision);
+            return utils.roundToNearest(value, 0.1);
+            /*
+            if (Math.round(value) == value) {
+                return value;
+            }
+            return value.toFixed(precision);*/
+        }
+    },
+    watch: {
+        activeRoutine() {
+            this.calculateProgress();
+            
+        },
+        workouts() {
+            this.calculateProgress();
         }
     },
     created() {

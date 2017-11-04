@@ -38,6 +38,7 @@ namespace Crash.Fit.Web.Controllers
             {
                 var measurement = new Measurement
                 {
+                    UserId = CurrentUserId,
                     MeasureId = reqMeasurement.MeasureId.Value,
                     Time = request.Time,
                     Value = reqMeasurement.Value

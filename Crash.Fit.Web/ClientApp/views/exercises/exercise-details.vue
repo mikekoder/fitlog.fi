@@ -42,6 +42,20 @@
                     </div>
                 </div>
             </div>
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-sm-5 col-md-3 col-lg-2">
+                    <div class="form-group">
+                        <label>{{ $t("bodyWeightPercentage") }}</label>
+                        <div class="input-group">
+                            <input class="form-control" v-model="percentageBW" />
+                            <span class="input-group-addon">%</span>
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </div>
             <hr />
             <div class="row main-actions">
                 <div class="col-sm-12">

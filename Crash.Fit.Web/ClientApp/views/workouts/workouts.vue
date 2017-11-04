@@ -18,9 +18,8 @@
                             <li role="separator" class="divider"></li>
                             <li class="custom-date"><span>{{ $t("timeInterval") }}</span></li>
                             <li class="custom-date">
-                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="start=arguments[0]"></datetime-picker>
-                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="end=arguments[0]"></datetime-picker>
-                                <button class="btn btn-sm" @click="fetchWorkouts()">{{ $t("OK") }}</button>
+                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="changeStart(arguments[0])"></datetime-picker>
+                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="changeEnd(arguments[0])"></datetime-picker>
                             </li>
                         </ul>
                     </div>
@@ -37,35 +36,71 @@
                         </ul>
                     </div>
                     <button class="btn btn-primary" @click="createWorkout(undefined)" v-if="!activeRoutine">{{ $t("create") }}</button>
-                    <div class="outer" v-if="workouts.length > 0">
-                        <div class="inner">
-                            <table class="table" id="workout-list">
-                                <thead>
-                                    <tr>
-                                        <th class="time freeze"><div><div>&nbsp;</div></div></th>
-                                        <template v-for="muscleGroup in muscleGroups">
-                                            <th class="muscle-group"><div><div>{{ muscleGroup.name}}</div></div></th>
-                                        </template>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="workout" v-for="workout in workouts">
-                                        <td class="freeze"><router-link :to="{ name: 'workout-details', params: { id: workout.id } }">{{ datetime(workout.time) }}</router-link></td>
-                                        <template v-for="muscleGroup in muscleGroups">
-                                            <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
-                                        </template>
-                                        <td><button class="btn btn-danger btn-xs" @click="deleteWorkout(workout)">{{ $t("delete") }}</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-xs-12">
+                             <ul class="nav nav-tabs">
+                                <li class="clickable" v-bind:class="{ active: tab === 'workouts' }"><a @click="tab = 'workouts'">{{ $t("workouts") }}</a></li>
+                                <li class="clickable" v-bind:class="{ active: tab === 'goals' }"><a @click="tab = 'goals'">{{ $t("routineProgress") }}</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="row" v-if="workouts.length == 0">
-                        <div class="col-sm-12">
-                            <br />
-                            {{ $t("noWorkouts") }}
+                    <div v-if="tab === 'workouts'">
+                        <div class="outer" v-if="workouts.length > 0">
+                        <div class="inner">
+                                <table class="table" id="workout-list">
+                                    <thead>
+                                        <tr>
+                                            <th class="time freeze"><div><div>&nbsp;</div></div></th>
+                                            <template v-for="muscleGroup in muscleGroups">
+                                                <th class="muscle-group"><div><div>{{ muscleGroup.name}}</div></div></th>
+                                            </template>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="workout" v-for="workout in workouts">
+                                            <td class="freeze"><router-link :to="{ name: 'workout-details', params: { id: workout.id } }">{{ datetime(workout.time) }}</router-link></td>
+                                            <template v-for="muscleGroup in muscleGroups">
+                                                <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
+                                            </template>
+                                            <td><button class="btn btn-danger btn-xs" @click="deleteWorkout(workout)">{{ $t("delete") }}</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+                        <div class="row" v-if="workouts.length == 0">
+                            <div class="col-sm-12">
+                                <br />
+                                {{ $t("noWorkouts") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="tab === 'goals'">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{ $t('exercise') }}</th>
+                                    <th>{{ $t('reps') }}</th>
+                                    <th>{{ $t('load') }}</th>
+                                    <th>{{ $t('completed') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="goal in progress">
+                                    <td>{{ goal.exercise.name }}</td>
+                                    <td>{{ goal.reps }}</td>
+                                    <td>{{ goal.load }} %</td>
+                                    <td><span>{{ goal.sets.length }} / {{ goal.times}}</span><span v-for="set in goal.sets"><br />{{ set.reps }} x {{ set.load }}%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

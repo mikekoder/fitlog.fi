@@ -110,7 +110,7 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Exercise(Id, UserId, Name,Created) VALUES(@Id, @UserId, @Name,@Created)", exercise, tran);
+                    conn.Execute("INSERT INTO Exercise(Id, UserId, Name,Created,PercentageBW) VALUES(@Id, @UserId, @Name,@Created,@PercentageBW)", exercise, tran);
                     if (exercise.Targets != null && exercise.Targets.Length > 0)
                     {
                         conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId) VALUES(@ExerciseId,@MuscleGroupId)", exercise.Targets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
@@ -133,7 +133,7 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                 try
                 {
                     conn.Execute("DELETE FROM ExerciseTarget WHERE ExerciseId=@Id", new { exercise.Id }, tran);
-                    conn.Execute("UPDATE Exercise SET Name=@Name WHERE Id=@Id", exercise, tran);
+                    conn.Execute("UPDATE Exercise SET Name=@Name,PercentageBW=@PercentageBW WHERE Id=@Id", exercise, tran);
                     if (exercise.Targets != null && exercise.Targets.Length > 0)
                     {
                         conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId) VALUES(@ExerciseId,@MuscleGroupId)", exercise.Targets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
@@ -225,8 +225,9 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                         w.Name,
                         w.Frequency
                     }), tran);
-                    conn.Execute("INSERT INTO RoutineExercise(RoutineWorkoutId,[Index],ExerciseId,Sets,Reps,LoadFrom,LoadTo) VALUES(@RoutineWorkoutId,@Index,@ExerciseId,@Sets,@Reps,@LoadFrom,@LoadTo)", routine.Workouts.SelectMany(w => w.Exercises.Select((e,i) => new
+                    conn.Execute("INSERT INTO RoutineExercise(Id,RoutineWorkoutId,[Index],ExerciseId,Sets,Reps,LoadFrom,LoadTo) VALUES(newid(),@RoutineWorkoutId,@Index,@ExerciseId,@Sets,@Reps,@LoadFrom,@LoadTo)", routine.Workouts.SelectMany(w => w.Exercises.Select((e,i) => new
                     {
+                        
                         RoutineWorkoutId = w.Id,
                         Index = i,
                         e.ExerciseId,
@@ -291,7 +292,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
 
                     conn.Execute("UPDATE Routine SET Name=@Name WHERE Id=@Id", routine, tran);
                     
-                    conn.Execute("INSERT INTO RoutineExercise(RoutineWorkoutId,[Index],ExerciseId,Sets,Reps,LoadFrom,LoadTo) VALUES(@RoutineWorkoutId,@Index,@ExerciseId,@Sets,@Reps,@LoadFrom,@LoadTo)", routine.Workouts.SelectMany(w => w.Exercises.Select((e, i) => new
+                    conn.Execute("INSERT INTO RoutineExercise(Id,RoutineWorkoutId,[Index],ExerciseId,Sets,Reps,LoadFrom,LoadTo) VALUES(newid(),@RoutineWorkoutId,@Index,@ExerciseId,@Sets,@Reps,@LoadFrom,@LoadTo)", routine.Workouts.SelectMany(w => w.Exercises.Select((e, i) => new
                     {
                         RoutineWorkoutId = w.Id,
                         Index = i,
@@ -432,7 +433,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                     conn.Execute("INSERT INTO Workout(Id, UserId, Time) VALUES(@Id, @UserId, @Time)", workout, tran);
                     if (workout.Sets != null)
                     {
-                        conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,Load,LoadBW) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@Load,@LoadBW)", workout.Sets.Select((s, i) => new
+                        conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,WeightsBW,Load,LoadBW) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@WeightsBW,@Load,@LoadBW)", workout.Sets.Select((s, i) => new
                         {
                             s.Id,
                             WorkoutId = workout.Id,
@@ -440,6 +441,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                             s.ExerciseId,
                             s.Reps,
                             s.Weights,
+                            s.WeightsBW,
                             s.Load,
                             s.LoadBW
                         }), tran);
@@ -473,7 +475,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                     conn.Execute("DELETE FROM WorkoutSet WHERE WorkoutId=@Id", new { workout.Id }, tran);
 
                     conn.Execute("UPDATE Workout SET Time=@Time WHERE Id=@Id", workout, tran);
-                    conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,Load,LoadBW) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@Load,@LoadBW)", workout.Sets.Select((s, i) => new
+                    conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,WeightsBW,Load,LoadBW) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@WeightsBW,@Load,@LoadBW)", workout.Sets.Select((s, i) => new
                     {
                         s.Id,
                         WorkoutId = workout.Id,
@@ -481,6 +483,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                         s.ExerciseId,
                         s.Reps,
                         s.Weights,
+                        s.WeightsBW,
                         s.Load,
                         s.LoadBW
                     }), tran);
@@ -653,7 +656,7 @@ WHERE TGE.TrainingGoalId IN (SELECT Id FROM TrainingGoal WHERE {filter}) ORDER B
             {
                 try
                 {
-                    conn.Execute("INSERT INTO OneRepMax(UserId,ExerciseId,Time,Max,MaxBW) VALUES(@UserId,@ExerciseId,@Time,@Max,@MaxBW)", maxs, tran);
+                    conn.Execute("INSERT INTO OneRepMax(Id,UserId,ExerciseId,Time,Max,MaxBW,MaxInclBW) VALUES(newid(),@UserId,@ExerciseId,@Time,@Max,@MaxBW,@MaxInclBW)", maxs, tran);
                     tran.Commit();
                 }
                 catch
@@ -668,7 +671,7 @@ WHERE TGE.TrainingGoalId IN (SELECT Id FROM TrainingGoal WHERE {filter}) ORDER B
             using (var conn = CreateConnection())
             {
                 var maxs = conn.Query<OneRepMax>("SELECT * FROM OneRepMax WHERE UserId=@userId AND Time >= @start", new { userId, start });
-                return maxs.GroupBy(m => m.ExerciseId).Select(m => m.OrderByDescending(m2 => m2.Max).First());
+                return maxs.GroupBy(m => m.ExerciseId).Select(m => m.OrderByDescending(m2 => m2.Time).First());
             }
         }
         class WorkoutTargetRaw
