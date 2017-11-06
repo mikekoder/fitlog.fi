@@ -312,7 +312,7 @@ namespace Crash.Fit.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {
-                return Redirect($"{returnUrl.TrimEnd('/','#')}/#/{refreshToken}/{accessToken}");
+                return Redirect($"{returnUrl.TrimEnd('/')}/{refreshToken}/{accessToken}");
             }
 
             return RedirectToLocal($"/#/login-success/{client}/{refreshToken}/{accessToken}");
