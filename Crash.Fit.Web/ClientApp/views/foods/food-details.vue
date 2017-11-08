@@ -26,8 +26,8 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="nav nav-tabs">
-                        <li class="clickable" v-bind:class="{ active: tab === 'nutrients' }"><a @click="tab = 'nutrients'">{{ $t("nutrients") }}</a></li>
-                        <li class="clickable" v-bind:class="{ active: tab === 'portions' }"><a @click="tab = 'portions'">{{ $t("portions") }}</a></li>
+                        <li class="clickable" :class="{ active: tab === 'nutrients' }"><a @click="tab = 'nutrients'">{{ $t("nutrients") }}</a></li>
+                        <li class="clickable" :class="{ active: tab === 'portions' }"><a @click="tab = 'portions'">{{ $t("portions") }}</a></li>
                     </ul>
                     <div v-if="tab === 'portions'">
                         <div class="row hidden-xs">
@@ -65,7 +65,7 @@
                                     <th></th>
                                     <th>{{ $t("amount") }}/
                                         <select v-model="nutrientPortion" @change="changeNutrientPortion">
-                                            <option v-for="portion in nutrientPortions" v-bind:value="portion">{{ portion.name }}</option>
+                                            <option v-for="portion in nutrientPortions" :value="portion">{{ portion.name }}</option>
                                         </select>
                                     </th>
                                     <th></th>

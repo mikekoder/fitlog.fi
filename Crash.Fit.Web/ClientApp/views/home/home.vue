@@ -15,7 +15,7 @@
                                 <li class="clickable"><a @click="changeDate('yesterday')">{{ $t("yesterday") }}</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li class="custom-date">
-                                    <datetime-picker v-bind:value="selectedDate" v-bind:format="'DD.MM.YYYY'" v-on:change="changeDate(arguments[0])"></datetime-picker>
+                                    <datetime-picker :value="selectedDate" :format="'DD.MM.YYYY'" @change="changeDate"></datetime-picker>
                                 </li>
                             </ul>
                         </div>
@@ -42,10 +42,10 @@
                                     <div class="row day-nutrients" v-if="meals.find(m => m.meal)">
                                         <div class="col-xs-2" v-for="nutrient in visibleNutrients">
                                             <div v-if="nutrient.id == energyDistributionId">
-                                                <chart-pie-energy v-bind:protein="dayNutrients[proteinId]" v-bind:carb="dayNutrients[carbId]" v-bind:fat="dayNutrients[fatId]"></chart-pie-energy>
+                                                <energy-distribution-bar :protein="dayNutrients[proteinId]" :carb="dayNutrients[carbId]" :fat="dayNutrients[fatId]"></energy-distribution-bar>
                                             </div>
                                             <div v-else>
-                                                <nutrient-bar v-bind:goal="nutrientGoal(nutrient.id)" v-bind:value="dayNutrients[nutrient.id]" v-bind:precision="nutrient.precision"></nutrient-bar>
+                                                <nutrient-bar :goal="nutrientGoal(nutrient.id)" :value="dayNutrients[nutrient.id]" :precision="nutrient.precision"></nutrient-bar>
                                             </div>
                                         </div>
                                     </div>
@@ -59,10 +59,10 @@
                                     <div class="row">
                                         <div class="col-md-2" v-for="(id,i) in selectedNutrients">
                                             <select class="form-control" v-model="selectedNutrients[i]">
-                                                <option v-bind:value="undefined"></option>
+                                                <option :value="undefined"></option>
                                                 <template v-for="group in nutrientGroups">
                                                     <option disabled>{{ group.name }}</option>
-                                                    <option v-for="nutrient in group.nutrients" v-bind:value="nutrient.id">
+                                                    <option v-for="nutrient in group.nutrients" :value="nutrient.id">
                                                         {{ nutrient.name }} ({{ unit(nutrient.unit) }})
                                                     </option>
                                                 </template>
@@ -87,8 +87,11 @@
                         <div class="box box-solid box-primary" v-for="meal in meals">
                             <div class="box-header with-border">
                                 <h3 class="box-title">{{ mealName(meal) }}</h3>
-                                <button class="btn btn-sm btn-primary pull-right" @click="copyMeal(meal.meal)" :title="$t('copy')" v-if="meal.meal"><i class="fa fa-copy"></i></button>
-                                <button class="btn btn-sm btn-primary pull-right" @click="pasteMeal(meal)" :title="$t('paste')" v-if="mealCopy"><i class="fa fa-paste"></i></button>
+                                
+                                <div class="box-tools pull-right">
+                                    <button class="btn btn-box-tool" @click="copyMeal(meal.meal)" :title="$t('copy')" v-if="meal.meal"><i class="fa fa-copy"></i></button>
+                                    <button class="btn btn-box-tool" @click="pasteMeal(meal)" :title="$t('paste')" v-if="mealCopy"><i class="fa fa-paste"></i></button>
+                                </div>
                             </div>
                             <div class="box-body" v-if="meal.meal">
                                 <div class="row meal-nutrients" v-if="meal.meal.nutrients">
@@ -96,7 +99,7 @@
                                         <span class="hidden-md hidden-lg">{{ nutrient.shortName }} <span v-if="nutrient.unit">({{ unit(nutrient.unit) }})</span></span>
                                         <span class="hidden-xs hidden-sm">{{ nutrient.name }} <span v-if="nutrient.unit">({{ unit(nutrient.unit) }})</span></span>
                                         <div v-if="nutrient.id == energyDistributionId">
-                                            <chart-pie-energy v-bind:protein="meal.meal.nutrients[proteinId]" v-bind:carb="meal.meal.nutrients[carbId]" v-bind:fat="meal.meal.nutrients[fatId]"></chart-pie-energy>
+                                            <energy-distribution-bar :protein="meal.meal.nutrients[proteinId]" :carb="meal.meal.nutrients[carbId]" :fat="meal.meal.nutrients[fatId]"></energy-distribution-bar>
                                         </div>
                                         <div v-else>
                                             <nutrient-bar :goal="nutrientGoal(nutrient.id, meal.meal)" :value="meal.meal.nutrients[nutrient.id]" :precision="nutrient.precision"></nutrient-bar>
@@ -122,7 +125,7 @@
                                     <div class="row">
                                         <div class="col-xs-2" v-for="nutrient in visibleNutrients">
                                             <div v-if="nutrient.id == energyDistributionId">
-                                                <chart-pie-energy v-bind:protein="row.nutrients[proteinId]" v-bind:carb="row.nutrients[carbId]" v-bind:fat="row.nutrients[fatId]"></chart-pie-energy>
+                                                <energy-distribution-bar :protein="row.nutrients[proteinId]" :carb="row.nutrients[carbId]" :fat="row.nutrients[fatId]"></energy-distribution-bar>
                                             </div>
                                             <div v-else>{{ decimal(row.nutrients[nutrient.id], nutrient.precision) }}</div>
                                         </div>
@@ -148,11 +151,10 @@
                 </div>
             </div>
             <div v-if="!isLoggedIn">
-                Fitlog on ilmainen ruoka- ja treenipäiväkirja.
             </div>
         </section>
         <section v-if="showEditMealRow">
-            <edit-meal-row v-bind:show="showEditMealRow" v-bind:row="row" v-on:save="saveRow(arguments[0])" v-on:close="showEditMealRow=false"></edit-meal-row>
+            <meal-row-editor :show="showEditMealRow" :row="row" @save="saveRow" @close="showEditMealRow=false"></meal-row-editor>
         </section>
     </div>
 </template>

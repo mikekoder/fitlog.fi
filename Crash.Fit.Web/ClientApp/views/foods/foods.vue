@@ -11,8 +11,8 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="nav nav-tabs">
-                        <li class="clickable" v-bind:class="{ active: showOwn }"><a @click="">{{ $t("own") }}</a></li>
-                        <li class="clickable" v-bind:class="{ active: !showOwn }"><a @click="">{{ $t("all") }}</a></li>
+                        <li class="clickable" :class="{ active: showOwn }"><a @click="">{{ $t("own") }}</a></li>
+                        <li class="clickable" :class="{ active: !showOwn }"><a @click="">{{ $t("all") }}</a></li>
                     </ul>
                 </div>
             </div>
@@ -26,11 +26,11 @@
                                 <th>{{ $t("name") }}</th>
                                 <th>
                                     <span class="hidden-xs">{{ $t("usageCount") }}</span>
-                                    <span class="hidden-sm hidden-md hidden-lg" v-bind:title="$t('usageCount')" ><i class="fa fa-cutlery"></i></i></span>
+                                    <span class="hidden-sm hidden-md hidden-lg" :title="$t('usageCount')" ><i class="fa fa-cutlery"></i></i></span>
                                 </th>
                                 <th>
                                     <span class="hidden-xs">{{ $t("nutrientCount") }}</span>
-                                    <span class="hidden-sm hidden-md hidden-lg" v-bind:title="$t('nutrientCount')"><i class="fa fa-flask"></i></span>
+                                    <span class="hidden-sm hidden-md hidden-lg" :title="$t('nutrientCount')"><i class="fa fa-flask"></i></span>
                                 </th>
                                 <th></th>
                             </tr>

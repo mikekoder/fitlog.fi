@@ -7,8 +7,8 @@
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <input type="number" min="1" step="1" v-model="reps" v-bind:placeholder="$t('reps')" /> x
-                        <input type="number" min="0" step="2.5" v-model="weights" v-bind:placeholder="$t('weights')" />
+                        <input type="number" min="1" step="1" v-model="reps" :placeholder="$t('reps')" /> x
+                        <input type="number" min="0" step="2.5" v-model="weights" :placeholder="$t('weights')" />
                         <button class="btn btn-primary" @click="calculate">{{ $t('calculate') }}</button>
                     </div>
                 </div>

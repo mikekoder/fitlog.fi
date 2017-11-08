@@ -13,18 +13,19 @@
 </template>
 
 <script>
-export default {
-    data() {
-        return {
-        }
-    },
-    computed: {
-        
-        maxValue(){
-            return Math.max(this.goal.min || 0, this.value || 0, this.goal.max || 0) * 1.1;
-        },/*
+    export default {
+        name: 'nutrient-bar',
+        data() {
+            return {
+            }
+        },
+        computed: {
+
+            maxValue() {
+                return Math.max(this.goal.min || 0, this.value || 0, this.goal.max || 0) * 1.1;
+            },/*
         color() {
-            
+
             var diff = 0;
             if (this.value || this.value == 0) {
                 if (this.goal.min && this.value < this.goal.min) {
@@ -43,143 +44,155 @@ export default {
             return '#bbbbbb';
         },
      */
-        
-        minLeft() {
-            return (this.goal.min || 0) / this.maxValue * 100;
-        },
-        minStyle() {
-            return 'left: ' + this.minLeft + '%;';
-        },
-        minClass() {
-            if (this.goal.min && this.value < this.goal.min) {
-                return 'bad';
-            }
-            if (this.goal.min && this.value > this.goal.min) {
-                return 'good';
-            }
-            return '';
-        },
-        maxLeft() {
-            return (this.goal.max || 0) / this.maxValue * 100;
-        },
-        maxStyle() {
-            return 'left: ' + this.maxLeft + '%;';
-        },
-        maxClass() {
-            if (this.goal.max && this.value > this.goal.max) {
-                return 'bad';
-            }
-            if (this.goal.max && this.value < this.goal.max) {
-                return 'good';
-            }
-            return '';
-        },
-        valueLeft() {
-            return (this.value || 0) / this.maxValue * 100;
-        },
-        valueStyle() {
-            var color = (this.goal.max && this.value > this.goal.max) || (this.goal.min && this.value < this.goal.min) ? '#F08080' : '#90EE90';
-            return 'width: ' + this.valueLeft + '%; background-color: ' + color + ';';
-        },
-        title() {
-            if (this.goal.min) {
-                if (this.goal.max) {
-                    return this.goal.min + ' - ' + this.goal.max;
-                }
-                else {
-                    return '> ' + this.goal.min;
-                }
-            }
-            if (this.goal.max) {
-                return '< ' + this.goal.max;
-            }
-            return '';
-        }
-    },
-    props: {
-        goal: Object,
-        value: Number,
-        precision: Number
-    },
-    created() {
 
-    },
-    methods: {
-        decimal(value, precision) {
-            if (!value) {
-                return value;
+            minLeft() {
+                return (this.goal.min || 0) / this.maxValue * 100;
+            },
+            minStyle() {
+                return 'left: ' + this.minLeft + '%;';
+            },
+            minClass() {
+                if (this.goal.min && this.value < this.goal.min) {
+                    return 'bad';
+                }
+                if (this.goal.min && this.value > this.goal.min) {
+                    return 'good';
+                }
+                return '';
+            },
+            maxLeft() {
+                return (this.goal.max || 0) / this.maxValue * 100;
+            },
+            maxStyle() {
+                return 'left: ' + this.maxLeft + '%;';
+            },
+            maxClass() {
+                if (this.goal.max && this.value > this.goal.max) {
+                    return 'bad';
+                }
+                if (this.goal.max && this.value < this.goal.max) {
+                    return 'good';
+                }
+                return '';
+            },
+            valueLeft() {
+                return (this.value || 0) / this.maxValue * 100;
+            },
+            valueStyle() {
+                var color = (this.goal.max && this.value > this.goal.max) || (this.goal.min && this.value < this.goal.min) ? '#F08080' : '#90EE90';
+                return 'width: ' + this.valueLeft + '%; background-color: ' + color + ';';
+            },
+            title() {
+                if (this.goal.min) {
+                    if (this.goal.max) {
+                        return this.goal.min + ' - ' + this.goal.max;
+                    }
+                    else {
+                        return '> ' + this.goal.min;
+                    }
+                }
+                if (this.goal.max) {
+                    return '< ' + this.goal.max;
+                }
+                return '';
             }
-            return value.toFixed(precision);
+        },
+        props: {
+            goal: Object,
+            value: Number,
+            precision: Number
+        },
+        created() {
+
+        },
+        methods: {
+            decimal(value, precision) {
+                if (!value) {
+                    return value;
+                }
+                return value.toFixed(precision);
+            }
         }
     }
-}
 </script>
 <style scoped>
     .bar-container {
         width: 100%;
         height: 20px;
         background-color: #f5f5f5;
-        position:relative;
+        position: relative;
         cursor: default;
     }
+
     .bar {
         position: absolute;
-        top:2px;
+        top: 2px;
         height: 16px;
         z-index: 1;
     }
+
     .line {
         position: absolute;
-        top:0;
+        top: 0;
         height: 100%;
         width: 3px;
         z-index: 2;
     }
-    .line.bad > div {
-        background-color: #DC143C;
-    }
-    .line.good > div {
-        background-color: #006400;
-    }
+
+        .line.bad > div {
+            background-color: #DC143C;
+        }
+
+        .line.good > div {
+            background-color: #006400;
+        }
+
     .min > div, .max > div {
-        position:absolute;
+        position: absolute;
         background-color: #808080;
     }
-    .min > div:nth-child(1){
-        height: 20px;
-        width: 1px;
-    }
-    .min > div:nth-child(2){
-        left: 1px;
-        height: 1px;
-        width: 2px;
-    }
-    .min > div:nth-child(3){
-        left: 1px;
-        top: 19px;
-        height: 1px;
-        width: 2px;
-    }
-    .max > div:nth-child(1){
-        left: 2px;
-        height: 20px;
-        width: 1px;
-    }
-    .max > div:nth-child(2){
-        height: 1px;
-        width: 2px;
-    }
-    .max > div:nth-child(3){
-        top: 19px;
-        height: 1px;
-        width: 2px;
-    }
+
+        .min > div:nth-child(1) {
+            height: 20px;
+            width: 1px;
+        }
+
+        .min > div:nth-child(2) {
+            left: 1px;
+            height: 1px;
+            width: 2px;
+        }
+
+        .min > div:nth-child(3) {
+            left: 1px;
+            top: 19px;
+            height: 1px;
+            width: 2px;
+        }
+
+        .max > div:nth-child(1) {
+            left: 2px;
+            height: 20px;
+            width: 1px;
+        }
+
+        .max > div:nth-child(2) {
+            height: 1px;
+            width: 2px;
+        }
+
+        .max > div:nth-child(3) {
+            top: 19px;
+            height: 1px;
+            width: 2px;
+        }
+
     .text {
         position: absolute;
-        top:0;
+        top: 0;
         width: 100%;
         height: 100%;
         z-index: 3;
-        text-align:center;
-     }
+        text-align: center;
+    }
 </style>

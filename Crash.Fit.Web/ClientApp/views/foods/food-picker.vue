@@ -7,6 +7,7 @@
     require('bootstrap-3-typeahead');
 
     export default {
+        name: 'food-picker',
         data() {
             return {
                 name: null

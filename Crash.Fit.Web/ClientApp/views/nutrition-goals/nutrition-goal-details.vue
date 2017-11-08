@@ -20,7 +20,7 @@
             <br />
             <div class="row">
                 <div class="col-xs-4 col-sm-3 col-md-2 master">
-                    <div class="box box-solid" v-for="period in periods" v-bind:class="{ selected: period == selectedPeriod }" @click="selectPeriod(period)">
+                    <div class="box box-solid" v-for="period in periods" :class="{ selected: period == selectedPeriod }" @click="selectPeriod(period)">
                         <div class="box-header with-border">
                             {{ daysFormatted(period) }}
                         </div>
@@ -45,16 +45,16 @@
                             <td><i class="fa fa-bed"></i></td>
                         </tr>
                         <tr>
-                            <td><input type="checkbox" v-model="selectedPeriod.monday" v-bind:title="$t('monday')" /></td>
-                            <td><input type="checkbox" v-model="selectedPeriod.tuesday" v-bind:title="$t('tuesday')" /></td>
-                            <td><input type="checkbox" v-model="selectedPeriod.wednesday" v-bind:title="$t('wednesday')" /></td>
-                            <td><input type="checkbox" v-model="selectedPeriod.thursday" v-bind:title="$t('thursday')" /></td>
-                            <td><input type="checkbox" v-model="selectedPeriod.friday" v-bind:title="$t('friday')" /></td>
-                            <td><input type="checkbox" v-model="selectedPeriod.saturday" v-bind:title="$t('saturday')" /></td>
-                            <td><input type="checkbox" v-model="selectedPeriod.sunday" v-bind:title="$t('sunday')" /></td>
+                            <td><input type="checkbox" v-model="selectedPeriod.monday" :title="$t('monday')" /></td>
+                            <td><input type="checkbox" v-model="selectedPeriod.tuesday" :title="$t('tuesday')" /></td>
+                            <td><input type="checkbox" v-model="selectedPeriod.wednesday" :title="$t('wednesday')" /></td>
+                            <td><input type="checkbox" v-model="selectedPeriod.thursday" :title="$t('thursday')" /></td>
+                            <td><input type="checkbox" v-model="selectedPeriod.friday" :title="$t('friday')" /></td>
+                            <td><input type="checkbox" v-model="selectedPeriod.saturday" :title="$t('saturday')" /></td>
+                            <td><input type="checkbox" v-model="selectedPeriod.sunday" :title="$t('sunday')" /></td>
                             <td class="divider"></td>
-                            <td><input type="checkbox" v-model="selectedPeriod.exerciseDay" v-bind:title="$t('exerciseDay')" /></td>
-                            <td><input type="checkbox" v-model="selectedPeriod.restDay" v-bind:title="$t('restDay')" /></td>
+                            <td><input type="checkbox" v-model="selectedPeriod.exerciseDay" :title="$t('exerciseDay')" /></td>
+                            <td><input type="checkbox" v-model="selectedPeriod.restDay" :title="$t('restDay')" /></td>
                         </tr>
                     </table>
                     

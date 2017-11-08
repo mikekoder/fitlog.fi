@@ -28,7 +28,7 @@
                         <div class="row">
                             <div class="col-sm-2 col-text-40">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
-                                <exercise-picker v-bind:exercises="exerciseOptions" v-bind:value="exercise.exercise" v-on:change="exercise.exercise=arguments[0]" v-on:nameChange="processNewExercise(exercise, arguments[0])" />
+                                <exercise-picker :exercises="exerciseOptions" :value="exercise.exercise" @change="val => exercise.exercise=val" @nameChange="val => processNewExercise(exercise, val)" />
                             </div>
                             <div class="col-xs-4 col-text-10">
                                 <label class="hidden-sm hidden-md hidden-lg" :title="$t('frequencyInfo')" data-toggle="tooltip" data-placement="top">{{ $t("workoutsPerWeek") }} <i class="fa fa-question-circle-o"></i></label>

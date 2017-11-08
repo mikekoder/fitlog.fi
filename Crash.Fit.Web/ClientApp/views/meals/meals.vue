@@ -19,8 +19,8 @@
                             <li role="separator" class="divider"></li>
                             <li class="custom-date"><span>{{ $t("timeInterval") }}</span></li>
                             <li class="custom-date">
-                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="start=arguments[0]"></datetime-picker>
-                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="end=arguments[0]"></datetime-picker>
+                                <datetime-picker :value="start" :format="'DD.MM.YYYY'" @change="changeStart"></datetime-picker>
+                                <datetime-picker :value="end" :format="'DD.MM.YYYY'" @change="changeEnd"></datetime-picker>
                                 <button class="btn btn-sm" @click="fetchMeals()">{{ $t("OK") }}</button>
                             </li>
                         </ul>
@@ -28,7 +28,7 @@
                     <button class="btn btn-primary" @click="createMeal()">{{ $t("log") }}</button>
                     <div class="btn-group" role="group" aria-label="...">
                         <template v-for="group in groups">
-                            <button class="btn btn-default" v-bind:class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t(group.id) }}</button>
+                            <button class="btn btn-default" :class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t(group.id) }}</button>
                         </template>
                         <button class="btn pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button>
                         <button class="btn pull-right" @click="saveSettings" v-if="editNutrients">{{ $t('save') }}</button>
@@ -64,10 +64,10 @@
                                             <template v-for="col in visibleColumns">
                                                 <td class="nutrient" v-if="!col.hideSummary">
                                                     <div class="chart" v-if="col.key === energyDistributionId">
-                                                        <chart-pie-energy v-bind:protein="day.nutrients[proteinId]" v-bind:carb="day.nutrients[carbId]" v-bind:fat="day.nutrients[fatId]"></chart-pie-energy>
+                                                        <chart-pie-energy :protein="day.nutrients[proteinId]" :carb="day.nutrients[carbId]" :fat="day.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
                                                     <div v-else>
-                                                        <nutrient-bar v-bind:goal="nutrientGoal(col.key, day.date)" v-bind:value="day.nutrients[col.key]" v-bind:precision="col.precision"></nutrient-bar>
+                                                        <nutrient-bar :goal="nutrientGoal(col.key, day.date)" :value="day.nutrients[col.key]" :precision="col.precision"></nutrient-bar>
                                                     </div>
                                                 </td>
                                             </template>
@@ -78,7 +78,7 @@
                                             <template v-for="col in visibleColumns">
                                                 <td class="nutrient" v-if="!col.hideSummary">
                                                     <div class="chart" v-if="col.key === energyDistributionId">
-                                                        <chart-pie-energy v-bind:protein="meal.nutrients[proteinId]" v-bind:carb="meal.nutrients[carbId]" v-bind:fat="meal.nutrients[fatId]"></chart-pie-energy>
+                                                        <chart-pie-energy :protein="meal.nutrients[proteinId]" :carb="meal.nutrients[carbId]" :fat="meal.nutrients[fatId]"></chart-pie-energy>
                                                     </div>
                                                     <div v-else>
                                                         <nutrient-bar :goal="nutrientGoal(col.key, day.date, meal)" :value="meal.nutrients[col.key]" :precision="col.precision"></nutrient-bar>

@@ -6,7 +6,7 @@
                 <div class="col-sm-5 col-datetime">
                     <div class="form-group">
                         <label>{{ $t("time") }}</label>
-                        <datetime-picker class="vue-picker1" name="picker1" v-bind:value="time" v-on:change="time=arguments[0]"></datetime-picker>
+                        <datetime-picker class="vue-picker1" name="picker1" :value="time" @change="val => time=val"></datetime-picker>
                     </div>
 
                 </div>
@@ -24,7 +24,7 @@
                         <div class="row">
                             <div class="col-sm-4 col-text-40">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
-                                <exercise-picker v-bind:exercises="exercises" v-bind:value="set.exercise" v-on:change="set.exercise=arguments[0]" v-on:nameChange="processNewExercise(set, arguments[0])" />
+                                <exercise-picker :exercises="exercises" :value="set.exercise" @change="val => set.exercise=val" @nameChange="val => processNewExercise(set, val)" />
                             </div>
                             <div class="col-xs-4 col-number-5">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("reps") }}</label>
