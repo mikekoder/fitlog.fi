@@ -21,7 +21,7 @@
           <div class="row">
             <div class="col-sm-12">
                 <template v-for="item in itemsSorted">
-                    <div class="box box-solid" v-bind:class="{voted: userHasVoted(item.id)}">
+                    <div class="box box-solid" :class="{voted: userHasVoted(item.id)}">
                         <div class="box-header with-border">
                             <h3 class="box-title">{{ item.title }}</h3>
                         </div>
@@ -30,7 +30,7 @@
                                 <div class="col-sm-12">
                                     {{ item.description }}
                                     <template v-if="userHasVoted(item.id)">
-                                        <a class="btn btn-app pull-right" v-bind:title="$t('youHaveVoted')">
+                                        <a class="btn btn-app pull-right" :title="$t('youHaveVoted')">
                                             <span class="badge bg-red">{{ item.score }}</span>
                                             <i class="fa fa-thumbs-o-up"></i>
                                         </a>

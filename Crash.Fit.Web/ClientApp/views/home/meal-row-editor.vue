@@ -1,5 +1,5 @@
 ﻿<template>
-    <div class="modal fade" id="modal-default" style="display: block;" v-bind:class="{ in: show }">
+    <div class="modal fade" id="modal-default" style="display: block;" :class="{ in: show }">
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,7 +11,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <label>{{ $t('food') }}</label>
-                        <food-picker v-bind:value="food" v-on:change="food=arguments[0]" />
+                        <food-picker :value="food" @change="val => food=val" />
                     </div>
                 </div>
                 <div class="row" v-if="food">
@@ -22,8 +22,8 @@
                     <div class="col-sm-9">
                         <label>{{ $t('portion') }}</label>
                         <select class="form-control" v-model="portion">
-                            <option v-bind:value="undefined">g</option>
-                            <option v-for="p in food.portions" v-bind:value="p">
+                            <option :value="undefined">g</option>
+                            <option v-for="p in food.portions" :value="p">
                                 {{ p.name }}
                             </option>
                         </select>
@@ -39,7 +39,7 @@
     </div>
 </template>
 
-<script src="./edit-meal-row.js">
+<script src="./meal-row-editor.js">
 </script>
 
 <style scoped>

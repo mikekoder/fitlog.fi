@@ -4,7 +4,7 @@
             <div class="col-sm-5 col-md-3 col-lg-2">
                 <div class="form-group">
                     <label>{{ $t("time") }}</label>
-                    <datetime-picker class="vue-picker1" name="picker1" v-bind:value="time" v-on:change="time=arguments[0]"></datetime-picker>
+                    <datetime-picker class="vue-picker1" name="picker1" :value="time" @change="val => time=val"></datetime-picker>
                 </div>
             </div>
         </div>

@@ -7,6 +7,9 @@ import constants from '../../store/constants'
 import nutrientsMixin from '../../mixins/nutrients'
 import mealDefinitionsMixin from '../../mixins/meal-definitions'
 import nutritionGoalMixin from '../../mixins/nutrition-goal'
+import DatetimePicker from '../../components/datetime-picker'
+import EnergyDistributionBar from '../../components/energy-distribution-bar'
+import NutrientBar from '../../components/nutrient-bar'
 
 export default {
     mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin],
@@ -64,11 +67,17 @@ export default {
         }
     },
     components: {
-        'datetime-picker': require('../../components/datetime-picker'),
-        'chart-pie-energy': require('../../components/energy-distribution-bar'),
-        'nutrient-bar': require('../../components/nutrient-bar')
+        DatetimePicker,
+        EnergyDistributionBar,
+        NutrientBar
     },
     methods: {
+        changeStart(date) {
+            this.showDateRange(date, this.end);
+        },
+        changeEnd(date) {
+            this.showDateRange(this.start, date);
+        },
         showDay() {
             var end = moment().endOf('day').toDate();
             var start = moment().startOf('day').toDate();

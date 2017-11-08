@@ -5,6 +5,7 @@ import moment from 'moment'
 import toaster from '../../toaster'
 import utils from '../../utils'
 import exercisesMixin from '../../mixins/exercises'
+import DatetimePicker from '../../components/datetime-picker'
 
 export default {
     mixins: [exercisesMixin],
@@ -35,7 +36,8 @@ export default {
         }
     },
     components: {
-        'datetime-picker': require('../../components/datetime-picker')
+        DatetimePicker
+        //'datetime-picker': require('../../components/datetime-picker')
     },
     methods: {
         showWeek() {

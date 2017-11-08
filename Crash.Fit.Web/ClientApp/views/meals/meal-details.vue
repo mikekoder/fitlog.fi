@@ -16,7 +16,7 @@
                                 </li>             
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <datetime-picker v-bind:value="date" v-on:change="date=arguments[0]" v-bind:format="'DD.MM.YYYY'"></datetime-picker>
+                                    <datetime-picker :value="date" @change="val => date=val" :format="'DD.MM.YYYY'"></datetime-picker>
                                 </li>
                             </ul>
                         </div> 
@@ -29,7 +29,7 @@
                                 <li>
                                     <div class="input-group">
                                       <span class="input-group-addon" style="border: 0px;">klo</span>
-                                      <datetime-picker v-bind:value="selectedTime" v-on:change="selectedTime=arguments[0]" v-bind:format="'HH:mm'" v-on:click="selectedTime=arguments[0]"></datetime-picker>
+                                      <datetime-picker :value="selectedTime" @change="val => selectedTime=val" :format="'HH:mm'" @click="val => selectedTime=val"></datetime-picker>
                                       <span class="input-group-btn">
                                         <button class="btn btn-secondary" type="button" @click="setTime">{{ $t('use') }}</button>
                                       </span>
@@ -44,8 +44,8 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="nav nav-tabs">
-                        <li class="clickable" v-bind:class="{ active: !showNutrients }"><a @click="toggleNutrients(false)">{{ $t("foods") }}</a></li>
-                        <li class="clickable" v-bind:class="{ active: showNutrients }"><a @click="toggleNutrients(true)">{{ $t("nutrients") }}</a></li>
+                        <li class="clickable" :class="{ active: !showNutrients }"><a @click="toggleNutrients(false)">{{ $t("foods") }}</a></li>
+                        <li class="clickable" :class="{ active: showNutrients }"><a @click="toggleNutrients(true)">{{ $t("nutrients") }}</a></li>
                     </ul>
                     <div v-if="!showNutrients">
                         <div class="row hidden-xs">
@@ -71,7 +71,7 @@
                                         <input type="checkbox" v-model="row.copy" />
                                         <span>{{ row.food ? row.food.name : '' }}</span>
                                     </div>
-                                    <food-picker v-else v-bind:value="row.food" v-on:change="setRowFood(row, arguments[0])" />
+                                    <food-picker v-else :value="row.food" @change="val => setRowFood(row, val)" />
                                 </div>
                                 <div class="col-xs-5 col-sm-2 col-number-5">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("amount") }}</label>
@@ -83,8 +83,8 @@
                                     <div v-if="row.food">
                                         <span v-if="copyMode">{{ row.portion ? row.portion.name : '' }}</span>
                                         <select v-else class="form-control" v-model="row.portion">
-                                            <option v-bind:value="undefined">g</option>
-                                            <option v-for="portion in row.food.portions" v-bind:value="portion">
+                                            <option :value="undefined">g</option>
+                                            <option v-for="portion in row.food.portions" :value="portion">
                                                 {{ portion.name }}
                                             </option>
                                         </select>

@@ -22,7 +22,7 @@
                         <div class="exercise-target row">
                             <div class="col-xs-8 col-sm-6 col-md-3">
                                 <select class="form-control" v-model="targets[index]">
-                                    <option v-for="musclegroup in muscleGroups" v-bind:value="musclegroup">
+                                    <option v-for="musclegroup in muscleGroups" :value="musclegroup">
                                         {{ musclegroup.name }}
                                     </option>
                                 </select>

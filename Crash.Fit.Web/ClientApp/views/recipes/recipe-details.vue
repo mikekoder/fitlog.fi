@@ -15,9 +15,9 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="nav nav-tabs">
-                        <li class="clickable" v-bind:class="{ active: tab === 'ingredients' }"><a @click="tab = 'ingredients'">{{ $t("foods") }}</a></li>
-                        <li class="clickable" v-bind:class="{ active: tab === 'portions' }"><a @click="tab = 'portions'">{{ $t("portions") }}</a></li>
-                        <li class="clickable" v-bind:class="{ active: tab === 'nutrients' }"><a @click="tab = 'nutrients'">{{ $t("nutrients") }}</a></li>
+                        <li class="clickable" :class="{ active: tab === 'ingredients' }"><a @click="tab = 'ingredients'">{{ $t("foods") }}</a></li>
+                        <li class="clickable" :class="{ active: tab === 'portions' }"><a @click="tab = 'portions'">{{ $t("portions") }}</a></li>
+                        <li class="clickable" :class="{ active: tab === 'nutrients' }"><a @click="tab = 'nutrients'">{{ $t("nutrients") }}</a></li>
                     </ul>
                     <div v-if="tab === 'ingredients'">
                         <div class="row hidden-xs">
@@ -35,7 +35,7 @@
                                 <div class="col-sm-4 col-text-40">
                                     <label class="hidden-sm hidden-md hidden-lg">Ruoka</label>
                                     <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank">{{ $t("createFood") }}</router-link>
-                                    <food-picker v-bind:value="row.food" v-on:change="row.food=arguments[0]" />
+                                    <food-picker :value="row.food" @change="val => row.food=val" />
                                 </div>
                                 <div class="col-xs-3 col-number-5">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("amount") }}</label>
@@ -45,8 +45,8 @@
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("portion") }}</label>
                                     <div v-if="row.food">
                                         <select class="form-control" v-model="row.portion">
-                                            <option v-bind:value="undefined">g</option>
-                                            <option v-for="portion in row.food.portions" v-bind:value="portion">
+                                            <option :value="undefined">g</option>
+                                            <option v-for="portion in row.food.portions" :value="portion">
                                                 {{ portion.name }}
                                             </option>
                                         </select>

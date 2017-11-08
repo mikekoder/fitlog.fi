@@ -41,7 +41,7 @@
             <section class="content">
                 <div class="row">
                     <div class="col-sm-12">
-                        <measurements-editor v-bind:measures="measures" v-bind:saveCallback="saveMeasurements" v-bind:cancelCallback="cancelMeasurements" />
+                        <measurements-editor :measures="measures" :saveCallback="saveMeasurements" :cancelCallback="cancelMeasurements" />
                     </div>
                 </div>
             </section>

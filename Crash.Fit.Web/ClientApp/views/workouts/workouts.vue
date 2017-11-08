@@ -18,8 +18,8 @@
                             <li role="separator" class="divider"></li>
                             <li class="custom-date"><span>{{ $t("timeInterval") }}</span></li>
                             <li class="custom-date">
-                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="start" v-bind:format="'DD.MM.YYYY'" v-on:change="changeStart(arguments[0])"></datetime-picker>
-                                <datetime-picker class="vue-picker1" name="picker1" v-bind:value="end" v-bind:format="'DD.MM.YYYY'" v-on:change="changeEnd(arguments[0])"></datetime-picker>
+                                <datetime-picker :value="start" :format="'DD.MM.YYYY'" @change="changeStart"></datetime-picker>
+                                <datetime-picker :value="end" :format="'DD.MM.YYYY'" @change="changeEnd"></datetime-picker>
                             </li>
                         </ul>
                     </div>
@@ -45,8 +45,8 @@
                     <div class="row">
                         <div class="col-xs-12">
                              <ul class="nav nav-tabs">
-                                <li class="clickable" v-bind:class="{ active: tab === 'workouts' }"><a @click="tab = 'workouts'">{{ $t("workouts") }}</a></li>
-                                <li class="clickable" v-bind:class="{ active: tab === 'goals' }"><a @click="tab = 'goals'">{{ $t("routineProgress") }}</a></li>
+                                <li class="clickable" :class="{ active: tab === 'workouts' }"><a @click="tab = 'workouts'">{{ $t("workouts") }}</a></li>
+                                <li class="clickable" :class="{ active: tab === 'goals' }"><a @click="tab = 'goals'">{{ $t("routineProgress") }}</a></li>
                             </ul>
                         </div>
                     </div>

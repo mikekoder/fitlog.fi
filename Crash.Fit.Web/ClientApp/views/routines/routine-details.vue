@@ -70,7 +70,7 @@
                                         <div class="row">
                                             <div class="col-sm-4 col-text-30">
                                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
-                                                <exercise-picker v-bind:exercises="exercises" v-bind:value="exercise.exercise" v-on:change="exercise.exercise=arguments[0]" v-on:nameChange="processNewExercise(exercise, arguments[0])" />
+                                                <exercise-picker :exercises="exercises" :value="exercise.exercise" @change="val => exercise.exercise=val" @nameChange="val => processNewExercise(exercise, val)" />
                                             </div>
                                             <div class="col-xs-4 col-number-5">
                                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("sets") }}</label>

@@ -5,8 +5,8 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="nav nav-tabs">
-                        <li v-bind:class="{ active: tab == 'basic' }"><a @click="tab='basic'">{{ $t('basicInformation') }}</a></li>
-                        <li v-bind:class="{ active: tab == 'logins' }"><a @click="tab='logins'">{{ $t('logins') }}</a></li>
+                        <li :class="{ active: tab == 'basic' }"><a @click="tab='basic'">{{ $t('basicInformation') }}</a></li>
+                        <li :class="{ active: tab == 'logins' }"><a @click="tab='logins'">{{ $t('logins') }}</a></li>
                     </ul>
                 </div>
             </div>
@@ -17,17 +17,17 @@
                         <div class="form-group dob">
                             <label>{{ $t('dob') }}</label><br />
                             <select v-model="day" class="form-control input-2">
-                                <option v-for="dayOption in days" v-bind:value="dayOption">
+                                <option v-for="dayOption in days" :value="dayOption">
                                     {{ dayOption }}
                                 </option>
                             </select>
                             <select v-model="month" class="form-control input-10">
-                                <option v-for="monthOption in months" v-bind:value="monthOption">
+                                <option v-for="monthOption in months" :value="monthOption">
                                     {{ monthOption.name }}
                                 </option>
                             </select>
                             <select v-model="year" class="form-control input-4">
-                                <option v-for="yearOption in years" v-bind:value="yearOption">
+                                <option v-for="yearOption in years" :value="yearOption">
                                     {{ yearOption }}
                                 </option>
                             </select>
@@ -39,9 +39,9 @@
                         <div class="form-group">
                             <label>{{ $t('gender') }}</label>
                             <select class="form-control input-10" v-model="gender">
-                                <option v-bind:value="undefined"></option>
-                                <option v-bind:value="'male'">Mies</option>
-                                <option v-bind:value="'female'">Nainen</option>
+                                <option :value="undefined"></option>
+                                <option :value="'male'">Mies</option>
+                                <option :value="'female'">Nainen</option>
                             </select>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                         <div class="form-group">
                             <label>{{ $t('pal') }}</label><br />
                             <select v-model="pal" class="form-control input-25">
-                                <option v-for="palOption in pals" v-bind:value="palOption">
+                                <option v-for="palOption in pals" :value="palOption">
                                     {{ palOption.name }}
                                 </option>
                             </select>

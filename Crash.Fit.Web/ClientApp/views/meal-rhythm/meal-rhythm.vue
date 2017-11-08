@@ -18,11 +18,11 @@
                             </div>
                             <div class="col-xs-6 col-time">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t('starts') }}</label>
-                                <datetime-picker v-bind:value="def.start" v-on:change="def.start=arguments[0]" v-bind:format="'HH:mm'"></datetime-picker>
+                                <datetime-picker :value="def.start" @change="val => def.start=val" :format="'HH:mm'"></datetime-picker>
                             </div>
                             <div class="col-xs-6 col-time">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t('ends') }}</label>
-                                <datetime-picker v-bind:value="def.end" v-on:change="def.end=arguments[0]" v-bind:format="'HH:mm'"></datetime-picker>
+                                <datetime-picker :value="def.end" @change="val => def.end=val" :format="'HH:mm'"></datetime-picker>
                             </div>
                             <div class="col-xs-12 col-actions-1">
                                 <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>

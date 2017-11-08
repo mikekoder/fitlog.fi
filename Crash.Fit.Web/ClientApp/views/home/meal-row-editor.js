@@ -2,8 +2,10 @@
 import api from '../../api'
 import formatters from '../../formatters'
 import toaster from '../../toaster'
+import FoodPicker from '../foods/food-picker'
 
 export default {
+    name: 'meal-row-editor',
     data () {
         return {
             food: undefined,
@@ -21,7 +23,7 @@ export default {
         }
     },
     components: {
-        'food-picker': require('../foods/food-picker'),
+        FoodPicker
     },
     methods: {
         cancel() {
@@ -56,7 +58,6 @@ export default {
                     }
                 },
                 failure() {
-                    toaster.error(self.$t('fetchFailed'));
                 }
             });
         }
