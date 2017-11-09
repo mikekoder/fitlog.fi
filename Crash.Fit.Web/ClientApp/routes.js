@@ -155,14 +155,12 @@ export default [
                 path: '/bugit',
                 name: 'bugs',
                 component: Feedback,
-                params: { foo: 'bar'},
                 meta: { type: 'Bug' }
             },
             {
                 path: '/bugit/:id',
                 name: 'bug-details',
                 component: FeedbackDetails,
-                params: { foo: 'bar' },
                 meta: { type: 'Bug' }
             },
             {
