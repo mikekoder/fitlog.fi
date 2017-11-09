@@ -53,7 +53,7 @@
                     <div v-if="tab === 'workouts'">
                         <div class="outer" v-if="workouts.length > 0">
                         <div class="inner">
-                                <table class="table" id="workout-list">
+                                <table class="table">
                                     <thead>
                                         <tr>
                                             <th class="time freeze"><div><div>&nbsp;</div></div></th>
@@ -90,14 +90,25 @@
                                     <th>{{ $t('reps') }}</th>
                                     <th>{{ $t('load') }}</th>
                                     <th>{{ $t('completed') }}</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="goal in progress">
+                                <tr v-for="goal in progress" @click="goal.expanded=(!goal.expanded)">
                                     <td>{{ goal.exercise.name }}</td>
                                     <td>{{ goal.reps }}</td>
                                     <td>{{ goal.load }} %</td>
-                                    <td><span>{{ goal.sets.length }} / {{ goal.times}}</span><span v-for="set in goal.sets"><br />{{ set.reps }} x {{ set.load }}%</span></td>
+                                    <td>
+                                        <div class="progress">
+                                          <div class="progress-bar progress-bar-aqua" :style="'width: '+(goal.sets.length / goal.times * 100)+'%'">{{ goal.sets.length }} / {{ goal.times}}</div>
+                                            <span v-if="goal.sets.length == 0">{{ goal.sets.length }} / {{ goal.times}}</span>
+                                        </div>
+                                        <span v-for="set in goal.sets" v-show="goal.expanded"><br />{{ set.reps }} x {{ set.load }}%</span>
+                                    </td>
+                                    <td>
+                                        <i v-if="goal.expanded" class="fa fa-chevron-up"></i>
+                                        <i v-else class="fa fa-chevron-down"></i>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -130,7 +141,7 @@
         margin-left: 100px;
     }
 
-    #workout-list {
+    .table {
         width: auto;
         table-layout: fixed;
     }

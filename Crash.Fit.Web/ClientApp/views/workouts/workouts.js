@@ -124,7 +124,8 @@ export default {
                                 reps: e.reps,
                                 load: loadFrom,
                                 times: utils.roundToNearest(e.sets * w.frequency * weeks, 0.1),
-                                sets: []
+                                sets: [],
+                                expanded: false
                             });
                         }
                         else {
@@ -136,7 +137,8 @@ export default {
                                     reps: e.reps,
                                     load: (step || step == 0) ? loadFrom + i * step : undefined,
                                     times: utils.roundToNearest(w.frequency * weeks, 0.1),
-                                    sets: []
+                                    sets: [],
+                                    expanded: false
                                 });
                             }
                         }
