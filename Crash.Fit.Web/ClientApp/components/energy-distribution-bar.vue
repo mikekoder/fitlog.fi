@@ -11,11 +11,6 @@
         name: 'energy-distribution-bar',
         data() {
             return {
-
-                /* energy: 0
-                proteinWidth: null,
-                carbWidth: null,
-                fatWidth: null*/
             }
         },
         computed: {
@@ -33,7 +28,6 @@
             }
         },
         props: {
-            size: 50,
             protein: 0,
             carb: 0,
             fat: 0

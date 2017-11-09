@@ -41,6 +41,7 @@ let router = new VueRouter({
     routes: routes,
     linkActiveClass: 'active'
 });
+/*
 router.beforeEach((to, from, next) =>{
     if (!to.matched.some(record => record.meta.anon)) {
         next();
@@ -48,6 +49,7 @@ router.beforeEach((to, from, next) =>{
         next();
     }
 });
+*/
 router.afterEach((to, from) => {
     if (window.matchMedia('(max-width: 900px)').matches) {
         $('body').addClass('sidebar-collapse').removeClass('sidebar-open');
