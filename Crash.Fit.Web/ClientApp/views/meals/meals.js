@@ -32,7 +32,7 @@ export default {
         columns() {
             var columns = [];
             //columns.push(this.energyDistributionColumn);
-            for (var i in this.$store.state.nutrition.nutrients) {
+            for (var i in this.$nutrients) {
                 var nutrient = this.$store.state.nutrition.nutrients[i];
                 if (nutrient.hideSummary) {
                     continue;
