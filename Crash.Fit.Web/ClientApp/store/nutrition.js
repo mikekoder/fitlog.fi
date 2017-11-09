@@ -38,7 +38,7 @@ export default {
     },
     actions: {
         [constants.SELECT_MEAL_DIARY_DATE]({ commit, state }, { date, success, failure }) {
-            state.diaryDate = date;
+            commit(constants.SELECT_MEAL_DIARY_DATE_SUCCESS, { date });
         },
         [constants.SAVE_MEAL_DIARY_SETTINGS]({ commit, state }, { settings, success, failure }) {
             api.saveHomeSettings(settings).then(function () {
@@ -74,7 +74,7 @@ export default {
                 }
             }
 
-            api.listMeals(start, end).then(function (meals) {
+            api.listMeals(start, end).then(meals => {
                 commit(constants.FETCH_MEALS_SUCCESS, { start, end, meals })
                 if (success) {
                     success();
@@ -476,6 +476,9 @@ export default {
         }
     },
     mutations: {
+        [constants.SELECT_MEAL_DIARY_DATE_SUCCESS](state, { date }) {
+            state.diaryDate = date;
+        },
         [constants.SELECT_MEAL_DATE_RANGE_SUCCESS](state, { start, end }) {
             state.mealsDisplayStart = start;
             state.mealsDisplayEnd = end;
