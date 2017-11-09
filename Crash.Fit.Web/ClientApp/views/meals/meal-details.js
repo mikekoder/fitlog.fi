@@ -223,15 +223,17 @@ export default {
                     }
                 });
             }
-            self.$store.dispatch(constants.FETCH_MEAL, {
-                id,
-                success(meal) {
-                    self.populate(meal);
-                },
-                failure() {
-                    toaster.error(self.$t('fetchFailed'));
-                }
-            });
+            else {
+                self.$store.dispatch(constants.FETCH_MEAL, {
+                    id,
+                    success(meal) {
+                        self.populate(meal);
+                    },
+                    failure() {
+                        toaster.error(self.$t('fetchFailed'));
+                    }
+                });
+            }
         }
         
         
