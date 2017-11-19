@@ -35,6 +35,7 @@ export default {
             }
             self.nutrientSettings = grouped;
             self.$store.commit(constants.LOADING_DONE);
+            self.toggleGroup(self.groups[0].id);
         },
         toggleGroup(group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
