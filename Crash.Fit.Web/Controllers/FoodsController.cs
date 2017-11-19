@@ -56,6 +56,7 @@ namespace Crash.Fit.Web.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult Details(Guid id)
         {
             var food = nutritionRepository.GetFood(id);

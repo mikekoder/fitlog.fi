@@ -29,9 +29,15 @@ namespace Crash.Fit.Web.Controllers
             var response = AutoMapper.Mapper.Map<NutrientResponse[]>(nutrients);
             return Ok(response);
         }
+        
         [HttpGet("settings")]
+        [AllowAnonymous]
         public IActionResult NutrientSettings()
         {
+            if(CurrentUserId == Guid.Empty)
+            {
+                return Ok(Enumerable.Empty<NutrientSettingResponse>());
+            }
             var nutrients = nutritionRepository.GetNutrientSettings(CurrentUserId);
             var response = AutoMapper.Mapper.Map<NutrientSettingResponse[]>(nutrients);
             return Ok(response);
