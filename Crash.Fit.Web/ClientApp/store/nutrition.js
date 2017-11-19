@@ -313,17 +313,17 @@ export default {
                 }
                 return;
             }
-            Promise.all([api.listNutrients(), api.getNutrientSettings()]).then(function (results) {
+            Promise.all([api.listNutrients(), api.getNutrientSettings()]).then(results => {
                 var nutrients = results[0];
                 var settings = results[1];
 
                 nutrients = applySettingsToNutrients(settings, nutrients);
-                
+
                 commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients });
                 if (success) {
                     success(nutrients);
                 }
-            }).catch(function (reason) {
+            }).catch(reason => {
                 if (failure) {
                     failure();
                 }
