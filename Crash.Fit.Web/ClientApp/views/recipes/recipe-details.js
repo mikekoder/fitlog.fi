@@ -106,10 +106,11 @@ export default {
             self.$store.dispatch(constants.SAVE_RECIPE, {
                 recipe,
                 success() {
+                    toaster.info(self.$t('saveSuccessful'));
                     self.$router.replace({ name: 'recipes' });
                 },
                 failure() {
-                    toaster.error(self.$t('recipeDetails.saveFailed'));
+                    toaster.error(self.$t('saveFailed'));
                 }
             });
         },

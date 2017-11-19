@@ -107,7 +107,7 @@ export default {
             self.$store.dispatch(constants.SAVE_PROFILE, {
                 profile,
                 success() {
-                  toaster.info(self.$t('savedProfile'));
+                  toaster.info(self.$t('saveSuccessful'));
                 },
                 failure() {
                   toaster.error(self.$t('saveFailed'));

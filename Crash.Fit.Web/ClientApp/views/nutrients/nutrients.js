@@ -63,10 +63,10 @@ export default {
             self.$store.dispatch(constants.SAVE_NUTRIENT_SETTINGS, {
                 settings,
                 success() {
-                    toaster.info(self.$t('nutrients.saved'));
+                    toaster.info(self.$t('saveSuccessful'));
                 },
                 failure() {
-                    toaster.error(self.$t('nutrients.saveFailed'));
+                    toaster.error(self.$t('saveFailed'));
                 }
             });
         },

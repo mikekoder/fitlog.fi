@@ -36,6 +36,7 @@ export default {
             self.$store.dispatch(constants.SAVE_EXERCISE, {
                 exercise,
                 success() {
+                    toaster.info(self.$t('saveSuccessful'));
                     self.$router.replace({ name: 'exercises' });
                 },
                 failure() {

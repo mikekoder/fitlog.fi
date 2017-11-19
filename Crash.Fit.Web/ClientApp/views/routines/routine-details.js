@@ -114,6 +114,7 @@ export default {
             self.$store.dispatch(constants.SAVE_ROUTINE, {
                 routine,
                 success() {
+                    toaster.info(self.$t('saveSuccessful'));
                     self.$router.replace({ name: 'routines' });
                 },
                 failure() {

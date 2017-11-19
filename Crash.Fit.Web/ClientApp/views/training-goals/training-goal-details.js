@@ -78,6 +78,7 @@ export default {
                 goal,
                 success() {
                     toaster.info(self.$t('trainingGoals.saved'));
+                     self.$router.replace({ name: 'training-goals' });
                 },
                 failure() {
                     toaster.error(self.$t('trainingGoals.saveFailed'));
