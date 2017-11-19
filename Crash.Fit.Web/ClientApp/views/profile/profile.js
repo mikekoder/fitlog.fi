@@ -158,7 +158,7 @@ export default {
                     self.hasPassword = profile.hasPassword;
                     if (profile.hasPassword) {
                         // don't show generated username
-                        self.email = profile.username;
+                        self.username = profile.username;
                     }
                     self.hasFacebook = profile.logins.includes('Facebook');
                     self.hasGoogle = profile.logins.includes('Google');

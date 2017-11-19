@@ -98,7 +98,7 @@
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label>{{ $t("username") }}</label> <span class="error">{{ usernameError }}</span>
-                            <input type="text" class="form-control" v-model="username" @blur="checkUsername">
+                            <input type="text" class="form-control" v-model="username" @blur="checkUsername" :disabled="hasPassword">
                         </div>
                     </div>
                 </div>
