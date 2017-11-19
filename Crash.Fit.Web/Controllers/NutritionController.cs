@@ -141,7 +141,9 @@ namespace Crash.Fit.Web.Controllers
             });
 
             nutritionRepository.SaveNutrientSettings(settings);
-            return Ok();
+
+            var response = AutoMapper.Mapper.Map<NutrientSettingResponse[]>(settings);
+            return Ok(response);
         }
 
         /*

@@ -317,26 +317,8 @@ export default {
                 var nutrients = results[0];
                 var settings = results[1];
 
-                settings.forEach(s => {
-                    var nutrient = nutrients.find(n => n.id == s.nutrientId);
-                    if (nutrient) {
-                        if (s.hideSummary != null) {
-                            nutrient.hideSummary = s.hideSummary;
-                            nutrient.userHideSummary = s.hideSummary;
-                        }
-                        if (s.hideDetails != null) {
-                            nutrient.hideDetails = s.hideDetails;
-                            nutrient.userHideDetails = s.hideDetails;
-                        }
-                        if (s.order != null) {
-                            nutrient.order = s.order;
-                            nutrient.userOrder = s.order;
-                        }
-                        if (s.homeOrder != null) {
-                            nutrient.homeOrder = s.homeOrder;
-                        }
-                    }
-                });
+                nutrients = applySettingsToNutrients(settings, nutrients);
+                
                 commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients });
                 if (success) {
                     success(nutrients);
@@ -348,7 +330,10 @@ export default {
             });
         },
         [constants.SAVE_NUTRIENT_SETTINGS]({ commit, state }, { settings, success, failure }) {
-            api.saveNutrientSettings(settings).then(function (nutrients) {
+            api.saveNutrientSettings(settings).then(function (savedSettings) {
+
+                var nutrients = applySettingsToNutrients(savedSettings, state.nutrients);
+
                 commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients })
                 if (success) {
                     success(nutrients);
@@ -632,6 +617,29 @@ export default {
     }
 }
 
+    function applySettingsToNutrients(settings, nutrients) {
+        settings.forEach(s => {
+            var nutrient = nutrients.find(n => n.id == s.nutrientId);
+            if (nutrient) {
+                if (s.hideSummary != null) {
+                    nutrient.hideSummary = s.hideSummary;
+                    nutrient.userHideSummary = s.hideSummary;
+                }
+                if (s.hideDetails != null) {
+                    nutrient.hideDetails = s.hideDetails;
+                    nutrient.userHideDetails = s.hideDetails;
+                }
+                if (s.order != null) {
+                    nutrient.order = s.order;
+                    nutrient.userOrder = s.order;
+                }
+                if (s.homeOrder != null) {
+                    nutrient.homeOrder = s.homeOrder;
+                }
+            }
+        });
+        return nutrients;
+    }
     function findDay(meal, state) {
         var date = moment(meal.time).startOf('day');
         return state.mealDays.find(d => moment(d.date).isSame(date, 'day'));
