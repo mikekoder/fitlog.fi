@@ -4,6 +4,9 @@
             <router-link tag="li" :to="{ name: 'home'}" exact>
                 <a><i class="fa fa-home"></i> <span>{{ $t("home") }}</span></a>
             </router-link>
+            <router-link tag="li" :to="{ name: 'profile'}" v-if="isLoggedIn">
+                <a><i class="fa fa-user"></i> <span>{{ $t("profile") }}</span></a>
+            </router-link>
             <li class="header">{{ $t("nutrition") }}</li>
             <router-link tag="li" :to="{ name: 'meals'}" v-if="isLoggedIn">
                 <a><i class="fa fa-cutlery"></i> <span>{{ $t("meals") }}</span></a>
@@ -61,19 +64,14 @@
                 <span>{{ $t("improvements") }}</span>
               </a>
             </router-link>
-            <!--
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-link"></i> <span>Multilevel</span>
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="#">Link in level 2</a></li>
-                    <li><a href="#">Link in level 2</a></li>
-                </ul>
-            </li>-->
+            <li class="header">{{ $t("follow") }}</li>
+            <li>
+                <a href="https://www.facebook.com/fitlog.fi/"><i class="fa fa-facebook"></i><span>fitlog.fi</span></a>
+            </li>
+            <li>
+                <a href="https://www.instagram.com/fitlog.fi/"><i class="fa fa-instagram"></i><span>fitlog.fi</span></a>
+            </li>
+            
         </ul>
     </section>
 
