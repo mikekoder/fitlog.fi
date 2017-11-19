@@ -8,7 +8,7 @@ export default {
             id: null,
             name: null,
             percentageBW: null,
-            targets: []
+            targets: {}
         }
     },
     computed: {
@@ -30,8 +30,13 @@ export default {
                 id: self.id,
                 name: self.name,
                 percentageBW: self.percentageBW,
-                targets: self.targets.map(t => t.id)
+                targets: []
             };
+            for (var i in self.targets) {
+                if (self.targets[i]) {
+                    exercise.targets.push(i);
+                }
+            }
 
             self.$store.dispatch(constants.SAVE_EXERCISE, {
                 exercise,
@@ -78,7 +83,11 @@ export default {
                             self.id = exercise.id;
                             self.name = exercise.name;
                             self.percentageBW = exercise.percentageBW;
-                            self.targets = exercise.targets.map(t => { return self.muscleGroups.find(g => g.id === t); });
+                            self.targets = {};
+                            exercise.targets.forEach(t => {
+                                self.targets[t] = true;
+                            });
+                            //self.targets = exercise.targets.map(t => { return self.muscleGroups.find(g => g.id === t); });
                             self.$store.commit(constants.LOADING_DONE);
                         },
                         failure() {
