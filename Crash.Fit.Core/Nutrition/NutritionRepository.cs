@@ -196,7 +196,7 @@ GROUP BY R.FoodId;";
                     }), tran);
                     if (food.Ingredients != null)
                     {
-                        conn.Execute("INSERT INTO RecipeIngredient(RecipeId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@RecipeId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", food.Ingredients.Select((i, index) => new
+                        conn.Execute("INSERT INTO RecipeIngredient(Id,RecipeId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(newid(),@RecipeId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", food.Ingredients.Select((i, index) => new
                         {
                             RecipeId = food.Id,
                             Index = index,
@@ -245,7 +245,7 @@ GROUP BY R.FoodId;";
 
                     if (food.Ingredients != null)
                     {
-                        conn.Execute("INSERT INTO RecipeIngredient(RecipeId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@RecipeId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", food.Ingredients.Select((i, index) => new
+                        conn.Execute("INSERT INTO RecipeIngredient(Id,RecipeId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(newid(),@RecipeId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", food.Ingredients.Select((i, index) => new
                         {
                             RecipeId = food.Id,
                             Index = index,
