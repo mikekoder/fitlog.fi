@@ -25,9 +25,8 @@
                                 </li>
                             </ul>
                         </li>-->
-                        <router-link tag="li" :to="{ name: 'profile'}" v-if="isLoggedIn">
-                            <a><i class="fa fa-user"></i> <span>{{ $t("profile") }}</span></a>
-                        </router-link>
+                        
+                       
                         <li v-if="!isLoggedIn">
                             <a href="#/luo-tunnus">{{ $t("register") }}</a>
                         </li>
