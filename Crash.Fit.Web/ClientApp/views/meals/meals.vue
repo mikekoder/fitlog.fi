@@ -64,7 +64,7 @@
                                             <template v-for="col in visibleColumns">
                                                 <td class="nutrient" v-if="!col.hideSummary">
                                                     <div class="chart" v-if="col.key === energyDistributionId">
-                                                        <chart-pie-energy :protein="day.nutrients[proteinId]" :carb="day.nutrients[carbId]" :fat="day.nutrients[fatId]"></chart-pie-energy>
+                                                        <energy-distribution-bar :protein="day.nutrients[proteinId]" :carb="day.nutrients[carbId]" :fat="day.nutrients[fatId]"></energy-distribution-bar>
                                                     </div>
                                                     <div v-else>
                                                         <nutrient-bar :goal="nutrientGoal(col.key, day.date)" :value="day.nutrients[col.key]" :precision="col.precision"></nutrient-bar>
@@ -78,7 +78,7 @@
                                             <template v-for="col in visibleColumns">
                                                 <td class="nutrient" v-if="!col.hideSummary">
                                                     <div class="chart" v-if="col.key === energyDistributionId">
-                                                        <chart-pie-energy :protein="meal.nutrients[proteinId]" :carb="meal.nutrients[carbId]" :fat="meal.nutrients[fatId]"></chart-pie-energy>
+                                                        <energy-distribution-bar :protein="meal.nutrients[proteinId]" :carb="meal.nutrients[carbId]" :fat="meal.nutrients[fatId]"></energy-distribution-bar>
                                                     </div>
                                                     <div v-else>
                                                         <nutrient-bar :goal="nutrientGoal(col.key, day.date, meal)" :value="meal.nutrients[col.key]" :precision="col.precision"></nutrient-bar>
