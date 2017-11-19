@@ -42,7 +42,7 @@ export default {
             self.$store.dispatch(constants.SAVE_MEAL_DEFINITIONS, {
                 definitions: defs,
                 success() {
-                    toaster.info(self.$t('saved'));
+                    toaster.info(self.$t('saveSuccessful'));
                 },
                 failure() {
                     toaster.error(self.$t('saveFailed'));

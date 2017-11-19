@@ -22,6 +22,7 @@ export default {
         self.$store.dispatch(constants.SAVE_FEEDBACK, {
             feedback,
             success() {
+                toaster.info(self.$t('saveSuccessful'));
                 if(feedback.type === 'Bug'){
                   self.$router.replace({ name: 'bugs' });
                 }
@@ -30,7 +31,7 @@ export default {
                 }
             },
             failure() {
-                toaster(self.$t('saveFailed'));
+                toaster.error(self.$t('saveFailed'));
             }
         });
       },

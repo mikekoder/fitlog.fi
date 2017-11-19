@@ -29,6 +29,7 @@ export default {
         saveMeasurements(measurements) {
             var self = this;
             api.saveMeasurements(measurements).then(() => {
+                toaster.info(self.$t('saveSuccessful'));
                 self.loadMeasures();
                 self.create = false;
             });
