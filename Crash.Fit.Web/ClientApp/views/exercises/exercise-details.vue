@@ -18,28 +18,20 @@
                         <div class="col-xs-8 col-sm-6 col-md-3"><label>{{ $t("muscleGroups") }}</label></div>
                         <div class="col-xs-4 col-sm-2">&nbsp;</div>
                     </div>
-                    <template v-for="(target,index) in targets">
-                        <div class="exercise-target row">
-                            <div class="col-xs-8 col-sm-6 col-md-3">
-                                <select class="form-control" v-model="targets[index]">
-                                    <option v-for="musclegroup in muscleGroups" :value="musclegroup">
-                                        {{ musclegroup.name }}
-                                    </option>
-                                </select>
+                    <div class="exercise-target row">
+                        <div class="col-xs-8 col-sm-6 col-md-3">
+                            <template v-for="(muscleGroup,index) in muscleGroups">
+                            <div class="form-group exercise-target">
+                                <input type="checkbox" v-model="targets[muscleGroup.id]" />
+                                <label>{{ muscleGroup.name }}</label>
                             </div>
-                            <div class="col-xs-4 col-sm-2">
-                                <div>
-                                    <button class="btn btn-danger btn-sm" @click="deleteTarget(index)">{{ $t("delete") }}</button>
-                                </div>
-                            </div>
+                            </template>
                         </div>
-                        <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
-                            <div class="col-sm-12"><hr /></div>
-                        </div>
-                    </template>
-                    <div class="row">
-                        <div class="col-xs-12"><button class="btn" @click="addTarget">{{ $t("add") }}</button></div>
                     </div>
+                    <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
+                        <div class="col-sm-12"><hr /></div>
+                    </div>
+                    
                 </div>
             </div>
             <div class="row">&nbsp;</div>
@@ -73,6 +65,15 @@
 <style scoped>
     div.exercise-target {
         margin-bottom: 5px;
+    }
+    div.exercise-target input[type=checkbox]{
+        width: 16px;
+        height: 16px;
+    }
+    div.exercise-target label {
+       margin-bottom: 2px;
+       position:relative;
+       top:-2px;
     }
 
     div.recipe-row-separator {
