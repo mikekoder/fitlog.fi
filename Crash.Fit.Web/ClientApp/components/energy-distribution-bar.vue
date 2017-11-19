@@ -1,8 +1,8 @@
 ﻿<template>
     <div class="bar-container">
-        <div class="bar protein" :title="'Proteiini ' + decimal(proteinWidth, 2) +'%'" :style="'width: '+ proteinWidth +'%;'">P</div>
-        <div class="bar carb" :title="'Hiilihydraatti ' + decimal(carbWidth, 2) +'%'" :style="'width: '+ carbWidth +'%;'">HH</div>
-        <div class="bar fat" :title="'Rasva ' + decimal(fatWidth, 2) +'%'" :style="'width: '+ fatWidth +'%;'">R</div>
+        <div class="bar protein" :title="$t('protein')+' ' + decimal(proteinWidth, 2) +'%'" :style="'width: '+ proteinWidth +'%;'">P</div>
+        <div class="bar carb" :title="$t('carbs')+' ' + decimal(carbWidth, 2) +'%'" :style="'width: '+ carbWidth +'%;'">HH</div>
+        <div class="bar fat" :title="$t('fat')+' ' + decimal(fatWidth, 2) +'%'" :style="'width: '+ fatWidth +'%;'">R</div>
     </div>
 </template>
 
