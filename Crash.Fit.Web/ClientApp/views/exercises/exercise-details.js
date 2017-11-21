@@ -73,7 +73,7 @@ export default {
                 if (id == constants.NEW_ID) {
                     self.id = undefined;
                     self.name = undefined;
-                    self.targets = [];
+                    self.targets = {};
                     self.$store.commit(constants.LOADING_DONE);
                 }
                 else {
