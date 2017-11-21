@@ -183,7 +183,7 @@ GROUP BY R.FoodId;";
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Food(Id,UserId,Name,IsRecipe,FineliId,Created,CookedWeight,NutrientPortionId) VALUES(@Id,@UserId,@Name,@IsRecipe,@FineliId,@Created,@CookedWeight,@NutrientPortionId)", food, tran);
+                    conn.Execute("INSERT INTO Food(Id,UserId,Name,Manufacturer,IsRecipe,FineliId,Created,CookedWeight,NutrientPortionId) VALUES(@Id,@UserId,@Name,@Manufacturer,@IsRecipe,@FineliId,@Created,@CookedWeight,@NutrientPortionId)", food, tran);
                     conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount,PortionAmount) VALUES(@FoodId,@NutrientId,@Amount,@PortionAmount)",
                         food.Nutrients.Select(n => new { FoodId = food.Id, n.NutrientId, n.Amount, n.PortionAmount }), tran);
                     conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Amount,Weight) VALUES(@Id,@FoodId,@Name,@Amount,@Weight)", food.Portions.Select(p => new
@@ -226,7 +226,7 @@ GROUP BY R.FoodId;";
                     conn.Execute("DELETE FROM RecipeIngredient WHERE RecipeId=@Id", new { food.Id }, tran);
                     conn.Execute("DELETE FROM FoodPortion WHERE FoodId=@Id", new { food.Id }, tran);
 
-                    conn.Execute("UPDATE Food SET Name=@Name,CookedWeight=@CookedWeight,NutrientPortionId=@NutrientPortionId WHERE Id=@Id", food, tran);
+                    conn.Execute("UPDATE Food SET Name=@Name,Manufacturer=@Manufacturer,CookedWeight=@CookedWeight,NutrientPortionId=@NutrientPortionId WHERE Id=@Id", food, tran);
                     conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount,PortionAmount) VALUES(@FoodId,@NutrientId,@Amount,@PortionAmount)", food.Nutrients.Select(n => new
                     {
                         FoodId = food.Id,

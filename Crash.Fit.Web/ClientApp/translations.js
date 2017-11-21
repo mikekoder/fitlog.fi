@@ -103,6 +103,7 @@
     logout: 'Kirjaudu ulos',
     lunch: 'Lounas',
     MACROCMP: 'Makrot',
+    manufacturer: 'Valmistaja',
     march: 'Maaliskuu',
     may: 'Toukokuu',
     mealCalculator: 'Aterialaskuri',

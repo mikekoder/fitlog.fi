@@ -10,6 +10,7 @@ namespace Crash.Fit.Nutrition
     {
         public Guid? UserId { get; set; }
         public string Name { get; set; }
+        public string Manufacturer { get; set; }
         public bool IsRecipe { get; set; }
         public string FineliId { get; set; }
         /// <summary>

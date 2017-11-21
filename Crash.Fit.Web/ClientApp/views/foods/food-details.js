@@ -90,6 +90,7 @@ export default {
             var food = {
                 id: self.id,
                 name: self.name,
+                manufacturer: self.manufacturer,
                 nutrients: [],
                 portions: self.portions ? self.portions.map(p => { return { id: p.id, name: p.name, weight: utils.parseFloat(p.weight), nutrientPortion: p === self.nutrientPortion }}) : []
             };
@@ -142,6 +143,7 @@ export default {
             var self = this;
             self.id = food.id;
             self.name = food.name;
+            self.manufacturer = food.manufacturer;
             self.portions = food.portions || [];
             if(food.nutrientPortionId){
                 self.nutrientPortion = self.portions.find(p => p.id === food.nutrientPortionId);
