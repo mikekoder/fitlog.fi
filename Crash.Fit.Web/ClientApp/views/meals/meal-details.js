@@ -5,6 +5,7 @@ import utils from '../../utils'
 import toaster from '../../toaster'
 import nutrientsMixin from '../../mixins/nutrients'
 import mealDefinitionsMixin from '../../mixins/meal-definitions'
+import api from '../../api'
 
 export default {
     mixins:[nutrientsMixin, mealDefinitionsMixin],
@@ -96,7 +97,7 @@ export default {
             }
             return quantity;
         },
-        save() {
+        createRequestModel() {
             var self = this;
             var time = new Date(self.time);
             var meal = {
@@ -107,6 +108,11 @@ export default {
                 name: self.name,
                 rows: self.rows.filter(r => r.food && r.quantity).map(r => { return { foodId: r.food.id, quantity: utils.parseFloat(r.quantity), portionId: r.portion ? r.portion.id : undefined } })
             };
+            return meal;
+        },
+        save() {
+            var self = this;
+            var meal = self.createRequestModel();
             self.$store.dispatch(constants.SAVE_MEAL, {
                 meal,
                 success() {
@@ -169,20 +175,26 @@ export default {
             self.selectedTime = meal.time;
             self.mealDefinitionId = meal.definitionId;
             self.name = meal.name;
-            var foodIds = meal.rows.map(r => { return r.foodId });
-            this.$store.dispatch(constants.FETCH_FOODS, {
-                ids: foodIds,
-                success(foods) {
-                    self.rows = meal.rows.map(r => {
-                        var food = foods.find(f => f.id == r.foodId);
-                        return { food: food, quantity: r.quantity, portion: food ? food.portions.find(p => p.id === r.portionId) : undefined };
-                    });
-                    self.$store.commit(constants.LOADING_DONE);
-                },
-                failure() {
-                    toaster.error(self.$t('fetchFailed'));
-                }
-            });
+            if (meal.draft) {
+                self.rows = meal.rows;
+                self.$store.commit(constants.LOADING_DONE);
+            }
+            else {
+                var foodIds = meal.rows.map(r => { return r.foodId });
+                this.$store.dispatch(constants.FETCH_FOODS, {
+                    ids: foodIds,
+                    success(foods) {
+                        self.rows = meal.rows.map(r => {
+                            var food = foods.find(f => f.id == r.foodId);
+                            return { food: food, quantity: r.quantity, portion: food ? food.portions.find(p => p.id === r.portionId) : undefined };
+                        });
+                        self.$store.commit(constants.LOADING_DONE);
+                    },
+                    failure() {
+                        toaster.error(self.$t('fetchFailed'));
+                    }
+                });
+            }
         },
         setDate(offset) {
             this.date = moment().add(offset, 'days').toDate();
@@ -194,6 +206,29 @@ export default {
         setMealDefinition(definition) {
             this.mealDefinitionId = definition.id;
             this.time = undefined;
+        },
+        saveDraft() {
+            var self = this;
+            var meal = {
+                draft: true,
+                id: self.id,
+                date: self.date,
+                time: self.time,
+                definitionId: self.mealDefinitionId,
+                name: self.name,
+                rows: self.rows
+            };
+            self.$store.dispatch(constants.SAVE_MEAL_DRAFT, { meal });
+        },
+        createFood(name, rowIndex) {
+            var self = this;
+            self.saveDraft();
+            self.$router.push({ name: 'food-details', params: { id: constants.NEW_ID, name: name, returnTo: { name: self.$route.name, params: { draft: true, rowIndex }} }});
+        },
+        createRecipe(name, rowIndex) {
+            var self = this;
+            self.saveDraft();
+            self.$router.push({ name: 'recipe-details', params: { id: constants.NEW_ID, name: name, returnTo: { name: self.$route.name, params: { draft: true, rowIndex }} }});
         }
     },
     watch: {
@@ -205,38 +240,58 @@ export default {
     },
     created() {
         var self = this;
-        
-        var id = self.$route.params.id;
-        var action = self.$route.params.action;
-        if (id == constants.NEW_ID) {
-            self.populate({ id: undefined, time: utils.previousHalfHour(), rows: [] });
-            self.addRow();
+
+        // returning from "create food"
+        if (self.$route.params.draft && self.$store.state.nutrition.mealDraft) {
+            var meal = self.$store.state.nutrition.mealDraft;            
+            if (self.$route.params.foodId) {
+                api.getFood(self.$route.params.foodId).then(food => {
+                    if (self.$route.params.rowIndex && meal.rows.length > self.$route.params.rowIndex) {
+                        meal.rows[self.$route.params.rowIndex].food = food;
+                        meal.rows[self.$route.params.rowIndex].portion = undefined;
+                    }
+                    else if (!meal.rows[meal.rows.length - 1].food) {
+                        meal.rows[meal.rows.length - 1].food = food;
+                    }
+                    else {
+                        meal.rows.push({ food: food, quantity: 1, portion: undefined });
+                    }
+                });
+            }
+            self.populate(meal);
         }
         else {
-            if (action == constants.RESTORE_ACTION) {
-                self.$store.dispatch(constants.RESTORE_MEAL, {
-                    id,
-                    success(meal) {
-                        self.$router.replace({ name: 'meals' });
-                    },
-                    failure() {
-                        toaster.error(self.$t('restoreFailed'));
-                    }
-                });
+            var id = self.$route.params.id;
+            var action = self.$route.params.action;
+            if (id == constants.NEW_ID) {
+                self.populate({ id: undefined, time: utils.previousHalfHour(), rows: [] });
+                self.addRow();
             }
             else {
-                self.$store.dispatch(constants.FETCH_MEAL, {
-                    id,
-                    success(meal) {
-                        self.populate(meal);
-                    },
-                    failure() {
-                        toaster.error(self.$t('fetchFailed'));
-                    }
-                });
+                if (action == constants.RESTORE_ACTION) {
+                    self.$store.dispatch(constants.RESTORE_MEAL, {
+                        id,
+                        success(meal) {
+                            self.$router.replace({ name: 'meals' });
+                        },
+                        failure() {
+                            toaster.error(self.$t('restoreFailed'));
+                        }
+                    });
+                }
+                else {
+                    self.$store.dispatch(constants.FETCH_MEAL, {
+                        id,
+                        success(meal) {
+                            self.populate(meal);
+                        },
+                        failure() {
+                            toaster.error(self.$t('fetchFailed'));
+                        }
+                    });
+                }
             }
         }
-        
         
         this.toggleGroup(this.groups[0].id);
     },

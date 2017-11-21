@@ -51,9 +51,9 @@
                         <div class="row hidden-xs">
                             <div class="col-sm-4 col-text-40">
                               <label>{{ $t("food") }}</label>
-                              <router-link :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createFood") }}</router-link>
+                                <a class="clickable" @click="createFood('', undefined)">{{ $t("createFood") }}</a>
                               <span v-if="!copyMode && isLoggedIn">|</span>
-                              <router-link :to="{ name: 'recipe-details', params: { id: constants.NEW_ID } }" target="_blank" v-if="!copyMode && isLoggedIn">{{ $t("createRecipe") }}</router-link>
+                              <a class="clickable" @click="createRecipe('', undefined)">{{ $t("createRecipe") }}</a>
                             </div>
                             <div class="col-sm-2 col-number-5"><label>{{ $t("amount") }}</label></div>
                             <div class="col-sm-3 col-text-20"><label>{{ $t("portion") }}</label></div>
@@ -71,7 +71,7 @@
                                         <input type="checkbox" v-model="row.copy" />
                                         <span>{{ row.food ? row.food.name : '' }}</span>
                                     </div>
-                                    <food-picker v-else :value="row.food" @change="val => setRowFood(row, val)" />
+                                    <food-picker v-else :value="row.food" @change="val => setRowFood(row, val)" @createFood="name => createFood(name, index)" @createRecipe="name => createRecipe(name, index)" />
                                 </div>
                                 <div class="col-xs-5 col-sm-2 col-number-5">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("amount") }}</label>

@@ -13,6 +13,8 @@ export default {
         meals: [],
         mealsDisplayStart: null,
         mealsDisplayEnd: null,
+        mealDraft: null,
+        rowDraft: null,
 
         nutrientGroups: [
             { id: 'MACROCMP', name: 'Makrot' },
@@ -111,6 +113,9 @@ export default {
                 }
             });
         },
+        [constants.SAVE_MEAL_DRAFT]({ commit, state }, { meal }) {
+            state.mealDraft = meal;
+        },
         [constants.DELETE_MEAL]({ commit, state }, { meal, success, failure }) {
             api.deleteMeal(meal.id).then(function () {
                 commit(constants.DELETE_MEAL_SUCCESS, { meal })
@@ -166,6 +171,9 @@ export default {
                     failure();
                 }
             });
+        },
+        [constants.SAVE_MEAL_ROW_DRAFT]({ commit, state }, { row }) {
+            state.rowDraft = row;
         },
         // Foods
         [constants.FETCH_MY_FOODS]({ commit, state }, { success, failure }) {

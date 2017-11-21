@@ -105,9 +105,15 @@ export default {
             };
             self.$store.dispatch(constants.SAVE_RECIPE, {
                 recipe,
-                success() {
-                    toaster.info(self.$t('saveSuccessful'));
-                    self.$router.replace({ name: 'recipes' });
+                success(savedRecipe) {
+                    if (self.$route.params.returnTo) {
+                        self.$route.params.returnTo.params.foodId = savedRecipe.id;
+                        self.$router.replace({ name: self.$route.params.returnTo.name, params: self.$route.params.returnTo.params });
+                    }
+                    else {
+                        toaster.info(self.$t('saveSuccessful'));
+                        self.$router.replace({ name: 'recipes' });
+                    }
                 },
                 failure() {
                     toaster.error(self.$t('saveFailed'));
@@ -115,7 +121,13 @@ export default {
             });
         },
         cancel() {
-            this.$router.go(-1);
+            var self = this;
+            if (self.$route.params.returnTo) {
+                self.$router.replace({ name: self.$route.params.returnTo.name, params: self.$route.params.returnTo.params });
+            }
+            else {
+                this.$router.go(-1);
+            }
         },
         deleteRecipe() {
             var self = this;
@@ -177,7 +189,7 @@ export default {
         var self = this;
         var id = self.$route.params.id;
         if (id == constants.NEW_ID) {
-            self.populate({ id: undefined, name: undefined, ingredients: [] });
+            self.populate({ id: undefined, name: self.$route.params.name, ingredients: [] });
             self.addIngredient();
         }
         else {

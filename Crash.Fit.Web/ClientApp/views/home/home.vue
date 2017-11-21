@@ -154,7 +154,7 @@
             </div>
         </section>
         <section v-if="showEditMealRow">
-            <meal-row-editor :show="showEditMealRow" :row="row" @save="saveRow" @close="showEditMealRow=false"></meal-row-editor>
+            <meal-row-editor :show="showEditMealRow" :row="row" @save="saveRow" @close="showEditMealRow=false" @createFood="name => createFood(name)" @createRecipe="name => createRecipe(name)"></meal-row-editor>
         </section>
     </div>
 </template>

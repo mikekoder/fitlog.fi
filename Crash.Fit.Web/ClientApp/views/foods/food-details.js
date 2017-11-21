@@ -102,9 +102,15 @@ export default {
 
             self.$store.dispatch(constants.SAVE_FOOD, {
                 food,
-                success() {
-                    toaster.info(self.$t('saveSuccessful'));
-                    self.$router.replace({ name: 'foods' });
+                success(savedFood) {
+                    if (self.$route.params.returnTo) {
+                        self.$route.params.returnTo.params.foodId = savedFood.id;
+                        self.$router.replace({ name: self.$route.params.returnTo.name, params: self.$route.params.returnTo.params  });
+                    }
+                    else {
+                        toaster.info(self.$t('saveSuccessful'));
+                        self.$router.replace({ name: 'foods' });
+                    }
                 },
                 failure() {
                     toaster.error(self.$t('saveFailed'));
@@ -112,7 +118,13 @@ export default {
             });
         },
         cancel() {
-            this.$router.go(-1);
+            var self = this;
+            if (self.$route.params.returnTo) {
+                self.$router.replace({ name: self.$route.params.returnTo.name, params: self.$route.params.returnTo.params });
+            }
+            else {
+                this.$router.go(-1);
+            }
         },
         deleteFood() {
             var self = this;
@@ -180,7 +192,7 @@ export default {
         var self = this;
         var id = self.$route.params.id;
         if (id == constants.NEW_ID) {
-            self.populate({ id: undefined, name: undefined, nutrients: []});
+            self.populate({ id: undefined, name: self.$route.params.name, nutrients: []});
         }
         else {
             self.$store.dispatch(constants.FETCH_FOOD, {

@@ -10,6 +10,7 @@ import DatetimePicker from '../../components/datetime-picker'
 import EnergyDistributionBar from '../../components/energy-distribution-bar'
 import NutrientBar from '../../components/nutrient-bar'
 import MealRowEditor from './meal-row-editor.vue'
+import api from '../../api'
 
 export default {
     mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin],
@@ -248,6 +249,20 @@ export default {
             }
 
             return value.toFixed(precision);
+        },
+        saveRowDraft() {
+            var self = this;
+            self.$store.dispatch(constants.SAVE_MEAL_ROW_DRAFT, { row: self.row });
+        },
+        createFood(name) {
+            var self = this;
+            self.saveRowDraft();
+            self.$router.push({ name: 'food-details', params: { id: constants.NEW_ID, name: name, returnTo: { name: self.$route.name, params: { draft: true}} }});
+        },
+        createRecipe(name) {
+            var self = this;
+            self.saveRowDraft();
+            self.$router.push({ name: 'recipe-details', params: { id: constants.NEW_ID, name: name, returnTo: { name: self.$route.name, params: { draft: true }} }});
         }
     },
     created() {
@@ -262,5 +277,16 @@ export default {
         });
         self.fetchData();
         this.$store.commit(constants.LOADING_DONE);
+        if (self.$route.params.draft && self.$store.state.nutrition.rowDraft) {
+            var row = self.$store.state.nutrition.rowDraft;            
+            if (self.$route.params.foodId) {
+                row.foodId = self.$route.params.foodId;
+                row.foodName = undefined;
+                row.portionId = undefined;
+                row.portionName = undefined;
+                self.row = row;
+                self.showEditMealRow = true;
+            }
+        }
     }
 }

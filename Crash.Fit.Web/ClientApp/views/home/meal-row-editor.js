@@ -44,6 +44,12 @@ export default {
                 portionName: self.portion ? self.portion.name : undefined
             };
             this.$emit('save', row);
+        },
+        createFood(name) {
+            this.$emit('createFood', name);
+        },
+        createRecipe(name) {
+            this.$emit('createRecipe', name);
         }
     },
     mounted() {
