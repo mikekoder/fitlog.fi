@@ -11,7 +11,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <label>{{ $t('food') }}</label>
-                        <food-picker :value="food" @change="val => food=val" />
+                        <food-picker :value="food" @change="val => food=val" @createFood="name => createFood(name)" @createRecipe="name => createRecipe(name)" />
                     </div>
                 </div>
                 <div class="row" v-if="food">

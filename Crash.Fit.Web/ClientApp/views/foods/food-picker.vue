@@ -26,6 +26,8 @@
             $(this.$el).typeahead({
                 source(query, process) {
                     api.searchFoods(query).then((results) => {
+                        results.push({ createFood: true, name: query, text: self.$t('createFood') });
+                        results.push({ createRecipe: true, name: query, text: self.$t('createRecipe') });
                         process(results);
                     });
                 },
@@ -38,14 +40,27 @@
                 sorter(items) {
                     return items;
                 },
-                afterSelect(food) {
-                    api.getFood(food.id).then((foodDetails) => {
-                        self.$emit('change', foodDetails);
-                    });
+                afterSelect(data) {
+                    if (data.createFood) {
+                        self.name = '';
+                        self.$emit('createFood', data.name);
+                    }
+                    else if (data.createRecipe) {
+                        self.name = '';
+                        self.$emit('createRecipe', data.name);
+                    }
+                    else {
+                        api.getFood(data.id).then((foodDetails) => {
+                            self.$emit('change', foodDetails);
+                        });
+                    }
                 },
                 displayText(data) {
                     if (data.usageCount > 0) {
                         return '<strong>' + data.name + '</strong>';
+                    }
+                    if (data.createFood || data.createRecipe) {
+                        return '<i class="fa fa-plus"></i> ' + data.text;
                     }
                     return data.name;
                 }
