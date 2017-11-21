@@ -10,7 +10,7 @@
             </div>
             <div class="form-group has-feedback">
                 <label>{{ $t("password") }}</label>
-                <input type="password" class="form-control" v-model="password">
+                <input type="password" class="form-control" v-model="password" @keyup.enter="login">
             </div>
             <div class="row">
                 <div class="col-xs-4 col-xs-offset-8">
