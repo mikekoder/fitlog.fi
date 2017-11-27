@@ -51,6 +51,7 @@
             <router-link tag="li" :to="{ name: 'measurements'}" v-if="isLoggedIn">
                 <a><i class="fa fa-balance-scale"></i> <span>{{ $t("measurements") }}</span></a>
             </router-link>
+            <!--
             <li class="header" v-if="isLoggedIn">{{ $t("getInvolved") }}</li>
             <router-link tag="li" :to="{ name: 'bugs'}" v-if="isLoggedIn">
               <a>
@@ -64,6 +65,7 @@
                 <span>{{ $t("improvements") }}</span>
               </a>
             </router-link>
+                -->
             <li class="header">{{ $t("follow") }}</li>
             <li>
                 <a href="https://www.facebook.com/fitlog.fi/"><i class="fa fa-facebook"></i><span>fitlog.fi</span></a>
