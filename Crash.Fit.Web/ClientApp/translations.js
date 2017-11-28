@@ -13,6 +13,7 @@
     august: 'Elokuu',
     average: 'Keskiarvo',
     basicInformation: 'Perustiedot',
+    bodyWeightPercentage: 'Nostettu kehonpaino',
     breakfast: 'Aamiainen',
     bug: 'Bugi',
     bugs: 'Bugit',
