@@ -35,7 +35,7 @@
                                 <div class="col-sm-4 col-text-40">
                                     <label class="hidden-sm hidden-md hidden-lg">Ruoka</label>
                                     <router-link class="hidden-sm hidden-md hidden-lg" :to="{ name: 'food-details', params: { id: constants.NEW_ID } }" target="_blank">{{ $t("createFood") }}</router-link>
-                                    <food-picker :value="row.food" @change="val => row.food=val" />
+                                    <food-picker :value="row.food" @change="val => row.food=val" :disableCreation="true" />
                                 </div>
                                 <div class="col-xs-3 col-number-5">
                                     <label class="hidden-sm hidden-md hidden-lg">{{ $t("amount") }}</label>
