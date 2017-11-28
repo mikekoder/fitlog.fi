@@ -601,7 +601,7 @@ SELECT * FROM NutritionGoalValue WHERE NutritionGoalPeriodId IN (SELECT Id FROM 
                         p.RestDay,
                         p.WholeDay
                     }), tran);
-                    conn.Execute("INSERT INTO NutritionGoalMeal(NutritionGoalPerionId,MealDefitionId) VALUES(@Id,MealDefitionId)", goal.Periods.SelectMany(p => p.MealDefinitions.Select(m => new
+                    conn.Execute("INSERT INTO NutritionGoalMeal(NutritionGoalPeriodId,MealDefinitionId) VALUES(@Id,@MealDefinitionId)", goal.Periods.SelectMany(p => p.MealDefinitions.Select(m => new
                     {
                         p.Id,
                         MealDefinitionId = m
