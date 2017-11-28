@@ -14,7 +14,8 @@
             }
         },
         props: {
-            value: {}
+            value: {},
+            disableCreation: false
         },
         methods: {
         },
@@ -26,8 +27,11 @@
             $(this.$el).typeahead({
                 source(query, process) {
                     api.searchFoods(query).then((results) => {
-                        results.push({ createFood: true, name: query, text: self.$t('createFood') });
-                        results.push({ createRecipe: true, name: query, text: self.$t('createRecipe') });
+
+                        if (!self.disableCreation) {
+                            results.push({ createFood: true, name: query, text: self.$t('createFood') });
+                            results.push({ createRecipe: true, name: query, text: self.$t('createRecipe') });
+                        }
                         process(results);
                     });
                 },
