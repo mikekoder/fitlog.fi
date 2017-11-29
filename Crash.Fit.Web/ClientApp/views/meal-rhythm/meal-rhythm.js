@@ -33,7 +33,20 @@ export default {
             this.definitions.push({start: '01.01.2000 10:00', end: '01.01.2000 13:00'});
         },
         deleteMeal(index) {
-            this.definitions.splice(index, 1);
+            var self = this;
+            self.definitions.splice(index, 1);
+            /*
+            var definition = self.definitions[index];
+            self.$store.dispatch(constants.DELETE_MEAL_DEFINITION, {
+                definition,
+                success() {
+                    
+                },
+                failure() {
+                    toaster.error(self.$t('saveFailed'));
+                }
+            });
+            */
         },
         save() {
             var self = this;

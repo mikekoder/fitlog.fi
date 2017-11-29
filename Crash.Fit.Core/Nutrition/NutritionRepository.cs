@@ -734,7 +734,7 @@ WHEN NOT MATCHED THEN
             {
                 try
                 {
-                    conn.Execute(@"DELETE FROM MealDefinition WHERE UserId IN @userIds AND Id NOT IN @ids", new {userIds = definitions.Select(d => d.UserId), ids = definitions.Select(d => d.Id) }, tran);
+                    conn.Execute(@"UPDATE MealDefinition SET Deleted=@Deleted WHERE UserId IN @userIds AND Id NOT IN @ids", new { Deleted = DateTimeOffset.Now, userIds = definitions.Select(d => d.UserId), ids = definitions.Select(d => d.Id) }, tran);
                     conn.Execute(sql, definitions, tran);
                     tran.Commit();
                 }
@@ -747,7 +747,7 @@ WHEN NOT MATCHED THEN
         }
         public IEnumerable<MealDefinition> GetMealDefinitions(Guid userId)
         {
-            var sql = "SELECT * FROM MealDefinition WHERE UserId=@userId";
+            var sql = "SELECT * FROM MealDefinition WHERE UserId=@userId AND Deleted IS NULL";
             using (var conn = CreateConnection())
             {
                 try

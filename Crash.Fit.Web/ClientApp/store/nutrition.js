@@ -467,6 +467,20 @@ export default {
                 }
             });
         }
+        /*
+        [constants.DELETE_MEAL_DEFINITION]({ commit, state }, { definition, success, failure }) {
+            api.deleteMealDefinition(definition).then(() => {
+                var index = state.definitions.findIndex(d => d.id == definition.id);
+                state.definitions.splice(index, 1);
+                if (success) {
+                    success();
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        }*/
     },
     mutations: {
         [constants.SELECT_MEAL_DIARY_DATE_SUCCESS](state, { date }) {
