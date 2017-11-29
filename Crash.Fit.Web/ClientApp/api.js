@@ -257,7 +257,14 @@ export default {
             data: JSON.stringify(definitions)
         });
     },
-
+    deleteMealDefinition(definition) {
+        var url = this.baseUrl + 'meals/definitions/'+id;
+        return $.ajax({
+            url: url,
+            type: 'DELETE',
+            contentType: 'text/json'
+        });
+    },
     // Workouts
     listWorkouts(start, end){
         var query = {};
