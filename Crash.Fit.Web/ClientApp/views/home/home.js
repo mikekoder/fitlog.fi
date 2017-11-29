@@ -55,7 +55,7 @@ export default {
             var defs = self.$mealDefinitions;
             var meals = self.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(start, end));
             var result = defs.map(d => { return { definition: d, meal: meals.find(m => m.definitionId == d.id) } });
-            meals.filter(m => !m.definitionId).forEach(m => {
+            meals.filter(m => !m.definitionId || defs.findIndex(d => d.id == m.definitionId) < 0).forEach(m => {
                 var index = result.findIndex(r => r.definition && r.definition.startHour && r.definition.startHour > m.time.getHours());
                 if (index == -1) {
                     result.push({ meal: m });
