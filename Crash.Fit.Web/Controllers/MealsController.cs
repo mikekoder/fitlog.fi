@@ -42,9 +42,17 @@ namespace Crash.Fit.Web.Controllers
             meal.UserId = CurrentUserId;
             meal.Created = DateTimeOffset.Now;
             AdjustTime(meal);
+            meal = MergeBySameDefinition(meal);
             CalculateNutrients(meal);
-            nutritionRepository.CreateMeal(meal);
-
+            if(meal.Id == Guid.Empty)
+            {
+                nutritionRepository.CreateMeal(meal);
+            }
+            else
+            {
+                nutritionRepository.UpdateMeal(meal);
+            }
+   
             var result = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
             return Ok(result);
         }
@@ -59,6 +67,7 @@ namespace Crash.Fit.Web.Controllers
             }
             AutoMapper.Mapper.Map(request, meal);
             AdjustTime(meal);
+            meal = MergeBySameDefinition(meal);
             CalculateNutrients(meal);
             nutritionRepository.UpdateMeal(meal);
 
@@ -264,6 +273,22 @@ namespace Crash.Fit.Web.Controllers
                     meal.Time = DateTimeUtils.CreateLocal(meal.Time, definition.Time); 
                 }
             }
+        }
+        private MealDetails MergeBySameDefinition(MealDetails meal)
+        {
+            if (!meal.DefinitionId.HasValue)
+            {
+                return meal;
+            }
+
+            var existing = nutritionRepository.SearchMeals(CurrentUserId, meal.Time.Date, meal.Time.Date.AddDays(1).AddSeconds(-1)).FirstOrDefault(m => m.DefinitionId == meal.DefinitionId);
+            if(existing == null || existing.Id == meal.Id)
+            {
+                return meal;
+            }
+
+            existing.Rows = existing.Rows.Union(meal.Rows).ToArray();
+            return existing;
         }
         private void CalculateNutrients(MealDetails meal)
         {
