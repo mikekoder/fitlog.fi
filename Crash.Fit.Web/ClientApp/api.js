@@ -451,5 +451,35 @@ export default {
             type: 'POST',
             contentType: 'text/json'
         });
-    }
+    },
+
+    // Activities
+    listActivities() {
+        return $.get(this.baseUrl + 'activities');
+    },
+    listEnergyExpenditures(start, end){
+        var query = {};
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(this.baseUrl + 'activities/energyexpenditures', query);
+    },
+    saveEnergyExpenditure(energyExpenditure){
+        var url = this.baseUrl + 'activities/energyexpenditures/';
+        var method = 'POST';
+        if (energyExpenditure.id) {
+            url += energyExpenditure.id;
+            method = 'PUT';
+        }
+
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(energyExpenditure)
+        });
+    },
 };

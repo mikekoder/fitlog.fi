@@ -181,7 +181,15 @@ namespace Crash.Fit.Web
 
                 m.CreateMap<NutritionGoalRequest, NutritionGoalDetails>();
                 m.CreateMap<NutritionGoalPeriodRequest, NutritionGoalPeriod>();
-                m.CreateMap<NutritionGoalPeriodRequest.NutrientValue, NutritionGoalValue>();
+                m.CreateMap<NutritionGoalPeriodRequest.NutrientValue, NutritionGoalValue>().AfterMap((request, model) =>
+                {
+                    if(model.Min.HasValue && model.Max.HasValue && model.Min.Value > model.Max.Value)
+                    {
+                        var temp = model.Min;
+                        model.Min = model.Max;
+                        model.Max = temp;
+                    }
+                });
                 // Foods
                 m.CreateMap<FoodSearchResult, FoodSearchResultResponse>();
                 m.CreateMap<FoodSummary, FoodSummaryResponse>();
@@ -239,12 +247,30 @@ namespace Crash.Fit.Web
                 m.CreateMap<PortionRequest, Portion>();
 
                 // Workouts
-                m.CreateMap<WorkoutSummary, WorkoutSummaryResponse>();
-                m.CreateMap<WorkoutDetails, WorkoutDetailsResponse>();
+                m.CreateMap<WorkoutSummary, WorkoutSummaryResponse>().AfterMap((model, response) => 
+                {
+                    if (model.Duration.HasValue)
+                    {
+                        response.Hours = model.Duration.Value.Hours;
+                        response.Minutes = model.Duration.Value.Minutes;
+                    }
+                });
+                m.CreateMap<WorkoutDetails, WorkoutDetailsResponse>().AfterMap((model, response) =>
+                {
+                    if (model.Duration.HasValue)
+                    {
+                        response.Hours = model.Duration.Value.Hours;
+                        response.Minutes = model.Duration.Value.Minutes;
+                    }
+                });
                 m.CreateMap<WorkoutSet, WorkoutSetResponse>();
                 m.CreateMap<WorkoutRequest, WorkoutDetails>().AfterMap((request, model) => 
                 {
                     model.Time = DateTimeUtils.ToLocal(model.Time);
+                    if(request.Hours.HasValue || request.Minutes.HasValue)
+                    {
+                        model.Duration = TimeSpan.FromMinutes((request.Hours ?? 0) * 60 + (request.Minutes ?? 0));
+                    }
                 });
                 m.CreateMap<WorkoutSetRequest, WorkoutSet>();
 
@@ -283,6 +309,27 @@ namespace Crash.Fit.Web
                 m.CreateMap<FeedbackDetails, FeedbackDetailsResponse>();
                 m.CreateMap<FeedbackComment, FeedbackDetailsResponse.Comment>();
                 m.CreateMap<FeedbackRequest, FeedbackDetails>();
+
+                // Activities
+                m.CreateMap<Activity, ActivityResponse>();
+                m.CreateMap<ActivityRequest, Activity>();
+                m.CreateMap<EnergyExpenditure, EnergyExpenditureResponse>().AfterMap((source, target) => 
+                {
+                    if (source.Duration.HasValue)
+                    {
+                        target.Hours = source.Duration.Value.Hours;
+                        target.Minutes = source.Duration.Value.Minutes;
+                    }
+                    
+                });
+                m.CreateMap<EnergyExpenditureRequest, EnergyExpenditure>().AfterMap((request, model) =>
+                {
+                    model.Time = DateTimeUtils.ToLocal(model.Time);
+                    if (request.Hours.HasValue || request.Minutes.HasValue)
+                    {
+                        model.Duration = TimeSpan.FromMinutes((request.Hours ?? 0) * 60 + (request.Minutes ?? 0));
+                    }
+                });
             });
 
             

@@ -6,9 +6,8 @@
                 <div class="col-sm-5 col-datetime">
                     <div class="form-group">
                         <label>{{ $t("time") }}</label>
-                        <datetime-picker class="vue-picker1" name="picker1" :value="time" @change="val => time=val"></datetime-picker>
+                        <datetime-picker :value="time" @change="val => time=val"></datetime-picker>
                     </div>
-
                 </div>
             </div>
             <div class="row">&nbsp;</div>
@@ -53,7 +52,32 @@
             <div class="row">
                 <div class="col-sm-12"><button class="btn" @click="addSet">{{ $t("add") }}</button></div>
             </div>
-            <hr />
+            <div class="row">
+                <div class="col-sm-12">
+                    <hr />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5 col-datetime">
+                    <div class="form-group">
+                        <label>{{ $t("duration") }}</label>
+                        <datetime-picker :value="duration" :format="'HH:mm'" @change="val => duration=val"></datetime-picker>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5 col-datetime">
+                    <div class="form-group">
+                        <label>{{ $t("energyExpenditure") }}<span v-if="energyExpenditureEstimate && energySpecified" class="estimate"> {{ $t('estimate') }}: {{ formatDecimal(energyExpenditureEstimate) }} kcal</span></label>
+                        <input type="number" min="0" v-model="energyExpenditure" @blur="energySpecified=true" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <hr />
+                </div>
+            </div>
             <div class="row main-actions">
                 <div class="col-sm-12">
                     <button class="btn btn-primary" @click="save">{{ $t("save") }}</button>
@@ -93,6 +117,10 @@
     div.weight 
     {
         padding-top:5px;
+    }
+    span.estimate{
+        font-weight: normal;
+        font-size: smaller;
     }
     @media (max-width: 767px) {
         div.food, div.quantity, div.portion, div.weight, div.actions

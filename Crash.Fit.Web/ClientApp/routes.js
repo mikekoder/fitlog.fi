@@ -21,7 +21,7 @@ import RoutineDetails from './views/routines/routine-details.vue'
 import RepCalculator from './views/rep-calculator/rep-calculator.vue'
 import TrainingGoals from './views/training-goals/training-goals.vue'
 import TrainingGoalDetails from './views/training-goals/training-goal-details.vue'
-
+import EnergyExpenditures from './views/energy-expenditures/energy-expenditures.vue'
 import Profile from './views/profile/profile.vue'
 import Login from './views/login.vue'
 import LoginSuccess from './views/login-success.vue'
@@ -31,6 +31,8 @@ import Measurements from './views/measurements/measurements.vue'
 
 import Feedback from './views/feedback/feedback.vue'
 import FeedbackDetails from './views/feedback/feedback-details.vue'
+
+
 
 import NotFound from './views/notfound.vue'
 
@@ -104,6 +106,11 @@ export default [
                 path: '/treenit/:id',
                 name: 'workout-details',
                 component: WorkoutDetails
+            },
+            {
+                path: '/kulutukset',
+                name: 'energy-expenditures',
+                component: EnergyExpenditures
             },
             {
                 path: '/liikkeet',

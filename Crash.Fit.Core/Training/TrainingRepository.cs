@@ -430,7 +430,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Workout(Id, UserId, Time) VALUES(@Id, @UserId, @Time)", workout, tran);
+                    conn.Execute("INSERT INTO Workout(Id, UserId, Time, Duration) VALUES(@Id, @UserId, @Time, @Duration)", workout, tran);
                     if (workout.Sets != null)
                     {
                         conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,WeightsBW,Load,LoadBW) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@WeightsBW,@Load,@LoadBW)", workout.Sets.Select((s, i) => new
@@ -474,7 +474,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                 {
                     conn.Execute("DELETE FROM WorkoutSet WHERE WorkoutId=@Id", new { workout.Id }, tran);
 
-                    conn.Execute("UPDATE Workout SET Time=@Time WHERE Id=@Id", workout, tran);
+                    conn.Execute("UPDATE Workout SET Time=@Time, Duration=@Duration WHERE Id=@Id", workout, tran);
                     conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,WeightsBW,Load,LoadBW) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@WeightsBW,@Load,@LoadBW)", workout.Sets.Select((s, i) => new
                     {
                         s.Id,
@@ -674,6 +674,174 @@ WHERE TGE.TrainingGoalId IN (SELECT Id FROM TrainingGoal WHERE {filter}) ORDER B
                 return maxs.GroupBy(m => m.ExerciseId).Select(m => m.OrderByDescending(m2 => m2.Time).First());
             }
         }
+
+        public IEnumerable<Activity> GetActivities()
+        {
+            var sql = @"SELECT * FROM Activity WHERE Deleted IS NULL";
+            using (var conn = CreateConnection())
+            {
+                return conn.Query<Activity>(sql).ToList();
+            }
+        }
+
+        public Activity GetActivity(Guid id)
+        {
+            var sql = @"SELECT * FROM Activity WHERE Id=@id";
+            using (var conn = CreateConnection())
+            {
+                return conn.QuerySingle<Activity>(sql,new { id });
+            }
+        }
+
+        public void CreateActivity(Activity activity)
+        {
+            activity.Id = Guid.NewGuid();
+            activity.Created = DateTimeOffset.Now;
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("INSERT INTO Activity(Id, Name,EnergyExpenditure, Created) VALUES(@Id, @Name,@EnergyExpenditure, @Created)", activity, tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    activity.Id = Guid.Empty;
+                    throw;
+                }
+            }
+        }
+
+        public void UpdateActivity(Activity activity)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE Activity SET Name=@Name,EnergyExpenditure=@EnergyExpenditure WHERE Id=@Id", activity, tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        public void DeleteActivity(Activity activity)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE Activity SET Deleted=@Deleted WHERE Id=@Id", new { activity.Id, Deleted = DateTimeOffset.Now }, tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        public IEnumerable<EnergyExpenditure> GetEnergyExpenditures(Guid userId, DateTimeOffset start, DateTimeOffset end)
+        {
+            var sql = @"SELECT E.*, A.Name AS ActivityName2, W.Duration AS Duration2 FROM EnergyExpenditure E
+LEFT JOIN Activity A ON A.Id = E.ActivityId 
+LEFT JOIN Workout W ON W.Id = E.WorkoutId
+WHERE E.UserId=@userId AND E.Time >= @start AND E.Time <= @end AND E.Deleted IS NULL";
+            using (var conn = CreateConnection())
+            {
+                var expenditures = conn.Query<EnergyExpenditureRaw>(sql,new { userId, start,end }).ToList();
+                foreach(var expenditure in expenditures)
+                {
+                    if (expenditure.ActivityId.HasValue)
+                    {
+                        expenditure.ActivityName = expenditure.ActivityName2;
+                    }
+                    if (expenditure.WorkoutId.HasValue)
+                    {
+                        expenditure.Duration = expenditure.Duration2;
+                    }
+                }
+                return expenditures;
+            }
+        }
+
+        public void CreateEnergyExpenditure(EnergyExpenditure expenditure)
+        {
+            expenditure.Id = Guid.NewGuid();
+            expenditure.Created = DateTimeOffset.Now;
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("INSERT INTO EnergyExpenditure(Id,UserId,Time,ActivityId,Duration,ActivityName,EnergyKcal,WorkoutId,Created) VALUES(@Id,@UserId,@Time,@ActivityId,@Duration,@ActivityName,@EnergyKcal,@WorkoutId,@Created)",  expenditure, tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    expenditure.Id = Guid.Empty;
+                    throw;
+                }
+            }
+        }
+
+        public EnergyExpenditure GetEnergyExpenditure(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+        public EnergyExpenditure GetEnergyExpenditureForWorkout(Guid workoutId)
+        {
+            using (var conn = CreateConnection())
+            {
+                return conn.QuerySingleOrDefault<EnergyExpenditure>("SELECT * FROM EnergyExpenditure WHERE WorkoutId=@workoutId", new { workoutId });
+            }
+        }
+        public void UpdateEnergyExpenditure(EnergyExpenditure expenditure)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE EnergyExpenditure SET Time=@Time,ActivityId=@ActivityId,Duration=@Duration,ActivityName=@ActivityName,EnergyKcal=@EnergyKcal WHERE Id=@Id", expenditure, tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        public void DeleteEnergyExpenditure(EnergyExpenditure expenditure)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("UPDATE EnergyExpenditure SET Deleted=@Deleted WHERE Id=@Id", new{ expenditure.Id, Deleted = DateTimeOffset.Now}, tran);
+                    tran.Commit();
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    throw;
+                }
+            }
+        }
+
         class WorkoutTargetRaw
         {
             public Guid WorkoutId { get; set; }
@@ -698,6 +866,11 @@ WHERE TGE.TrainingGoalId IN (SELECT Id FROM TrainingGoal WHERE {filter}) ORDER B
         class TrainingGoalExerciseRaw : TrainingGoalExercise
         {
             public Guid TrainingGoalId { get; set; }
+        }
+        class EnergyExpenditureRaw : EnergyExpenditure
+        {
+            public string ActivityName2 { get; set; }
+            public TimeSpan? Duration2 { get; set; }
         }
     }
 }

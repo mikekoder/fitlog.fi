@@ -33,6 +33,9 @@
             <router-link tag="li" :to="{ name: 'workouts'}" v-if="isLoggedIn">
                 <a><i class="fa fa-heartbeat"></i> <span>{{ $t("workouts") }}</span></a>
             </router-link>
+            <router-link tag="li" :to="{ name: 'energy-expenditures'}" v-if="isLoggedIn">
+                <a><i class="fa fa-fire"></i> <span>{{ $t("energyExpenditures") }}</span></a>
+            </router-link>
             <router-link tag="li" :to="{ name: 'exercises'}" v-if="isLoggedIn">
                 <a><i class="fa fa-universal-access"></i> <span>{{ $t("exercises") }}</span></a>
             </router-link>

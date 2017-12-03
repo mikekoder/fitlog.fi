@@ -31,7 +31,15 @@ export default {
         activeTrainingGoalLoaded: false,
         activeTrainingGoal: {},
         trainingGoalsLoaded: false,
-        trainingGoals: {}
+        trainingGoals: {},
+
+        activitiesLoaded: false,
+        activities: [],
+        energyExpenditures: [],
+        energyExpendituresStart: null,
+        energyExpendituresEnd: null,
+        energyExpendituresDisplayStart: null,
+        energyExpendituresDisplayEnd: null
     },
     actions: {
         // Diary
@@ -345,6 +353,70 @@ export default {
                     failure();
                 }
             });
+        },
+
+        // Activities
+        [constants.FETCH_ACTIVITIES]({ commit, state }, { forceRefresh, success, failure }) {
+            if (state.activitiesLoaded && !forceRefresh) {
+                if (success) {
+                    success(state.activities);
+                }
+                return;
+            }
+            api.listActivities().then(function (activities) {
+                commit(constants.FETCH_ACTIVITIES_SUCCESS, { activities });
+                if (success) {
+                    success(activities);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.SELECT_ENERGY_EXPENDITURE_DATE_RANGE]({ commit, state }, { start, end, success, failure }) {
+            commit(constants.SELECT_ENERGY_EXPENDITURE_DATE_RANGE_SUCCESS, { start, end });
+            if (success) {
+                success();
+            }
+        },
+        [constants.FETCH_ENERGY_EXPENDITURES]({ commit, state }, { start, end, success, failure }) {
+            if (state.energyExpendituresStart && state.energyExpendituresEnd) {
+                if (moment(start).isBefore(state.energyExpendituresStart) || moment(end).isAfter(state.energyExpendituresEnd)) {
+                    start = moment.min(moment(start), moment(state.energyExpendituresEnd));
+                    end = moment.max(moment(end), moment(state.energyExpendituresStart));
+                }
+                else {
+                    // within already loaded period
+                    if (success) {
+                        success(state.energyExpenditures);
+                    }
+                    return;
+                }
+            }
+
+            api.listEnergyExpenditures(start, end).then(function (energyExpenditures) {
+                commit(constants.FETCH_ENERGY_EXPENDITURES_SUCCESS, { start, end, energyExpenditures })
+                if (success) {
+                    success(energyExpenditures);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.SAVE_ENERGY_EXPENDITURE]({ commit, state }, { energyExpenditure, success, failure }) {
+            api.saveEnergyExpenditure(energyExpenditure).then(function (savedEnergyExpenditure) {
+                commit(constants.SAVE_ENERGY_EXPENDITURE_SUCCESS, { energyExpenditure: savedEnergyExpenditure })
+                if (success) {
+                    success(savedEnergyExpenditure);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
         }
     },
 
@@ -477,7 +549,40 @@ export default {
         },
         [constants.LOGOUT_SUCCESS](state) {
             // TODO: clear state
-        }
+        },
+        [constants.FETCH_ACTIVITIES_SUCCESS](state, { activities }) {
+            state.activities = activities;
+            state.activitiesLoaded = true;
+        },
+        [constants.SELECT_ENERGY_EXPENDITURE_DATE_RANGE_SUCCESS](state, { start, end }) {
+            state.energyExpendituresDisplayStart = start;
+            state.energyExpendituresDisplayEnd = end;
+        },
+        [constants.FETCH_ENERGY_EXPENDITURES_SUCCESS](state, { start, end, energyExpenditures }) {
+            energyExpenditures.forEach(activity => {
+                var existing = state.energyExpenditures.find(a => a.id == activity.id);
+                if (!existing) {
+                    activity.time = new Date(activity.time);
+                    state.energyExpenditures.push(activity);
+                }
+            });
+            if (!state.energyExpendituresStart || moment(start).isBefore(state.energyExpendituresStart)) {
+                state.energyExpendituresStart = start;
+            }
+            if (!state.energyExpendituresEnd || moment(end).isAfter(state.energyExpendituresEnd)) {
+                state.energyExpendituresEnd = end;
+            }
+        },
+        [constants.SAVE_ENERGY_EXPENDITURE_SUCCESS](state, { id, energyExpenditure }) {
+            if (id) {
+                var old = state.energyExpenditures.find(x => x.id == id);
+                if (old) {
+                    deleteEnergyExpenditure(old, state);
+                }
+            }
+
+            state.energyExpenditures.push(energyExpenditure);
+        },
     }
 }
 function deleteExercise(exercise, state){
@@ -488,4 +593,7 @@ function deleteRoutine(routine, state){
 }
 function deleteWorkout(workout, state){
     state.workouts.splice(state.workouts.findIndex(x => x.id == workout.id), 1);
+}
+function deleteEnergyExpenditure(energyExpenditure, state){
+    state.energyExpenditures.splice(state.energyExpenditures.findIndex(x => x.id == energyExpenditure.id), 1);
 }
