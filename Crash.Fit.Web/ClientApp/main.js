@@ -15,6 +15,7 @@ import './css/site.css'
 import 'bootstrap-notify'
 import $ from 'jquery';
 import translations from './translations'
+import moment from 'moment'
 Vue.config.productionTip = false
 
 Vue.use(VueRouter)
@@ -33,6 +34,65 @@ Vue.mixin({
         },
         loading() {
             return this.$store.state.loading;
+        },
+        $profile() {
+            return this.$store.state.profile.profile;
+        }
+    },
+    methods: {
+        formatDate(value) {
+            if(!value){
+                return '-';
+            }
+            var m = new moment(value);
+            return m.format('DD.MM.YYYY');
+        },
+        formatTime(value) {
+            if(!value){
+                return '-';
+            }
+            var m = new moment(value);
+            return m.format('HH:mm');
+        },
+        formatDateTime(value, format) {
+            if(!value){
+                return '-';
+            }
+            var m = new moment(value);
+            format = format || 'DD.MM.YYYY HH:mm';
+            return m.format(format);
+        },
+        formatDuration(hours, minutes) {
+            var time = '01.01.2000 ' + (hours || 0) + ':' + (minutes || 0);
+            return this.formatTime(time);
+        },
+        formatUnit(unit) {
+            switch(unit){
+                case 'G':
+                    return 'g';
+                case 'MG':
+                    return 'mg';
+                case 'UG':
+                    return '\u03BCg';
+                case'KCAL':
+                    return 'kcal';
+                case 'KJ':
+                    return 'kJ';
+                case 'CM':
+                    return 'cm';
+                case 'KG':
+                    return 'kg';
+                case 'KCAL_DAY':
+                    return 'kcal/' + this.$t('day');
+                default:
+                    return unit;
+            }
+        },
+        formatDecimal(value, precision) {
+            if (!value) {
+                return value;
+            }
+            return value.toFixed(precision);
         }
     }
 });
