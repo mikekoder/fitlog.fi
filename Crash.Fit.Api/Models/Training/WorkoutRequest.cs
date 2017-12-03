@@ -8,6 +8,8 @@ namespace Crash.Fit.Api.Models.Training
     public class WorkoutRequest
     {
         public DateTimeOffset Time { get; set; }
+        public int? Hours { get; set; }
+        public int? Minutes { get; set; }
         public string Name { get; set; }
         public WorkoutSetRequest[] Sets { get; set; }
     }

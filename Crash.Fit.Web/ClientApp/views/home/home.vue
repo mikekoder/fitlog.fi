@@ -23,19 +23,45 @@
 
                     </div>
                 </div>
-                <br />
+                <div class="row">&nbsp;</div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="box box-solid">
+                            <div class="box-body">
+                               <div class="row">
+                                   <div class="col-xs-2 col-text-10">{{ $t('eaten') }}</div>
+                                   <div class="col-xs-1 operator"></div>
+                                   <div class="col-xs-2 col-text-10" :title="$t('rmr')">{{ $t('rmrAbbr') }}</div>
+                                   <div class="col-xs-1 operator"></div>
+                                   <div class="col-xs-2 col-text-10">{{ $t('expenditure') }}</div>
+                                   <div class="col-xs-1 operator"></div>
+                                   <div class="col-xs-2 col-text-10">{{ $t('total' )}}</div>
+                               </div>
+                                <div class="row total-energy">
+                                   <div class="col-xs-2 col-text-10">{{ formatDecimal(eatenEnergy) }}</div>
+                                   <div class="col-xs-1 operator">-</div>
+                                   <div class="col-xs-2 col-text-10">{{ formatDecimal(rmr) }}</div>
+                                   <div class="col-xs-1 operator">-</div>
+                                   <div class="col-xs-2 col-text-10">{{ formatDecimal(energyExpenditure) }}</div>
+                                   <div class="col-xs-1 operator">=</div>
+                                   <div class="col-xs-2 col-text-10" :class="totalClass">{{ formatDecimal(totalEnergy) }} {{ formatUnit('KCAL') }}</div>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="box box-solid">
                             <div class="box-body">
                                 <template v-if="!editNutrients">
                                     <div class="row">
-                                        <div class="col-xs-12"><button class="btn pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button></div>
+                                        <div class="col-xs-12"><button class="btn btn-sm pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button></div>
                                     </div>
                                     <div class="row day-nutrients">
                                         <div class="col-xs-2" v-for="nutrient in visibleNutrients">
-                                            <span class="hidden-md hidden-lg">{{ nutrient.shortName }} <span v-if="nutrient.unit">({{ unit(nutrient.unit) }})</span></span>
-                                            <span class="hidden-xs hidden-sm">{{ nutrient.name }} <span v-if="nutrient.unit">({{ unit(nutrient.unit) }})</span></span>
+                                            <span class="hidden-md hidden-lg">{{ nutrient.shortName }} <span v-if="nutrient.unit">({{ formatUnit(nutrient.unit) }})</span></span>
+                                            <span class="hidden-xs hidden-sm">{{ nutrient.name }} <span v-if="nutrient.unit">({{ formatUnit(nutrient.unit) }})</span></span>
                                         </div>
 
                                     </div>
@@ -63,7 +89,7 @@
                                                 <template v-for="group in nutrientGroups">
                                                     <option disabled>{{ group.name }}</option>
                                                     <option v-for="nutrient in group.nutrients" :value="nutrient.id">
-                                                        {{ nutrient.name }} ({{ unit(nutrient.unit) }})
+                                                        {{ nutrient.name }} ({{ formatUnit(nutrient.unit) }})
                                                     </option>
                                                 </template>
                                             </select>
@@ -96,8 +122,8 @@
                             <div class="box-body" v-if="meal.meal">
                                 <div class="row meal-nutrients" v-if="meal.meal.nutrients">
                                     <div class="col-xs-2" v-for="nutrient in visibleNutrients">
-                                        <span class="hidden-md hidden-lg">{{ nutrient.shortName }} <span v-if="nutrient.unit">({{ unit(nutrient.unit) }})</span></span>
-                                        <span class="hidden-xs hidden-sm">{{ nutrient.name }} <span v-if="nutrient.unit">({{ unit(nutrient.unit) }})</span></span>
+                                        <span class="hidden-md hidden-lg">{{ nutrient.shortName }} <span v-if="nutrient.unit">({{ formatUnit(nutrient.unit) }})</span></span>
+                                        <span class="hidden-xs hidden-sm">{{ nutrient.name }} <span v-if="nutrient.unit">({{ formatUnit(nutrient.unit) }})</span></span>
                                         <div v-if="nutrient.id == energyDistributionId">
                                             <energy-distribution-bar :protein="meal.meal.nutrients[proteinId]" :carb="meal.meal.nutrients[carbId]" :fat="meal.meal.nutrients[fatId]"></energy-distribution-bar>
                                         </div>
@@ -127,7 +153,7 @@
                                             <div v-if="nutrient.id == energyDistributionId">
                                                 <energy-distribution-bar :protein="row.nutrients[proteinId]" :carb="row.nutrients[carbId]" :fat="row.nutrients[fatId]"></energy-distribution-bar>
                                             </div>
-                                            <div v-else>{{ decimal(row.nutrients[nutrient.id], nutrient.precision) }}</div>
+                                            <div v-else>{{ formatDecimal(row.nutrients[nutrient.id], nutrient.precision) }}</div>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -195,4 +221,23 @@
     div.row > button.pull-right {
         margin-right: 15px;
     }
+    .operator{
+        width: 30px;
+    }
+    .total-energy
+    { 
+        font-weight: bold;
+        font-size: larger;
+    }
+    /*
+    .total-start, .total-end{
+        border: 1px solid red;
+    }
+    .total-start {
+        border-right: 0px;
+    }
+    .total-end {
+        border-left: 0px;
+    }
+        */
 </style>

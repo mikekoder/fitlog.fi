@@ -1,6 +1,5 @@
 ﻿import constants from '../../store/constants'
 import api from '../../api'
-import formatters from '../../formatters'
 import utils from '../../utils'
 import toaster from '../../toaster'
 
@@ -9,11 +8,40 @@ export default {
         return {
             id: null,
             time: null,
+            duration: undefined,
             sets: [{ exercise: null, reps: null, weights: null }],
             exercises: [],
+            energyExpenditure: undefined,
+            energySpecified: false
         }
     },
     computed: {
+        totalMinutes() {
+            var time = this.duration ? new Date(this.duration) : undefined;
+            if (time) {
+                return time.getHours() * 60 + time.getMinutes();
+            }
+            return null;
+        },
+        weight() {
+            if (this.$profile) {
+                return this.$profile.weight;
+            }
+            return null;
+        },
+        energyExpenditureEstimate() {
+            if (this.totalMinutes && this.weight) {
+                return constants.WORKOUT_ENERGY_EXPENDITURE * this.totalMinutes * this.weight;
+            }
+            return null;
+        }
+    },
+    watch: {
+        energyExpenditureEstimate() {
+            if (!this.energySpecified || !this.energyExpenditure ) {
+                this.energyExpenditure = this.formatDecimal(this.energyExpenditureEstimate);
+            }
+        }
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
@@ -59,9 +87,12 @@ export default {
         },
         save() {
             var self = this;
+            var time = self.duration ? new Date(self.duration) : undefined;
             var workout = {
                 id: self.id,
                 time: self.time,
+                hours: time ? time.getHours() : undefined,
+                minutes: time ? time.getMinutes() : undefined,
                 sets: self.sets.filter(s => s.exercise && s.reps).map(s => { return { exerciseId: s.exercise.id, exerciseName: s.exercise.name, reps: utils.parseFloat(s.reps), weights: utils.parseFloat(s.weights) } })
             };
             self.$store.dispatch(constants.SAVE_WORKOUT, {
@@ -90,17 +121,14 @@ export default {
                 }
             });
         },
-        unit: formatters.formatUnit,
-        decimal(value, precision) {
-            if (!value) {
-                return value;
-            }
-            return value.toFixed(precision);
-        },
         populate(workout) {
             var self = this;
             self.id = workout.id;
             self.time = workout.time;
+            self.duration = '01.01.2000 ' + (workout.hours || 0) + ':' + (workout.minutes || 0);
+            if (workout.id) {
+                self.energySpecified = true;
+            }
             self.$store.dispatch(constants.FETCH_EXERCISES, {
                 success(exercises) {
                     self.exercises = exercises;
@@ -133,7 +161,6 @@ export default {
         }
     },
     created() {
-        
 
         var self = this;
         var id = self.$route.params.id;
@@ -143,6 +170,8 @@ export default {
             var workout = {
                 id: undefined, 
                 time: utils.previousHalfHour(),
+                hours: 1,
+                minutes: 0,
                 sets: []
             };
             if(routineId && routineWorkoutId){

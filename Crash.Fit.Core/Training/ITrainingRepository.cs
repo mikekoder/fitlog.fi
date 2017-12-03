@@ -32,14 +32,24 @@ namespace Crash.Fit.Training
         bool DeleteRoutine(Routine routine);
         bool RestoreRoutine(Guid id, out RoutineDetails routine);
         bool ActivateRoutine(Guid userId, Guid routineId);
+        Activity GetActivity(Guid id);
+        void ActivateRoutine(Guid userId, Guid routineId);
         IEnumerable<TrainingGoalDetails> GetTrainingGoals(Guid userId);
         TrainingGoalDetails GetTrainingGoal(Guid id);
         void CreateTrainingGoal(TrainingGoalDetails goal);
         void UpdateTrainingGoal(TrainingGoalDetails goal);
         void ActivateTrainingGoal(TrainingGoal goal);
         void DeleteTrainingGoal(TrainingGoal goal);
-
+        void CreateActivity(Activity activity);
         void SaveOneRepMaxs(IEnumerable<OneRepMax> maxs);
         IEnumerable<OneRepMax> GetOneRepMaxs(Guid userId, DateTimeOffset start);
+        void UpdateActivity(Activity activity);
+        void DeleteActivity(Activity activity);
+        IEnumerable<EnergyExpenditure> GetEnergyExpenditures(Guid userId, DateTimeOffset start, DateTimeOffset dateTimeOffset);
+        void CreateEnergyExpenditure(EnergyExpenditure expenditure);
+        EnergyExpenditure GetEnergyExpenditure(Guid id);
+        void UpdateEnergyExpenditure(EnergyExpenditure expenditure);
+        void DeleteEnergyExpenditure(EnergyExpenditure expenditure);
+        EnergyExpenditure GetEnergyExpenditureForWorkout(Guid workoutId);
     }
 }

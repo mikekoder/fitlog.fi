@@ -1,5 +1,4 @@
 import constants from '../../store/constants'
-import formatters from '../../formatters'
 import toaster from '../../toaster'
 import moment from 'moment'
 import utils from '../../utils'
@@ -21,6 +20,7 @@ export default {
             fatId: constants.FAT_ID,
             energyId: constants.ENERGY_ID,
             energyDistributionId: constants.ENERGY_DISTRIBUTION_ID,
+            energyDifferenceId: constants.ENERGY_DIFFERENCE_ID,
             showEditMealRow: false,
             row: undefined,
             selectedNutrients: [],
@@ -39,7 +39,7 @@ export default {
             else if (moment().subtract(1, 'day').isSame(this.selectedDate, 'd')) {
                 return this.$t('yesterday');
             }
-            return this.date(this.selectedDate);
+            return this.formatDate(this.selectedDate);
         },
         visibleNutrients() {
             return this.$nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1, n2) => n1.homeOrder - n2.homeOrder);
@@ -75,7 +75,10 @@ export default {
         },
         dayNutrients() {
             var day = this.$store.state.nutrition.mealDays.find(d => moment(d.date).isSame(this.selectedDate, 'day'));
-            return day.nutrients;
+            if (day) {
+                return day.nutrients;
+            }
+            return undefined;
         },
         nutrientGroups() {
             return this.$store.state.nutrition.nutrientGroups.map(g => {
@@ -96,6 +99,46 @@ export default {
                 return this.$store.state.clipboard.data;
             }
             return undefined;
+        },
+        eatenEnergy() {
+            if (this.dayNutrients) {
+                return this.dayNutrients[this.energyId];
+            }
+            return 0;
+        },
+        rmr() {
+            if (this.$profile) {
+                return this.$profile.rmr;
+            }
+            return null;
+        },
+        energyExpenditure() {
+            var expenditures = this.$store.state.training.energyExpenditures.filter(e => moment(e.time).isSame(self.selectedDate, 'day'));
+            var sum = 0;
+            expenditures.forEach(e => {
+                sum += e.energyKcal;
+            });
+            return sum;
+        },
+        totalEnergy() {
+            return this.eatenEnergy - this.rmr - this.energyExpenditure;
+        },
+        energyGoal() {
+            return this.nutrientGoal(this.energyDifferenceId);
+        },
+        totalClass() {
+            if (this.totalEnergy && this.energyGoal) {
+                if (this.energyGoal.min && this.totalEnergy < this.energyGoal.min) {
+                    return 'bg-danger';
+                }
+                if (this.energyGoal.max && this.totalEnergy > this.energyGoal.max) {
+                    return 'bg-danger';
+                }
+                if (this.energyGoal.min || this.energyGoal.min == 0 || this.energyGoal.max || this.energyGoal.max == 0) {
+                    return 'bg-success';
+                }
+            }
+            return '';
         }
     },
     components: {
@@ -118,6 +161,7 @@ export default {
                 failure() { }
             });
             self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
+            self.$store.dispatch(constants.FETCH_ENERGY_EXPENDITURES, { start: start, end: end });
         },
         changeDate(date) {
             var newDate;
@@ -146,7 +190,7 @@ export default {
             if (defMeal.definition) {
                 return defMeal.definition.name;
             }
-            return this.time(defMeal.meal.time);
+            return this.formatTime(defMeal.meal.time);
         },
         addRow(defMeal) {
             this.row = {
@@ -239,16 +283,6 @@ export default {
         },
         nutrientGoal(nutrientId, meal) {
             return utils.nutrientGoal(this.$nutritionGoal, this.workouts, nutrientId, this.selectedDate, meal);
-        },
-        date: formatters.formatDate,
-        time: formatters.formatTime,
-        unit: formatters.formatUnit,
-        decimal(value, precision) {
-            if (!value) {
-                return value;
-            }
-
-            return value.toFixed(precision);
         },
         saveRowDraft() {
             var self = this;

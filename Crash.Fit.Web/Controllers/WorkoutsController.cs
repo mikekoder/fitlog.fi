@@ -49,12 +49,20 @@ namespace Crash.Fit.Web.Controllers
             var exercises = CreateExercises(request.Sets);
             var workout = AutoMapper.Mapper.Map<WorkoutDetails>(request);
             workout.UserId = CurrentUserId;
-            var userWeight = GetUserWeight();
+            var userWeight = measurementRepository.GetUserWeight(CurrentUserId);
             var maxs = Calculate1RMs(workout, exercises, userWeight);
             Update1RMs(maxs);
             CalculateLoads(workout.Sets, exercises, userWeight);
             trainingRepository.CreateWorkout(workout);
-
+            var burnedCalories = CalculateEnergyExpenditure(workout.Duration, userWeight);
+            var energyExpenditure = new EnergyExpenditure
+            {
+                UserId = CurrentUserId,
+                Time = workout.Time,
+                WorkoutId = workout.Id,
+                EnergyKcal = burnedCalories
+            };
+            trainingRepository.CreateEnergyExpenditure(energyExpenditure);
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
@@ -89,11 +97,31 @@ namespace Crash.Fit.Web.Controllers
             }
             var exercises = CreateExercises(request.Sets);
             AutoMapper.Mapper.Map(request, workout);
-            var userWeight = GetUserWeight();
+            var userWeight = measurementRepository.GetUserWeight(CurrentUserId);
             var maxs = Calculate1RMs(workout, exercises, userWeight);
             Update1RMs(maxs);
             CalculateLoads(workout.Sets, exercises, userWeight);
             trainingRepository.UpdateWorkout(workout);
+
+            var burnedCalories = CalculateEnergyExpenditure(workout.Duration, userWeight);
+            var energyExpenditure = trainingRepository.GetEnergyExpenditureForWorkout(id);
+            if (energyExpenditure == null)
+            {
+                energyExpenditure = new EnergyExpenditure
+                {
+                    UserId = CurrentUserId,
+                    Time = workout.Time,
+                    WorkoutId = workout.Id,
+                    EnergyKcal = burnedCalories
+                };
+                trainingRepository.CreateEnergyExpenditure(energyExpenditure);
+            }
+            else
+            {
+                energyExpenditure.Time = workout.Time;
+                energyExpenditure.EnergyKcal = burnedCalories;
+                trainingRepository.UpdateEnergyExpenditure(energyExpenditure);
+            }
 
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
@@ -169,10 +197,7 @@ namespace Crash.Fit.Web.Controllers
 
             return Ok();
         }
-        private decimal? GetUserWeight()
-        {
-            return measurementRepository.GetMeasures(CurrentUserId).FirstOrDefault(m => m.Id == Constants.Measurements.WeightId)?.LatestValue;
-        }
+       
         private IEnumerable<Exercise> CreateExercises(IEnumerable<WorkoutSetRequest> sets)
         {
             var exerciseIds = sets.Where(s => s.ExerciseId.HasValue).Select(s => s.ExerciseId.Value);
@@ -242,6 +267,10 @@ namespace Crash.Fit.Web.Controllers
                 }
                 
             }
+        }
+        private decimal CalculateEnergyExpenditure(TimeSpan? duration, decimal? userWeight)
+        {
+            return Constants.Training.WorkoutEnergyExpenditure * (decimal)(duration?.TotalMinutes ?? 60) * userWeight ?? 75m;
         }
     }
 }
