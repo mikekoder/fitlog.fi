@@ -72,7 +72,7 @@ export default {
                 activityId: self.activity ? self.activity.id : undefined,
                 hours: time ? time.getHours() : undefined,
                 minutes: time ? time.getMinutes() : undefined,
-                activityName: self.activityName,
+                activityName: self.activity ? self.activity.name : self.activityName,
                 energyKcal: self.energyKcal
             };
             this.$emit('save', expenditure);
