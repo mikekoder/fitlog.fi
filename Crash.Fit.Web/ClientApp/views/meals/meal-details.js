@@ -1,6 +1,5 @@
 ﻿import constants from '../../store/constants'
 import api from '../../api'
-import formatters from '../../formatters'
 import utils from '../../utils'
 import toaster from '../../toaster'
 import nutrientsMixin from '../../mixins/nutrients'
@@ -34,7 +33,7 @@ export default {
                 var meal = self.mealDefinitions.find(m => m.id == self.mealDefinitionId);
                 return meal.name;
             }
-            return formatters.formatTime(self.time);
+            return this.formatTime(self.time);
         },
         constants() {
             return constants;
@@ -152,14 +151,6 @@ export default {
         cancelCopy() {
             this.copyMode = false;
             this.copyAllRows = true;
-        },
-        unit: formatters.formatUnit,
-        formatDate: formatters.formatDate,
-        decimal(value, precision) {
-            if (!value) {
-                return value;
-            }
-            return value.toFixed(precision);
         },
         toggleGroup(group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))

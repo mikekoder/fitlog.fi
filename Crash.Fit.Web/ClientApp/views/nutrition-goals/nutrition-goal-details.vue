@@ -90,7 +90,7 @@
                                 <td>&nbsp;</td>
                             </tr>
                             <tr v-for="nutrient in nutrients[group.id]" v-if="groupOpenStates[group.id]">
-                                <td><span class="name">{{ nutrient.name }}</span> <span class="unit">{{ unit(nutrient.unit) }}</span></td>
+                                <td><span class="name">{{ nutrient.name }}</span> <span class="unit">{{ formatUnit(nutrient.unit) }}</span></td>
                                 <td><input type="number" class="form-control input-4" v-model="selectedPeriod.nutrients[nutrient.id].min" /> - <input type="number" class="form-control input-4" v-model="selectedPeriod.nutrients[nutrient.id].max" /></td>
                             </tr>
                         </tbody>

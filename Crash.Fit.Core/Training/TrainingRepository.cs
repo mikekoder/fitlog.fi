@@ -101,7 +101,7 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                 return exercises;
             }
         }
-        public bool CreateExercise(ExerciseDetails exercise)
+        public void CreateExercise(ExerciseDetails exercise)
         {
             exercise.Id = Guid.NewGuid();
             exercise.Created = DateTimeOffset.Now;
@@ -116,7 +116,6 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                         conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId) VALUES(@ExerciseId,@MuscleGroupId)", exercise.Targets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
                     }
                     tran.Commit();
-                    return true;
                 }
                 catch(Exception ex)
                 {
@@ -125,7 +124,7 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                 }
             }
         }
-        public bool UpdateExercise(ExerciseDetails exercise)
+        public void UpdateExercise(ExerciseDetails exercise)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -139,7 +138,6 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                         conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId) VALUES(@ExerciseId,@MuscleGroupId)", exercise.Targets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
                     }
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
@@ -148,7 +146,7 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                 }
             }
         }
-        public bool DeleteExercise(Exercise exercise)
+        public void DeleteExercise(Exercise exercise)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -157,7 +155,6 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                 {
                     conn.Execute("UPDATE Exercise SET Deleted=@Deleted WHERE Id=@Id", new { exercise.Id, Deleted = DateTimeOffset.Now }, tran);
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
@@ -166,7 +163,7 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                 }
             }
         }
-        public bool RestoreExercise(Guid id, out ExerciseDetails exercise)
+        public void RestoreExercise(Guid id, out ExerciseDetails exercise)
         {
             throw new NotImplementedException();
         }
@@ -203,7 +200,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                 return routine;
             }
         }
-        public bool CreateRoutine(RoutineDetails routine)
+        public void CreateRoutine(RoutineDetails routine)
         {
             routine.Id = Guid.NewGuid();
             routine.Created = DateTimeOffset.Now;
@@ -238,7 +235,6 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                     })), tran);
 
                     tran.Commit();
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -252,7 +248,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                 }
             }
         }
-        public bool UpdateRoutine(RoutineDetails routine)
+        public void UpdateRoutine(RoutineDetails routine)
         {
             var workoutIds = routine.Workouts.Select(w => w.Id).ToArray();
             
@@ -304,7 +300,6 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                     })), tran);
 
                     tran.Commit();
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -317,7 +312,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                 }
             }
         }
-        public bool DeleteRoutine(Routine routine)
+        public void DeleteRoutine(Routine routine)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -326,7 +321,6 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                 {
                     conn.Execute("UPDATE Routine SET Deleted=@Deleted WHERE Id=@Id", new { routine.Id, Deleted = DateTimeOffset.Now }, tran);
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
@@ -335,11 +329,11 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                 }
             }
         }    
-        public bool RestoreRoutine(Guid id, out RoutineDetails routine)
+        public void RestoreRoutine(Guid id, out RoutineDetails routine)
         {
             throw new NotImplementedException();
         }
-        public bool ActivateRoutine(Guid userId, Guid routineId)
+        public void ActivateRoutine(Guid userId, Guid routineId)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -349,7 +343,6 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                     conn.Execute("UPDATE Routine SET Active=0 WHERE UserId=@userId", new { userId }, tran);
                     conn.Execute("UPDATE Routine SET Active=1 WHERE Id=@routineId", new { routineId }, tran);
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
@@ -417,7 +410,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
             }
 
         }
-        public bool CreateWorkout(WorkoutDetails workout)
+        public void CreateWorkout(WorkoutDetails workout)
         {
             workout.Id = Guid.NewGuid();
             workout.Created = DateTimeOffset.Now;
@@ -447,7 +440,6 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                         }), tran);
                     }
                     tran.Commit();
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -461,7 +453,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                 }
             }
         }
-        public bool UpdateWorkout(WorkoutDetails workout)
+        public void UpdateWorkout(WorkoutDetails workout)
         {
             foreach (var set in workout.Sets.Where(r => r.Id == Guid.Empty))
             {
@@ -488,7 +480,6 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                         s.LoadBW
                     }), tran);
                     tran.Commit();
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -497,7 +488,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                 }
             }
         }
-        public bool DeleteWorkout(Workout workout)
+        public void DeleteWorkout(Workout workout)
         {
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
@@ -506,7 +497,6 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                 {
                     conn.Execute("UPDATE Workout SET Deleted=@Deleted WHERE Id=@Id", new { workout.Id, Deleted = DateTimeOffset.Now }, tran);
                     tran.Commit();
-                    return true;
                 }
                 catch
                 {
@@ -515,7 +505,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                 }
             }
         }
-        public bool RestoreWorkout(Guid id, out WorkoutDetails workout)
+        public void RestoreWorkout(Guid id, out WorkoutDetails workout)
         {
             throw new NotImplementedException();
         }

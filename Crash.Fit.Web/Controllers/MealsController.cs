@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Nutrition;
 using Crash.Fit.Api.Models.Nutrition;
 using Crash.Fit.Logging;
+using Crash.Fit.Measurements;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -122,7 +123,7 @@ namespace Crash.Fit.Web.Controllers
                 var endParts = (model.End ?? "").Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
                 definitions.Add(new MealDefinition
                 {
-                    Id = model.Id.HasValue ? model.Id.Value : Guid.Empty,
+                    Id = model.Id ?? Guid.Empty,
                     UserId = CurrentUserId,
                     Name = model.Name,
                     Start = startParts.Length > 0 ? new TimeSpan(int.Parse(startParts[0]), startParts.Length > 1 ? int.Parse(startParts[1]) : 0,0) : null as TimeSpan?,

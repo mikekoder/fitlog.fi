@@ -1,6 +1,5 @@
 ﻿import constants from '../../store/constants'
 import api from '../../api'
-import formatters from '../../formatters'
 import toaster from '../../toaster'
 import mealDefinitionsMixin from '../../mixins/meal-definitions'
 
@@ -61,8 +60,7 @@ export default {
                     toaster.error(self.$t('saveFailed'));
                 }
             });
-        },
-        formatTime: formatters.formatTime
+        }
     },
     created() {
     }

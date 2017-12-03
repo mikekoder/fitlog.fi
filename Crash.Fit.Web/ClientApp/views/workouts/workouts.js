@@ -1,6 +1,5 @@
 import constants from '../../store/constants'
 import api from '../../api'
-import formatters from '../../formatters'
 import moment from 'moment'
 import toaster from '../../toaster'
 import utils from '../../utils'
@@ -173,19 +172,6 @@ export default {
                 
             }
             self.progress = goals.sort((a,b) => a.index - b.index);
-        },
-        date: formatters.formatDate,
-        datetime: formatters.formatDateTime,
-        decimal(value, precision) {
-            if (!value) {
-                return value;
-            }
-            return utils.roundToNearest(value, 0.1);
-            /*
-            if (Math.round(value) == value) {
-                return value;
-            }
-            return value.toFixed(precision);*/
         }
     },
     watch: {

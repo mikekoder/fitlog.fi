@@ -4,10 +4,10 @@
             <div class="line min" :style="minStyle" :class="minClass" v-if="goal.min"><div></div><div></div><div></div></div>
             <div class="line max" :style="maxStyle" :class="maxClass" v-if="goal.max"><div></div><div></div><div></div></div>
             <div class="bar value" :style="valueStyle"></div>
-            <div class="text">{{ decimal(value, precision) }}</div>
+            <div class="text">{{ formatDecimal(value, precision) }}</div>
         </div>
         <div v-else>
-            {{ decimal(value, precision) }}
+            {{ formatDecimal(value, precision) }}
         </div>
     </div>
 </template>
@@ -101,17 +101,6 @@
             goal: Object,
             value: Number,
             precision: Number
-        },
-        created() {
-
-        },
-        methods: {
-            decimal(value, precision) {
-                if (!value) {
-                    return value;
-                }
-                return value.toFixed(precision);
-            }
         }
     }
 </script>

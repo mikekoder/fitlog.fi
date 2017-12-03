@@ -53,10 +53,7 @@ namespace Crash.Fit.Web.Controllers
         {
             var exercise = AutoMapper.Mapper.Map<ExerciseDetails>(request);
             exercise.UserId = CurrentUserId;
-            if (!trainingRepository.CreateExercise(exercise))
-            {
-                return BadRequest();
-            }
+            trainingRepository.CreateExercise(exercise);
 
             var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);
             return Ok(response);
@@ -71,10 +68,7 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             AutoMapper.Mapper.Map(request, exercise);
-            if(!trainingRepository.UpdateExercise(exercise))
-            {
-                return BadRequest();
-            }
+            trainingRepository.UpdateExercise(exercise);
 
             var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);
             return Ok(response);

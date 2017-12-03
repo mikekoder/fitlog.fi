@@ -1,7 +1,6 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
 import api from '../../api'
-import formatters from '../../formatters'
 import toaster from '../../toaster'
 
 export default {

@@ -31,14 +31,14 @@
                             <tbody>
                                 <tr v-for="result in results">
                                     <td>{{ result.reps }}</td>
-                                    <td>{{ decimal(result.avg, 2) }}</td>
-                                    <td>{{ decimal(result.Epley, 2) }}</td>
-                                    <td>{{ decimal(result.Brzycki, 2) }}</td>
-                                    <td>{{ decimal(result.Lander, 2) }}</td>
-                                    <td>{{ decimal(result.Lombardi, 2) }}</td>
-                                    <td>{{ decimal(result.Mayhew, 2) }}</td>
-                                    <td>{{ decimal(result.OConner, 2) }}</td>
-                                    <td>{{ decimal(result.Wathan, 2) }}</td>
+                                    <td>{{ formatDecimal(result.avg, 2) }}</td>
+                                    <td>{{ formatDecimal(result.Epley, 2) }}</td>
+                                    <td>{{ formatDecimal(result.Brzycki, 2) }}</td>
+                                    <td>{{ formatDecimal(result.Lander, 2) }}</td>
+                                    <td>{{ formatDecimal(result.Lombardi, 2) }}</td>
+                                    <td>{{ formatDecimal(result.Mayhew, 2) }}</td>
+                                    <td>{{ formatDecimal(result.OConner, 2) }}</td>
+                                    <td>{{ formatDecimal(result.Wathan, 2) }}</td>
                                 </tr>
                             </tbody>
                         </table>

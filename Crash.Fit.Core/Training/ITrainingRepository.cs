@@ -13,25 +13,25 @@ namespace Crash.Fit.Training
         IEnumerable<ExerciseDetails> SearchUserExercises(Guid userId, DateTimeOffset start1RM);
         ExerciseDetails GetExercise(Guid id);
         IEnumerable<ExerciseDetails> GetExercises(IEnumerable<Guid> ids);
-        bool CreateExercise(ExerciseDetails exercise);
-        bool UpdateExercise(ExerciseDetails exercise);
-        bool DeleteExercise(Exercise exercise);
-        bool RestoreExercise(Guid id, out ExerciseDetails exercise);
+        void CreateExercise(ExerciseDetails exercise);
+        void UpdateExercise(ExerciseDetails exercise);
+        void DeleteExercise(Exercise exercise);
+        void RestoreExercise(Guid id, out ExerciseDetails exercise);
 
         IEnumerable<WorkoutDetails> SearchWorkouts(Guid userId, DateTimeOffset start, DateTimeOffset end);
+        IEnumerable<Activity> GetActivities();
         WorkoutDetails GetWorkout(Guid id);
-        bool CreateWorkout(WorkoutDetails workout);
-        bool UpdateWorkout(WorkoutDetails workout);
-        bool DeleteWorkout(Workout workout);
-        bool RestoreWorkout(Guid id, out WorkoutDetails workout);
+        void CreateWorkout(WorkoutDetails workout);
+        void UpdateWorkout(WorkoutDetails workout);
+        void DeleteWorkout(Workout workout);
+        void RestoreWorkout(Guid id, out WorkoutDetails workout);
 
         IEnumerable<RoutineSummary> SearchRoutines(Guid userId);
         RoutineDetails GetRoutine(Guid id);
-        bool CreateRoutine(RoutineDetails routine);
-        bool UpdateRoutine(RoutineDetails routine);
-        bool DeleteRoutine(Routine routine);
-        bool RestoreRoutine(Guid id, out RoutineDetails routine);
-        bool ActivateRoutine(Guid userId, Guid routineId);
+        void CreateRoutine(RoutineDetails routine);
+        void UpdateRoutine(RoutineDetails routine);
+        void DeleteRoutine(Routine routine);
+        void RestoreRoutine(Guid id, out RoutineDetails routine);
         Activity GetActivity(Guid id);
         void ActivateRoutine(Guid userId, Guid routineId);
         IEnumerable<TrainingGoalDetails> GetTrainingGoals(Guid userId);

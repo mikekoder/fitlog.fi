@@ -1,5 +1,4 @@
 import api from '../../api'
-import formatters from '../../formatters'
 import moment from 'moment'
 import toaster from '../../toaster'
 import utils from '../../utils'
@@ -153,16 +152,6 @@ export default {
         nutrientGoal(nutrientId, day, meal) {
             return utils.nutrientGoal(this.$nutritionGoal, this.workouts, nutrientId, day, meal);
         },
-        date: formatters.formatDate,
-        time: formatters.formatTime,
-        datetime: formatters.formatDateTime,
-        unit: formatters.formatUnit,
-        decimal(value, precision) {
-            if (!value) {
-                return value;
-            }
-            return value.toFixed(precision);
-        },
         mealName(meal) {
             if (meal.definitionId) {
                 var def = this.$store.state.nutrition.mealDefinitions.find(d => d.id == meal.definitionId);
@@ -170,7 +159,7 @@ export default {
                     return def.name;
                 }
             }
-            return this.time(meal.time);
+            return this.formatTime(meal.time);
         }
     },
     created() {

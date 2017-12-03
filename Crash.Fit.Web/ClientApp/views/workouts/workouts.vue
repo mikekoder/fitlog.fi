@@ -6,7 +6,7 @@
                 <div class="col-sm-12">
                     <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            {{ date(start) }} - {{ date(end) }} <span class="caret"></span>
+                            {{ formatDate(start) }} - {{ formatDate(end) }} <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
                             <li class="clickable"><a @click="showWeek">{{ $t("currentWeek") }}</a></li>
@@ -65,7 +65,9 @@
                                     </thead>
                                     <tbody>
                                         <tr class="workout" v-for="workout in workouts">
-                                            <td class="freeze"><router-link :to="{ name: 'workout-details', params: { id: workout.id } }">{{ datetime(workout.time) }}</router-link></td>
+                                            <td class="freeze">
+                                                <router-link :to="{ name: 'workout-details', params: { id: workout.id } }">{{ formatDateTime(workout.time) }}</router-link>
+                                            </td>
                                             <template v-for="muscleGroup in muscleGroups">
                                                 <td class="muscle-group">{{ workout.muscleGroupSets[muscleGroup.id] }}</td>
                                             </template>

@@ -1,7 +1,6 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
 import api from '../../api'
-import formatters from '../../formatters'
 import toaster from '../../toaster'
 import DAYS from '../../enums/days'
 import nutrientsMixin from '../../mixins/nutrients'
@@ -221,7 +220,6 @@ export default {
             }
             return text.substr(1);
         },
-        unit: formatters.formatUnit,
         populate(goal) {
             var self = this;
             self.id = goal.id;

@@ -81,7 +81,7 @@
                                     <template v-if="!nutrient.computed">
                                         <td class="col-text-30">{{ nutrient.name }}</td>
                                         <td class="col-number-8"><input type="number" class="form-control" v-model="nutrients[nutrient.id]" /></td>
-                                        <td>{{ unit(nutrient.unit)}}</td>
+                                        <td>{{ formatUnit(nutrient.unit)}}</td>
                                     </template>
                                 </tr>
                             </tbody>

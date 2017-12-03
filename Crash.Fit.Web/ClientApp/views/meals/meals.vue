@@ -6,7 +6,7 @@
                 <div class="col-sm-12">
                     <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            {{ date(start) }} - {{ date(end) }} <span class="caret"></span>
+                            {{ formatDate(start) }} - {{ formatDate(end) }} <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
                             <li class="clickable"><a @click="showDay">{{ $t("today") }}</a></li>
@@ -50,7 +50,7 @@
                                     <tr>
                                         <th class="time freeze">{{ $t("time") }}</th>
                                         <template v-for="col in visibleColumns">
-                                            <th class="unit" v-if="!col.hideSummary">{{ unit(col.unit) }}</th>
+                                            <th class="unit" v-if="!col.hideSummary">{{ formatUnit(col.unit) }}</th>
                                         </template>
                                         <th></th>
                                     </tr>
@@ -61,7 +61,7 @@
                                             <td class="freeze clickable">
                                                 <i v-if="!dayStates[day.date.getTime()]" class="fa fa-chevron-down"></i>
                                                 <i v-if="dayStates[day.date.getTime()]" class="fa fa-chevron-up"></i>
-                                                {{ date(day.date) }}
+                                                {{ formatDate(day.date) }}
                                             </td>
                                             <template v-for="col in visibleColumns">
                                                 <td class="nutrient" v-if="!col.hideSummary">
@@ -100,7 +100,7 @@
                     </div>
 
                     <div v-for="meal in meals">
-                        <div class="alert alert-info" role="alert" v-if="meal.deleted">Ateria {{ datetime(meal.time) }} poistettu. <button class="btn btn-link" @click="restoreMeal(meal)">{{ $t("restore") }}</button></div>
+                        <div class="alert alert-info" role="alert" v-if="meal.deleted">Ateria {{ formatDateTime(meal.time) }} poistettu. <button class="btn btn-link" @click="restoreMeal(meal)">{{ $t("restore") }}</button></div>
                     </div>
 
                 </div>

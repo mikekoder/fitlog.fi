@@ -11,12 +11,6 @@ export default {
     },
     components: {},
     methods: {
-        decimal(value, precision) {
-            if (!value) {
-                return value;
-            }
-            return value.toFixed(precision);
-        },
         calculate() {
             var r = this.reps;
             if (typeof (r) !== 'number') {
