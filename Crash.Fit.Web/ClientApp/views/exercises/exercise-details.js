@@ -1,6 +1,5 @@
 ﻿import constants from '../../store/constants'
 import api from '../../api'
-import formatters from '../../formatters'
 import toaster from '../../toaster'
 export default {
     data() {
@@ -87,7 +86,6 @@ export default {
                             exercise.targets.forEach(t => {
                                 self.targets[t] = true;
                             });
-                            //self.targets = exercise.targets.map(t => { return self.muscleGroups.find(g => g.id === t); });
                             self.$store.commit(constants.LOADING_DONE);
                         },
                         failure() {

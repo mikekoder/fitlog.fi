@@ -1,6 +1,5 @@
 ﻿import constants from '../../store/constants'
 import api from '../../api'
-import formatters from '../../formatters'
 import utils from '../../utils'
 import toaster from '../../toaster'
 var defaultNutrientPortion = { id: undefined, name: '100g' };
@@ -137,13 +136,6 @@ export default {
                     toaster.error(self.$t('deleteFailed'));
                 }
             });
-        },
-        unit: formatters.formatUnit,
-        decimal(value, precision) {
-            if (!value) {
-                return value;
-            }
-            return value.toFixed(precision);
         },
         toggleGroup(group) {
             this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))

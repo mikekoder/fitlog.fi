@@ -1,6 +1,5 @@
 ﻿import constants from '../../store/constants'
 import api from '../../api'
-import formatters from '../../formatters'
 import toaster from '../../toaster'
 import FoodPicker from '../foods/food-picker'
 

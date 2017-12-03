@@ -34,7 +34,7 @@
                                     <button class="btn btn-sm" @click="moveNutrientDown(group.id, index)" :disabled="index === (nutrientSettings[group.id].length - 1)"><i class="fa fa-arrow-down"></i></button>
                                 </div>
                                 <div class="col-xs-6 col-sm-3">{{ nutrient.name }}</div>
-                                <div class="col-xs-2 col-sm-1">{{ unit(nutrient.unit) }}</div>
+                                <div class="col-xs-2 col-sm-1">{{ formatUnit(nutrient.unit) }}</div>
                                 <div class="col-xs-12 col-sm-3">
                                     <div class="row">
                                         <div class="col-xs-4 hidden-sm hidden-md hidden-lg">{{ $t("summary") }}</div>

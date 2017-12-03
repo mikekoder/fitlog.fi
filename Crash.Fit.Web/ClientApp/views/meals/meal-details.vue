@@ -128,8 +128,8 @@
                                 </tr>
                                 <tr v-for="nutrient in allNutrients[group.id]" v-if="groupOpenStates[group.id]">
                                     <td>{{ nutrient.name }}</td>
-                                    <td>{{ decimal(mealNutrients[nutrient.id], nutrient.precision) }}</td>
-                                    <td>{{ unit(nutrient.unit)}}</td>
+                                    <td>{{ formatDecimal(mealNutrients[nutrient.id], nutrient.precision) }}</td>
+                                    <td>{{ formatUnit(nutrient.unit)}}</td>
                                 </tr>
                             </tbody>
                         </table>

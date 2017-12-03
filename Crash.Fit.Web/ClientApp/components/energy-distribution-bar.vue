@@ -1,8 +1,8 @@
 ﻿<template>
     <div class="bar-container">
-        <div class="bar protein" :title="$t('protein')+' ' + decimal(proteinWidth, 2) +'%'" :style="'width: '+ proteinWidth +'%;'">P</div>
-        <div class="bar carb" :title="$t('carbs')+' ' + decimal(carbWidth, 2) +'%'" :style="'width: '+ carbWidth +'%;'">HH</div>
-        <div class="bar fat" :title="$t('fat')+' ' + decimal(fatWidth, 2) +'%'" :style="'width: '+ fatWidth +'%;'">R</div>
+        <div class="bar protein" :title="$t('protein')+' ' + formatDecimal(proteinWidth, 2) +'%'" :style="'width: '+ proteinWidth +'%;'">P</div>
+        <div class="bar carb" :title="$t('carbs')+' ' + formatDecimal(carbWidth, 2) +'%'" :style="'width: '+ carbWidth +'%;'">HH</div>
+        <div class="bar fat" :title="$t('fat')+' ' + formatDecimal(fatWidth, 2) +'%'" :style="'width: '+ fatWidth +'%;'">R</div>
     </div>
 </template>
 
@@ -31,16 +31,6 @@
             protein: 0,
             carb: 0,
             fat: 0
-        },
-        mounted() {
-        },
-        methods: {
-            decimal(value, precision) {
-                if (!value) {
-                    return value;
-                }
-                return value.toFixed(precision);
-            }
         }
     }
 </script>

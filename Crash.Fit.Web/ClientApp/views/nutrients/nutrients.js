@@ -1,7 +1,6 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
 import api from '../../api'
-import formatters from '../../formatters'
 import toaster from '../../toaster'
 import nutrientsMixin from '../../mixins/nutrients'
 
@@ -70,8 +69,7 @@ export default {
                     toaster.error(self.$t('saveFailed'));
                 }
             });
-        },
-        unit: formatters.formatUnit
+        }
     },
     created() {
     }
