@@ -1,6 +1,5 @@
 ﻿import constants from '../../store/constants'
 import api from '../../api'
-import formatters from '../../formatters'
 import utils from '../../utils'
 
 export default {

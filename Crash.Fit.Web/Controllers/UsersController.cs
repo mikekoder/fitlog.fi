@@ -23,6 +23,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Crash.Fit.Measurements;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -34,14 +35,32 @@ namespace Crash.Fit.Web.Controllers
         private readonly IProfileRepository _profileRepository;
         private readonly IConfigurationRoot _configuration;
         private readonly INutritionRepository _nutritionRepository;
+        private readonly RoleManager<Role> _roleManager;
+        private readonly IMeasurementRepository _measurementRepository;
 
-        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager, IProfileRepository profileRepository, ILogRepository logger, IConfigurationRoot configuration, INutritionRepository nutritionRepository) : base(logger)
+        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager, IProfileRepository profileRepository, IMeasurementRepository measurementRepository, ILogRepository logger, IConfigurationRoot configuration, INutritionRepository nutritionRepository, RoleManager<Role> roleManager) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _profileRepository = profileRepository;
             _configuration = configuration;
             _nutritionRepository = nutritionRepository;
+            _roleManager = roleManager;
+            _measurementRepository = measurementRepository;
+            /*
+            var roles = new[]
+            {
+                Role.Admin,
+                Role.UserAdmin,
+                Role.FoodAdmin
+            };
+
+            if(! _roleManager.RoleExistsAsync("admin").Result)
+            {
+                _roleManager.CreateAsync(new Role {Name = "admin" });
+                _roleManager.
+            }
+            */
         }
 
         [HttpGet("me")]
@@ -60,6 +79,12 @@ namespace Crash.Fit.Web.Controllers
             var hasPassword = await _userManager.HasPasswordAsync(user);
 
             var result = AutoMapper.Mapper.Map<ProfileResponse>(profile);
+
+            var measures = _measurementRepository.GetMeasures(CurrentUserId);
+            result.Weight = measures.FirstOrDefault(m => m.Id == Constants.Measurements.WeightId)?.LatestValue;
+            result.Height = measures.FirstOrDefault(m => m.Id == Constants.Measurements.HeightId)?.LatestValue;
+            result.Rmr = measures.FirstOrDefault(m => m.Id == Constants.Measurements.RmrId)?.LatestValue;
+
             result.Logins = logins.Select(l => l.LoginProvider).ToArray();
             result.HasPassword = hasPassword;
             result.Username = user.UserName;
@@ -79,9 +104,38 @@ namespace Crash.Fit.Web.Controllers
             }
             profile.DoB = model.DoB;
             profile.Gender = model.Gender;
-            profile.Height = model.Height;
-            profile.Rmr = model.Rmr;
-            profile.Weight = model.Weight;
+
+            var measures = _measurementRepository.GetMeasures(CurrentUserId);
+            if (model.Weight.HasValue && model.Weight != measures.FirstOrDefault(m => m.Id == Constants.Measurements.WeightId)?.LatestValue)
+            {
+                _measurementRepository.CreateMeasurement(new Measurement
+                {
+                    MeasureId = Constants.Measurements.WeightId,
+                    UserId = CurrentUserId,
+                    Time = DateTimeOffset.Now,
+                    Value = model.Weight.Value
+                });
+            }
+            if (model.Height.HasValue && model.Height != measures.FirstOrDefault(m => m.Id == Constants.Measurements.HeightId)?.LatestValue)
+            {
+                _measurementRepository.CreateMeasurement(new Measurement
+                {
+                    MeasureId = Constants.Measurements.HeightId,
+                    UserId = CurrentUserId,
+                    Time = DateTimeOffset.Now,
+                    Value = model.Height.Value
+                });
+            }
+            if (model.Rmr.HasValue && model.Rmr != measures.FirstOrDefault(m => m.Id == Constants.Measurements.RmrId)?.LatestValue)
+            {
+                _measurementRepository.CreateMeasurement(new Measurement
+                {
+                    MeasureId = Constants.Measurements.RmrId,
+                    UserId = CurrentUserId,
+                    Time = DateTimeOffset.Now,
+                    Value = model.Rmr.Value
+                });
+            }
 
             _profileRepository.SaveProfile(profile);
             var result = AutoMapper.Mapper.Map<ProfileResponse>(profile);

@@ -19,7 +19,7 @@ FROM
 (
   SELECT Measure.*,Measurement.Time AS LatestTime,Measurement.Value AS LatestValue, ROW_NUMBER() OVER(PARTITION BY Measure.Id ORDER BY Measurement.Time DESC) rownumber
   FROM Measure
-  LEFT JOIN Measurement ON Measurement.MeasureId=Measure.Id
+  LEFT JOIN Measurement ON Measurement.MeasureId=Measure.Id AND Measurement.UserId=@userId
   WHERE Measure.UserId=@userId OR Measure.UserId IS NULL
 ) x
 WHERE rownumber=1;";

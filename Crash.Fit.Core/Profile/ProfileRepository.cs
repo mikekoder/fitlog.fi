@@ -28,9 +28,9 @@ namespace Crash.Fit.Profile
 USING (select @UserId AS UserId) AS Source
 ON (Profile.UserId=Source.UserId)
 WHEN MATCHED THEN
-	UPDATE SET DoB=@DoB, Gender=@Gender, Height=@Height,Weight=@Weight, Rmr=@Rmr
+	UPDATE SET DoB=@DoB, Gender=@Gender
 WHEN NOT MATCHED THEN
-	INSERT(UserId,DoB,Gender,Height,Weight,Rmr) VALUES(@UserId,@DoB,@Gender,@Height,@Weight,@Rmr);";
+	INSERT(UserId,DoB,Gender) VALUES(@UserId,@DoB,@Gender);";
 
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
