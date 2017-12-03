@@ -10,8 +10,8 @@ namespace Crash.Fit.Profile
         public Guid UserId { get; set; }
         public DateTime? DoB { get; set; }
         public string Gender { get; set; }
-        public decimal? Height { get; set; }
-        public decimal? Weight { get; set; }
-        public decimal? Rmr { get; set; }
+        //public decimal? Height { get; set; }
+        //public decimal? Weight { get; set; }
+        //public decimal? Rmr { get; set; }
     }
 }

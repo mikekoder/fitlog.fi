@@ -1,7 +1,6 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
 import api from '../../api'
-import formatters from '../../formatters'
 import toaster from '../../toaster'
 import moment from 'moment'
 
@@ -23,6 +22,7 @@ export default {
             height: undefined,
             weight: undefined,
             rmr: undefined,
+            rmrSpecified: false,
             pal: undefined,
 
             username: undefined,
@@ -72,6 +72,13 @@ export default {
         },
         isValid(){
             return this.usernameIsValid && this.newPasswordIsValid && this.newPassword2IsValid;
+        }
+    },
+    watch: {
+        rmrEstimate() {
+            if (!this.rmrSpecified || !this.rmr ) {
+                this.rmr = this.formatDecimal(this.rmrEstimate);
+            }
         }
     },
     components: {},
@@ -150,7 +157,10 @@ export default {
                     self.gender = profile.gender;
                     self.height = profile.height;
                     self.weight = profile.weight;
-                    self.rmr = profile.rmr;
+                    if (profile.rmr) {
+                        self.rmr = profile.rmr;
+                        self.rmrSpecified = true;
+                    }
                     if (profile.pal) {
                         self.pal = self.pals.find(p => p.value == profile.pal);
                     }

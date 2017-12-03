@@ -65,9 +65,8 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label>{{ $t('rmr') }}</label><br />
-                            <span>{{ $t('estimate') }}: {{ rmrEstimate }}</span><br />
-                            <input type="number" min="1" class="form-control input-10" v-model="rmr" /> kcal/{{ $t('day') }}
+                            <label>{{ $t('rmr') }}<span class="estimate" v-if="rmrSpecified"><br />{{ $t('estimate') }}: {{ rmrEstimate }} kcal/{{ $t('day')}}</span></label><br />
+                            <input type="number" min="1" class="form-control input-10" v-model="rmr" @blur="rmrSpecified=true" /> kcal/{{ $t('day') }}
                         </div>
 
                     </div>
@@ -155,5 +154,8 @@
     span.error {
         color: red;
     }
-    
+    span.estimate {
+        font-weight: normal;
+        font-size: smaller;
+    }
 </style>

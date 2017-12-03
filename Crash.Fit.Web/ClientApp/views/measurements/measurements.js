@@ -1,7 +1,6 @@
 import constants from '../../store/constants'
 import api from '../../api'
 import toaster from '../../toaster'
-import formatters from '../../formatters'
 
 export default {
     data () {
@@ -36,8 +35,7 @@ export default {
         },
         cancelMeasurements() {
             this.create = false;
-        },
-        datetime: formatters.formatDateTime
+        }
     },
     created() {
         this.loadMeasures();

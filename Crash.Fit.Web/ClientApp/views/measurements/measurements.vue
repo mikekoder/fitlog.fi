@@ -21,8 +21,8 @@
                             <tbody>
                                 <tr v-for="measure in measures">
                                     <td>{{ measure.name }}</td>
-                                    <td>{{ measure.latestValue }}</td>
-                                    <td>{{ datetime(measure.latestTime) }}</td>
+                                    <td>{{ measure.latestValue }}<span v-if="measure.latestValue"> {{ formatUnit(measure.unit) }}</span></td>
+                                    <td>{{ formatDateTime(measure.latestTime) }}</td>
                                 </tr>
                             </tbody>
                         </table>
