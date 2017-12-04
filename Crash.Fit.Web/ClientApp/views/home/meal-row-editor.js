@@ -19,6 +19,15 @@ export default {
     computed: {
         canSave() {
             return this.food && this.quantity;
+        },
+        weight() {
+            if (this.quantity) {
+                if (this.portion) {
+                    return this.quantity * this.portion.weight;
+                }
+                return this.quantity;
+            }
+            return undefined;
         }
     },
     components: {
