@@ -113,6 +113,7 @@ export default {
             return null;
         },
         energyExpenditure() {
+            var self = this;
             var expenditures = this.$store.state.training.energyExpenditures.filter(e => moment(e.time).isSame(self.selectedDate, 'day'));
             var sum = 0;
             expenditures.forEach(e => {
