@@ -165,7 +165,7 @@ export default {
         },
         [constants.SAVE_EXERCISE]({ commit, state }, { exercise, success, failure }) {
             api.saveExercise(exercise).then(function (savedExercise) {
-                commit(constants.SAVE_EXERCISE_SUCCESS, { id: exercise.id, exercise: savedExercise })
+                commit(constants.SAVE_EXERCISE_SUCCESS, { id: savedExercise.id, exercise: savedExercise })
                 if (success) {
                     success(savedExercise);
                 }

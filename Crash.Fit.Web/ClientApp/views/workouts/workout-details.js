@@ -10,12 +10,15 @@ export default {
             time: null,
             duration: undefined,
             sets: [{ exercise: null, reps: null, weights: null }],
-            exercises: [],
+            //exercises: [],
             energyExpenditure: undefined,
             energySpecified: false
         }
     },
     computed: {
+        exercises() {
+            return this.$store.state.training.exercises;
+        },
         totalMinutes() {
             var time = this.duration ? new Date(this.duration) : undefined;
             if (time) {
@@ -69,20 +72,14 @@ export default {
         deleteSet(index) {
             this.sets.splice(index, 1);
         },
+        setExercise(set, exercise) {
+            console.log('setExercise', exercise);
+            set.exercise = exercise;
+        },
         processNewExercise(set, exerciseName) {
+            console.log('processNewExercise', exerciseName);
             if (!exerciseName) {
                 set.exercise = undefined;
-            }
-            else {
-                var found = this.exercises.filter(e => e.name.toLowerCase().indexOf(exerciseName.toLowerCase()) >= 0);
-                if (found.length == 0) {
-                    var exercise = { id: undefined, name: exerciseName };
-                    this.exercises.push(exercise);
-                    set.exercise = exercise;
-                }
-                else {
-                    set.exercise = found[0];
-                }
             }
         },
         save() {
@@ -131,9 +128,7 @@ export default {
             }
             self.$store.dispatch(constants.FETCH_EXERCISES, {
                 success(exercises) {
-                    self.exercises = exercises;
-                    if (workout.sets && workout.sets.length > 0) {
-       
+                    if (workout.sets && workout.sets.length > 0) {     
                         self.sets = workout.sets.map(s => {
                             var exercise = self.exercises.find(e => e.id === s.exerciseId);
                             
