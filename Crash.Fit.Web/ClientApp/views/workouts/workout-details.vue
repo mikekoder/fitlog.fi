@@ -23,7 +23,7 @@
                         <div class="row">
                             <div class="col-sm-4 col-text-40">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
-                                <exercise-picker :exercises="exercises" :value="set.exercise" @change="val => set.exercise=val" @nameChange="val => processNewExercise(set, val)" />
+                                <exercise-picker :exercises="exercises" :value="set.exercise" @change="val => setExercise(set,val)" @nameChange="val => processNewExercise(set, val)" />
                             </div>
                             <div class="col-xs-4 col-number-5">
                                 <label class="hidden-sm hidden-md hidden-lg">{{ $t("reps") }}</label>
