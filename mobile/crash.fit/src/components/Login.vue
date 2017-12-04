@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="q-tab-pane">
-      <q-input v-model="username" type="text" :float-label="$t('username')+'/' + $t('email')" />
+      <q-input v-model="username" type="email" :float-label="$t('username')+'/' + $t('email')" />
       <q-input v-model="password" type="password" :float-label="$t('password')" />
       <div class="row">
         <div class="col">
@@ -40,8 +40,8 @@ export default {
       url: undefined,
       refreshToken: undefined,
       accessToken: undefined,
-      username: undefined,
-      password: undefined,
+      username: 'testi@fitlog.fi',
+      password: 'testi123',
       debugInfo: ''
     }
   },
@@ -49,7 +49,29 @@ export default {
   },
   methods: {
     login(){
+      var self = this;
+      var data = {
+        username: this.username,
+        password: this.password,
+        client: this.client
+      };
+      
+      api.login(data).done((response) => {
+        self.$store.dispatch(constants.STORE_TOKENS, {
+          client: response.client,
+          refreshToken: response.refreshToken,
+          accessToken: response.accessToken,
+          success() {
+            self.$router.replace({name: 'meals'});
+          },
+          failure() {
+            Toast.create(self.$t('failed'));
+          }
+        });
+      }).fail(xhr => {
+          alert(JSON.stringify(xhr));
 
+      });
     },
     fbLogin(){
       this.socialLogin('Facebook');
@@ -100,7 +122,8 @@ export default {
         }
       }
       else {
-        window.location = config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile&returnUrl='+ window.location.href;
+        console.log(window.location.href);
+        window.location = config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile&returnUrl='+ encodeURIComponent(window.location.href);
       }
     },
     finishLogin(refreshToken, accessToken){

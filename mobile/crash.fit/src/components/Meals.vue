@@ -2,70 +2,82 @@
   <div>
     
   <q-card>
-      <q-card-title>
+      <q-card-title class="card-title bg-grey-4">
         <div class="row">
-          <div class="col col-lg-2"><q-btn round  @click="changeDate(-1)"><q-icon name="fa-chevron-left" /></q-btn></div>
-          <div class="col col-lg-2">
+          <div class="col col-lg-2" align="right">
+            <q-btn round small glossy color="grey-6" @click="changeDate(-1)"><q-icon name="fa-chevron-left" /></q-btn>
+          </div>
+          <div class="col col-lg-2" align="center">
             <q-datetime v-model="selectedDate" type="date" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" @change="changeDate" @blur="datepickerVisible=false;" ref="datepicker" v-show="datepickerVisible" />
-            <q-btn round :flat="true" @click="()=> {datepickerVisible=true; $refs.datepicker.open();}">{{ dateText }}</q-btn>
+            <q-btn round small :flat="true" @click="()=> {datepickerVisible=true; $refs.datepicker.open();}">{{ dateText }}</q-btn>
             </div>
-          <div class="col col-lg-2"><q-btn round  @click="changeDate(1)"><q-icon name="fa-chevron-right" /></q-btn></div>
-          <q-btn round class="pull-right" icon="fa-gear" @click="showMealSettings"></q-btn>
+          <div class="col col-lg-2" align="left">
+            <q-btn round small glossy color="grey-6" @click="changeDate(1)"><q-icon name="fa-chevron-right" /></q-btn>
+          </div>
+          <q-btn round small class="pull-right" icon="fa-gear" @click="showMealSettings"></q-btn>
           
         </div>
       </q-card-title>
       <q-card-separator />
       <q-card-main>
         <div class="row">
-          <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index">{{ nutrient.shortName }}</div>
+          <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index" align="center">{{ nutrient.shortName }}</div>
         </div>
         <div class="row">
-          <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index">
+          <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index"  align="center">
             <div v-if="nutrient.id == energyDistributionId" v-show="nutrients[proteinId] && nutrients[carbId] && nutrients[fatId]">
-                <energy-distribution v-bind:protein="nutrients[proteinId]" v-bind:carb="nutrients[carbId]" v-bind:fat="nutrients[fatId]"></energy-distribution>
+                <energy-distribution-bar v-bind:protein="nutrients[proteinId]" v-bind:carb="nutrients[carbId]" v-bind:fat="nutrients[fatId]"></energy-distribution-bar>
             </div>
-            <div v-else>{{ decimal(nutrients[nutrient.id]) }}</div>
+            <div v-else>
+              <nutrient-bar :goal="nutrientGoal(nutrient.id)" :value="nutrients[nutrient.id]" :precision="nutrient.precision"></nutrient-bar>
+            </div>
         </div>
         </div>
       </q-card-main>
     </q-card>
     <q-scroll-area style="height: 70vh;">
       <q-card v-for="(mealdef, index) in meals" :key="index">
-        <q-card-title>
+        <q-card-title class="card-title bg-grey-3">
           <div class="row">{{ mealName(mealdef) }}</div>
           <div class="row" v-if="mealdef.meal">
-            <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index">
+            <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index" align="center">
               <div v-if="nutrient.id == energyDistributionId">
-                  <energy-distribution v-bind:protein="mealdef.meal.nutrients[proteinId]" v-bind:carb="mealdef.meal.nutrients[carbId]" v-bind:fat="mealdef.meal.nutrients[fatId]"></energy-distribution>
+                  <energy-distribution-bar v-bind:protein="mealdef.meal.nutrients[proteinId]" v-bind:carb="mealdef.meal.nutrients[carbId]" v-bind:fat="mealdef.meal.nutrients[fatId]"></energy-distribution-bar>
               </div>
-              <div v-else>{{ decimal(mealdef.meal.nutrients[nutrient.id]) }}</div>
+              <div v-else>
+                <nutrient-bar :goal="nutrientGoal(nutrient.id, mealdef.meal)" :value="mealdef.meal.nutrients[nutrient.id]" :precision="nutrient.precision"></nutrient-bar>
               </div>
+            </div>
           </div>
         </q-card-title>
         <q-card-separator />
         <q-card-main v-if="mealdef.meal">
-          <div v-for="(row,index) in mealdef.meal.rows" @click="editRow(row)" :key="index">
+          <div v-for="(row,index) in mealdef.meal.rows" @click="clickRow(row)" :key="index">
             <div class="row food-portion">
               <div class="col">{{ row.foodName }} {{ row.quantity }} {{ row.portionName || 'g' }}</div>  
             </div>
             <div class="row nutrients">
-              <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index">
+              <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index" align="center">
                 <div v-if="nutrient.id == energyDistributionId">
-                  <energy-distribution v-bind:protein="row.nutrients[proteinId]" v-bind:carb="row.nutrients[carbId]" v-bind:fat="row.nutrients[fatId]"></energy-distribution>
+                  <energy-distribution-bar v-bind:protein="row.nutrients[proteinId]" v-bind:carb="row.nutrients[carbId]" v-bind:fat="row.nutrients[fatId]"></energy-distribution-bar>
                 </div>
-                <div v-else>{{ decimal(row.nutrients[nutrient.id]) }}</div>
+                <div v-else>
+                  {{ decimal(row.nutrients[nutrient.id]) }}
                 </div>
+              </div>
             </div>
-            <q-btn round class="float-right" color="primary" style="top: -55px; right:-10px;" small icon="fa-trash" v-on:click.stop="deleteRow(mealdef,row)"></q-btn>
+            <!--
+            <q-btn round class="float-right" color="primary" style="top: -55px; right:-10px;" small icon="keyboard_arrow_up" v-on:click.stop="showFab=true"></q-btn>
+            -->
           </div>
         </q-card-main>
-        <q-card-actions>
-          <q-btn round color="primary" icon="fa-plus" small @click="addRow(mealdef)"></q-btn>
+        <q-card-actions align="end">
+          <q-btn round glossy color="primary" icon="fa-plus" small @click="addRow(mealdef)"></q-btn>
         </q-card-actions>
       </q-card>
     </q-scroll-area>
-    <edit-row ref="editRow" v-on:save="saveRow(arguments[0])" />
-    <meal-settings ref="mealSettings" v-on:save="saveSettings(arguments[0])" />
+    <meal-row-editor ref="editRow" @save="saveRow(arguments[0])" />
+    <meal-settings ref="mealSettings" @save="saveSettings(arguments[0])" />
   </div>
 </template>
 
@@ -74,16 +86,28 @@ import { openURL } from 'quasar'
 import moment from 'moment'
 import constants from '../store/constants'
 import formatters from '../formatters'
-import { QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator,QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem,QDatetime } from 'quasar'
+import { QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator,QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem,QDatetime, ActionSheet } from 'quasar'
+import EnergyDistributionBar from './energy-distribution-bar'
+import NutrientBar from './nutrient-bar'
+import MealRowEditor from './meal-row-editor'
+import MealSettings from './meal-settings'
+import utils from '../utils'
+import nutrientsMixin from '../mixins/nutrients'
+import mealDefinitionsMixin from '../mixins/meal-definitions'
+import nutritionGoalMixin from '../mixins/nutrition-goal'
+
 export default {
+  mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin],
   components: {
     QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator, QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem, QDatetime,
-    'energy-distribution': require('./energy-distribution-bar'),
-    'edit-row': require('./edit-meal-row'),
-    'meal-settings': require('./meal-settings')
+    EnergyDistributionBar,
+    NutrientBar,
+    MealRowEditor,
+    MealSettings
   },
   data () {
     return {
+      showFab: false,
       proteinId: constants.PROTEIN_ID,
       carbId: constants.CARB_ID,
       fatId: constants.FAT_ID,
@@ -127,6 +151,13 @@ export default {
       );
       return result;
     },
+    workouts() {
+        var self = this;
+        return this.$store.state.training.workouts.filter(w => moment(w.time).isSame(self.selectedDate, 'day'));
+    },
+    nutritionGoal() {
+        return this.$store.state.nutrition.activeNutritionGoal;
+    },
     nutrients() {
       var result = {};
       this.meals.filter(m => m.meal).forEach(m => {
@@ -148,6 +179,18 @@ export default {
             }
         });
         return 
+    },
+    mealCopy() {
+        if (this.$store.state.clipboard.type == constants.MEAL) {
+            return this.$store.state.clipboard.data;
+        }
+        return undefined;
+    },
+    rowCopy() {
+        if (this.$store.state.clipboard.type == constants.MEAL_ROWS) {
+            return this.$store.state.clipboard.data;
+        }
+        return undefined;
     }
   },
   methods: {
@@ -171,10 +214,10 @@ export default {
         }
         if (!moment(newDate).isSame(this.selectedDate, 'd')) {
             this.$store.dispatch(constants.SELECT_MEAL_DIARY_DATE, { date: newDate });
-            this.fetchMeals();
+            this.fetchData();
         }
     },
-    fetchMeals() {
+    fetchData() {
       var self = this;
       var start = moment(self.selectedDate).startOf('day');
       var end = moment(self.selectedDate).endOf('day');
@@ -186,6 +229,7 @@ export default {
         },
         failure: function () { }
       });
+      self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
     },
     mealName(defMeal) {
       if (defMeal.definition) {
@@ -212,9 +256,78 @@ export default {
       };
       this.$refs.editRow.open(this.selectedRow);
     },
+    clickRow(row){
+      var self = this;
+      ActionSheet.create({
+        title: `${row.foodName} ${ row.quantity } ${ row.portionName || 'g' }`,
+        gallery: true,
+        actions: [
+          {
+            label: self.$t('edit'),
+            icon: 'fa-edit',
+            handler: function() {
+              self.editRow(row);
+            }
+          },
+          {
+            label: self.$t('copy'),
+            icon: 'fa-copy',
+            handler: function() {
+              self.copyRow(row);
+            }
+          },
+          {
+            label: self.$t('delete'),
+            icon: 'fa-trash',
+            handler: function() {
+              self.deleteRow(row);
+            }
+          }
+        ]
+      });
+    },
     editRow(row){
       this.selectedRow = row;
       this.$refs.editRow.open(this.selectedRow);
+    },
+    copyMeal(meal) {
+        this.$store.dispatch(constants.CLIPBOARD_COPY, {
+            type: constants.MEAL,
+            data: meal
+        });
+    },
+    pasteMeal(mealDef) {
+        var self = this;
+        var meal = self.$store.state.clipboard.data;
+        self.appendRows(mealDef, meal.rows);
+    },
+    copyRow(row) {
+        this.$store.dispatch(constants.CLIPBOARD_COPY, {
+            type: constants.MEAL_ROWS,
+            data: [row]
+        });
+    },
+    pasteRows(mealDef) {
+        var self = this;
+        var rows = self.$store.state.clipboard.data;
+        self.appendRows(mealDef, rows);
+    },
+    appendRows(mealDef, rows) {
+        var self = this;
+        var meal = {
+            id: mealDef.meal ? mealDef.meal.id : undefined,
+            date: self.selectedDate,
+            definitionId: mealDef.definition.id,
+            rows : mealDef.meal && mealDef.meal.rows ? mealDef.meal.rows.map(r => { return { foodId: r.foodId, quantity: r.quantity, portionId: r.portionId }}) : []
+        }
+        rows.forEach(r => {
+            meal.rows.push({ foodId: r.foodId, quantity: utils.parseFloat(r.quantity), portionId: r.portionId });
+        });
+        self.$store.dispatch(constants.SAVE_MEAL, {
+            meal,
+            success() { },
+            failure() { }
+        });
     },
     deleteRow(mealdef, row){
       this.$store.dispatch(constants.DELETE_MEAL_ROW, {
@@ -240,7 +353,10 @@ export default {
     },
     showMealSettings(){
       this.$refs.mealSettings.open();
-    }
+    },
+    nutrientGoal(nutrientId, meal) {
+      return utils.nutrientGoal(this.$nutritionGoal, this.workouts, nutrientId, this.selectedDate, meal);
+    },
   },
   created(){
     var self = this;
@@ -250,7 +366,7 @@ export default {
     });
     self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
         success: function () {
-            self.fetchMeals();
+            self.fetchData();
         },
         failure: function () {
           self.$store.commit(constants.LOADING_DONE);

@@ -29,6 +29,7 @@
     import api from'../api'
     import formatters from '../formatters'
 export default {
+    name: 'meal-settings',
     data () {
         return {
             selectedNutrients: []

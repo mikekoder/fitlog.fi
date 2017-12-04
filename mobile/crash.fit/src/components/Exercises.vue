@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import constants from '../store/constants'
+
 export default {
   data () {
     return {

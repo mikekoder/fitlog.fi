@@ -120,12 +120,12 @@ export default {
       var self = this;
       self.$store.dispatch(constants.REFRESH_TOKEN, {
           success: function () { 
-              if(!self.isLoggedIn){
-                  self.$store.dispatch(constants.FETCH_PROFILE, {});
-              }
+            if(!self.isLoggedIn){
+              self.$store.dispatch(constants.FETCH_PROFILE, {});
+            }
           },
           failure: function () {
-              self.$router.push({name: 'login'});
+            self.$router.push({name: 'login'});
           }
       });
     },
@@ -148,7 +148,7 @@ export default {
       self.refreshTokens();
       setInterval(function () {
           self.refreshTokens();
-      }, 60000); 
+      }, 300000); 
   },
   mounted () {
   },

@@ -27,7 +27,7 @@
                 <q-btn round class="float-right" color="primary" style="top: -55px; right:-10px;" small icon="fa-trash" v-on:click.stop="deleteIngredient(index)"></q-btn>
             </div>
             <q-btn round color="primary" icon="fa-plus" small @click="addIngredient"></q-btn>
-            <edit-row ref="editRow" v-on:save="saveIngredient(arguments[0])" />
+            <meal-row-editor ref="editRow" v-on:save="saveIngredient(arguments[0])" />
         </q-tab-pane>
         <q-tab-pane name="tab-2">
           <div class="row" v-for="(portion,index) in portions" :key="index">
@@ -52,6 +52,7 @@
  import constants from '../store/constants'
  import formatters from '../formatters'
  import utils from '../utils'
+import MealRowEditor from './meal-row-editor'
 
 var defaultNutrientPortion = { id: undefined, name: '100g' };
 export default {
@@ -69,8 +70,7 @@ export default {
   },
   components: {
         QTabs,QTab,QTabPane,QField,QInput,QScrollArea,QSearch,QAutocomplete,QSelect,QBtn,QModal,QList,QItem,
-        'edit-row': require('./edit-meal-row'),
-        'energy-distribution': require('./energy-distribution-bar')
+        MealRowEditor
     },
     computed: {
         nutrientGroups() {
