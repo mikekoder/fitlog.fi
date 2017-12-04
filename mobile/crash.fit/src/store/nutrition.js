@@ -24,8 +24,10 @@ export default {
         nutrientsLoaded: false,
         nutrients: [],
         nutrientsGrouped: {},
+        activeNutritionGoalLoaded: false,
+        activeNutritionGoal: {},
         nutritionGoalsLoaded: false,
-        nutritionGoals: [],
+        nutritionGoals: {},
 
         mealDefinitionsLoaded: false,
         mealDefinitions: [],
@@ -311,12 +313,35 @@ export default {
                 }
                 return;
             }
-            api.listNutrients().then(function (nutrients) {
-                commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients })
+            Promise.all([api.listNutrients(), api.getNutrientSettings()]).then(function (results) {
+                var nutrients = results[0];
+                var settings = results[1];
+
+                settings.forEach(s => {
+                    var nutrient = nutrients.find(n => n.id == s.nutrientId);
+                    if (nutrient) {
+                        if (s.hideSummary != null) {
+                            nutrient.hideSummary = s.hideSummary;
+                            nutrient.userHideSummary = s.hideSummary;
+                        }
+                        if (s.hideDetails != null) {
+                            nutrient.hideDetails = s.hideDetails;
+                            nutrient.userHideDetails = s.hideDetails;
+                        }
+                        if (s.order != null) {
+                            nutrient.order = s.order;
+                            nutrient.userOrder = s.order;
+                        }
+                        if (s.homeOrder != null) {
+                            nutrient.homeOrder = s.homeOrder;
+                        }
+                    }
+                });
+                commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients });
                 if (success) {
                     success(nutrients);
                 }
-            }).fail(function () {
+            }).catch(function (reason) {
                 if (failure) {
                     failure();
                 }
@@ -353,11 +378,10 @@ export default {
                 }
             });
         },
-        [constants.SAVE_NUTRITION_GOALS]({ commit, state }, { goals, success, failure }) {
-            api.saveNutritionGoals(goals).then(function (savedGoals) {
-                commit(constants.FETCH_NUTRITION_GOALS_SUCCESS, { goals: savedGoals })
+        [constants.FETCH_NUTRITION_GOAL]({ commit, state }, { id, success, failure }) {
+            api.getNutritionGoal(id).then(function (goal) {
                 if (success) {
-                    success(savedGoals);
+                    success(goal);
                 }
             }).fail(function () {
                 if (failure) {
@@ -365,7 +389,60 @@ export default {
                 }
             });
         },
-
+        [constants.FETCH_ACTIVE_NUTRITION_GOAL]({ commit, state }, { forceRefresh, success, failure }) {
+            if (state.nutritionGoalLoaded && !forceRefresh) {
+                if (success) {
+                    success(state.nutritionGoal);
+                }
+                return;
+            }
+            api.getActiveNutritionGoal().then(function (goal) {
+                commit(constants.FETCH_ACTIVE_NUTRITION_GOAL_SUCCESS, { goal })
+                if (success) {
+                    success(goal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.SAVE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
+            api.saveNutritionGoal(goal).then(function (savedGoal) {
+                commit(constants.FETCH_NUTRITION_GOAL_SUCCESS, { goal: savedGoal })
+                if (success) {
+                    success(savedGoal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.ACTIVATE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
+            api.activateNutritionGoal(goal.id).then(function () {
+                commit(constants.ACTIVATE_NUTRITION_GOAL_SUCCESS, { goal })
+                if (success) {
+                    success(savedGoal);
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
+        [constants.DELETE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
+            api.deleteNutritionGoal(goal.id).then(function () {
+                commit(constants.DELETE_NUTRITION_GOAL_SUCCESS, { goal })
+                if (success) {
+                    success();
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
         // Meal rhythm
         [constants.FETCH_MEAL_DEFINITIONS]({ commit, state }, { forceRefresh, success, failure }) {
             if (state.mealDefinitionsLoaded && !forceRefresh) {
@@ -419,10 +496,35 @@ export default {
             state.nutrientsGrouped = grouped;
             state.nutrientsLoaded = true;
         },
-
         [constants.FETCH_NUTRITION_GOALS_SUCCESS](state, { goals }) {
             state.nutritionGoals = goals;
             state.nutritionGoalsLoaded = true;
+        },
+        [constants.FETCH_NUTRITION_GOAL_SUCCESS](state, { goal }) {
+            var old = state.nutritionGoals.find(g => g.id == goal.id);
+            if (old) {
+                 state.nutritionGoals.splice(state.nutritionGoals.findIndex(g => g.id == old.id), 1);
+            }
+            state.nutritionGoals.push(goal);
+        },
+        [constants.FETCH_ACTIVE_NUTRITION_GOAL_SUCCESS](state, { goal }) {
+            state.activeNutritionGoal = goal;
+            state.activeNutritionGoalLoaded = true;
+        },
+        [constants.ACTIVATE_NUTRITION_GOAL_SUCCESS](state, { goal }) {
+            state.nutritionGoals.forEach(g => {
+                if (g.id === goal.id) {
+                    g.active = true;
+                    state.activeNutritionGoal = g;
+                    state.activeNutritionGoalLoaded = true;
+                }
+                else {
+                    g.active = false;
+                }
+            });
+        },
+        [constants.DELETE_NUTRITION_GOAL_SUCCESS](state, { goal }) {
+            deleteNutritionGoal(goal, state)
         },
         [constants.FETCH_MEALS_STARTED](state) {
             state.mealsLoading = true;
@@ -452,6 +554,10 @@ export default {
             state.mealsLoading = false;
         },
         [constants.FETCH_MEAL_SUCCESS](state, { meal }) {
+            var old = state.meals.find(m => m.id == meal.id);
+            if (old) {
+                deleteMeal(old, state)
+            }
             addMeal(meal, state);
         },
         [constants.SAVE_MEAL_STARTED](state) {
@@ -461,7 +567,7 @@ export default {
             if (id) {
                 var old = state.meals.find(m => m.id == id);
                 if (old) {
-                    removeMeal(old, state)
+                    deleteMeal(old, state)
                 }
             }
             addMeal(meal, state);
@@ -473,7 +579,7 @@ export default {
 
         },
         [constants.DELETE_MEAL_SUCCESS](state, { meal }) {
-            removeMeal(meal, state)
+            deleteMeal(meal, state)
         },
         [constants.RESTORE_MEAL_SUCCESS](state, { meal }) {
             meal.time = new Date(meal.time);
@@ -495,7 +601,6 @@ export default {
             state.mealDefinitions = definitions;
         },
         [constants.SAVE_MEAL_ROW_SUCCESS](state, { row }) {
-
             updateMealRow(row, state);
         },
         [constants.DELETE_MEAL_ROW_SUCCESS](state, { row }) {
@@ -524,9 +629,12 @@ export default {
     }
 }
 
-    function removeMeal(meal, state){
+    function findDay(meal, state) {
         var date = moment(meal.time).startOf('day');
-        var day = state.mealDays.find(d => moment(d.date).isSame(date, 'day'));
+        return state.mealDays.find(d => moment(d.date).isSame(date, 'day'));
+    }
+    function deleteMeal(meal, state){
+        var day = findDay(meal, state);
         if(day){
             for (var nutrientId in meal.nutrients) {
                 if (day.nutrients[nutrientId]) {
@@ -537,12 +645,13 @@ export default {
             if(day.meals.length == 0){
                 state.mealDays.splice(state.mealDays.findIndex(d => d == day), 1);
             }
+            calculateEnergyDistribution(day);
         }
         state.meals.splice(state.meals.findIndex(m => m.id == meal.id), 1);
     }
-    function addMeal(meal, state){
+    function addMeal(meal, state) {
         var date = moment(meal.time).startOf('day');
-        var day = state.mealDays.find(d => moment(d.date).isSame(date, 'day'));
+        var day = findDay(meal, state);
         if (!day) {
             day = { date: date.toDate(), meals: [], nutrients: {}};
             state.mealDays.push(day);
@@ -569,14 +678,42 @@ export default {
             day.nutrients[nutrientId] += meal.nutrients[nutrientId];
         }
         state.meals.push(meal);
+        calculateEnergyDistribution(day);
+    }
+    function calculateEnergyDistribution(item) {
+        if (!item || !item.nutrients) {
+            return;
+        }
+        var energy = item.nutrients[constants.ENERGY_ID];
+        var protein = item.nutrients[constants.PROTEIN_ID];
+        var carbs = item.nutrients[constants.CARB_ID];
+        var fat = item.nutrients[constants.FAT_ID];
+
+        var calculatedEnergy = 4 * protein + 4 * carbs + 9 * fat;
+
+        if (energy || calculatedEnergy) {
+            if (protein) {
+                item.nutrients[constants.PROTEIN_ENERGY_ID] = (4 * protein) / (calculatedEnergy || energy) * 100;
+            }
+            if (carbs) {
+                item.nutrients[constants.CARB_ENERGY_ID] = (4 * carbs) / (calculatedEnergy || energy) * 100;
+            }
+            if (fat) {
+                item.nutrients[constants.FAT_ENERGY_ID] = (9 * fat) / (calculatedEnergy || energy) * 100;
+            }
+        }
     }
     function updateMealRow(row, state) {
         var meal = state.meals.find(m => m.id == row.mealId);
+        var day = findDay(meal, state);
         var rowIndex = meal.rows.findIndex(r => r.id == row.id);
         if (rowIndex >= 0) {
             var oldRow = meal.rows[rowIndex];
             for (var i in oldRow.nutrients) {
                 meal.nutrients[i] -= oldRow.nutrients[i];
+                if (day) {
+                    day.nutrients[i] -= oldRow.nutrients[i];
+                }
             }
             meal.rows.splice(rowIndex, 1, row);
         }
@@ -584,22 +721,40 @@ export default {
             meal.rows.push(row);
         }
         for (var i in row.nutrients) {
+            if (!meal.nutrients[i]) {
+                meal.nutrients[i] = 0;
+            }
             meal.nutrients[i] += row.nutrients[i];
+            if (day) {
+                day.nutrients[i] += row.nutrients[i];
+            }
         }
+
+        calculateEnergyDistribution(meal);
+        calculateEnergyDistribution(day);
     }
     function deleteMealRow(row, state) {
         var meal = state.meals.find(m => m.id == row.mealId);
+        var day = findDay(meal, state);
         var rowIndex = meal.rows.findIndex(r => r.id == row.id);
         if(rowIndex < 0){
             return;
         }
         if(meal.rows.length == 1){
-            removeMeal(meal, state);
+            deleteMeal(meal, state);
             return;
         }
         var oldRow = meal.rows[rowIndex];
         for (var i in oldRow.nutrients) {
             meal.nutrients[i] -= oldRow.nutrients[i];
+            day.nutrients[i] -= oldRow.nutrients[i];
         }
+        
         meal.rows.splice(rowIndex, 1);
+
+        calculateEnergyDistribution(meal);
+        calculateEnergyDistribution(day);
+    }
+    function deleteNutritionGoal(goal, state) {
+        state.nutritionGoals.splice(state.nutritionGoals.findIndex(x => x.id == goal.id), 1);
     }

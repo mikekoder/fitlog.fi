@@ -4,6 +4,7 @@ import nutrition from './nutrition'
 import training from './training'
 import profile from './profile'
 import feedback from './feedback'
+import clipboard from './clipboard'
 import constants from './constants'
 
 Vue.use(Vuex)
@@ -25,6 +26,7 @@ export default new Vuex.Store({
         nutrition,
         training,
         profile,
-        feedback
+        feedback,
+        clipboard
     }
 })

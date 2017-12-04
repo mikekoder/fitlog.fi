@@ -60,6 +60,7 @@
     import api from'../api'
 
 export default {
+    name: 'meal-row-editor',
     data () {
         return {
             tab: 'tab-1',
