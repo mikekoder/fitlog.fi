@@ -29,6 +29,12 @@
                         </select>
                     </div>
                 </div>
+                <div class="row" v-if="portion">
+                    <div class="col-sm-12">
+                        <label>{{ $t('weight') }}</label>
+                        {{ weight }} g
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default pull-left" @click="cancel">{{ $t('cancel')}}</button>
@@ -43,4 +49,5 @@
 </script>
 
 <style scoped>
+    .row{ margin-bottom: 5px;}
 </style>
