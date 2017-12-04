@@ -75,17 +75,6 @@ export default {
             if (!exerciseName) {
                 workoutExercise.exercise = undefined;
             }
-            else {
-                var found = this.exercises.filter(e => e.name.toLowerCase().indexOf(exerciseName.toLowerCase()) >= 0);
-                if (found.length == 0) {
-                    var exercise = { id: undefined, name: exerciseName };
-                    this.exercises.push(exercise);
-                    workoutExercise.exercise = exercise;
-                }
-                else {
-                    workoutExercise.exercise = found[0];
-                }
-            }
         },
         save() {
             var self = this;
