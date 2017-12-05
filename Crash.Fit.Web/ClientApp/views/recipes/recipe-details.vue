@@ -155,7 +155,7 @@
                                         {{ group.name }}
                                     </th>
                                 </tr>
-                                <tr v-for="nutrient in allNutrients[group.id]" v-if="groupOpenStates[group.id]">
+                                <tr v-for="nutrient in allNutrients[group.id]" v-if="groupOpenStates[group.id] && !nutrient.computed">
                                     <td>{{ nutrient.name }}</td>
                                     <td>{{ formatDecimal(recipeNutrients[nutrient.id], nutrient.precision) }}</td>
                                     <td>{{ formatDecimal(recipeNutrients[nutrient.id] * 100 / recipeWeight, nutrient.precision) }}</td>
