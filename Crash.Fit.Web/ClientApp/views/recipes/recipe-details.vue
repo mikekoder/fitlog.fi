@@ -135,7 +135,7 @@
                         </div>
                     </div>
                     <div v-if="tab === 'nutrients'">
-                        <table>
+                        <table class="nutrients">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -184,4 +184,7 @@
 <script src="./recipe-details.js">
 </script>
 <style scoped>
+    .nutrients th, .nutrients td {
+        padding: 2px 4px;
+    }
 </style>
