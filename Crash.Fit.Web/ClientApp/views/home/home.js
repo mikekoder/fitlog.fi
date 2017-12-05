@@ -25,7 +25,7 @@ export default {
             row: undefined,
             selectedNutrients: [],
             editNutrients: false,
-
+            eatenEnergy: undefined
         }
     },
     computed: {
@@ -100,12 +100,6 @@ export default {
             }
             return undefined;
         },
-        eatenEnergy() {
-            if (this.dayNutrients) {
-                return this.dayNutrients[this.energyId];
-            }
-            return 0;
-        },
         rmr() {
             if (this.$profile) {
                 return this.$profile.rmr;
@@ -157,7 +151,7 @@ export default {
                 start,
                 end,
                 success() {
-
+                    self.updateComputedValues();
                 },
                 failure() { }
             });
@@ -205,14 +199,18 @@ export default {
             this.showEditMealRow = true;
         },
         saveRow(row) {
+            var self = this;
             row.date = this.selectedDate;
             this.$store.dispatch(constants.SAVE_MEAL_ROW, {
                 row,
-                success() { },
+                success() {
+                    self.updateComputedValues();
+                },
                 failure() { }
             });
             this.row = {};
             this.showEditMealRow = false;
+            
         },
         copyMeal(meal) {
             this.$store.dispatch(constants.CLIPBOARD_COPY, {
@@ -249,14 +247,19 @@ export default {
             });
             self.$store.dispatch(constants.SAVE_MEAL, {
                 meal,
-                success() { },
+                success() {
+                    self.updateComputedValues();
+                },
                 failure() { }
             });
         },
         deleteRow(row) {
+            var self = this;
             this.$store.dispatch(constants.DELETE_MEAL_ROW, {
                 row,
-                success() { },
+                success() {
+                    self.updateComputedValues();
+                },
                 failure() { }
             });
         },
@@ -298,6 +301,9 @@ export default {
             var self = this;
             self.saveRowDraft();
             self.$router.push({ name: 'recipe-details', params: { id: constants.NEW_ID, name: name, returnTo: { name: self.$route.name, params: { draft: true }} }});
+        },
+        updateComputedValues() {
+            this.eatenEnergy = this.dayNutrients ? this.dayNutrients[this.energyId] ? this.dayNutrients[this.energyId] : 0 : 0;
         }
     },
     created() {
