@@ -145,12 +145,17 @@ export default {
                 var meal = state.meals.find(m => m.id == savedRow.mealId);
                 if (meal) {
                     commit(constants.SAVE_MEAL_ROW_SUCCESS, { row: savedRow });
+                    if (success) {
+                        success(savedRow);
+                    }
                 }
                 else {
                     api.getMeal(savedRow.mealId).then(function (createdMeal) {
                         createdMeal.time = new Date(createdMeal.time);
                         commit(constants.FETCH_MEAL_SUCCESS, { meal: createdMeal });
-
+                        if (success) {
+                            success(createdMeal);
+                        }
                     });
                 }
 
