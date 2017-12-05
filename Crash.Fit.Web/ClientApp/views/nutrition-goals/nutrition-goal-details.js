@@ -251,6 +251,9 @@ export default {
             else {
                 self.periods = [];
             }
+        },
+        cancel() {
+            this.$router.go(-1);
         }
     },
     created() {

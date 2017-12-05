@@ -107,6 +107,7 @@
             <div class="row" v-if="periods.length > 0">
                 <div class="col-sm-12">
                     <button class="btn btn-primary" @click="save">{{ $t('save') }}</button>
+                    <button class="btn btn-secondary" @click="cancel">{{ $t('cancel') }}</button>
                 </div>
             </div>
           
