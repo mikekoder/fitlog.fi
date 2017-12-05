@@ -4,7 +4,6 @@ import VueI18n from 'vue-i18n'
 import VueAnalytics from 'vue-analytics'
 import store from './store/store'
 import routes from './routes'
-import 'jquery'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'admin-lte'
@@ -115,6 +114,22 @@ router.afterEach((to, from) => {
         $('body').addClass('sidebar-collapse').removeClass('sidebar-open');
     }
 })
+
+
+// HACK: scrolling on mobile fires resize event which hides the sidebar
+$("body").on("expanded.pushMenu", function(){
+    window.sidebarExpanded = true;
+});
+$("body").on("collapsed.pushMenu", function(){
+    window.sidebarExpanded = false;
+});
+$(window).resize(() => {
+    if (window.sidebarExpanded) {
+        setTimeout(() => {
+            $('body').addClass('sidebar-open').removeClass('sidebar-collapse');
+        }, 10);
+    }
+});
 Vue.use(VueAnalytics, {
     id: 'UA-10474486-3',
     router
