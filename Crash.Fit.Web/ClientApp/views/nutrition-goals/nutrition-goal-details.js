@@ -15,7 +15,8 @@ export default {
             name: undefined,
             periods: [],
             groupOpenStates: {},
-            selectedPeriod: undefined
+            selectedPeriod: undefined,
+            energyDistributionId: constants.ENERGY_DISTRIBUTION_ID
         }
     },
     computed: {
