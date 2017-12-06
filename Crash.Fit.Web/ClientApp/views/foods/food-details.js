@@ -28,7 +28,7 @@ export default {
             var portions = [];
             portions.push(defaultNutrientPortion);
             if(this.portions.length === 0){
-                portions.push({ name: this.$t('portion'), nutrientPortion: true });
+                portions.push({ name: this.$t('portion'), nutrientPortion: true, weight: 100 });
             }
             else {
                 this.portions.forEach(p => { portions.push(p); });
