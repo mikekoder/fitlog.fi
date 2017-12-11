@@ -86,5 +86,25 @@ namespace Crash.Fit.Web.Controllers
 
             return Ok();
         }
+
+        [HttpPut("{id}/onerepmax")]
+        public IActionResult Update1RM(Guid id, [FromBody]decimal max)
+        {
+            var exercise = trainingRepository.GetExercise(id);
+            if (exercise.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+
+            trainingRepository.SaveOneRepMaxs(new[] { new OneRepMax
+            {
+                ExerciseId = id,
+                UserId = CurrentUserId,
+                Time = DateTimeOffset.Now,
+                Max = max
+            }});
+
+            return Ok();
+        }
     }
 }

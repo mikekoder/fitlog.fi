@@ -5,7 +5,10 @@ import exercisesMixin from '../../mixins/exercises'
 export default {
     mixins: [exercisesMixin],
     data() {
-        return {}
+        return {
+            exercise1RM: undefined,
+            oneRepMax: undefined
+        }
     },
     computed: {
     },
@@ -23,6 +26,28 @@ export default {
                     toaster(self.$t('deleteFailed'));
                 }
             });
+        },
+        edit1RM(exercise) {
+            this.exercise1RM = exercise;
+            this.oneRepMax = exercise.oneRepMax;
+        },
+        cancel1RM() {
+            this.exercise1RM = undefined;
+            this.oneRepMax = undefined;
+        },
+        save1RM() {
+            var self = this;
+            self.$store.dispatch(constants.SAVE_1RM, {
+                exerciseId: self.exercise1RM.id,
+                oneRepMax: self.oneRepMax,
+                success() {
+                    self.exercise1RM = undefined;
+                    self.oneRepMax = undefined;
+                },
+                failure() {
+                    toaster.error(self.$t('saveFailed'));
+                }
+            })
         }
     },
     created() {
