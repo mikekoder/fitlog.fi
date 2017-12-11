@@ -328,6 +328,15 @@ export default {
             data: JSON.stringify(exercise)
         });
     },
+    save1RM(exerciseId, oneRepMax){
+        var url = this.baseUrl + 'exercises/' + exerciseId + '/onerepmax';
+        return $.ajax({
+            url: url,
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(oneRepMax)
+        });
+    },
     deleteExercise(id){
         return $.ajax({
             url: this.baseUrl + 'exercises/' + id,

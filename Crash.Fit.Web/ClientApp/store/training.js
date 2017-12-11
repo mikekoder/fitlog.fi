@@ -175,6 +175,21 @@ export default {
                 }
             });
         },
+        [constants.SAVE_1RM]({ commit, state }, { exerciseId, oneRepMax, success, failure }) {
+            api.save1RM(exerciseId, oneRepMax).then(function () {
+                commit(constants.SAVE_1RM_SUCCESS, {
+                    exerciseId,
+                    oneRepMax
+                })
+                if (success) {
+                    success();
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        },
         [constants.DELETE_EXERCISE]({ commit, state }, { exercise, success, failure }) {
             api.deleteExercise(exercise.id).then(function () {
                 commit(constants.DELETE_EXERCISE_SUCCESS, { exercise })
@@ -467,6 +482,10 @@ export default {
                 }
             }
             state.exercises.push(exercise);
+        },
+        [constants.SAVE_1RM_SUCCESS](state, { exerciseId, oneRepMax }) {
+            var exercise = state.exercises.find(e => e.id == exerciseId);
+            exercise.oneRepMax = oneRepMax;
         },
         [constants.SAVE_ROUTINE_SUCCESS](state, { id, routine }) {
             if (id) {

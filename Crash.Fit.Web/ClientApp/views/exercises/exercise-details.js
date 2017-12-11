@@ -16,12 +16,6 @@ export default {
         }
     },
     methods: {
-        addTarget() {
-            this.targets.push(undefined);
-        },
-        deleteTarget(index) {
-            this.targets.splice(index, 1);
-        },
         save() {
             var self = this;
 

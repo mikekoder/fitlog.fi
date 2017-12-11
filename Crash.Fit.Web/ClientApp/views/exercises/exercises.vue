@@ -22,9 +22,16 @@
                             <tr v-for="exercise in $exercises">
                                 <td><router-link :to="{ name: 'exercise-details', params: { id: exercise.id } }">{{ exercise.name }}</router-link></td>
                                 <td>{{ exercise.usageCount }}</td>
-                                <td>{{ exercise.oneRepMax }}</td>
                                 <td>
-                                    <button class="btn btn-danger btn-xs" @click="deleteExercise(exercise)">{{ $t("delete") }}</button>
+                                    <input type="number" step="2.5" class="form-control input-4" v-model="oneRepMax" v-if="exercise1RM == exercise" />
+                                    <span v-else>{{ exercise.oneRepMax }}</span></td>
+                                <td>
+                                    <button class="btn btn-sm" v-if="!exercise1RM" @click="edit1RM(exercise)"><i class="fa fa-pencil"></i></button>
+                                    <button class="btn btn-sm" v-if="exercise1RM == exercise" @click="save1RM"><i class="fa fa-floppy-o"></i></button>
+                                    <button class="btn btn-sm" v-if="exercise1RM == exercise" @click="cancel1RM"><i class="fa fa-undo"></i></button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" @click="deleteExercise(exercise)">{{ $t("delete") }}</button>
                                 </td>
                             </tr>
                         </tbody>
