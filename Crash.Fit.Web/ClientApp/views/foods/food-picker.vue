@@ -1,5 +1,5 @@
 <template>
-    <input type="text" class="form-control" v-model="name" />
+    <input type="text" class="form-control" v-model="text" />
 </template>
 
 <script>
@@ -10,7 +10,16 @@
         name: 'food-picker',
         data() {
             return {
-                name: null
+                name: null,
+                manufacturer: null
+            }
+        },
+        computed: {
+            text: {
+                get() {
+                    return this.getDisplayText(this.name, this.manufacturer);
+                },
+                set(val){}
             }
         },
         props: {
@@ -18,10 +27,19 @@
             disableCreation: false
         },
         methods: {
+            getDisplayText(name, manufacturer) {
+                if (manufacturer) {
+                    return name + ' (' + manufacturer + ')';
+                }
+                return name;
+            }
         },
         mounted() {
             if (this.value) {
-                $(this.$el).val(this.value.name);
+                this.name = this.value.name;
+                this.manufacturer = this.value.manufacturer;
+
+                //$(this.$el).val(this.text);
             }
             var self = this;
             $(this.$el).typeahead({
@@ -54,19 +72,25 @@
                         self.$emit('createRecipe', data.name);
                     }
                     else {
+                        $(self.$el).val(self.getDisplayText(data.name, data.manufacturer));
                         api.getFood(data.id).then((foodDetails) => {
                             self.$emit('change', foodDetails);
                         });
                     }
                 },
                 displayText(data) {
-                    if (data.usageCount > 0) {
-                        return '<strong>' + data.name + '</strong>';
-                    }
                     if (data.createFood || data.createRecipe) {
                         return '<i class="fa fa-plus"></i> ' + data.text;
                     }
-                    return data.name;
+                    var text = data.name;
+                    if (data.manufacturer) {
+                        text += ' (' + data.manufacturer +')'
+                    }
+                    if (data.usageCount > 0) {
+                        return '<strong>' + text + '</strong>';
+                    }
+                    
+                    return text;
                 }
             });
         },
@@ -74,8 +98,10 @@
             value(newValue) {
                 if (newValue) {
                     this.name = newValue.name;
+                    this.manufacturer = newValue.manufacturer;
                 } else {
                     this.name = '';
+                    this.manufacturer = '';
                 }
             }
         }
