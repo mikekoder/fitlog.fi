@@ -44,7 +44,7 @@
                                    <div class="col-xs-1 operator">-</div>
                                    <div class="col-xs-2 col-text-10">{{ formatDecimal(energyExpenditure) }}</div>
                                    <div class="col-xs-1 operator">=</div>
-                                   <div class="col-xs-2 col-text-10" :class="totalClass">{{ formatDecimal(totalEnergy) }} {{ formatUnit('KCAL') }}</div>
+                                   <div class="col-xs-2 col-text-10" :class="totalClass" :title="totalTitle">{{ formatDecimal(totalEnergy) }} {{ formatUnit('KCAL') }}</div>
                                </div>
                             </div>
                         </div>
@@ -115,8 +115,8 @@
                                 <h3 class="box-title">{{ mealName(meal) }}</h3>
                                 
                                 <div class="box-tools pull-right">
-                                    <button class="btn btn-box-tool" @click="copyMeal(meal.meal)" :title="$t('copy')" v-if="meal.meal"><i class="fa fa-copy"></i></button>
-                                    <button class="btn btn-box-tool" @click="pasteMeal(meal)" :title="$t('paste')" v-if="mealCopy"><i class="fa fa-paste"></i></button>
+                                    <button class="btn btn-box-tool" @click="copyMeal(meal.meal)" :title="$t('copyMeal')" v-if="meal.meal"><i class="fa fa-copy"></i></button>
+                                    <button class="btn btn-box-tool" @click="pasteMeal(meal)" :title="$t('pasteMeal')" v-if="mealCopy"><i class="fa fa-paste"></i></button>
                                 </div>
                             </div>
                             <div class="box-body" v-if="meal.meal">
@@ -143,7 +143,7 @@
                                         <div class="col-xs-4 col-sm-2">
                                             <button class="btn pull-right icon-sm" @click="deleteRow(row)" :title="$t('delete')"><i class="fa fa-trash-o"></i></button>
                                             <span class="pull-right">&nbsp;</span>
-                                            <button class="btn pull-right icon-sm" @click="copyRow(row)" :title="$t('copy')"><i class="fa fa-files-o"></i></button>
+                                            <button class="btn pull-right icon-sm" @click="copyRow(row)" :title="$t('copyRow')"><i class="fa fa-files-o"></i></button>
                                             <span class="pull-right">&nbsp;</span>
                                             <button class="btn pull-right icon-sm" @click="editRow(row)" :title="$t('edit')"><i class="fa fa-edit"></i></button>
                                         </div>
@@ -168,7 +168,7 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <button class="btn" @click="addRow(meal)">{{ $t('addFood') }}</button>
-                                        <button class="btn btn-sm icon-sm" @click="pasteRows(meal)" :title="$t('paste')" v-if="rowCopy"><i class="fa fa-paste"></i></button>
+                                        <button class="btn btn-sm icon-sm" @click="pasteRows(meal)" :title="$t('pasteRow')" v-if="rowCopy"><i class="fa fa-paste"></i></button>
                                     </div>
                                 </div>
                             </div>
