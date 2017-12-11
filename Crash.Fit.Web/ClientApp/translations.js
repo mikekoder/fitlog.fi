@@ -91,6 +91,7 @@
     foodDetails: 'Ruoka-aineen tiedot',
     foods: 'Ruoka-aineet',
     freeWorkout: 'Vapaa treeni',
+    frequency: 'Toisto',
     frequencyInfo: 'Voit syöttää myös desimaalilukuja. Esim. 3 kertaa 2 viikossa = 3 / 2 = 1.5',
     friday: 'Perjantai',
     fridayAbbr: 'Pe',
