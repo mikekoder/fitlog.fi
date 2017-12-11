@@ -60,43 +60,52 @@
                             <div class="box-body">
                                 <div class="workout-details">
                                     <div class="row hidden-xs">
+                                        <div class="col-sm-1 col-drag"></div>
                                         <div class="col-sm-4 col-text-30"><label>{{ $t("exercise") }}</label></div>
                                         <div class="col-sm-2 col-number-5"><label>{{ $t("sets") }}</label></div>
                                         <div class="col-sm-2 col-number-5"><label>{{ $t("reps") }}</label></div>
                                         <div class="col-sm-2 col-load"><label>{{ $t("load") }} (%)</label></div>
                                         <div class="col-sm-4 col-actions-3">&nbsp;</div>
                                     </div>
-                                    <template v-for="(exercise,index) in workout.exercises">
-                                        <div class="row">
-                                            <div class="col-sm-4 col-text-30">
-                                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
-                                                <exercise-picker :exercises="exercises" :value="exercise.exercise" @change="val => exercise.exercise=val" @nameChange="val => processNewExercise(exercise, val)" />
+                                    <draggable :list="workout.exercises" :options="{handle:'.handle', group:'exercises'}" class="drag-area">
+                                        <div class="row" v-for="(exercise,index) in workout.exercises">
+                                            <div class="col-sm-12">
+                                                <div class="row">
+                                                <div class="col-sm-1 col-drag">
+                                                    <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
+                                                    <i class="fa fa-bars handle" :title="$t('dragToReorder')"></i>
+                                                </div>
+                                                <div class="col-sm-4 col-text-30">
+                                                    <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
+                                                    <exercise-picker :exercises="exercises" :value="exercise.exercise" @change="val => exercise.exercise=val" @nameChange="val => processNewExercise(exercise, val)" />
+                                                </div>
+                                                <div class="col-xs-4 col-number-5">
+                                                    <label class="hidden-sm hidden-md hidden-lg">{{ $t("sets") }}</label>
+                                                    <input type="number" min="1" step="1" class="form-control" v-model="exercise.sets" />
+                                                </div>
+                                                <div class="col-xs-4 col-number-5">
+                                                    <label class="hidden-sm hidden-md hidden-lg">{{ $t("reps") }}</label>
+                                                    <input type="number" min="1" step="1" class="form-control" v-model="exercise.reps" />
+                                                </div>
+                                                <div class="col-xs-4 col-load">
+                                                    <label class="hidden-sm hidden-md hidden-lg">{{ $t("load") }}</label>
+                                                    <input type="number" min="0" step="5" class="form-control" v-model="exercise.loadFrom" />
+                                                    <i class="fa fa-arrow-right"></i>
+                                                    <input type="number" min="0" step="5" class="form-control" v-model="exercise.loadTo" />
+                                                </div>
+                                                <div class="actions col-sm-4 col-xs-4 col-actions-3">
+                                                    <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
+                                                    <button class="btn btn-sm" @click="moveExerciseUp(workout,index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
+                                                    <button class="btn btn-sm" @click="moveExerciseDown(workout,index)" :disabled="index === (workout.exercises.length - 1)"><i class="fa fa-arrow-down"></i></button>
+                                                    <button class="btn btn-danger btn-sm" @click="deleteExercise(workout,index)">{{ $t("delete") }}</button>
+                                                </div>
                                             </div>
-                                            <div class="col-xs-4 col-number-5">
-                                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("sets") }}</label>
-                                                <input type="number" min="1" step="1" class="form-control" v-model="exercise.sets" />
+                                            <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
+                                                <div class="col-sm-12"><hr /></div>
                                             </div>
-                                            <div class="col-xs-4 col-number-5">
-                                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("reps") }}</label>
-                                                <input type="number" min="1" step="1" class="form-control" v-model="exercise.reps" />
-                                            </div>
-                                            <div class="col-xs-4 col-load">
-                                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("load") }}</label>
-                                                <input type="number" min="0" step="5" class="form-control" v-model="exercise.loadFrom" />
-                                                <i class="fa fa-arrow-right"></i>
-                                                <input type="number" min="0" step="5" class="form-control" v-model="exercise.loadTo" />
-                                            </div>
-                                            <div class="actions col-sm-4 col-xs-4 col-actions-3">
-                                                <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
-                                                <button class="btn btn-sm" @click="moveExerciseUp(workout,index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
-                                                <button class="btn btn-sm" @click="moveExerciseDown(workout,index)" :disabled="index === (workout.exercises.length - 1)"><i class="fa fa-arrow-down"></i></button>
-                                                <button class="btn btn-danger btn-sm" @click="deleteExercise(workout,index)">{{ $t("delete") }}</button>
                                             </div>
                                         </div>
-                                        <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
-                                            <div class="col-sm-12"><hr /></div>
-                                        </div>
-                                    </template>
+                                    </draggable>
                                     <div class="row">&nbsp;</div>
                                     <div class="row">
                                         <div class="col-sm-12"><button class="btn" @click="addExercise(workout)">{{ $t("add") }}</button></div>
@@ -144,4 +153,7 @@
 
     label{ display:block;}
     input{ padding: 6px;}
+    .drag-area{
+        min-height: 20px;
+    }
 </style>

@@ -2,6 +2,7 @@
 import api from '../../api'
 import utils from '../../utils'
 import toaster from '../../toaster'
+import draggable from 'vuedraggable'
 
 export default {
     data () {
@@ -48,7 +49,8 @@ export default {
     },
     components: {
         'datetime-picker': require('../../components/datetime-picker'),
-        'exercise-picker': require('../../components/exercise-picker')
+        'exercise-picker': require('../../components/exercise-picker'),
+        draggable
     },
     methods: {
         addSet(){
