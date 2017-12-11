@@ -134,6 +134,20 @@ export default {
                 }
             }
             return '';
+        },
+        totalTitle() {
+            if (this.energyGoal) {
+                if (this.energyGoal.min || this.energyGoal.min == 0) {
+                    if (this.energyGoal.max || this.energyGoal.max == 0) {
+                        return this.energyGoal.min + ' - ' + this.energyGoal.max;
+                    }
+                    return '>' + this.energyGoal.min;
+                }
+                if (this.energyGoal.max || this.energyGoal.max == 0) {
+                    return '<' + this.energyGoal.max;
+                }
+            }
+            return '';
         }
     },
     components: {
