@@ -2,6 +2,7 @@
 import api from '../../api'
 import utils from '../../utils'
 import toaster from '../../toaster'
+import draggable from 'vuedraggable'
 
 export default {
     data () {
@@ -17,7 +18,8 @@ export default {
     computed: {
     },
     components: {
-        'exercise-picker': require('../../components/exercise-picker')
+        'exercise-picker': require('../../components/exercise-picker'),
+        draggable
     },
     methods: {
         frequencyText(value) {

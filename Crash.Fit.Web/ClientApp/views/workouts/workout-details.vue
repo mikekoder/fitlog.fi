@@ -14,37 +14,49 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="row hidden-xs">
+                        <div class="col-sm-1 col-drag"></div>
                         <div class="col-sm-4 col-text-40"><label>{{ $t("exercise") }}</label></div>
                         <div class="col-sm-2 col-number-5"><label>{{ $t("reps") }}</label></div>
                         <div class="col-sm-3 col-number-5"><label>{{ $t("weights") }}</label></div>
-                        <div class="col-sm-3 col-actions-4">&nbsp;</div>
+                        <div class="col-sm-2 col-actions-4">&nbsp;</div>
                     </div>
-                    <template v-for="(set,index) in sets">
-                        <div class="row">
-                            <div class="col-sm-4 col-text-40">
-                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
-                                <exercise-picker :exercises="exercises" :value="set.exercise" @change="val => setExercise(set,val)" @nameChange="val => processNewExercise(set, val)" />
+                    <draggable :list="sets" :options="{handle:'.handle'}">
+                        <div class="row" v-for="(set,index) in sets">
+                            <div class="col-sm-12">
+                                 <div class="row">
+                                     <div class="col-sm-1 col-xs-1 col-drag">
+                                         <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
+                                         <i class="fa fa-bars handle" :title="$t('dragToReorder')"></i>
+                                     </div>
+                                    <div class="col-sm-4 col-xs-11 col-text-40">
+                                        <label class="hidden-sm hidden-md hidden-lg">{{ $t("exercise") }}</label>
+                                        <exercise-picker :exercises="exercises" :value="set.exercise" @change="val => setExercise(set,val)" @nameChange="val => processNewExercise(set, val)" />
+                                    </div>
+                                    <div class="col-xs-4 col-number-5">
+                                        <label class="hidden-sm hidden-md hidden-lg">{{ $t("reps") }}</label>
+                                        <input type="number" min="0" class="form-control" v-model="set.reps" />
+                                    </div>
+                                    <div class="col-xs-4 col-number-5">
+                                        <label class="hidden-sm hidden-md hidden-lg">{{ $t("weights") }}</label>
+                                        <input type="number" min="0" step="2.5" class="form-control" v-model="set.weights" />
+                                    </div>
+                                    <div class="col-xs-4 col-actions-4">
+                                        <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
+                                        <!--
+                                        <button class="btn btn-sm" @click="moveSetUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
+                                        <button class="btn btn-sm" @click="moveSetDown(index)" :disabled="index === (sets.length - 1)"><i class="fa fa-arrow-down"></i></button>
+                                        -->
+                                        <button class="btn btn-primary btn-sm" @click="copySet(index)">{{ $t("copy") }}</button>
+                                        <button class="btn btn-danger btn-sm" @click="deleteSet(index)">{{ $t("delete") }}</button>
+                                    </div>
                             </div>
-                            <div class="col-xs-4 col-number-5">
-                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("reps") }}</label>
-                                <input type="number" min="0" class="form-control" v-model="set.reps" />
+                            <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
+                                <div class="col-sm-12"><hr /></div>
                             </div>
-                            <div class="col-xs-4 col-number-5">
-                                <label class="hidden-sm hidden-md hidden-lg">{{ $t("weights") }}</label>
-                                <input type="number" min="0" step="2.5" class="form-control" v-model="set.weights" />
-                            </div>
-                            <div class="col-xs-4 col-actions-4">
-                                <label class="hidden-sm hidden-md hidden-lg">&nbsp;</label>
-                                <button class="btn btn-sm" @click="moveSetUp(index)" :disabled="index === 0"><i class="fa fa-arrow-up"></i></button>
-                                <button class="btn btn-sm" @click="moveSetDown(index)" :disabled="index === (sets.length - 1)"><i class="fa fa-arrow-down"></i></button>
-                                <button class="btn btn-primary" @click="copySet(index)">{{ $t("copy") }}</button>
-                                <button class="btn btn-danger btn-sm" @click="deleteSet(index)">{{ $t("delete") }}</button>
                             </div>
                         </div>
-                        <div class="workout-set-separator row hidden-sm hidden-md hidden-lg">
-                            <div class="col-sm-12"><hr /></div>
-                        </div>
-                    </template>
+                    </draggable>
+                    
 
                 </div>
             </div>

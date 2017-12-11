@@ -44,6 +44,7 @@ section.content { min-height: 700px;}
 .col-actions-3 { width: 180px; }
 .col-actions-4 { width: 230px; }
 .col-actions-1 label, .col-actions-2 label, .col-actions-3 label, .col-actions-4 label{width: 100%; }
+.col-drag{ width: 10px; font-size: 24px;}
 button.icon-sm{ padding: 3px 8px; }
 .row.separator { padding: 0px; }
 .row.separator hr { border: 1px solid #00c0ef; }

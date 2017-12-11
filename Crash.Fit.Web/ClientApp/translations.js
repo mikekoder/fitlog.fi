@@ -57,6 +57,7 @@
     diary: 'Päiväkirja',
     dinner: 'Päivällinen',
     dob: 'Syntymäaika',
+    dragToReorder: 'Siirrä raahaamalla',
     duration: 'Kesto',
     eaten: 'Syöty',
     email: 'Sähköposti',
