@@ -53,7 +53,7 @@
             </transition>
         </div>
         <footer class="main-footer">
-            <strong>&copy; <a href="http://mikakolari.fi">Mika Kolari</a></strong>
+            <strong>&copy; <a href="http://mikakolari.fi">Mika Kolari</a></strong> Elintarviketiedot: Terveyden ja hyvinvoinnin laitos, Fineli.
         </footer>
     </div>
 </template>
