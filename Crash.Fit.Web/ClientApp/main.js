@@ -113,6 +113,7 @@ router.afterEach((to, from) => {
     if (window.matchMedia('(max-width: 900px)').matches) {
         $('body').addClass('sidebar-collapse').removeClass('sidebar-open');
     }
+    window.scrollTo(0, 0);
 })
 
 
