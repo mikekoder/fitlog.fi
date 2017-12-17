@@ -28,23 +28,35 @@
                     <div class="col-xs-12">
                         <div class="box box-solid">
                             <div class="box-body">
-                               <div class="row">
-                                   <div class="col-xs-2 col-text-10">{{ $t('eaten') }}</div>
+                               <div class="row hidden-xs hidden-sm">
+                                   <div class="col-xs-2 col-text-10"><label>{{ $t('eaten') }}</label></div>
                                    <div class="col-xs-1 operator"></div>
-                                   <div class="col-xs-2 col-text-10" :title="$t('rmr')">{{ $t('rmrAbbr') }}</div>
+                                   <div class="col-xs-2 col-text-10" :title="$t('rmr')"><label>{{ $t('rmrAbbr') }}</label></div>
                                    <div class="col-xs-1 operator"></div>
-                                   <div class="col-xs-2 col-text-10">{{ $t('expenditure') }}</div>
+                                   <div class="col-xs-2 col-text-10"><label>{{ $t('expenditure') }}</label></div>
                                    <div class="col-xs-1 operator"></div>
-                                   <div class="col-xs-2 col-text-10">{{ $t('total' )}}</div>
+                                   <div class="col-xs-2 col-text-10"><label>{{ $t('total' )}}</label></div>
                                </div>
                                 <div class="row total-energy">
-                                   <div class="col-xs-2 col-text-10">{{ formatDecimal(eatenEnergy) }}</div>
+                                   <div class="col-xs-2 col-text-10">
+                                        <label class="hidden-md hidden-lg">{{ $t('eaten') }}</label>
+                                        {{ formatDecimal(eatenEnergy) }}
+                                   </div>
                                    <div class="col-xs-1 operator">-</div>
-                                   <div class="col-xs-2 col-text-10">{{ formatDecimal(rmr) }}</div>
+                                   <div class="col-xs-2 col-text-10">
+                                        <label class="hidden-md hidden-lg">{{ $t('rmrAbbr') }}</label>
+                                        {{ formatDecimal(rmr) }}
+                                   </div>
                                    <div class="col-xs-1 operator">-</div>
-                                   <div class="col-xs-2 col-text-10">{{ formatDecimal(energyExpenditure) }}</div>
+                                   <div class="col-xs-2 col-text-10">
+                                        <label class="hidden-md hidden-lg">{{ $t('expenditure') }}</label>
+                                        {{ formatDecimal(energyExpenditure) }}
+                                   </div>
                                    <div class="col-xs-1 operator">=</div>
-                                   <div class="col-xs-2 col-text-10" :class="totalClass" :title="totalTitle">{{ formatDecimal(totalEnergy) }} {{ formatUnit('KCAL') }}</div>
+                                   <div class="col-xs-2 col-text-10" :class="totalClass" :title="totalTitle">
+                                        <label class="hidden-md hidden-lg">{{ $t('total' )}}</label>
+                                        {{ formatDecimal(totalEnergy) }} {{ formatUnit('KCAL') }}
+                                   </div>
                                </div>
                             </div>
                         </div>
@@ -228,6 +240,11 @@
     { 
         font-weight: bold;
         font-size: larger;
+    }
+    .total-energy label{
+        font-weight: normal;
+        font-size: initial;
+        display: block;
     }
     /*
     .total-start, .total-end{
