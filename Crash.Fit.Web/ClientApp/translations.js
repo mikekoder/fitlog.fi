@@ -102,6 +102,7 @@
     height: 'Pituus',
     hide: 'Piilota',
     home: 'Etusivu',
+    homeDescription: 'Fitlog.fi on ilmainen ruoka- ja treenipäiväkirja. Näet makrojen lisäksi myös vitamiinit ja mineraalit sekä päivä- että ateriatasolla. Voit myös asettaa ravintotavoitteita päiväkohtaisesti sekä treeni- ja lepopäiville.',
     improvement: 'Kehitysidea',
     improvements: 'Kehitysideat',
     ingredients: 'Ainesosat',
