@@ -189,6 +189,7 @@
                 </div>
             </div>
             <div v-if="!isLoggedIn">
+                <p>{{ $t('homeDescription') }}</p>
                 Voit testata palvelua tunnuksilla <strong>testi@fitlog.fi</strong> / <strong>testi123</strong>
             </div>
         </section>
