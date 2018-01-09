@@ -30,6 +30,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Crash.Fit.Api.Models.Activities;
+using Crash.Fit.Activities;
 
 namespace Crash.Fit.Web
 {
@@ -148,6 +150,10 @@ namespace Crash.Fit.Web
             services.AddTransient<IFeedbackRepository>(s =>
             {
                 return new FeedbackRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+            });
+            services.AddTransient<IActivityRepository>(s =>
+            {
+                return new ActivityRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
             });
             services.AddSingleton<IConfigurationRoot>(Configuration);
             AutoMapper.Mapper.Initialize(m => {
@@ -330,6 +336,13 @@ namespace Crash.Fit.Web
                         model.Duration = TimeSpan.FromMinutes((request.Hours ?? 0) * 60 + (request.Minutes ?? 0));
                     }
                 });
+
+                m.CreateMap<ActivityPreset, ActivityPresetResponse>().AfterMap((model, response) => 
+                {
+                    var inactivityHours = 24 - response.Sleep - response.LightActivity - response.ModerateActivity - response.HeavyActivity;
+                    response.Factor = (Constants.Activities.SleepFactor * response.Sleep + Constants.Activities.InactivityFactor * inactivityHours + Constants.Activities.LightActivityFactor * response.LightActivity + Constants.Activities.ModerateActivityFactor * response.ModerateActivity + Constants.Activities.HeavyActivityFactor * response.HeavyActivity) / 24;
+                });
+                m.CreateMap<ActivityPresetRequest, ActivityPreset>();
             });
 
             

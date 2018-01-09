@@ -5,6 +5,7 @@ import utils from '../../utils'
 import nutrientsMixin from '../../mixins/nutrients'
 import mealDefinitionsMixin from '../../mixins/meal-definitions'
 import nutritionGoalMixin from '../../mixins/nutrition-goal'
+import activityPresetsMixin from '../../mixins/activity-presets'
 import DatetimePicker from '../../components/datetime-picker'
 import EnergyDistributionBar from '../../components/energy-distribution-bar'
 import NutrientBar from '../../components/nutrient-bar'
@@ -12,7 +13,7 @@ import MealRowEditor from './meal-row-editor.vue'
 import api from '../../api'
 
 export default {
-    mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin],
+    mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin, activityPresetsMixin],
     data() {
         return {
             proteinId: constants.PROTEIN_ID,
@@ -25,7 +26,8 @@ export default {
             row: undefined,
             selectedNutrients: [],
             editNutrients: false,
-            eatenEnergy: undefined
+            eatenEnergy: undefined,
+            activityPreset: undefined
         }
     },
     computed: {
@@ -106,6 +108,12 @@ export default {
             }
             return null;
         },
+        activityLevelEnergy() {
+            if (this.activityPreset && this.rmr) {
+                return (this.activityPreset.factor - 1) * this.rmr;
+            }
+            return null;
+        },
         energyExpenditure() {
             var self = this;
             var expenditures = this.$store.state.training.energyExpenditures.filter(e => moment(e.time).isSame(self.selectedDate, 'day'));
@@ -116,7 +124,7 @@ export default {
             return sum;
         },
         totalEnergy() {
-            return this.eatenEnergy - this.rmr - this.energyExpenditure;
+            return this.eatenEnergy - this.rmr - this.activityLevelEnergy - this.energyExpenditure;
         },
         energyGoal() {
             return this.nutrientGoal(this.energyDifferenceId);
@@ -192,7 +200,7 @@ export default {
             if (!moment(newDate).isSame(this.selectedDate, 'd')) {
                 this.$store.dispatch(constants.SELECT_MEAL_DIARY_DATE, { date: newDate });
                 this.fetchData();
-
+                this.selectActivityPreset();
             }
         },
         mealName(defMeal) {
@@ -318,6 +326,37 @@ export default {
         },
         updateComputedValues() {
             this.eatenEnergy = this.dayNutrients ? this.dayNutrients[this.energyId] ? this.dayNutrients[this.energyId] : 0 : 0;
+        },
+        selectActivityPreset() {
+            var preset;
+            switch (this.selectedDate.getDay()) {
+                case 0:
+                    preset = this.$activityPresets.find(p => p.sunday == true);
+                    break;
+                case 1:
+                    preset = this.$activityPresets.find(p => p.monday == true);
+                    break;
+                case 2:
+                    preset = this.$activityPresets.find(p => p.tuesday == true);
+                    break;
+                case 3:
+                    preset = this.$activityPresets.find(p => p.wednesday == true);
+                    break;
+                case 4:
+                    preset = this.$activityPresets.find(p => p.thursday == true);
+                    break;
+                case 5:
+                    preset = this.$activityPresets.find(p => p.friday == true);
+                    break;
+                case 6:
+                    preset = this.$activityPresets.find(p => p.saturday == true);
+                    break;
+            }
+
+            this.activityPreset = preset;
+        },
+        $activityPresetsLoaded() {
+            this.selectActivityPreset();
         }
     },
     created() {

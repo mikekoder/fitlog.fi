@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Crash.Fit.Training;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Crash.Fit.Logging;
-using Crash.Fit.Api.Models.Training;
 using Crash.Fit.Measurements;
+using Crash.Fit.Activities;
+using Crash.Fit.Api.Models.Activities;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -16,33 +17,26 @@ namespace Crash.Fit.Web.Controllers
     [Route("api/[controller]")]
     public class ActivitiesController : ApiControllerBase
     {
-        private readonly ITrainingRepository trainingRepository;
+        private readonly IActivityRepository activityRepository;
         private readonly IMeasurementRepository measurementRepository;
-        public ActivitiesController(ITrainingRepository trainingRepository, IMeasurementRepository measurementRepository, ILogRepository logger) : base(logger)
+        public ActivitiesController(IActivityRepository activityRepository, IMeasurementRepository measurementRepository, ILogRepository logger) : base(logger)
         {
-            this.trainingRepository = trainingRepository;
+            this.activityRepository = activityRepository;
             this.measurementRepository = measurementRepository;
         }
         [HttpGet("")]
         public IActionResult List()
         {
-            var activities = trainingRepository.GetActivities().OrderBy(e => e.Name);
+            var activities = activityRepository.GetActivities().OrderBy(e => e.Name);
 
             var response = AutoMapper.Mapper.Map<ActivityResponse[]>(activities);
             return Ok(response);
         }
-        [HttpGet("search")]
-        public IActionResult Search(string name)
-        {
-            var exercises = trainingRepository.SearchExercises(name.Split(' '), CurrentUserId).OrderBy(e => e.Name);
 
-            var response = AutoMapper.Mapper.Map<ExerciseResponse[]>(exercises);
-            return Ok(response);
-        }
         [HttpGet("{id}")]
         public IActionResult Details(Guid id)
         {
-            var activity = trainingRepository.GetActivity(id);
+            var activity = activityRepository.GetActivity(id);
             if(activity == null)
             {
                 return NotFound();
@@ -55,7 +49,7 @@ namespace Crash.Fit.Web.Controllers
         public IActionResult Create([FromBody]ActivityRequest request)
         {
             var activity = AutoMapper.Mapper.Map<Activity>(request);
-            trainingRepository.CreateActivity(activity);
+            activityRepository.CreateActivity(activity);
 
             var response = AutoMapper.Mapper.Map<ActivityResponse>(activity);
             return Ok(response);
@@ -64,9 +58,9 @@ namespace Crash.Fit.Web.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(Guid id, [FromBody]ActivityRequest request)
         {
-            var activity = trainingRepository.GetActivity(id);
+            var activity = activityRepository.GetActivity(id);
             AutoMapper.Mapper.Map(request, activity);
-            trainingRepository.UpdateActivity(activity);
+            activityRepository.UpdateActivity(activity);
 
             var response = AutoMapper.Mapper.Map<ActivityResponse>(activity);
             return Ok(response);
@@ -75,8 +69,8 @@ namespace Crash.Fit.Web.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
-            var activity = trainingRepository.GetActivity(id);
-            trainingRepository.DeleteActivity(activity);
+            var activity = activityRepository.GetActivity(id);
+            activityRepository.DeleteActivity(activity);
 
             return Ok();
         }
@@ -84,7 +78,7 @@ namespace Crash.Fit.Web.Controllers
         [HttpGet("energyexpenditures")]
         public IActionResult GetEnergyExpenditures(DateTimeOffset start, DateTimeOffset? end)
         {
-            var expenditures = trainingRepository.GetEnergyExpenditures(CurrentUserId, start, end ?? DateTimeOffset.Now).OrderByDescending(e => e.Time);
+            var expenditures = activityRepository.GetEnergyExpenditures(CurrentUserId, start, end ?? DateTimeOffset.Now).OrderByDescending(e => e.Time);
             var response = AutoMapper.Mapper.Map<EnergyExpenditureResponse[]>(expenditures);
             return Ok(response);
         }
@@ -94,7 +88,7 @@ namespace Crash.Fit.Web.Controllers
             var expenditure = AutoMapper.Mapper.Map<EnergyExpenditure>(request);
             expenditure.UserId = CurrentUserId;
             CalculateEnergy(expenditure);
-            trainingRepository.CreateEnergyExpenditure(expenditure);
+            activityRepository.CreateEnergyExpenditure(expenditure);
 
             var response = AutoMapper.Mapper.Map<EnergyExpenditureResponse>(expenditure);
             return Ok(response);
@@ -102,7 +96,7 @@ namespace Crash.Fit.Web.Controllers
         [HttpPut("energyexpenditures/{id}")]
         public IActionResult UpdateEnergyExpenditure(Guid id, [FromBody]EnergyExpenditureRequest request)
         {
-            var expenditure = trainingRepository.GetEnergyExpenditure(id);
+            var expenditure = activityRepository.GetEnergyExpenditure(id);
             if(expenditure == null)
             {
                 return NotFound();
@@ -113,7 +107,7 @@ namespace Crash.Fit.Web.Controllers
             }
             AutoMapper.Mapper.Map(request, expenditure);
             CalculateEnergy(expenditure);
-            trainingRepository.UpdateEnergyExpenditure(expenditure);
+            activityRepository.UpdateEnergyExpenditure(expenditure);
 
             var response = AutoMapper.Mapper.Map<EnergyExpenditureResponse>(expenditure);
             return Ok(response);
@@ -121,7 +115,7 @@ namespace Crash.Fit.Web.Controllers
         [HttpDelete("energyexpenditures/{id}")]
         public IActionResult DeleteEnergyExpenditure(Guid id)
         {
-            var expenditure = trainingRepository.GetEnergyExpenditure(id);
+            var expenditure = activityRepository.GetEnergyExpenditure(id);
             if (expenditure == null)
             {
                 return NotFound();
@@ -131,10 +125,38 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             
-            trainingRepository.DeleteEnergyExpenditure(expenditure);
+            activityRepository.DeleteEnergyExpenditure(expenditure);
 
             return Ok();
         }
+
+        [HttpGet("presets")]
+        public IActionResult GetActivityPresets()
+        {
+            var presets = activityRepository.GetActivityPresets(CurrentUserId);
+
+            var response = AutoMapper.Mapper.Map<ActivityPresetResponse[]>(presets);
+            return Ok(response);
+        }
+        [HttpPut("presets")]
+        public IActionResult UpdateActivityPresets([FromBody]ActivityPresetRequest[] request)
+        {
+            var presets = AutoMapper.Mapper.Map<ActivityPreset[]>(request);
+            foreach(var preset in presets)
+            {
+                preset.UserId = CurrentUserId;
+                var inactivityHours = 24 - preset.Sleep - preset.LightActivity - preset.ModerateActivity - preset.HeavyActivity;
+                preset.Factor = (Constants.Activities.SleepFactor * preset.Sleep + 
+                    Constants.Activities.InactivityFactor * inactivityHours + 
+                    Constants.Activities.LightActivityFactor * preset.LightActivity + 
+                    Constants.Activities.ModerateActivityFactor * preset.ModerateActivity + 
+                    Constants.Activities.HeavyActivityFactor * preset.HeavyActivity) / 24;
+
+            }
+            activityRepository.SaveActivityPresets(presets);
+            return GetActivityPresets();
+        }
+
         private void CalculateEnergy(EnergyExpenditure expenditure)
         {
             var userWeight = measurementRepository.GetUserWeight(CurrentUserId);
@@ -144,7 +166,7 @@ namespace Crash.Fit.Web.Controllers
             }
             if (expenditure.ActivityId.HasValue && expenditure.Duration.HasValue)
             {
-                var activity = trainingRepository.GetActivity(expenditure.ActivityId.Value);
+                var activity = activityRepository.GetActivity(expenditure.ActivityId.Value);
                 expenditure.EnergyKcal = activity.EnergyExpenditure * userWeight.Value * (decimal)expenditure.Duration.Value.TotalMinutes;
             }
         }

@@ -22,6 +22,8 @@ import RepCalculator from './views/rep-calculator/rep-calculator.vue'
 import TrainingGoals from './views/training-goals/training-goals.vue'
 import TrainingGoalDetails from './views/training-goals/training-goal-details.vue'
 import EnergyExpenditures from './views/energy-expenditures/energy-expenditures.vue'
+import ActivityLevels from './views/activity-levels/activity-levels.vue'
+
 import Profile from './views/profile/profile.vue'
 import Login from './views/login.vue'
 import LoginSuccess from './views/login-success.vue'
@@ -106,6 +108,11 @@ export default [
                 path: '/treenit/:id',
                 name: 'workout-details',
                 component: WorkoutDetails
+            },
+            {
+                path: '/aktiivisuustasot',
+                name: 'activity-levels',
+                component: ActivityLevels
             },
             {
                 path: '/kulutukset',
