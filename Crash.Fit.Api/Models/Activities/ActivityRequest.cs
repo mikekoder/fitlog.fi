@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Crash.Fit.Training
+namespace Crash.Fit.Api.Models.Activities
 {
-    public class Activity : Entity
+    public class ActivityRequest
     {
         public string Name { get; set; }
-        /// <summary>
-        /// kcal/kg/minute
-        /// </summary>
         public decimal EnergyExpenditure { get; set; }
     }
 }

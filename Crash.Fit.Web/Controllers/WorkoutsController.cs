@@ -8,6 +8,7 @@ using Crash.Fit.Training;
 using Crash.Fit.Api.Models.Training;
 using Crash.Fit.Logging;
 using Crash.Fit.Measurements;
+using Crash.Fit.Activities;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -17,10 +18,12 @@ namespace Crash.Fit.Web.Controllers
     {
         private readonly ITrainingRepository trainingRepository;
         private readonly IMeasurementRepository measurementRepository;
-        public WorkoutsController(ITrainingRepository trainingRepository, IMeasurementRepository measurementRepository, ILogRepository logger) : base(logger)
+        private readonly IActivityRepository activityRepository;
+        public WorkoutsController(ITrainingRepository trainingRepository, IMeasurementRepository measurementRepository, IActivityRepository activityRepository, ILogRepository logger) : base(logger)
         {
             this.trainingRepository = trainingRepository;
             this.measurementRepository = measurementRepository;
+            this.activityRepository = activityRepository;
         }
 
         [HttpGet("")]
@@ -62,7 +65,7 @@ namespace Crash.Fit.Web.Controllers
                 WorkoutId = workout.Id,
                 EnergyKcal = burnedCalories
             };
-            trainingRepository.CreateEnergyExpenditure(energyExpenditure);
+            activityRepository.CreateEnergyExpenditure(energyExpenditure);
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
         }
@@ -104,7 +107,7 @@ namespace Crash.Fit.Web.Controllers
             trainingRepository.UpdateWorkout(workout);
 
             var burnedCalories = CalculateEnergyExpenditure(workout.Duration, userWeight);
-            var energyExpenditure = trainingRepository.GetEnergyExpenditureForWorkout(id);
+            var energyExpenditure = activityRepository.GetEnergyExpenditureForWorkout(id);
             if (energyExpenditure == null)
             {
                 energyExpenditure = new EnergyExpenditure
@@ -114,13 +117,13 @@ namespace Crash.Fit.Web.Controllers
                     WorkoutId = workout.Id,
                     EnergyKcal = burnedCalories
                 };
-                trainingRepository.CreateEnergyExpenditure(energyExpenditure);
+                activityRepository.CreateEnergyExpenditure(energyExpenditure);
             }
             else
             {
                 energyExpenditure.Time = workout.Time;
                 energyExpenditure.EnergyKcal = burnedCalories;
-                trainingRepository.UpdateEnergyExpenditure(energyExpenditure);
+                activityRepository.UpdateEnergyExpenditure(energyExpenditure);
             }
 
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
@@ -249,16 +252,22 @@ namespace Crash.Fit.Web.Controllers
         private void CalculateLoads(IEnumerable<WorkoutSet> sets, IEnumerable<Exercise> exercises, decimal? userWeight)
         {
             var maxs = trainingRepository.GetOneRepMaxs(CurrentUserId, DateTimeOffset.Now.AddDays(-30));
-            foreach(var set in sets.Where(s => s.Weights > 0))
+            foreach(var set in sets)
             {
                 var exercise = exercises.FirstOrDefault(e => e.Id == set.ExerciseId);
+                if (userWeight.HasValue && exercise.PercentageBW.HasValue)
+                {
+                    set.WeightsBW = set.Weights + userWeight.Value * (exercise.PercentageBW.Value / 100);
+                }
                 var max = maxs.FirstOrDefault(m => m.ExerciseId == set.ExerciseId);
                 if(max != null)
                 {
-                    set.Load = set.Weights / max.Max * 100;
+                    if (set.Weights > 0)
+                    {
+                        set.Load = set.Weights / max.Max * 100;
+                    }
                     if (userWeight.HasValue && exercise.PercentageBW.HasValue)
                     {
-                        set.WeightsBW = set.Weights + userWeight.Value * (exercise.PercentageBW.Value / 100);
                         if (max.MaxInclBW.HasValue)
                         {
                             set.LoadBW = set.WeightsBW / max.MaxInclBW * 100;

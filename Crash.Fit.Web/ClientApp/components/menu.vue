@@ -7,6 +7,9 @@
             <router-link tag="li" :to="{ name: 'profile'}" v-if="isLoggedIn">
                 <a><i class="fa fa-user"></i> <span>{{ $t("profile") }}</span></a>
             </router-link>
+            <router-link tag="li" :to="{ name: 'activity-levels'}" v-if="isLoggedIn">
+                <a><i class="fa fa-user"></i> <span>{{ $t("activityLevels") }}</span></a>
+            </router-link>
             <li class="header">{{ $t("nutrition") }}</li>
             <router-link tag="li" :to="{ name: 'meals'}" v-if="isLoggedIn">
                 <a><i class="fa fa-cutlery"></i> <span>{{ $t("meals") }}</span></a>

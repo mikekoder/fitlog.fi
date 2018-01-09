@@ -491,4 +491,17 @@ export default {
             data: JSON.stringify(energyExpenditure)
         });
     },
+    listActivityPresets() {
+        return $.get(this.baseUrl + 'activities/presets');
+    },
+    saveActivityPresets(presets) {
+        var url = this.baseUrl + 'activities/presets';
+        return $.ajax({
+            url: url,
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(presets)
+        });
+
+    }
 };

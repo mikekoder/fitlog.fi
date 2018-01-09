@@ -20,7 +20,6 @@
                             </ul>
                         </div>
                         <button class="btn" @click="changeDate(1)"><i class="fa fa-chevron-right"></i></button>
-
                     </div>
                 </div>
                 <div class="row">&nbsp;</div>
@@ -29,15 +28,27 @@
                         <div class="box box-solid">
                             <div class="box-body">
                                <div class="row hidden-xs hidden-sm">
-                                   <div class="col-xs-2 col-text-10"><label>{{ $t('eaten') }}</label></div>
+                                   <div class="col-xs-1 col-text-20"><label>{{ $t('activityLevel') }}</label></div>
+                                   <div class="col-xs-1 col-text-10"><label>{{ $t('eaten') }}</label></div>
                                    <div class="col-xs-1 operator"></div>
-                                   <div class="col-xs-2 col-text-10" :title="$t('rmr')"><label>{{ $t('rmrAbbr') }}</label></div>
+                                   <div class="col-xs-1 col-text-10" :title="$t('rmr')"><label>{{ $t('rmrAbbr') }}</label></div>
                                    <div class="col-xs-1 operator"></div>
-                                   <div class="col-xs-2 col-text-10"><label>{{ $t('expenditure') }}</label></div>
+                                   <div class="col-xs-1 col-text-10" :title="$t('rmr')"><label>{{ $t('activity2') }}</label></div>
                                    <div class="col-xs-1 operator"></div>
-                                   <div class="col-xs-2 col-text-10"><label>{{ $t('total' )}}</label></div>
+                                   <div class="col-xs-1 col-text-10"><label>{{ $t('expenditure') }}</label></div>
+                                   <div class="col-xs-1 operator"></div>
+                                   <div class="col-xs-1 col-text-10"><label>{{ $t('total' )}}</label></div>
                                </div>
                                 <div class="row total-energy">
+                                    <div class="col-xs-2 col-text-20">
+                                        <label class="hidden-md hidden-lg">{{ $t('activityPreset') }}</label>
+                                        <select class="form-control" v-model="activityPreset">
+                                            <option :value="undefined"></option>
+                                            <option v-for="preset in $activityPresets" :value="preset">
+                                                {{ preset.name }} ({{ formatDecimal(preset.factor, 2) }})
+                                            </option>
+                                        </select>
+                                   </div>
                                    <div class="col-xs-2 col-text-10">
                                         <label class="hidden-md hidden-lg">{{ $t('eaten') }}</label>
                                         {{ formatDecimal(eatenEnergy) }}
@@ -48,6 +59,12 @@
                                         {{ formatDecimal(rmr) }}
                                    </div>
                                    <div class="col-xs-1 operator">-</div>
+                                    <div class="col-xs-2 col-text-10">
+                                        <label class="hidden-md hidden-lg">{{ $t('activity') }}</label>
+                                        {{ formatDecimal(activityLevelEnergy) }}
+                                   </div>
+                                   <div class="col-xs-1 operator">-</div>
+                                    
                                    <div class="col-xs-2 col-text-10">
                                         <label class="hidden-md hidden-lg">{{ $t('expenditure') }}</label>
                                         {{ formatDecimal(energyExpenditure) }}

@@ -32,7 +32,8 @@ section.content { min-height: 700px;}
 .col-text-30 { width: 240px; }
 .col-text-40 { width: 310px;}
 .col-number-5 { width: 80px; }
-.col-number-8 {  width: 100px; }
+.col-number-8 { width: 100px; }
+.col-number-10 { width: 120px; }
 .col-date { width: 120px; }
 .col-time{ width: 70px;}
 .col-datetime{ width: 160px;}

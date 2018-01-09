@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Crash.Fit.Api.Models.Training
+namespace Crash.Fit.Activities
 {
-    public class ActivityRequest
+    public class ActivityLevel : Entity
     {
         public string Name { get; set; }
-        public decimal EnergyExpenditure { get; set; }
+        public decimal Factor { get; set; }
     }
 }
