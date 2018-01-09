@@ -8,6 +8,7 @@ using Crash.Fit.Training;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Crash.Fit.Logging;
 using Crash.Fit.Api.Models.Training;
+using Crash.Fit.Measurements;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -16,9 +17,11 @@ namespace Crash.Fit.Web.Controllers
     public class ExercisesController : ApiControllerBase
     {
         private readonly ITrainingRepository trainingRepository;
-        public ExercisesController(ITrainingRepository trainingRepository, ILogRepository logger) : base(logger)
+        private readonly IMeasurementRepository measurementRepository;
+        public ExercisesController(ITrainingRepository trainingRepository,IMeasurementRepository measurementRepository, ILogRepository logger) : base(logger)
         {
             this.trainingRepository = trainingRepository;
+            this.measurementRepository = measurementRepository;
         }
         [HttpGet("")]
         public IActionResult List()
@@ -95,14 +98,29 @@ namespace Crash.Fit.Web.Controllers
             {
                 return Unauthorized();
             }
-
-            trainingRepository.SaveOneRepMaxs(new[] { new OneRepMax
+            
+            var oneRepMap = new OneRepMax
             {
                 ExerciseId = id,
                 UserId = CurrentUserId,
                 Time = DateTimeOffset.Now,
                 Max = max
-            }});
+            };
+
+            if (exercise.PercentageBW.HasValue)
+            {
+                var userWeight = measurementRepository.GetUserWeight(CurrentUserId);
+                if (userWeight.HasValue)
+                {
+                    oneRepMap.MaxInclBW = oneRepMap.Max + (exercise.PercentageBW / 100m) * userWeight;
+                }
+            }
+            else
+            {
+                oneRepMap.MaxInclBW = oneRepMap.MaxBW;
+            }
+
+            trainingRepository.SaveOneRepMaxs(new[] {oneRepMap});
 
             return Ok();
         }
