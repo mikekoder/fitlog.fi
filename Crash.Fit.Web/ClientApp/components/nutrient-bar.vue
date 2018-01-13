@@ -61,7 +61,7 @@
                 return '';
             },
             maxLeft() {
-                return (this.goal.max || 0) / this.maxValue * 100;
+                return (this.goal.max || 0) / this.maxValue * 100 - 2;
             },
             maxStyle() {
                 return 'left: ' + this.maxLeft + '%;';
