@@ -8,6 +8,7 @@ using Crash.Fit.Nutrition;
 using Crash.Fit.Api.Models.Nutrition;
 using Crash.Fit.Logging;
 using Crash.Fit.Measurements;
+using System.Diagnostics;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -70,7 +71,13 @@ namespace Crash.Fit.Web.Controllers
             AdjustTime(meal);
             meal = MergeBySameDefinition(meal);
             CalculateNutrients(meal);
+
+            var sw = Stopwatch.StartNew();
+
             nutritionRepository.UpdateMeal(meal);
+
+            sw.Stop();
+            Logger.LogDuration("nutritionRepository.UpdateMeal", sw.Elapsed);
 
             var result = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
             return Ok(result);
@@ -282,7 +289,13 @@ namespace Crash.Fit.Web.Controllers
                 return meal;
             }
 
+            var sw = Stopwatch.StartNew();
+
             var existing = nutritionRepository.SearchMeals(CurrentUserId, meal.Time.Date, meal.Time.Date.AddDays(1).AddSeconds(-1)).FirstOrDefault(m => m.DefinitionId == meal.DefinitionId);
+
+            sw.Stop();
+            Logger.LogDuration("MergeBySameDefinition", sw.Elapsed);
+
             if(existing == null || existing.Id == meal.Id)
             {
                 return meal;
@@ -293,6 +306,8 @@ namespace Crash.Fit.Web.Controllers
         }
         private void CalculateNutrients(MealDetails meal)
         {
+            var sw = Stopwatch.StartNew();
+
             var foodIds = meal.Rows.Where(r => r.Nutrients == null || r.Nutrients.Length == 0).Select(r => r.FoodId);
             var foods = nutritionRepository.GetFoods(foodIds);
             foreach(var row in meal.Rows.Where(r => r.Nutrients == null || r.Nutrients.Length == 0))
@@ -322,6 +337,9 @@ namespace Crash.Fit.Web.Controllers
                 NutrientId = n.Key,
                 Amount = n.Sum()
             })).ToArray();
+
+            sw.Stop();
+            Logger.LogDuration("CalculateNutrients", sw.Elapsed);
 
         }
         private IEnumerable<NutrientAmount> AppendCalculatedNutrients(IEnumerable<NutrientAmount> nutrients)

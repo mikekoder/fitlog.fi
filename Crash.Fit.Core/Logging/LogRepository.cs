@@ -36,6 +36,26 @@ namespace Crash.Fit.Logging
                 }
             }
         }
+        public void LogDuration(string message, TimeSpan duration)
+        {
+            using (var conn = CreateConnection())
+            using (var tran = conn.BeginTransaction())
+            {
+                try
+                {
+                    conn.Execute("INSERT INTO LogDuration(Time,Message,Duration) VALUES(@Time,@message,@duration)", new
+                    {
+                        Time = DateTimeOffset.Now,
+                        message,
+                        duration
+                    }, tran);
+                    tran.Commit();
+                }
+                catch
+                {
+                }
+            }
+        }
         /*
         public void LogAction(Guid userId, string action, string message, Exception ex)
         {
