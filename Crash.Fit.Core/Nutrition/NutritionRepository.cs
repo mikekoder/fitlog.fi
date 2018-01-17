@@ -393,9 +393,10 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
                         r.Quantity,
                         r.PortionId,
                         r.Weight }), tran);
-                    conn.Execute("INSERT INTO MealRowNutrient(MealRowId,NutrientId,Amount) VALUES(@Id,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
+                    conn.Execute("INSERT INTO MealRowNutrient(MealRowId,MealId,NutrientId,Amount) VALUES(@Id,@MealId,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
                     {
                         r.Id,
+                        MealId = meal.Id,
                         n.NutrientId,
                         n.Amount
                     })), tran);
@@ -422,7 +423,7 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
                 {
                     conn.Execute("DELETE FROM MealNutrient WHERE MealId=@Id", new { meal.Id }, tran);
                     conn.Execute("DELETE FROM MealRow WHERE MealId=@Id", new { meal.Id }, tran);
-                    conn.Execute("DELETE FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE MealId=@Id)", new { meal.Id }, tran);
+                    conn.Execute("DELETE FROM MealRowNutrient WHERE MealId=@Id", new { meal.Id }, tran);
 
                     conn.Execute("UPDATE Meal SET Time=@Time,DefinitionId=@DefinitionId WHERE Id=@Id", meal, tran);
                     conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
@@ -436,9 +437,10 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
                         r.Quantity,
                         r.PortionId,
                         r.Weight }), tran);
-                    conn.Execute("INSERT INTO MealRowNutrient(MealRowId,NutrientId,Amount) VALUES(@Id,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
+                    conn.Execute("INSERT INTO MealRowNutrient(MealRowId,MealId,NutrientId,Amount) VALUES(@Id,@MealId,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
                     {
                         r.Id,
+                        MealId=meal.Id,
                         n.NutrientId,
                         n.Amount
                     })), tran);
