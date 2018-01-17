@@ -224,7 +224,7 @@ GROUP BY R.FoodId;";
                 {
                     conn.Execute("DELETE FROM FoodNutrient WHERE FoodId=@Id", new { food.Id }, tran);
                     conn.Execute("DELETE FROM RecipeIngredient WHERE RecipeId=@Id", new { food.Id }, tran);
-                    conn.Execute("DELETE FROM FoodPortion WHERE FoodId=@Id", new { food.Id }, tran);
+                    conn.Execute("DELETE FROM FoodPortion WHERE FoodId=@Id AND Id NOT IN @ids", new { food.Id, ids = food.Portions.Select(p => p.Id) }, tran);
 
                     conn.Execute("UPDATE Food SET Name=@Name,Manufacturer=@Manufacturer,CookedWeight=@CookedWeight,NutrientPortionId=@NutrientPortionId WHERE Id=@Id", food, tran);
                     conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount,PortionAmount) VALUES(@FoodId,@NutrientId,@Amount,@PortionAmount)", food.Nutrients.Select(n => new
@@ -234,9 +234,17 @@ GROUP BY R.FoodId;";
                         n.Amount,
                         n.PortionAmount
                     }), tran);
-                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Weight,Amount) VALUES(@Id,@FoodId,@Name,@Weight,@Amount)", food.Portions.Select(p => new
+                    conn.Execute("UPDATE FoodPortion SET Name=@Name,Weight=@Weight,Amount=@Amount WHERE Id=@Id AND FoodId=@FoodId", food.Portions.Where(p => p.Id != Guid.Empty).Select(p => new
                     {
-                        Id = p.Id == Guid.Empty ? Guid.NewGuid() : p.Id,
+                        p.Id,
+                        FoodId = food.Id,
+                        p.Name,
+                        p.Weight,
+                        p.Amount
+                    }), tran);
+                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Weight,Amount) VALUES(@Id,@FoodId,@Name,@Weight,@Amount)", food.Portions.Where(p => p.Id == Guid.Empty).Select(p => new
+                    {
+                        Id = Guid.NewGuid() ,
                         FoodId = food.Id,
                         p.Name,
                         p.Weight,
