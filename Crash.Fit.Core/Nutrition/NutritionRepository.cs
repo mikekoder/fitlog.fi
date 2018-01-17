@@ -421,11 +421,11 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
             {
                 try
                 {
-                    conn.Execute("DELETE FROM MealNutrient WHERE MealId=@Id", new { meal.Id }, tran);
-                    conn.Execute("DELETE FROM MealRow WHERE MealId=@Id", new { meal.Id }, tran);
-                    conn.Execute("DELETE FROM MealRowNutrient WHERE MealId=@Id", new { meal.Id }, tran);
-
-                    conn.Execute("UPDATE Meal SET Time=@Time,DefinitionId=@DefinitionId WHERE Id=@Id", meal, tran);
+                    conn.Execute(@"
+DELETE FROM MealNutrient WHERE MealId=@Id;
+DELETE FROM MealRow WHERE MealId=@Id;
+DELETE FROM MealRowNutrient WHERE MealId=@Id;
+UPDATE Meal SET Time=@Time,DefinitionId=@DefinitionId WHERE Id=@Id", meal, tran);
                     conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
                                             meal.Nutrients.Select(n => new { MealId = meal.Id, n.NutrientId, n.Amount }), tran);
                     conn.Execute("INSERT INTO MealRow(Id,MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@Id,@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select((r, i) => new
