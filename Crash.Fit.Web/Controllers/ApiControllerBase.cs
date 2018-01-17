@@ -29,10 +29,10 @@ namespace Crash.Fit.Web.Controllers
             }
         }
 
-        private readonly ILogRepository logger;
+        protected readonly ILogRepository Logger;
         public ApiControllerBase(ILogRepository logger)
         {
-            this.logger = logger;
+            this.Logger = logger;
         }
 
 
@@ -46,7 +46,7 @@ namespace Crash.Fit.Web.Controllers
                 var body = GetRequestBody(context.HttpContext.Request);
                 var userId = CurrentUserId;
 
-                logger.LogException(CurrentUserId, method, path + query, body, context.Exception);
+                Logger.LogException(CurrentUserId, method, path + query, body, context.Exception);
             }
             base.OnActionExecuted(context);
         }
