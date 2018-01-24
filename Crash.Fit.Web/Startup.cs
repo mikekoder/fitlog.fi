@@ -177,7 +177,7 @@ namespace Crash.Fit.Web
                     model.HideDetails = request.UserHideDetails;
                     model.HideSummary = request.UserHideSummary;
                 });
-                m.CreateMap<IEnumerable<NutrientAmount>, Dictionary<Guid, decimal>>().ConvertUsing(na => na.ToDictionary(n => n.NutrientId, n => n.Amount));
+                m.CreateMap<IEnumerable<NutrientAmount>, Dictionary<int, decimal>>().ConvertUsing(na => na.ToDictionary(n => n.NutrientId, n => n.Amount));
                 m.CreateMap<NutrientAmount, NutrientAmountModel>();
                 m.CreateMap<NutrientAmountModel, NutrientAmount>();
 

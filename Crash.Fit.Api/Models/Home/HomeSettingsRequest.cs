@@ -6,6 +6,6 @@ namespace Crash.Fit.Api.Models.Home
 {
     public class HomeSettingsRequest
     {
-        public Guid?[] Nutrients { get; set; }
+        public int?[] Nutrients { get; set; }
     }
 }

@@ -42,9 +42,7 @@ namespace Crash.Fit.Nutrition
         void SaveMealDefinitions(IEnumerable<MealDefinition> definitions);
         IEnumerable<FoodSearchResult> SearchLatestFoods(Guid userId, int count);
         IEnumerable<MealDefinition> GetMealDefinitions(Guid userId);
-        MealRow GetMealRow(Guid id);
-        void AddMealRow(MealRow row);
-        void SaveHomeNutrients(Guid userId, Guid[] nutrients);
+        void SaveHomeNutrients(Guid userId, int[] nutrientIds);
         IEnumerable<FoodSearchResult> SearchMostUsedFoods(Guid userId, int count);
     }
 }

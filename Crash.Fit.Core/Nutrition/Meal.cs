@@ -14,7 +14,7 @@ namespace Crash.Fit.Nutrition
     }
     public class MealDetails : Meal
     {
-        public NutrientAmount[] Nutrients { get; set; }
+        public Dictionary<int,decimal> Nutrients { get; set; }
         public MealRow[] Rows { get; set; }
     }
 }
