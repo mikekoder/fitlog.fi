@@ -29,7 +29,7 @@ namespace Crash.Fit.Api.Models.Nutrition
 
         public class NutrientValue
         {
-            public Guid NutrientId { get; set; }
+            public int NutrientId { get; set; }
             public decimal? Min { get; set; }
             public decimal? Max { get; set; }
         }

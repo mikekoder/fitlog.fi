@@ -306,11 +306,9 @@ namespace Crash.Fit.Web.Controllers
         }
         private void CalculateNutrients(MealDetails meal)
         {
-            var sw = Stopwatch.StartNew();
-
-            var foodIds = meal.Rows.Where(r => r.Nutrients == null || r.Nutrients.Length == 0).Select(r => r.FoodId);
+            var foodIds = meal.Rows.Where(r => r.Nutrients == null || r.Nutrients.Count == 0).Select(r => r.FoodId);
             var foods = nutritionRepository.GetFoods(foodIds);
-            foreach(var row in meal.Rows.Where(r => r.Nutrients == null || r.Nutrients.Length == 0))
+            foreach(var row in meal.Rows.Where(r => r.Nutrients == null || r.Nutrients.Count == 0))
             {
                 var food = foods.Single(f => f.Id == row.FoodId);
                 row.FoodName = food.Name;
@@ -324,47 +322,41 @@ namespace Crash.Fit.Web.Controllers
                 {
                     row.Weight = row.Quantity;
                 }
-                row.Nutrients  = AppendCalculatedNutrients(food.Nutrients.Where(n => !Constants.Nutrition.ComputedNutrientIds.Contains(n.NutrientId)).Select(n => new NutrientAmount
-                {
-                    NutrientId = n.NutrientId,
-                    Amount = row.Weight * n.Amount / 100m
-                })).ToArray();
+                row.Nutrients  = AppendCalculatedNutrients(food.Nutrients
+                    .Where(n => !Constants.Nutrition.ComputedNutrientIds.Contains(n.NutrientId))
+                    .ToDictionary(n => n.NutrientId,n => row.Weight * n.Amount / 100m));
             }
 
 
-            meal.Nutrients = AppendCalculatedNutrients(meal.Rows.SelectMany(r => r.Nutrients.Where(n => !Constants.Nutrition.ComputedNutrientIds.Contains(n.NutrientId))).GroupBy(n => n.NutrientId, n => n.Amount).Select(n => new NutrientAmount
-            {
-                NutrientId = n.Key,
-                Amount = n.Sum()
-            })).ToArray();
-
-            sw.Stop();
-            Logger.LogDuration("CalculateNutrients", sw.Elapsed);
+            meal.Nutrients = AppendCalculatedNutrients(meal.Rows
+                .SelectMany(r => r.Nutrients.Where(n => !Constants.Nutrition.ComputedNutrientIds.Contains(n.Key)))
+                .GroupBy(n => n.Key, n => n.Value)
+                .ToDictionary(g => g.Key, g => g.Sum()));
 
         }
-        private IEnumerable<NutrientAmount> AppendCalculatedNutrients(IEnumerable<NutrientAmount> nutrients)
+        private Dictionary<int,decimal> AppendCalculatedNutrients(Dictionary<int,decimal> nutrients)
         {
-            var energy = nutrients.FirstOrDefault(n => n.NutrientId == Constants.Nutrition.EnergyKcalId)?.Amount;
-            var protein = nutrients.FirstOrDefault(n => n.NutrientId == Constants.Nutrition.ProteinId)?.Amount;
-            var carbs = nutrients.FirstOrDefault(n => n.NutrientId == Constants.Nutrition.CarbId)?.Amount;
-            var fat = nutrients.FirstOrDefault(n => n.NutrientId == Constants.Nutrition.FatId)?.Amount;
+            var energy = nutrients.ContainsKey(Constants.Nutrition.EnergyKcalId) ? nutrients[Constants.Nutrition.EnergyKcalId] : null as decimal?;
+            var protein = nutrients.ContainsKey(Constants.Nutrition.ProteinId) ? nutrients[Constants.Nutrition.ProteinId] : null as decimal?;
+            var carbs = nutrients.ContainsKey(Constants.Nutrition.CarbId) ? nutrients[Constants.Nutrition.CarbId] : null as decimal?;
+            var fat = nutrients.ContainsKey(Constants.Nutrition.FatId) ? nutrients[Constants.Nutrition.FatId] : null as decimal?;
             var calculatedEnergy = 4 * protein + 4 * carbs + 9 * fat;
 
-            var newNutrients = new List<NutrientAmount>(nutrients);
+            var newNutrients = new Dictionary<int,decimal>(nutrients);
 
             if (energy.HasValue || calculatedEnergy.HasValue)
             {
                 if (protein.HasValue)
                 {
-                    newNutrients.Add(new NutrientAmount { NutrientId = Constants.Nutrition.ProteinEnergyId, Amount = (4 * protein.Value) / (calculatedEnergy ?? energy).Value * 100 });
+                    newNutrients.Add(Constants.Nutrition.ProteinEnergyId, (4 * protein.Value) / (calculatedEnergy ?? energy).Value * 100 );
                 }
                 if (carbs.HasValue)
                 {
-                    newNutrients.Add(new NutrientAmount { NutrientId = Constants.Nutrition.CarbEnergyId, Amount = (4 * carbs.Value) / (calculatedEnergy ?? energy).Value * 100 });
+                    newNutrients.Add(Constants.Nutrition.CarbEnergyId, (4 * carbs.Value) / (calculatedEnergy ?? energy).Value * 100 );
                 }
                 if (fat.HasValue)
                 {
-                    newNutrients.Add(new NutrientAmount { NutrientId = Constants.Nutrition.FatEnergyId, Amount = (9 * fat.Value) / (calculatedEnergy ?? energy).Value * 100 });
+                    newNutrients.Add(Constants.Nutrition.FatEnergyId, (9 * fat.Value) / (calculatedEnergy ?? energy).Value * 100);
                 }
             }
 

@@ -11,6 +11,6 @@ namespace Crash.Fit.Api.Models.Nutrition
         public DateTimeOffset Time { get; set; }
         public Guid? DefinitionId { get; set; }
         public MealRowModel[] Rows { get; set; }
-        public Dictionary<Guid,decimal> Nutrients { get; set; }
+        public Dictionary<int, decimal> Nutrients { get; set; }
     }
 }

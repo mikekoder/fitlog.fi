@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using Newtonsoft.Json;
 
 namespace Crash.Fit.Nutrition
 {
@@ -31,13 +32,12 @@ namespace Crash.Fit.Nutrition
         }
         public void CreateNutrient(Nutrient nutrient)
         {
-            nutrient.Id = Guid.NewGuid();
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Nutrient(Id,Name,ShortName,Unit,FineliId,FineliClass,FineliGroup,DefaultOrder,DefaultHideSummary,DefaultHideDetails) VALUES(@Id,@Name,@ShortName,@Unit,@FineliId,@FineliClass,@FineliGroup,@DefaultOrder,@DefaultHideSummary,@DefaultHideDetails)", nutrient, tran);
+                    conn.Execute("INSERT INTO Nutrient(Name,ShortName,Unit,FineliId,FineliClass,FineliGroup,DefaultOrder,DefaultHideSummary,DefaultHideDetails) VALUES(@Name,@ShortName,@Unit,@FineliId,@FineliClass,@FineliGroup,@DefaultOrder,@DefaultHideSummary,@DefaultHideDetails)", nutrient, tran);
                     tran.Commit();
                 }
                 catch
@@ -279,7 +279,7 @@ GROUP BY R.FoodId;";
             {
                 try
                 {
-                    conn.Execute("UPDATE Food SET Deleted=@Deleted WHERE Id=@Id", new { Id = food.Id, Deleted = DateTimeOffset.Now }, tran);
+                    conn.Execute("UPDATE Food SET Deleted=@Deleted WHERE Id=@Id", new { food.Id, Deleted = DateTimeOffset.Now }, tran);
                     tran.Commit();
                 }
                 catch
@@ -313,26 +313,33 @@ GROUP BY R.FoodId;";
         {
             var sql = @"
 SELECT * FROM Meal WHERE Id=@id;
-SELECT * FROM MealNutrient WHERE MealId=@id;
 SELECT MR.*, F.Name AS FoodName, FP.Name AS PortionName FROM MealRow MR 
     JOIN Food F ON F.Id=MR.FoodId 
     LEFT JOIN FoodPortion FP ON FP.Id=MR.PortionId
-    WHERE MR.MealId=@id ORDER BY [Index];
-SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE MealId=@id);";
+    WHERE MR.MealId=@id ORDER BY [Index];";
             var parameters = new { id };
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, parameters))
             {
-                var meal = multi.Read<MealDetails>().SingleOrDefault();
+                var meal = multi.Read<MealRaw>().SingleOrDefault();
                 if (meal != null)
                 {
-                    meal.Nutrients = multi.Read<NutrientAmount>().ToArray();
-                    meal.Rows = multi.Read<MealRow>().ToArray();
-                    var rowNutrients = multi.Read<MealRowNutrientRaw>().ToArray();
-                    foreach(var row in meal.Rows)
+                    //meal.Nutrients = multi.Read<NutrientAmount>().ToArray();
+                    if (meal.NutrientsJson != null)
                     {
-                        row.Nutrients = rowNutrients.Where(r => r.MealRowId == row.Id).ToArray();
+                        meal.Nutrients = JsonConvert.DeserializeObject<Dictionary<int, decimal>>(meal.NutrientsJson);
                     }
+                    var rows = multi.Read<MealRowRaw>().ToArray();
+                    //var rowNutrients = multi.Read<MealRowNutrientRaw>().ToArray();
+                    foreach(var row in rows)
+                    {
+                        //row.Nutrients = rowNutrients.Where(r => r.MealRowId == row.Id).ToArray();
+                        if (row.NutrientsJson != null)
+                        {
+                            row.Nutrients = JsonConvert.DeserializeObject<Dictionary<int, decimal>>(row.NutrientsJson);
+                        }
+                    }
+                    meal.Rows = rows;
                 }
                 return meal;
             }
@@ -342,28 +349,30 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
             var filter = "UserId=@userId AND Time >= @start AND Time <= @end AND Deleted IS NULL";
             var sql = $@"
 SELECT * FROM Meal WHERE {filter};
-SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
 SELECT MR.*, F.Name AS FoodName, FP.Name AS PortionName FROM MealRow MR 
     JOIN Food F ON F.Id=MR.FoodId 
     LEFT JOIN FoodPortion FP ON FP.Id=MR.PortionId
-    WHERE MR.MealId IN(SELECT Id FROM Meal WHERE {filter}) ORDER BY [Index];
-SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE MealId IN (SELECT Id FROM Meal WHERE {filter}))";
+    WHERE MR.MealId IN(SELECT Id FROM Meal WHERE {filter}) ORDER BY [Index];";
             var parameters = new { userId, start, end };
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, parameters))
             {
-                var meals = multi.Read<MealDetails>().ToList();
-                var nutrients = multi.Read<MealNutrient>().ToList();
-                var rows = multi.Read<MealRow>().ToList();
-                var rowNutrients = multi.Read<MealRowNutrientRaw>();
+                var meals = multi.Read<MealRaw>().ToList();
+                var rows = multi.Read<MealRowRaw>().ToList();
+                foreach(var row in rows)
+                {
+                    if (row.NutrientsJson != null)
+                    {
+                        row.Nutrients = JsonConvert.DeserializeObject<Dictionary<int, decimal>>(row.NutrientsJson);
+                    }
+                }
                 foreach (var meal in meals)
                 {
-                    meal.Nutrients = nutrients.Where(n => n.MealId == meal.Id).ToArray();
-                    meal.Rows = rows.Where(r => r.MealId == meal.Id).ToArray();
-                    foreach(var row in meal.Rows)
+                    if (meal.NutrientsJson != null)
                     {
-                        row.Nutrients = rowNutrients.Where(r => r.MealRowId == row.Id).ToArray();
+                        meal.Nutrients = JsonConvert.DeserializeObject<Dictionary<int, decimal>>(meal.NutrientsJson);
                     }
+                    meal.Rows = rows.Where(r => r.MealId == meal.Id).ToArray();
                 }
                 return meals;
             }
@@ -381,18 +390,31 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Meal(Id,UserId,Time,DefinitionId,Created) VALUES(@Id,@UserId,@Time,@DefinitionId,@Created)", meal, tran);
+                    conn.Execute("INSERT INTO Meal(Id,UserId,Time,DefinitionId,Created,NutrientsJson) VALUES(@Id,@UserId,@Time,@DefinitionId,@Created,@NutrientsJson)", new
+                    {
+                        meal.Id,
+                        meal.UserId,
+                        meal.DefinitionId,
+                        meal.Time,
+                        meal.Created,
+                        NutrientsJson = JsonConvert.SerializeObject(meal.Nutrients)
+                    }, tran);
+                    /*
                     conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
                         meal.Nutrients.Select(n => new { MealId = meal.Id, n.NutrientId, n.Amount }), tran);
-                    conn.Execute("INSERT INTO MealRow(Id,MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@Id,@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select((r, i) => new
+                        */
+                    conn.Execute("INSERT INTO MealRow(Id,MealId,[Index],FoodId,Quantity,PortionId,Weight,NutrientsJson) VALUES(@Id,@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight,@NutrientsJson)", meal.Rows.Select((r, i) => new
                     {
-                        Id = r.Id,
+                        r.Id,
                         MealId = meal.Id,
                         Index = i,
                         r.FoodId,
                         r.Quantity,
                         r.PortionId,
-                        r.Weight }), tran);
+                        r.Weight,
+                        NutrientsJson = JsonConvert.SerializeObject(r.Nutrients)
+                    }), tran);
+                    /*
                     conn.Execute("INSERT INTO MealRowNutrient(MealRowId,MealId,NutrientId,Amount) VALUES(@Id,@MealId,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
                     {
                         r.Id,
@@ -400,6 +422,7 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
                         n.NutrientId,
                         n.Amount
                     })), tran);
+                    */
                     tran.Commit();
                 }
                 catch (Exception ex)
@@ -419,31 +442,44 @@ SELECT * FROM MealRowNutrient WHERE MealRowId IN(SELECT Id FROM MealRow WHERE Me
             using (var conn = CreateConnection())
             using (var tran = conn.BeginTransaction())
             {
+                (conn as System.Data.SqlClient.SqlConnection).StatisticsEnabled = true;
                 try
                 {
                     conn.Execute(@"
 DELETE FROM MealNutrient WHERE MealId=@Id;
 DELETE FROM MealRow WHERE MealId=@Id;
 DELETE FROM MealRowNutrient WHERE MealId=@Id;
-UPDATE Meal SET Time=@Time,DefinitionId=@DefinitionId WHERE Id=@Id", meal, tran);
-                    conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
-                                            meal.Nutrients.Select(n => new { MealId = meal.Id, n.NutrientId, n.Amount }), tran);
-                    conn.Execute("INSERT INTO MealRow(Id,MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@Id,@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", meal.Rows.Select((r, i) => new
+UPDATE Meal SET Time=@Time,DefinitionId=@DefinitionId,NutrientsJson=@NutrientsJson WHERE Id=@Id", new
                     {
-                        Id = r.Id,
+                        meal.Id,
+                        meal.DefinitionId,
+                        meal.Time,
+                        NutrientsJson = JsonConvert.SerializeObject(meal.Nutrients)
+                    }, tran);
+                    /*
+                    conn.Execute("INSERT INTO MealNutrient(MealId,NutrientId,Amount) VALUES(@MealId,@NutrientId,@Amount)",
+                                            meal.Nutrients.Select(n => new { MealId = meal.Id, n.NutrientId, n.Amount }).ToArray(), tran);
+                                            */
+                    conn.Execute("INSERT INTO MealRow(Id,MealId,[Index],FoodId,Quantity,PortionId,Weight,NutrientsJson) VALUES(@Id,@MealId,@Index,@FoodId,@Quantity,@PortionId,@Weight,@NutrientsJson)", meal.Rows.Select((r, i) => new
+                    {
+                        r.Id,
                         MealId = meal.Id,
                         Index = i,
                         r.FoodId,
                         r.Quantity,
                         r.PortionId,
-                        r.Weight }), tran);
+                        r.Weight,
+                        NutrientsJson = JsonConvert.SerializeObject(r.Nutrients)
+                    }), tran);
+                    /*
                     conn.Execute("INSERT INTO MealRowNutrient(MealRowId,MealId,NutrientId,Amount) VALUES(@Id,@MealId,@NutrientId,@Amount)", meal.Rows.SelectMany(r => r.Nutrients.Select(n => new
                     {
                         r.Id,
                         MealId=meal.Id,
                         n.NutrientId,
                         n.Amount
-                    })), tran);
+                    })).ToArray(), tran);
+                    */
                     tran.Commit();
                 }
                 catch (Exception ex)
@@ -451,6 +487,8 @@ UPDATE Meal SET Time=@Time,DefinitionId=@DefinitionId WHERE Id=@Id", meal, tran)
                     tran.Rollback();
                     throw;
                 }
+                var stats = (conn as System.Data.SqlClient.SqlConnection).RetrieveStatistics();
+                ;
             }
         }
         public void DeleteMeal(Meal meal)
@@ -460,7 +498,7 @@ UPDATE Meal SET Time=@Time,DefinitionId=@DefinitionId WHERE Id=@Id", meal, tran)
             {
                 try
                 {
-                    conn.Execute("UPDATE Meal SET Deleted=@Deleted WHERE Id=@Id", new { Id = meal.Id, Deleted = DateTimeOffset.Now }, tran);
+                    conn.Execute("UPDATE Meal SET Deleted=@Deleted WHERE Id=@Id", new { meal.Id, Deleted = DateTimeOffset.Now }, tran);
                     tran.Commit();
                 }
                 catch
@@ -514,7 +552,7 @@ WHEN NOT MATCHED THEN
                 }
             }
         }
-        public void SaveHomeNutrients(Guid userId, Guid[] nutrients)
+        public void SaveHomeNutrients(Guid userId, int[] nutrientIds)
         {
             var sql = @"MERGE INTO NutrientSettings
 USING(select @NutrientId AS NutrientId, @UserId AS UserId) AS Source
@@ -530,7 +568,7 @@ WHEN NOT MATCHED THEN
                 try
                 {
                     conn.Execute("UPDATE NutrientSettings SET HomeOrder=NULL WHERE UserId=@userId", new { userId }, tran);
-                    conn.Execute(sql, nutrients.Select((nutrientId,index) => new
+                    conn.Execute(sql, nutrientIds.Select((nutrientId,index) => new
                     {
                         UserId = userId,
                         NutrientId = nutrientId,
@@ -770,58 +808,6 @@ WHEN NOT MATCHED THEN
                 }
             }
         }
-        public MealRow GetMealRow(Guid id)
-        {
-            var sql = @"
-SELECT MR.*, F.Name AS FoodName, FP.Name AS PortionName FROM MealRow MR 
-    JOIN Food F ON F.Id=MR.FoodId 
-    LEFT JOIN FoodPortion FP ON FP.Id=MR.PortionId
-    WHERE MR.Id=@id ORDER BY [Index];
-SELECT * FROM MealRowNutrient WHERE MRowId=@id";
-            var parameters = new { id };
-            using (var conn = CreateConnection())
-            using (var multi = conn.QueryMultiple(sql, parameters))
-            {
-                var row = multi.Read<MealRow>().SingleOrDefault();
-                if (row != null)
-                {
-                    row.Nutrients = multi.Read<NutrientAmount>().ToArray();
-                }
-                return row;
-            }
-        }
-        public void AddMealRow(MealRow row)
-        {
-            row.Id = Guid.NewGuid();
-             
-            using (var conn = CreateConnection())
-            using (var tran = conn.BeginTransaction())
-            {
-                try
-                {
-                    conn.Execute("UPDATE MealNutrient SET Amount=Amount+@Amount WHERE MealId=@MealId AND NutrientId=@NutrientId", row.Nutrients.Select(n => new
-                    {
-                        MealId = row.MealId,
-                        n.NutrientId,
-                        n.Amount
-                    }), tran);
-                    conn.Execute("INSERT INTO MealRow(Id,MealId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(@Id,@MealId,(SELECT MAX([Index])+1 FROM MealRow WHERE MealId=@MealId),@FoodId,@Quantity,@PortionId,@Weight)", row, tran);
-                    conn.Execute("INSERT INTO MealRowNutrient(MealId,RowId,NutrientId,Amount) VALUES(@MealId,@RowId,@NutrientId,@Amount)", row.Nutrients.Select(n => new
-                    {
-                        row.MealId,
-                        RowId = row.Id,
-                        n.NutrientId,
-                        n.Amount
-                    }), tran);
-                    tran.Commit();
-                }
-                catch (Exception ex)
-                {
-                    tran.Rollback();
-                    throw;
-                }
-            }
-        }
 
         public IEnumerable<FoodSearchResult> SearchLatestFoods(Guid userId, int count)
         {
@@ -849,6 +835,23 @@ ORDER BY FoodUsage.UsageCount DESC";
             }
         }
 
+        private class MealRaw : MealDetails
+        {
+            public string NutrientsJson { get; set; }
+
+            public MealRaw()
+            {
+                Nutrients = new Dictionary<int, decimal>();
+            }
+        }
+        private class MealRowRaw : MealRow
+        {
+            public string NutrientsJson { get; set; }
+            public MealRowRaw()
+            {
+                Nutrients = new Dictionary<int, decimal>();
+            }
+        }
         private class PortionRaw : Portion
         {
             public Guid FoodId { get; set; }

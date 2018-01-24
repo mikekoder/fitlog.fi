@@ -16,6 +16,6 @@ namespace Crash.Fit.Api.Models.Nutrition
         public Guid? PortionId { get; set; }
         public string PortionName { get; set; }
         public decimal Weight { get; set; }
-        public Dictionary<Guid, decimal> Nutrients { get; set; }
+        public Dictionary<int, decimal> Nutrients { get; set; }
     }
 }

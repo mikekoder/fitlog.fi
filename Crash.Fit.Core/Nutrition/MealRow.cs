@@ -17,6 +17,6 @@ namespace Crash.Fit.Nutrition
         public Guid? PortionId { get; set; }
         public string PortionName { get; set; }
         public decimal Weight { get; set; }
-        public NutrientAmount[] Nutrients { get; set; }
+        public Dictionary<int, decimal> Nutrients { get; set; }
     }
 }
