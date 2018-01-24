@@ -31,7 +31,9 @@ export default {
             var self = this;
             if (self.mealDefinitionId) {
                 var meal = self.mealDefinitions.find(m => m.id == self.mealDefinitionId);
-                return meal.name;
+                if (meal) {
+                    return meal.name;
+                }
             }
             return this.formatTime(self.time);
         },
