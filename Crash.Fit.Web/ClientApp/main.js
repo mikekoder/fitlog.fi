@@ -111,13 +111,16 @@ router.beforeEach((to, from, next) =>{
 */
 router.afterEach((to, from) => {
     if (window.matchMedia('(max-width: 900px)').matches) {
+         window.sidebarExpanded = false;
         $('body').addClass('sidebar-collapse').removeClass('sidebar-open');
     }
     window.scrollTo(0, 0);
 })
 
 
-// HACK: scrolling on mobile fires resize event which hides the sidebar
+/* HACK: scrolling on mobile fires resize event causing collapsing of the sidebar
+    which is not desirable
+*/
 $("body").on("expanded.pushMenu", function(){
     window.sidebarExpanded = true;
 });
