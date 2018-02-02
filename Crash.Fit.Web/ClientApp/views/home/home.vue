@@ -41,7 +41,7 @@
                                </div>
                                 <div class="row total-energy">
                                     <div class="col-xs-2 col-text-20">
-                                        <label class="hidden-md hidden-lg">{{ $t('activityPreset') }}</label>
+                                        <label class="hidden-md hidden-lg">{{ $t('activityLevel') }}</label>
                                         <select class="form-control" v-model="activityPreset">
                                             <option :value="undefined"></option>
                                             <option v-for="preset in $activityPresets" :value="preset">
