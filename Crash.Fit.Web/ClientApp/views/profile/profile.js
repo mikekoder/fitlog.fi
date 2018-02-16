@@ -124,7 +124,7 @@ export default {
         updateLogin() {
             var self = this;
             var login = {
-                username: self.email,
+                username: self.username,
                 oldPassword: self.oldPassword,
                 newPassword: self.newPassword
             };
