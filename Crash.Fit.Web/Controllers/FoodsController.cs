@@ -24,7 +24,7 @@ namespace Crash.Fit.Web.Controllers
         [HttpGet("")]
         public IActionResult List()
         {
-            var foods = nutritionRepository.SearchUserFoods(CurrentUserId);
+            var foods = nutritionRepository.SearchUserFoods(CurrentUserId).OrderBy(f => f.Name);
 
             var response = AutoMapper.Mapper.Map<FoodSummaryResponse[]>(foods);
             return Ok(response);
