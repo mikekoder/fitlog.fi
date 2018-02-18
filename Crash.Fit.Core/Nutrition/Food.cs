@@ -23,6 +23,12 @@ namespace Crash.Fit.Nutrition
         public int UsageCount { get; set; }
         public DateTimeOffset? LatestUse { get; set; }
     }
+    public class FoodSearchNutrientResult : Food
+    {
+        public int UsageCount { get; set; }
+        public DateTimeOffset? LatestUse { get; set; }
+        public decimal NutrientAmount { get; set; }
+    }
     public class FoodSummary : Food
     {
         public int UsageCount { get; set; }

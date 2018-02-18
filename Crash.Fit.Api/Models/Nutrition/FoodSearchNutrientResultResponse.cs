@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace Crash.Fit.Api.Models.Nutrition
 {
-    public class FoodSearchResultResponse : FoodResponse
+    public class FoodSearchNutrientResultResponse : FoodSearchResultResponse
     {
-        public int UsageCount { get; set; }
-        public DateTimeOffset? LatestUse { get; set; }
+        public decimal NutrientAmount { get; set; }
     }
 }
