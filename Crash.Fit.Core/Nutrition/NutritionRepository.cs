@@ -834,20 +834,19 @@ ORDER BY FoodUsage.UsageCount DESC";
                 return conn.Query<FoodSearchResult>(sql, new { userId, count });
             }
         }
-        public IEnumerable<FoodSearchNutrientResult> SearchFoodsMostNutrients(int nutrientId, Guid userId, int count)
+        public IEnumerable<FoodSearchNutrientResult> SearchFoodsTopNutrients(int nutrientId, Guid userId, int count, bool descending = true)
         {
-            var sql = @"SELECT TOP (@count) Food.*, FoodUsage.UsageCount, FoodUsage.LatestUse, FoodNutrient.Amount AS NutrientAmount
+            var sql = $@"SELECT TOP (@count) Food.*, FoodUsage.UsageCount, FoodUsage.LatestUse, FoodNutrient.Amount AS NutrientAmount
 FROM Food 
 JOIN FoodNutrient ON FoodNutrient.FoodId=Food.Id AND FoodNutrient.NutrientId=@nutrientId
 LEFT JOIN FoodUsage ON FoodUsage.FoodId=Food.Id AND FoodUsage.UserId=@userId
 WHERE Food.UserId=@userId OR Food.UserId IS NULL
-ORDER BY FoodNutrient.Amount DESC";
+ORDER BY FoodNutrient.Amount{( descending ? " DESC" : "")}";
             using (var conn = CreateConnection())
             {
                 return conn.Query<FoodSearchNutrientResult>(sql, new { userId, nutrientId, count });
             }
         }
-
         private class MealRaw : MealDetails
         {
             public string NutrientsJson { get; set; }
