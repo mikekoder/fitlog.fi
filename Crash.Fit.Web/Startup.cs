@@ -198,6 +198,7 @@ namespace Crash.Fit.Web
                 });
                 // Foods
                 m.CreateMap<FoodSearchResult, FoodSearchResultResponse>();
+                m.CreateMap<FoodSearchNutrientResult, FoodSearchNutrientResultResponse>();
                 m.CreateMap<FoodSummary, FoodSummaryResponse>();
                 m.CreateMap<FoodDetails, FoodDetailsResponse>();
                 m.CreateMap<FoodNutrientAmount, FoodNutrientAmountResponse>();

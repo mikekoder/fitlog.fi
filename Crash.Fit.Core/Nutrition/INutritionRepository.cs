@@ -41,6 +41,7 @@ namespace Crash.Fit.Nutrition
         void DeleteNutritionGoal(NutritionGoal goal);
         void SaveMealDefinitions(IEnumerable<MealDefinition> definitions);
         IEnumerable<FoodSearchResult> SearchLatestFoods(Guid userId, int count);
+        IEnumerable<FoodSearchNutrientResult> SearchFoodsMostNutrients(int nutrientId, Guid userId, int count);
         IEnumerable<MealDefinition> GetMealDefinitions(Guid userId);
         void SaveHomeNutrients(Guid userId, int[] nutrientIds);
         IEnumerable<FoodSearchResult> SearchMostUsedFoods(Guid userId, int count);
