@@ -44,8 +44,17 @@ namespace Crash.Fit.Web.Controllers
         [AllowAnonymous]
         public IActionResult SearchMostNutrients(int nutrientId, int? count)
         {
-            var foods = nutritionRepository.SearchFoodsMostNutrients(nutrientId, CurrentUserId, count ?? 50);
+            var foods = nutritionRepository.SearchFoodsTopNutrients(nutrientId, CurrentUserId, count ?? 50);
  
+            var response = AutoMapper.Mapper.Map<FoodSearchNutrientResultResponse[]>(foods);
+            return Ok(response);
+        }
+        [HttpGet("search/least-nutrients")]
+        [AllowAnonymous]
+        public IActionResult SearchLeastNutrients(int nutrientId, int? count)
+        {
+            var foods = nutritionRepository.SearchFoodsTopNutrients(nutrientId, CurrentUserId, count ?? 50, false);
+
             var response = AutoMapper.Mapper.Map<FoodSearchNutrientResultResponse[]>(foods);
             return Ok(response);
         }
