@@ -205,7 +205,7 @@ namespace Crash.Fit.Web.Controllers
         {
             var exerciseIds = sets.Where(s => s.ExerciseId.HasValue).Select(s => s.ExerciseId.Value);
             var exercises = new List<Exercise>();
-            exercises.AddRange(trainingRepository.GetExercises(exerciseIds));
+            exercises.AddRange(trainingRepository.SearchUserExercises(CurrentUserId, DateTimeOffset.MinValue));
             foreach (var set in sets.Where(s => s.ExerciseId == null && !string.IsNullOrWhiteSpace(s.ExerciseName)))
             {
                 var exercise = exercises.FirstOrDefault(e => e.Name.Equals(set.ExerciseName, StringComparison.CurrentCultureIgnoreCase));
