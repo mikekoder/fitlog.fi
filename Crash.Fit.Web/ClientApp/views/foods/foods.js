@@ -7,11 +7,19 @@ export default {
     mixins:[nutrientsMixin],
     data () {
         return {
+            tab: 'own',
             foods: [],
-            showOwn: true
+            searchText: undefined,
+            searchResults: [],
+            topDirection: 'most',
+            topNutrient: undefined,
+            topResults: []
         }
     },
-    computed:{
+    computed: {
+        nutrients() {
+            return this.$nutrients.filter(n => !n.computed);
+        }
     },
     methods: {
         createFood(){
@@ -29,6 +37,34 @@ export default {
                 }
             });
         },
+        search(){
+            var self = this;
+            if(self.searchText.length >= 2){
+                api.searchFoods(self.searchText).then(results => {
+                    self.searchResults = results;
+                });
+            }
+            else {
+                self.searchResults = [];
+            }
+        },
+        searchTopFoods(){
+            var self = this;
+            self.topResults = [];
+            if (!self.topNutrient) {
+                return;
+            }
+            if(self.topDirection == 'most'){
+                api.searchFoodsMostNutrients(self.topNutrient.id).then(results => {
+                    self.topResults = results;
+                });
+            }
+            else{
+                api.searchFoodsLeastNutrients(self.topNutrient.id).then(results => {
+                    self.topResults = results;
+                });
+            }
+        }
     },
     created() {
         var self = this;
