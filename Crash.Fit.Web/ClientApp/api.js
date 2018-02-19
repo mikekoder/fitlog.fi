@@ -40,6 +40,12 @@ export default {
             data: JSON.stringify(profile)
         });
     },
+    deleteProfile () {
+        return $.ajax({
+            url: this.baseUrl + 'users/me/',
+            type: 'DELETE'
+        });
+    },
     logout(){
         return $.post(this.baseUrl+'users/logout');
     },

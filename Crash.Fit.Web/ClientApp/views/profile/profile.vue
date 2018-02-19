@@ -7,6 +7,7 @@
                     <ul class="nav nav-tabs">
                         <li :class="{ active: tab == 'basic' }"><a @click="tab='basic'">{{ $t('basicInformation') }}</a></li>
                         <li :class="{ active: tab == 'logins' }"><a @click="tab='logins'">{{ $t('logins') }}</a></li>
+                        <li :class="{ active: tab == 'delete' }"><a @click="tab='delete'">{{ $t('delete') }}</a></li>
                     </ul>
                 </div>
             </div>
@@ -138,7 +139,15 @@
                     </div>
                 </div>
             </div>
-            
+            <div v-if="tab == 'delete'">
+                <div class="row">&nbsp;</div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-danger" v-if="deleteStarted" @click="deleteProfile">{{ $t("confirmDeletion") }}</button>
+                        <button class="btn btn-danger" v-else @click="deleteStarted=true">{{ $t("deleteAccount") }}</button>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 </template>
