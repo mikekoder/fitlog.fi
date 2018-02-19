@@ -1,5 +1,5 @@
 ﻿<template>
-    <div>
+    <div v-if="value || value == 0">
         <div class="bar-container" v-if="goal.min || goal.max" :title="title">
             <div class="line min" :style="minStyle" :class="minClass" v-if="goal.min"><div></div><div></div><div></div></div>
             <div class="line max" :style="maxStyle" :class="maxClass" v-if="goal.max"><div></div><div></div><div></div></div>
