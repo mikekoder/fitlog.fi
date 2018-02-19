@@ -63,8 +63,8 @@
 
 <script>
     import { QTabs,QTab,QTabPane,QField,QInput,QScrollArea,QSearch,QAutocomplete,QSelect,QBtn,QModal,QList,QItem } from 'quasar'
-    import constants from '../store/constants'
-    import api from'../api'
+    import constants from '../../store/constants'
+    import api from'../../api'
 
 export default {
     data () {

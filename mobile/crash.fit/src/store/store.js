@@ -5,6 +5,7 @@ import training from './training'
 import profile from './profile'
 import feedback from './feedback'
 import clipboard from './clipboard'
+import activities from './activities'
 import constants from './constants'
 
 Vue.use(Vuex)
@@ -27,6 +28,7 @@ export default new Vuex.Store({
         training,
         profile,
         feedback,
-        clipboard
+        clipboard,
+        activities
     }
 })

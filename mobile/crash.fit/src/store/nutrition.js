@@ -13,6 +13,8 @@ export default {
         meals: [],
         mealsDisplayStart: null,
         mealsDisplayEnd: null,
+        mealDraft: null,
+        rowDraft: null,
 
         nutrientGroups: [
             { id: 'MACROCMP', name: 'Makrot' },
@@ -38,7 +40,7 @@ export default {
     },
     actions: {
         [constants.SELECT_MEAL_DIARY_DATE]({ commit, state }, { date, success, failure }) {
-            state.diaryDate = date;
+            commit(constants.SELECT_MEAL_DIARY_DATE_SUCCESS, { date });
         },
         [constants.SAVE_MEAL_DIARY_SETTINGS]({ commit, state }, { settings, success, failure }) {
             api.saveHomeSettings(settings).then(function () {
@@ -59,9 +61,9 @@ export default {
                 success();
             }
         },
-        [constants.FETCH_MEALS]({ commit, state }, { start, end, success, failure }) {
+        [constants.FETCH_MEALS]({ commit, state }, { start, end, force, success, failure }) {
             if (state.mealsStart && state.mealsEnd) {
-                if (moment(start).isBefore(state.mealsStart) || moment(end).isAfter(state.mealsEnd)) {
+                if (moment(start).isBefore(state.mealsStart) || moment(end).isAfter(state.mealsEnd) || force) {
                     start = moment.min(moment(start), moment(state.mealsEnd));
                     end = moment.max(moment(end), moment(state.mealsStart));
                 }
@@ -74,7 +76,7 @@ export default {
                 }
             }
 
-            api.listMeals(start, end).then(function (meals) {
+            api.listMeals(start, end).then(meals => {
                 commit(constants.FETCH_MEALS_SUCCESS, { start, end, meals })
                 if (success) {
                     success();
@@ -111,6 +113,9 @@ export default {
                 }
             });
         },
+        [constants.SAVE_MEAL_DRAFT]({ commit, state }, { meal }) {
+            state.mealDraft = meal;
+        },
         [constants.DELETE_MEAL]({ commit, state }, { meal, success, failure }) {
             api.deleteMeal(meal.id).then(function () {
                 commit(constants.DELETE_MEAL_SUCCESS, { meal })
@@ -140,12 +145,17 @@ export default {
                 var meal = state.meals.find(m => m.id == savedRow.mealId);
                 if (meal) {
                     commit(constants.SAVE_MEAL_ROW_SUCCESS, { row: savedRow });
+                    if (success) {
+                        success(savedRow);
+                    }
                 }
                 else {
                     api.getMeal(savedRow.mealId).then(function (createdMeal) {
                         createdMeal.time = new Date(createdMeal.time);
                         commit(constants.FETCH_MEAL_SUCCESS, { meal: createdMeal });
-
+                        if (success) {
+                            success(createdMeal);
+                        }
                     });
                 }
 
@@ -166,6 +176,9 @@ export default {
                     failure();
                 }
             });
+        },
+        [constants.SAVE_MEAL_ROW_DRAFT]({ commit, state }, { row }) {
+            state.rowDraft = row;
         },
         // Foods
         [constants.FETCH_MY_FOODS]({ commit, state }, { success, failure }) {
@@ -313,42 +326,27 @@ export default {
                 }
                 return;
             }
-            Promise.all([api.listNutrients(), api.getNutrientSettings()]).then(function (results) {
+            Promise.all([api.listNutrients(), api.getNutrientSettings()]).then(results => {
                 var nutrients = results[0];
                 var settings = results[1];
 
-                settings.forEach(s => {
-                    var nutrient = nutrients.find(n => n.id == s.nutrientId);
-                    if (nutrient) {
-                        if (s.hideSummary != null) {
-                            nutrient.hideSummary = s.hideSummary;
-                            nutrient.userHideSummary = s.hideSummary;
-                        }
-                        if (s.hideDetails != null) {
-                            nutrient.hideDetails = s.hideDetails;
-                            nutrient.userHideDetails = s.hideDetails;
-                        }
-                        if (s.order != null) {
-                            nutrient.order = s.order;
-                            nutrient.userOrder = s.order;
-                        }
-                        if (s.homeOrder != null) {
-                            nutrient.homeOrder = s.homeOrder;
-                        }
-                    }
-                });
+                nutrients = applySettingsToNutrients(settings, nutrients);
+
                 commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients });
                 if (success) {
                     success(nutrients);
                 }
-            }).catch(function (reason) {
+            }).catch(reason => {
                 if (failure) {
                     failure();
                 }
             });
         },
         [constants.SAVE_NUTRIENT_SETTINGS]({ commit, state }, { settings, success, failure }) {
-            api.saveNutrientSettings(settings).then(function (nutrients) {
+            api.saveNutrientSettings(settings).then(function (savedSettings) {
+
+                var nutrients = applySettingsToNutrients(savedSettings, state.nutrients);
+
                 commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients })
                 if (success) {
                     success(nutrients);
@@ -474,8 +472,25 @@ export default {
                 }
             });
         }
+        /*
+        [constants.DELETE_MEAL_DEFINITION]({ commit, state }, { definition, success, failure }) {
+            api.deleteMealDefinition(definition).then(() => {
+                var index = state.definitions.findIndex(d => d.id == definition.id);
+                state.definitions.splice(index, 1);
+                if (success) {
+                    success();
+                }
+            }).fail(function () {
+                if (failure) {
+                    failure();
+                }
+            });
+        }*/
     },
     mutations: {
+        [constants.SELECT_MEAL_DIARY_DATE_SUCCESS](state, { date }) {
+            state.diaryDate = date;
+        },
         [constants.SELECT_MEAL_DATE_RANGE_SUCCESS](state, { start, end }) {
             state.mealsDisplayStart = start;
             state.mealsDisplayEnd = end;
@@ -537,6 +552,13 @@ export default {
                 meal.time = new Date(meal.time);
                 meal.definition = state.mealDefinitions.find(d => d.id == meal.definitionId);
                 if (!state.mealsStart || !state.mealsEnd || moment(meal.time).isBefore(state.mealsStart) || moment(meal.time).isAfter(state.mealsEnd)) {
+                    addMeal(meal, state);
+                }
+                else{
+                    var old = state.meals.find(m => m.id == meal.id);
+                    if (old) {
+                        deleteMeal(old, state)
+                    }
                     addMeal(meal, state);
                 }
             }
@@ -629,6 +651,29 @@ export default {
     }
 }
 
+    function applySettingsToNutrients(settings, nutrients) {
+        settings.forEach(s => {
+            var nutrient = nutrients.find(n => n.id == s.nutrientId);
+            if (nutrient) {
+                if (s.hideSummary != null) {
+                    nutrient.hideSummary = s.hideSummary;
+                    nutrient.userHideSummary = s.hideSummary;
+                }
+                if (s.hideDetails != null) {
+                    nutrient.hideDetails = s.hideDetails;
+                    nutrient.userHideDetails = s.hideDetails;
+                }
+                if (s.order != null) {
+                    nutrient.order = s.order;
+                    nutrient.userOrder = s.order;
+                }
+                if (s.homeOrder != null) {
+                    nutrient.homeOrder = s.homeOrder;
+                }
+            }
+        });
+        return nutrients;
+    }
     function findDay(meal, state) {
         var date = moment(meal.time).startOf('day');
         return state.mealDays.find(d => moment(d.date).isSame(date, 'day'));

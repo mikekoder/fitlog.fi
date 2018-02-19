@@ -1,13 +1,13 @@
 ﻿<template>
-    <div>
+    <div v-if="value || value == 0">
         <div class="bar-container" v-if="goal.min || goal.max" :title="title">
             <div class="line min" :style="minStyle" :class="minClass" v-if="goal.min"><div></div><div></div><div></div></div>
             <div class="line max" :style="maxStyle" :class="maxClass" v-if="goal.max"><div></div><div></div><div></div></div>
             <div class="bar value" :style="valueStyle"></div>
-            <div class="text">{{ decimal(value, precision) }}</div>
+            <div class="text">{{ formatDecimal(value, precision) }}</div>
         </div>
         <div v-else>
-            {{ decimal(value, precision) }}
+            {{ formatDecimal(value, precision) }}
         </div>
     </div>
 </template>
@@ -61,7 +61,7 @@
                 return '';
             },
             maxLeft() {
-                return (this.goal.max || 0) / this.maxValue * 100;
+                return (this.goal.max || 0) / this.maxValue * 100 - 2;
             },
             maxStyle() {
                 return 'left: ' + this.maxLeft + '%;';
@@ -101,17 +101,6 @@
             goal: Object,
             value: Number,
             precision: Number
-        },
-        created() {
-
-        },
-        methods: {
-            decimal(value, precision) {
-                if (!value) {
-                    return value;
-                }
-                return value.toFixed(precision);
-            }
         }
     }
 </script>

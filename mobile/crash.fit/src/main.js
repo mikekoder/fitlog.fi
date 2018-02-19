@@ -12,10 +12,13 @@ require(`quasar/dist/quasar.${__THEME}.css`)
 require('./assets/common.css')
 import Vue from 'vue'
 import Quasar from 'quasar'
+import { TouchHold, TouchSwipe } from 'quasar'
+
 import router from './router'
 import store from './store/store'
 import VueI18n from 'vue-i18n'
 import translations from './translations'
+import moment from 'moment'
 
 Vue.config.productionTip = false
 Vue.use(Quasar) // Install Quasar Framework
@@ -25,6 +28,10 @@ const i18n = new VueI18n({
   messages: translations
 })
 Vue.mixin({
+    directives: {
+        TouchHold,
+        TouchSwipe
+    },
   computed:{
       isLoggedIn(){
           return this.$store.state.profile.profile && true;
@@ -73,7 +80,51 @@ Vue.mixin({
         ]
       }
   },
-  created(){
+    methods: {
+       formatDate(value) {
+        if(!value){
+            return '-';
+        }
+        var m = new moment(value);
+        return m.format('DD.MM.YYYY');
+    },
+      formatTime(value) {
+        if(!value){
+            return '-';
+        }
+        var m = new moment(value);
+        return m.format('HH:mm');
+    },
+    formatDateTime(value, format) {
+        if(!value){
+            return '-';
+        }
+        var m = new moment(value);
+        format = format || 'DD.MM.YYYY HH:mm';
+        return m.format(format);
+    },
+    formatUnit(unit){
+        switch(unit){
+            case 'G':
+                return 'g';
+            case 'MG':
+                return 'mg';
+            case 'UG':
+                return '\u03BCg';
+            case'KCAL':
+                return 'kcal';
+            case 'KJ':
+                return 'kJ';
+            default:
+                return unit;
+        }
+    },
+    formatDecimal (value, precision) {
+        if (!value) {
+            return value;
+        }
+        return value.toFixed(precision);
+    }
   }
 });
 

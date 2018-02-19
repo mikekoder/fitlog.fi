@@ -1,61 +1,14 @@
-<template>
-  <div :class="{desktop: isDesktop }">
-    <div class="row pad">
-    <q-input type="text" v-model="name" :float-label="$t('name')" />
-    </div>
-    <q-tabs v-model="tab">
-        <!-- Tabs - notice slot="title" -->
-        <q-tab slot="title" name="tab-1" :label="$t('ingredients')" />
-        <q-tab slot="title" name="tab-2" :label="$t('portions')" />
-        <q-tab slot="title" name="tab-3" :label="$t('nutrients')" />
-        <!-- Targets -->
-        <q-tab-pane name="tab-1">
-            <div v-for="(row,index) in ingredients" @click="editIngredient(row)" :key="index">
-                <div class="row food-portion">
-                <div class="col">{{ row.foodName }} {{ row.quantity }} {{ row.portionName || 'g' }}</div>  
-                </div>
-                <!--
-                <div class="row nutrients">
-                <div class="col" v-for="nutrient in visibleNutrients" :key="nutrient.id">
-                    <div v-if="nutrient.id == energyDistributionId">
-                    <energy-distribution v-bind:protein="row.nutrients[proteinId]" v-bind:carb="row.nutrients[carbId]" v-bind:fat="row.nutrients[fatId]"></energy-distribution>
-                    </div>
-                    <div v-else>{{ decimal(row.nutrients[nutrient.id]) }}</div>
-                    </div>
-                </div>
-                -->
-                <q-btn round class="float-right" color="primary" style="top: -55px; right:-10px;" small icon="fa-trash" v-on:click.stop="deleteIngredient(index)"></q-btn>
-            </div>
-            <q-btn round color="primary" icon="fa-plus" small @click="addIngredient"></q-btn>
-            <meal-row-editor ref="editRow" v-on:save="saveIngredient(arguments[0])" />
-        </q-tab-pane>
-        <q-tab-pane name="tab-2">
-          <div class="row" v-for="(portion,index) in portions" :key="index">
-            <div class="col col-lg-4 col-xl-3"><q-input type="text" v-model="portion.name" :float-label="$t('name')" /></div>
-            <div class="col col-lg-2 col-xl-1"><q-input type="number" v-model="portion.weight" :float-label="$t('weight')" /></div>
-            <div class="col col-lg-1"><q-btn round small color="primary" icon="fa-trash" @click="removePortion(index)"></q-btn></div>
-          </div>
-          <div class="row">
-            <q-btn round small color="primary" icon="fa-plus" @click="addPortion"></q-btn>
-          </div>
-        </q-tab-pane>
-    </q-tabs>
-    <div class="row pad buttons">
-      <q-btn @click="cancel">{{ $t('cancel') }}</q-btn>
-      <q-btn color="primary" @click="save">{{ $t('save') }}</q-btn>
-    </div>
-  </div>
-</template>
-
-<script>
  import { QTabs,QTab,QTabPane,QField,QInput,QScrollArea,QSearch,QAutocomplete,QSelect,QBtn,QModal,QList,QItem } from 'quasar'
- import constants from '../store/constants'
- import formatters from '../formatters'
- import utils from '../utils'
-import MealRowEditor from './meal-row-editor'
+ import constants from '../../store/constants'
+ import utils from '../../utils'
+import MealRowEditor from '../../components/meal-row-editor'
+import nutrientsMixin from '../../mixins/nutrients'
+import nutrientGroupsMixin from '../../mixins/nutrient-groups'
 
 var defaultNutrientPortion = { id: undefined, name: '100g' };
 export default {
+    mixins:[nutrientsMixin,nutrientGroupsMixin],
+
   data () {
     return {
         id: null,
@@ -64,6 +17,7 @@ export default {
         portions: [],
         cookedWeight: undefined,
         tab: 'tab-1',
+        groupOpenStates: {},
         selectedGroup: undefined,
         selectedRow: undefined
     }
@@ -77,6 +31,9 @@ export default {
             return this.$store.state.nutrition.nutrientGroups;
         },
         nutrientsGrouped() {
+            return this.$store.state.nutrition.nutrientsGrouped;
+        },
+        allNutrients() {
             return this.$store.state.nutrition.nutrientsGrouped;
         },
         recipeNutrients() {
@@ -216,13 +173,6 @@ export default {
             }
         });
     },
-    unit: formatters.formatUnit,
-    decimal(value, precision) {
-        if (!value) {
-            return value;
-        }
-        return value.toFixed(precision);
-    },
     toggleGroup(group) {
         this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
     },
@@ -248,7 +198,7 @@ export default {
                     self.$store.commit(constants.LOADING_DONE);
                 },
                 failure() {
-                    toaster(self.$t('recipeDetails.fetchFailed'));
+                    toaster(self.$t('fetchFailed'));
                 }
             });
         }
@@ -270,7 +220,7 @@ export default {
                 self.populate(recipe);
             },
             failure() {
-                toaster(self.$t('recipeDetails.fetchFailed'));
+                toaster(self.$t('fetchFailed'));
             }
         });
     }
@@ -296,12 +246,3 @@ export default {
 
   }
 }
-</script>
-
-<style lang="stylus" scoped>
-.q-tab-pane { height: 60vh;}
-.scroll { height: 100%;}
-.desktop .q-tab-pane { height: 70vh;}
-.desktop .q-scrollarea { height: 100%;}
-.food-portion{ padding-bottom: 30px;}
-</style>
