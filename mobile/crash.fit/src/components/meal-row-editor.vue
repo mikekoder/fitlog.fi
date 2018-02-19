@@ -2,44 +2,46 @@
     <q-modal ref="modal" :class="{desktop: isDesktop }">
       <h5>Ruoka-aine</h5>
       
-        <q-tabs v-model="tab" v-if="selectFood">
+        <q-tabs v-model="tab" v-if="selectFood" style="height: 83vh;">
             <!-- Tabs - notice slot="title" -->
-            <q-tab slot="title" name="tab-1" icon="fa-search" />
-            <q-tab slot="title" name="tab-2" icon="fa-clock-o" />
-            <q-tab slot="title" name="tab-3" icon="fa-star" />
-            <q-tab slot="title" name="tab-4" icon="fa-user" />
+            <q-tab slot="title" name="tab-1" icon="fa-search" :label="$t('search')" />
+            <q-tab slot="title" name="tab-2" icon="fa-clock-o" :label="$t('latest')" />
+            <q-tab slot="title" name="tab-3" icon="fa-star" :label="$t('mostUsed')" />
+            <q-tab slot="title" name="tab-4" icon="fa-user" :label="$t('my')" />
             <!-- Targets -->
+            <q-scroll-area style="height: 70vh;">
             <q-tab-pane name="tab-1">
                 <q-search v-model="searchText" :placeholder="$t('food')" @change="foodChange">
-                    <q-autocomplete @search="search" @selected="foodSelected" :min-characters="2" :max-results="20" />
+                    <q-autocomplete @search="search" @selected="foodSelected" :min-characters="2" :max-results="20" separator />
                 </q-search>
                 <q-btn @click="selectFood=false" v-if="food">{{ $t('ok') }}</q-btn>
             </q-tab-pane>
             <q-tab-pane name="tab-2">
-                <q-scroll-area>
+                
                     <q-list>
-                        <q-item v-for="(f, index) in latestFoods" @click="load(f.id)" v-bind:class="{selected: food && f.id == food.id }" :key="index">{{ f.name }}</q-item>
+                        <q-item v-for="(f, index) in latestFoods" @click="load(f.id)" v-bind:class="{selected: food && f.id == food.id }" :key="index" :separator="true">{{ f.name }}</q-item>
                     </q-list>
-                </q-scroll-area>
+         
             </q-tab-pane>
             <q-tab-pane name="tab-3">
-                <q-scroll-area>
+                
                     <q-list>
-                        <q-item v-for="(f, index) in mostUsedFoods" @click="load(f.id)" v-bind:class="{selected: food && f.id == food.id }" :key="index">{{ f.name }}</q-item>
+                        <q-item v-for="(f, index) in mostUsedFoods" @click="load(f.id)" v-bind:class="{selected: food && f.id == food.id }" :key="index" :separator="true">{{ f.name }}</q-item>
                     </q-list>
-                </q-scroll-area>
+                
             </q-tab-pane>
             <q-tab-pane name="tab-4">
-                <q-scroll-area>
+               
                     <q-list>
-                        <q-item v-for="(f, index) in ownFoods" @click="load(f.id)" v-bind:class="{selected: food && f.id == food.id }" :key="index">{{ f.name }}</q-item>
+                        <q-item v-for="(f, index) in ownFoods" @click="load(f.id)" v-bind:class="{selected: food && f.id == food.id }" :key="index" :separator="true">{{ f.name }}</q-item>
                     </q-list>
-                </q-scroll-area>
+           
             </q-tab-pane>
+            </q-scroll-area>
         </q-tabs>
       
       <div class="row pad" v-if="!selectFood">     
-        <q-btn @click="reselectFood">{{ food.name }}</q-btn>
+        <q-btn @click="reselectFood">{{ food.manufacturer ? `${food.name} (${food.manufacturer})` : food.name }}</q-btn>
       </div>
       <div class="row pad" v-if="!selectFood">     
         <q-input v-model="quantity" type="number" v-if="food" :float-label="$t('quantity')" />
@@ -119,7 +121,7 @@ export default {
         search(text, done){
           var self = this;
           api.searchFoods(text).then(results => {
-            done(results.map(f => { return { ...f, value: f.name, label: f.name, icon: f.userId ? 'fa-user' : '' }}));
+            done(results.map(f => { return { ...f, value: f.manufacturer ? `${f.name} (${f.manufacturer})` : f.name, label: f.manufacturer ? `${f.name} (${f.manufacturer})` : f.name, icon: f.userId ? 'fa-user' : '' }}));
           });
           
         },
@@ -138,7 +140,7 @@ export default {
             self.$store.dispatch(constants.FETCH_FOOD, {
                 id: foodId,
                 success (food) {
-                    self.searchText = food.name;
+                    self.searchText = food.manufacturer ? `${food.name} (${food.manufacturer})` : food.name;
                     self.food = food;
                     self.selectFood = false;
                     var portions = food.portions.map(p => {return {...p, label: p.name, value: p }});

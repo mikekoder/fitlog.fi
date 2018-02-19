@@ -41,7 +41,7 @@ export default {
         });
     },
     logout(){
-        return $.post(this.baseUrl+'users/logout');
+        return $.post(this.baseUrl + 'users/logout');
     },
     refreshToken(refreshToken) {
         return $.get(this.baseUrl + 'users/refresh-token/?refreshToken=' + refreshToken);
@@ -122,6 +122,12 @@ export default {
     // Foods
     searchFoods(name){
         return $.get(this.baseUrl + 'foods/search', { name });
+    },
+    searchFoodsMostNutrients(nutrientId){
+        return $.get(this.baseUrl + 'foods/search/most-nutrients', { nutrientId, count: 100 });
+    },
+    searchFoodsLeastNutrients(nutrientId){
+        return $.get(this.baseUrl + 'foods/search/least-nutrients', { nutrientId, count: 100 });
     },
     getLatestFoods() {
         return $.get(this.baseUrl + 'foods/latest');
@@ -260,16 +266,15 @@ export default {
             data: JSON.stringify(definitions)
         });
     },
-
-    // Workouts
-    startWorkout(time){
+    deleteMealDefinition(definition) {
+        var url = this.baseUrl + 'meals/definitions/'+id;
         return $.ajax({
-            url: this.baseUrl + 'workouts/start',
-            type: 'POST',
-            contentType: 'text/json',
-            data: JSON.stringify({time})
+            url: url,
+            type: 'DELETE',
+            contentType: 'text/json'
         });
     },
+    // Workouts
     listWorkouts(start, end){
         var query = {};
         if (start) {
@@ -330,6 +335,15 @@ export default {
             type: method,
             contentType: 'text/json',
             data: JSON.stringify(exercise)
+        });
+    },
+    save1RM(exerciseId, oneRepMax){
+        var url = this.baseUrl + 'exercises/' + exerciseId + '/onerepmax';
+        return $.ajax({
+            url: url,
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(oneRepMax)
         });
     },
     deleteExercise(id){
@@ -455,5 +469,48 @@ export default {
             type: 'POST',
             contentType: 'text/json'
         });
+    },
+
+    // Activities
+    listActivities() {
+        return $.get(this.baseUrl + 'activities');
+    },
+    listEnergyExpenditures(start, end){
+        var query = {};
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(this.baseUrl + 'activities/energyexpenditures', query);
+    },
+    saveEnergyExpenditure(energyExpenditure){
+        var url = this.baseUrl + 'activities/energyexpenditures/';
+        var method = 'POST';
+        if (energyExpenditure.id) {
+            url += energyExpenditure.id;
+            method = 'PUT';
+        }
+
+        return $.ajax({
+            url: url,
+            type: method,
+            contentType: 'text/json',
+            data: JSON.stringify(energyExpenditure)
+        });
+    },
+    listActivityPresets() {
+        return $.get(this.baseUrl + 'activities/presets');
+    },
+    saveActivityPresets(presets) {
+        var url = this.baseUrl + 'activities/presets';
+        return $.ajax({
+            url: url,
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify(presets)
+        });
+
     }
 };

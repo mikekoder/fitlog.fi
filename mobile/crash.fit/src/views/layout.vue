@@ -1,6 +1,6 @@
 <template>
   <q-layout ref="layout" view="lHh Lpr fff" :left-class="{'bg-grey-2': true}">
-    <q-toolbar slot="header" class="glossy">
+    <q-toolbar slot="header" class="glossy bg-tertiary">
       <q-btn flat @click="$refs.layout.toggleLeft()">
         <q-icon name="menu" />
       </q-btn>
@@ -13,17 +13,17 @@
     <div slot="left">
       <q-list no-border link inset-delimiter v-if="!isLoggedIn">
         <q-side-link item :to="{ name: 'login' }">  
-          <q-item-side icon="fa-key" />
+          <q-item-side icon="fa-sign-in" />
           <q-item-main :label="$t('login')" />
         </q-side-link>
       </q-list>
       <q-list no-border link inset-delimiter v-if="isLoggedIn">
-
-        <q-list-header>{{ $t('nutrition') }}</q-list-header>
-        <q-side-link item :to="{ name: 'meals' }">  
+         <q-side-link item :to="{ name: 'home' }" exact>  
           <q-item-side icon="fa-cutlery" />
           <q-item-main :label="$t('diary')" />
         </q-side-link>
+        <q-list-header>{{ $t('nutrition') }}</q-list-header>
+       
         <q-side-link item :to="{ name: 'foods' }">  
           <q-item-side icon="fa-apple" />
           <q-item-main :label="$t('foods')" />
@@ -36,11 +36,13 @@
           <q-item-side icon="fa-book" />
           <q-item-main :label="$t('recipes')" />
         </q-side-link>
+        <!--
         <q-side-link item :to="{ name: 'nutrition-goals' }">  
           <q-item-side icon="fa-crosshairs" />
           <q-item-main :label="$t('nutritionGoals')" />
         </q-side-link>
-
+-->
+        
         <q-list-header>{{ $t('training') }}</q-list-header>
         <q-side-link item :to="{ name: 'workouts' }">  
           <q-item-side icon="fa-heartbeat" />
@@ -50,30 +52,34 @@
           <q-item-side icon="fa-universal-access" />
           <q-item-main :label="$t('exercises')" />
         </q-side-link>
+        <!--
         <q-side-link item :to="{ name: 'routines' }">  
           <q-item-side icon="fa-calendar" />
           <q-item-main :label="$t('routines')" />
         </q-side-link>
+        -->
         <q-side-link item :to="{ name: 'rep-calculator' }">  
           <q-item-side icon="fa-calculator" />
           <q-item-main :label="$t('repCalculator')" />
         </q-side-link>
-
+        <!--
         <q-list-header>{{ $t('measurements') }}</q-list-header>
         <q-side-link item :to="{ name: 'measurements' }">  
           <q-item-side icon="fa-balance-scale" />
           <q-item-main :label="$t('measurements')" />
         </q-side-link>
-
+        -->
 
         <q-list-header>{{ $t('profile') }}</q-list-header>
         <q-item @click="logout">
-          <q-item-side icon="fa-key" />
+          <q-item-side icon="fa-sign-out" />
           <q-item-main :label="$t('logout')" />
         </q-item>
+        <!--
         <q-list-header>Debug</q-list-header>
         <q-item v-if="profile">{{ profile.username }}</q-item>
         <q-item>{{ token }}</q-item>
+        -->
       </q-list>
     </div>
     <router-view v-show="!loading" />
@@ -134,9 +140,11 @@ export default {
       this.title = this.$t(title);
     },
     logout(){
+      alert('before');
       var self = this;
       self.$store.dispatch(constants.LOGOUT, {
-          success: function () { },
+          
+          success: function () {alert('done'); },
           failure: function () { }
       });
     }
@@ -154,6 +162,7 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     this.$store.commit(constants.LOADING);
+    this.refreshTokens();
     next();
   },
   beforeRouteLeave(to, from, next) {

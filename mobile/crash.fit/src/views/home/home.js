@@ -1,109 +1,26 @@
-<template>
-  <div>
-    
-  <q-card>
-      <q-card-title class="card-title bg-grey-4">
-        <div class="row">
-          <div class="col col-lg-2" align="right">
-            <q-btn round small glossy color="grey-6" @click="changeDate(-1)"><q-icon name="fa-chevron-left" /></q-btn>
-          </div>
-          <div class="col col-lg-2" align="center">
-            <q-datetime v-model="selectedDate" type="date" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" @change="changeDate" @blur="datepickerVisible=false;" ref="datepicker" v-show="datepickerVisible" />
-            <q-btn round small :flat="true" @click="()=> {datepickerVisible=true; $refs.datepicker.open();}">{{ dateText }}</q-btn>
-            </div>
-          <div class="col col-lg-2" align="left">
-            <q-btn round small glossy color="grey-6" @click="changeDate(1)"><q-icon name="fa-chevron-right" /></q-btn>
-          </div>
-          <q-btn round small class="pull-right" icon="fa-gear" @click="showMealSettings"></q-btn>
-          
-        </div>
-      </q-card-title>
-      <q-card-separator />
-      <q-card-main>
-        <div class="row">
-          <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index" align="center">{{ nutrient.shortName }}</div>
-        </div>
-        <div class="row">
-          <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index"  align="center">
-            <div v-if="nutrient.id == energyDistributionId" v-show="nutrients[proteinId] && nutrients[carbId] && nutrients[fatId]">
-                <energy-distribution-bar v-bind:protein="nutrients[proteinId]" v-bind:carb="nutrients[carbId]" v-bind:fat="nutrients[fatId]"></energy-distribution-bar>
-            </div>
-            <div v-else>
-              <nutrient-bar :goal="nutrientGoal(nutrient.id)" :value="nutrients[nutrient.id]" :precision="nutrient.precision"></nutrient-bar>
-            </div>
-        </div>
-        </div>
-      </q-card-main>
-    </q-card>
-    <q-scroll-area style="height: 70vh;">
-      <q-card v-for="(mealdef, index) in meals" :key="index">
-        <q-card-title class="card-title bg-grey-3">
-          <div class="row">{{ mealName(mealdef) }}</div>
-          <div class="row" v-if="mealdef.meal">
-            <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index" align="center">
-              <div v-if="nutrient.id == energyDistributionId">
-                  <energy-distribution-bar v-bind:protein="mealdef.meal.nutrients[proteinId]" v-bind:carb="mealdef.meal.nutrients[carbId]" v-bind:fat="mealdef.meal.nutrients[fatId]"></energy-distribution-bar>
-              </div>
-              <div v-else>
-                <nutrient-bar :goal="nutrientGoal(nutrient.id, mealdef.meal)" :value="mealdef.meal.nutrients[nutrient.id]" :precision="nutrient.precision"></nutrient-bar>
-              </div>
-            </div>
-          </div>
-        </q-card-title>
-        <q-card-separator />
-        <q-card-main v-if="mealdef.meal">
-          <div v-for="(row,index) in mealdef.meal.rows" @click="clickRow(row)" :key="index">
-            <div class="row food-portion">
-              <div class="col">{{ row.foodName }} {{ row.quantity }} {{ row.portionName || 'g' }}</div>  
-            </div>
-            <div class="row nutrients">
-              <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="index" align="center">
-                <div v-if="nutrient.id == energyDistributionId">
-                  <energy-distribution-bar v-bind:protein="row.nutrients[proteinId]" v-bind:carb="row.nutrients[carbId]" v-bind:fat="row.nutrients[fatId]"></energy-distribution-bar>
-                </div>
-                <div v-else>
-                  {{ decimal(row.nutrients[nutrient.id]) }}
-                </div>
-              </div>
-            </div>
-            <!--
-            <q-btn round class="float-right" color="primary" style="top: -55px; right:-10px;" small icon="keyboard_arrow_up" v-on:click.stop="showFab=true"></q-btn>
-            -->
-          </div>
-        </q-card-main>
-        <q-card-actions align="end">
-          <q-btn round glossy color="primary" icon="fa-plus" small @click="addRow(mealdef)"></q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-scroll-area>
-    <meal-row-editor ref="editRow" @save="saveRow(arguments[0])" />
-    <meal-settings ref="mealSettings" @save="saveSettings(arguments[0])" />
-  </div>
-</template>
-
-<script>
 import { openURL } from 'quasar'
 import moment from 'moment'
-import constants from '../store/constants'
-import formatters from '../formatters'
-import { QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator,QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem,QDatetime, ActionSheet } from 'quasar'
-import EnergyDistributionBar from './energy-distribution-bar'
-import NutrientBar from './nutrient-bar'
-import MealRowEditor from './meal-row-editor'
+import constants from '../../store/constants'
+import { QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator,QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem,QDatetime, ActionSheet, QPullToRefresh } from 'quasar'
+import EnergyDistributionBar from '../../components/energy-distribution-bar'
+import NutrientBar from '../../components/nutrient-bar'
+import MealRowEditor from '../../components/meal-row-editor'
 import MealSettings from './meal-settings'
-import utils from '../utils'
-import nutrientsMixin from '../mixins/nutrients'
-import mealDefinitionsMixin from '../mixins/meal-definitions'
-import nutritionGoalMixin from '../mixins/nutrition-goal'
+import utils from '../../utils'
+import nutrientsMixin from '../../mixins/nutrients'
+import mealDefinitionsMixin from '../../mixins/meal-definitions'
+import nutritionGoalMixin from '../../mixins/nutrition-goal'
+import NutrientKnob from '../../components/nutrient-knob'
 
 export default {
   mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin],
   components: {
-    QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator, QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem, QDatetime,
+    QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator, QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem, QDatetime,QPullToRefresh,
     EnergyDistributionBar,
     NutrientBar,
     MealRowEditor,
-    MealSettings
+    MealSettings,
+    NutrientKnob
   },
   data () {
     return {
@@ -128,7 +45,7 @@ export default {
         else if (moment().subtract(1,'day').isSame(this.selectedDate, 'd')) {
             return this.$t('yesterday');
         }
-        return this.date(this.selectedDate);
+        return this.formatDate(this.selectedDate);
     },
     visibleNutrients() {
           return this.$store.state.nutrition.nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1,n2) => n1.homeOrder - n2.homeOrder);
@@ -217,34 +134,44 @@ export default {
             this.fetchData();
         }
     },
-    fetchData() {
+    fetchData(refreshCallback) {
       var self = this;
       var start = moment(self.selectedDate).startOf('day');
       var end = moment(self.selectedDate).endOf('day');
+      var force = refreshCallback && true;
       self.$store.dispatch(constants.FETCH_MEALS, {
         start,
         end,
+        force,
         success: function () {
           self.$store.commit(constants.LOADING_DONE);
+          if(refreshCallback){
+            refreshCallback();
+          }
         },
         failure: function () { }
       });
       self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
+    },
+    refresh(done){
+        this.fetchData(done);
+    },
+    swipe(event){
+        if(event.direction == "left"){
+            this.changeDate(1);
+        }
+        else if(event.direction == "right"){
+            this.changeDate(-1);
+        }
+        else{
+            return false;
+        }
     },
     mealName(defMeal) {
       if (defMeal.definition) {
           return defMeal.definition.name;
       }
       return this.time(defMeal.meal.time);
-    },
-    date: formatters.formatDate,
-    time: formatters.formatTime,
-    unit: formatters.formatUnit,
-    decimal (value, precision) {
-        if (!value) {
-            return value;
-        }
-        return value.toFixed(precision);
     },
     addRow(mealdef){
       this.selectedRow = { 
@@ -256,7 +183,7 @@ export default {
       };
       this.$refs.editRow.open(this.selectedRow);
     },
-    clickRow(row){
+    clickRow(mealDef, row){
       var self = this;
       ActionSheet.create({
         title: `${row.foodName} ${ row.quantity } ${ row.portionName || 'g' }`,
@@ -280,7 +207,7 @@ export default {
             label: self.$t('delete'),
             icon: 'fa-trash',
             handler: function() {
-              self.deleteRow(row);
+              self.deleteRow(mealDef, row);
             }
           }
         ]
@@ -387,8 +314,3 @@ export default {
     
   }
 }
-</script>
-
-<style lang="stylus">
-.row.nutrients{ padding-bottom: 20px;}
-</style>

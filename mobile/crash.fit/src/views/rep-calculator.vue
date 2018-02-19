@@ -14,7 +14,7 @@
                             <thead>
                                 <tr>
                                     <th>{{ $t('reps') }}</th>
-                                    <th>{{ $t('average') }}</th>
+                                    <th>{{ $t('estimate') }}</th>
                                     <th>Epley<sub>*</sub></th>
                                     <th>Brzycki<sub>*</sub></th>
                                     <th>Lander<sub>*</sub></th>

@@ -15,9 +15,8 @@
 </template>
 
 <script>
-import constants from '../store/constants'
-import formatters from '../formatters'
-import DAYS from '../enums/days'
+import constants from '../../store/constants'
+import DAYS from '../../enums/days'
 import {QCard,QCardTitle,QCardSeparator,QCardMain } from 'quasar'
 export default {
   components: {QCard,QCardTitle,QCardSeparator,QCardMain},

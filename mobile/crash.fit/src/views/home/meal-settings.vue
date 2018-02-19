@@ -9,7 +9,7 @@
                     <template v-for="(group,index_g) in nutrientGroups">
                         <option disabled :key="index_g">{{ group.name }}</option>
                         <option v-for="(nutrient,index_n) in group.nutrients" v-bind:value="nutrient.id" :key="index_n">
-                        {{ nutrient.name }} ({{ unit(nutrient.unit) }})
+                        {{ nutrient.name }} ({{ formatUnit(nutrient.unit) }})
                         </option>
                     </template>
                 </select>
@@ -25,9 +25,9 @@
 
 <script>
     import { QTabs,QTab,QTabPane,QField,QInput,QScrollArea,QSearch,QAutocomplete,QSelect,QBtn,QModal,QList,QItem,QItemMain } from 'quasar'
-    import constants from '../store/constants'
-    import api from'../api'
-    import formatters from '../formatters'
+    import constants from '../../store/constants'
+    import api from '../../api'
+
 export default {
     name: 'meal-settings',
     data () {
@@ -81,8 +81,7 @@ export default {
                 failure() { }
             });
             
-        },
-        unit: formatters.formatUnit
+        }
     }
 }
 </script>

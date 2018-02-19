@@ -1,5 +1,20 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Layout from './views/layout'
+import Home from './views/home/home.vue'
+import Login from './views/login.vue'
+import Foods from './views/foods/foods.vue'
+import FoodDetails from './views/foods/food-details.vue'
+import Recipes from './views/recipes/recipes.vue'
+import RecipeDetails from './views/recipes/recipe-details.vue'
+import MealRhythm from './views/meal-rhythm/meal-rhythm.vue'
+import Workouts from './views/workouts/workouts.vue'
+import WorkoutDetails from './views/workouts/workout-details.vue'
+import Exercises from './views/exercises/exercises.vue'
+import ExerciseDetails from './views/exercises/exercise-details.vue'
+import Routines from './views/routines/routines.vue'
+//import RoutineDetails from './views/routines/routine-details.vue'
+import RepCalculator from './views/rep-calculator.vue'
 
 Vue.use(VueRouter)
 
@@ -23,12 +38,50 @@ export default new VueRouter({
 
   routes: [
     { path: '/',
-      component: load('Layout'),
+      component: Layout,
       children: [
+        {
+            path: '/',
+            name: 'home',
+            component: Home,
+            meta: { title: 'diary' }
+        },
+        {
+            path: '/foods',
+            name: 'foods',
+            component: Foods,
+            meta: { title: 'foods' }
+          },
+          {
+            path: '/foods/:id',
+            name: 'food-details',
+            component: FoodDetails,
+            meta: { title: 'foodDetails' }
+        },
+          
+        {
+          path: '/recipes',
+          name: 'recipes',
+          component: Recipes,
+          meta: { title: 'recipes' }
+        },
+        {
+          path: '/recipes/:id',
+          name: 'recipe-details',
+          component: RecipeDetails,
+          meta: { title: 'recipeDetails' }
+        },
+        {
+          path: '/meal-rhythm',
+          name: 'meal-rhythm',
+          component: MealRhythm,
+          meta: { title: 'mealRhythm' }
+        },
+
         {
           path: '/login/:refreshToken?/:accessToken?',
           name: 'login',
-          component: load('Login'),
+          component: Login,
           meta: { title: 'login' }
         },
         {
@@ -37,96 +90,77 @@ export default new VueRouter({
           component: load('Register'),
           meta: { title: 'register' }
         },
-        {
-          path: '/meals',
-          name: 'meals',
-          component: load('Meals'),
-          meta: { title: 'meals' }
-        },
-        {
-          path: '/foods',
-          name: 'foods',
-          component: load('Foods'),
-          meta: { title: 'foods' }
-        },
-        {
-          path: '/foods/:id',
-          name: 'food-details',
-          component: load('FoodDetails'),
-          meta: { title: 'foodDetails' }
-        },
-        {
-          path: '/recipes',
-          name: 'recipes',
-          component: load('Recipes'),
-          meta: { title: 'recipes' }
-        },
-        {
-          path: '/recipes/:id',
-          name: 'recipe-details',
-          component: load('RecipeDetails'),
-          meta: { title: 'recipeDetails' }
-        },
-        {
-          path: '/meal-rhythm',
-          name: 'meal-rhythm',
-          component: load('MealRhythm'),
-          meta: { title: 'mealRhythm' }
-        },
+
+        /*
+        
         {
           path: '/nutrition-goals',
           name: 'nutrition-goals',
           component: load('NutritionGoals'),
           meta: { title: 'nutritionGoals' }
         },
-        {
-          path: '/workouts',
-          name: 'workouts',
-          component: load('Workouts'),
-          meta: { title: 'workouts' }
-        },
+        
         {
           path: '/workouts/:id',
           name: 'workout-details',
           component: load('WorkoutDetails'),
           meta: { title: 'workoutDetails' }
         },
+        */
+        {
+          path: '/workouts',
+          name: 'workouts',
+          component: Workouts,
+          meta: { title: 'workouts' }
+        },
+        {
+          path: '/workouts/:id',
+          name: 'workout-details',
+          component: WorkoutDetails,
+          meta: { title: 'workoutDetails' }
+        },
         {
           path: '/exercises',
           name: 'exercises',
-          component: load('Exercises'),
+          component: Exercises,
           meta: { title: 'exercises' }
         },
         {
           path: '/exercises/:id',
           name: 'exercise-details',
-          component: load('ExerciseDetails'),
+          component: ExerciseDetails,
           meta: { title: 'exerciseDetails' }
         },
+        
         {
           path: '/routines',
           name: 'routines',
           component: load('Routines'),
           meta: { title: 'routines' }
         },
+        /*
         {
           path: '/routines/:id',
           name: 'routine-details',
           component: load('RoutineDetails'),
           meta: { title: 'routineDetails' }
         },
+        */
         {
           path: '/rep-calculator',
           name: 'rep-calculator',
-          component: load('RepCalculator'),
+          component: RepCalculator,
           meta: { title: 'repCalculator' }
         },
+        /*
         {
           path: '/measurements',
           name: 'measurements',
           component: load('Measurements'),
           meta: { title: 'measurements' }
-        }]
+        }
+        */
+        ]
     },
 
     // Always leave this last one
