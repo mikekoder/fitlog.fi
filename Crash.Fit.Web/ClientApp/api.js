@@ -120,6 +120,12 @@ export default {
     searchFoods(name){
         return $.get(this.baseUrl + 'foods/search', { name });
     },
+    searchFoodsMostNutrients(nutrientId){
+        return $.get(this.baseUrl + 'foods/search/most-nutrients', { nutrientId, count: 100 });
+    },
+    searchFoodsLeastNutrients(nutrientId){
+        return $.get(this.baseUrl + 'foods/search/least-nutrients', { nutrientId, count: 100 });
+    },
     getLatestFoods() {
         return $.get(this.baseUrl + 'foods/latest');
     },
