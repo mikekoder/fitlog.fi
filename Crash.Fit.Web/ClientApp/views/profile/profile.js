@@ -34,7 +34,9 @@ export default {
             newPassword2: undefined,
             usernameError: null,
             passwordError: null,
-            password2Error: null
+            password2Error: null,
+
+            deleteStarted: false
         }
     },
     computed: {
@@ -140,6 +142,14 @@ export default {
         },
         connectGoogle() {
             window.location = api.baseUrl + 'users/external-login/?provider=Google&client=web&add=true&returnUrl=/#/profiili';
+        },
+        deleteProfile() {
+            var self = this;
+
+            self.$store.dispatch(constants.DELETE_PROFILE, {
+                success() { },
+                failure() { }
+            });
         }
     },
     created() {

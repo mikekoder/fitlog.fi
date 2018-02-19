@@ -142,6 +142,25 @@ namespace Crash.Fit.Web.Controllers
 
             return Ok(result);
         }
+        [HttpDelete("me")]
+        public async Task<IActionResult> DeleteProfile()
+        {
+            var user = await _userManager.FindByIdAsync(CurrentUserId.ToString());
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
+
+            var profile = _profileRepository.GetProfile(CurrentUserId);
+            profile.DoB = null;
+            profile.Gender = null;
+
+            _profileRepository.SaveProfile(profile);
+
+            return Ok();
+        }
+
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody]LoginRequest model)
