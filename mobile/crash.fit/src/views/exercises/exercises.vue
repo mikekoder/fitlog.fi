@@ -2,7 +2,10 @@
   <div :class="{desktop: isDesktop }">
       <q-scroll-area>
           <q-list>
-              <q-item v-for="(exercise,index) in ownExercises" @click="showExercise(exercise)" :key="index" :separator="true">{{ exercise.name }}</q-item>
+              <q-item v-for="(exercise,index) in ownExercises" @click="showExercise(exercise)" :key="index" :separator="true">
+                <div class="col-9">{{ exercise.name }}</div>
+                  <div class="col-2">{{ formatDecimal(exercise.oneRepMax) }}</div>
+                </q-item>
           </q-list>
       </q-scroll-area>
     <div class="row pad">

@@ -110,7 +110,7 @@ export default {
             });
         },
         [constants.SAVE_WORKOUT]({ commit, state }, { workout, success, failure }) {
-            api.saveWorkout(workout).then(function (savedWorkout) {
+            api.saveWorkout(workout).then(savedWorkout => {
                 commit(constants.SAVE_WORKOUT_SUCCESS, { id: workout.id, workout: savedWorkout })
                 if (success) {
                     success(savedWorkout);
@@ -122,7 +122,7 @@ export default {
             });
         },
         [constants.DELETE_WORKOUT]({ commit, state }, { workout, success, failure }) {
-            api.deleteWorkout(workout.id).then(function () {
+            api.deleteWorkout(workout.id).then(() => {
                 commit(constants.DELETE_WORKOUT_SUCCESS, { workout })
                 if (success) {
                     success();
@@ -521,6 +521,15 @@ export default {
             });
 
             state.workouts.push(workout);
+            /*
+            state.workouts.sort(function (a, b) {
+                if (a.time.getTime() < b.time.getTime())
+                    return 1;
+                if (a.time.getTime() > b.time.getTime())
+                    return -1;
+                return 0;
+            });
+            */
         },
         [constants.DELETE_EXERCISE_SUCCESS](state, { exercise }) {
             deleteExercise(exercise, state)

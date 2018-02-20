@@ -31,7 +31,7 @@
               <q-item v-for="(food,index) in topResults" @click="showFood(food)" :key="index" :separator="true">
                   <div class="col-9">{{ food.name }}</div>
                   <div class="col-2">{{ formatDecimal(food.nutrientAmount,topNutrient.precision) }}</div>
-                  <div class="col-1">{{ formatUnit(topNutrient.unit) }} </div>
+                  <div class="col-1">{{ formatUnit(topNutrient.unit) }}</div>
               </q-item>
             </q-list>
           </q-tab-pane>

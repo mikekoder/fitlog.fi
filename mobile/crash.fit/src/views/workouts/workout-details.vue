@@ -5,7 +5,7 @@
 
     <q-scroll-area style="height: 90vh;">
         <div class="row pad">
-            <q-datetime v-model="time" type="datetime" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" :float-label="$t('time')" format24h />
+            <q-datetime v-model="time" type="datetime" :format="$t('datetimeFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" :float-label="$t('time')" format24h />
         </div>
         <div class="row pad" v-for="(set,index) in sets">
             <div class="col-6">
@@ -29,9 +29,6 @@
                     <q-fab-action color="negative" @click="deleteSet(index)" icon="delete"></q-fab-action>
                     <q-fab-action color="secondary" @click="copySet(index)" icon="content_copy"></q-fab-action>
                 </q-fab>
-                <!--
-                <q-btn round glossy color="primary" small icon="fa-trash" v-on:click.stop="deleteSet(index)"></q-btn>
-                -->
             </div>
         </div>
         <div class="row pad buttons">
