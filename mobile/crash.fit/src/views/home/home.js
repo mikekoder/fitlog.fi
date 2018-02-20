@@ -11,6 +11,7 @@ import nutrientsMixin from '../../mixins/nutrients'
 import mealDefinitionsMixin from '../../mixins/meal-definitions'
 import nutritionGoalMixin from '../../mixins/nutrition-goal'
 import NutrientKnob from '../../components/nutrient-knob'
+import { Toast } from 'quasar'
 
 export default {
   mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin],
@@ -143,18 +144,26 @@ export default {
         start,
         end,
         force,
-        success: function () {
+        success: (meals) => {
           self.$store.commit(constants.LOADING_DONE);
           if(refreshCallback){
             refreshCallback();
           }
         },
-        failure: function () { }
+        failure: () => { }
       });
       self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
     },
     refresh(done){
-        this.fetchData(done);
+        var self = this;
+        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
+            success() {
+                self.fetchData(done);
+            },
+            failure() {
+              self.$store.commit(constants.LOADING_DONE);
+             }
+        });
     },
     swipe(event){
         if(event.direction == "left"){
@@ -287,18 +296,25 @@ export default {
   },
   created(){
     var self = this;
+
+    setTimeout(() => {
+        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
+            success() {
+                self.fetchData();
+            },
+            failure() {
+                Toast.create(self.$t('fetchFailed'));
+                self.$store.commit(constants.LOADING_DONE);
+             }
+        });
+
+    } , 100);
+
     self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-        success: function () { },
-        failure: function () { }
+        success() { },
+        failure() { }
     });
-    self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-        success: function () {
-            self.fetchData();
-        },
-        failure: function () {
-          self.$store.commit(constants.LOADING_DONE);
-         }
-    });
+    
     self.$store.dispatch(constants.FETCH_LATEST_FOODS, {
         success() { },
         failure() { }

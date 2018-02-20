@@ -125,12 +125,12 @@ export default {
     refreshTokens() {
       var self = this;
       self.$store.dispatch(constants.REFRESH_TOKEN, {
-          success: function () { 
+          success: () => { 
             if(!self.isLoggedIn){
               self.$store.dispatch(constants.FETCH_PROFILE, {});
             }
           },
-          failure: function () {
+          failure: () => {
             self.$router.push({name: 'login'});
           }
       });
@@ -140,12 +140,11 @@ export default {
       this.title = this.$t(title);
     },
     logout(){
-      alert('before');
       var self = this;
       self.$store.dispatch(constants.LOGOUT, {
           
-          success: function () {alert('done'); },
-          failure: function () { }
+          success: () => { },
+          failure: () => { }
       });
     }
   },
@@ -154,7 +153,7 @@ export default {
       self.updateTitle();
       //self.$store.dispatch(constants.FETCH_PROFILE, {});
       self.refreshTokens();
-      setInterval(function () {
+      setInterval(() => {
           self.refreshTokens();
       }, 300000); 
   },

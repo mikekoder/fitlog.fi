@@ -25,7 +25,13 @@ export default {
       },
       workouts() {
           var self = this;
-          return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end)).map(w => { return { ...w, exercises: [...new Set(w.sets.map(e => e.exerciseName))]}});
+          return this.$store.state.training.workouts.filter(w => moment(w.time).isBetween(self.start, self.end)).sort(function (a, b) {
+            if (a.time.getTime() < b.time.getTime())
+                return 1;
+            if (a.time.getTime() > b.time.getTime())
+                return -1;
+            return 0;
+        }).map(w => { return { ...w, exercises: [...new Set(w.sets.map(e => e.exerciseName))]}});
       },
       activeRoutine() {
           return this.$store.state.training.activeRoutine;
