@@ -9,7 +9,6 @@ namespace Crash.Fit.Training
     public class WorkoutSet
     {
         public Guid Id { get; set; }
-        //public int Index { get; set; }
         public Guid ExerciseId { get; set; }
         public string ExerciseName { get; set; }
         public int Reps { get; set; }
