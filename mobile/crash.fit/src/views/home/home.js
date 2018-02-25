@@ -155,15 +155,7 @@ export default {
       self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
     },
     refresh(done){
-        var self = this;
-        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-            success() {
-                self.fetchData(done);
-            },
-            failure() {
-              self.$store.commit(constants.LOADING_DONE);
-             }
-        });
+        this.init(done);
     },
     swipe(event){
         if(event.direction == "left"){
@@ -293,40 +285,49 @@ export default {
     nutrientGoal(nutrientId, meal) {
       return utils.nutrientGoal(this.$nutritionGoal, this.workouts, nutrientId, this.selectedDate, meal);
     },
+    init(done){
+        var self = this;
+        if(self.isLoggedIn){
+            self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
+                success() {
+                    self.fetchData(done);
+                },
+                failure() {
+                    Toast.create(self.$t('fetchFailed'));
+                    self.$store.commit(constants.LOADING_DONE);
+                 }
+            });
+            self.$store.dispatch(constants.FETCH_NUTRIENTS, {
+                force: true,
+                success() { },
+                failure() { }
+            });
+            
+            self.$store.dispatch(constants.FETCH_LATEST_FOODS, {
+                success() { },
+                failure() { }
+            });
+            self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, {
+                success() { },
+                failure() { }
+            });
+            self.$store.dispatch(constants.FETCH_MY_FOODS, {
+                success() { },
+                failure() { }
+            });
+        }
+        else {
+            setTimeout(() => {
+                self.init();
+            } , 100);
+        }
+        
+    
+        
+    }
   },
   created(){
-    var self = this;
-
-    setTimeout(() => {
-        self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-            success() {
-                self.fetchData();
-            },
-            failure() {
-                Toast.create(self.$t('fetchFailed'));
-                self.$store.commit(constants.LOADING_DONE);
-             }
-        });
-
-    } , 100);
-
-    self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-        success() { },
-        failure() { }
-    });
-    
-    self.$store.dispatch(constants.FETCH_LATEST_FOODS, {
-        success() { },
-        failure() { }
-    });
-    self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, {
-        success() { },
-        failure() { }
-    });
-    self.$store.dispatch(constants.FETCH_MY_FOODS, {
-        success() { },
-        failure() { }
-    });
+    this.init();
     
   }
 }

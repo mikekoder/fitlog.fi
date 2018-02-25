@@ -111,6 +111,7 @@ export default {
         },
         [constants.SAVE_WORKOUT]({ commit, state }, { workout, success, failure }) {
             api.saveWorkout(workout).then(savedWorkout => {
+                savedWorkout.time = new Date(savedWorkout.time);
                 commit(constants.SAVE_WORKOUT_SUCCESS, { id: workout.id, workout: savedWorkout })
                 if (success) {
                     success(savedWorkout);

@@ -52,12 +52,10 @@
           <q-item-side icon="fa-universal-access" />
           <q-item-main :label="$t('exercises')" />
         </q-side-link>
-        <!--
         <q-side-link item :to="{ name: 'routines' }">  
           <q-item-side icon="fa-calendar" />
           <q-item-main :label="$t('routines')" />
         </q-side-link>
-        -->
         <q-side-link item :to="{ name: 'rep-calculator' }">  
           <q-item-side icon="fa-calculator" />
           <q-item-main :label="$t('repCalculator')" />

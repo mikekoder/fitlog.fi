@@ -7,7 +7,7 @@
         <div class="row pad">
             <q-datetime v-model="time" type="datetime" :format="$t('datetimeFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" :float-label="$t('time')" format24h />
         </div>
-        <div class="row pad" v-for="(set,index) in sets">
+        <div class="row pad" v-for="(set,index) in sets" :key="index">
             <div class="col-6">
                 <div v-if="exercises.length > 20">
                     <q-input color="amber" v-model="set.exerciseName" :float-label="$t('exercise')" >

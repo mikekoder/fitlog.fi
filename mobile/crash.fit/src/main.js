@@ -32,6 +32,11 @@ Vue.mixin({
         TouchHold,
         TouchSwipe
     },
+    data () {
+        return {
+            cardTitleBackground: 'bg-grey-3'
+        }
+    },
   computed:{
       isLoggedIn(){
           return this.$store.state.profile.profile && true;
