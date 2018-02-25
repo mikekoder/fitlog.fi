@@ -1,14 +1,14 @@
 import { openURL } from 'quasar'
 import moment from 'moment'
 import constants from '../../store/constants'
-import { QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator,QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem,QDatetime, QSearch,QAutocomplete, QInput} from 'quasar'
+import { QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator,QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem,QDatetime, QSearch,QAutocomplete, QInput, QTooltip} from 'quasar'
 import api from '../../api'
 import exercisesMixin from '../../mixins/exercises'
 import utils from '../../utils'
 
 export default {
   components: {
-    QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator, QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem, QDatetime,QSearch,QAutocomplete, QInput
+    QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator, QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem, QDatetime,QSearch,QAutocomplete, QInput,  QTooltip
   },
   mixins: [exercisesMixin],
   data() {
@@ -16,7 +16,8 @@ export default {
           startDatepickerVisible: false,
           endDatepickerVisible: false,
           tab: 'workouts',
-          progress: []
+          progress: [],
+          tooltipsOpen: true
       }
   },
   computed: {
@@ -188,7 +189,17 @@ export default {
               
           }
           self.progress = goals.sort((a,b) => a.index - b.index);
-      }
+      },
+      showTooltips(){
+          var self = this;
+          setTimeout(() => {
+            self.$refs.tooltip1.open();
+          },200);
+      },
+      hideTooltips(){
+        var self = this;
+        self.$refs.tooltip1.close();
+    }
   },
   watch: {
       activeRoutine() {
@@ -216,6 +227,6 @@ export default {
       else {
           self.showDays(7);
       }
-
+      
   }
 }

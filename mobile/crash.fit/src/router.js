@@ -10,10 +10,12 @@ import RecipeDetails from './views/recipes/recipe-details.vue'
 import MealRhythm from './views/meal-rhythm/meal-rhythm.vue'
 import Workouts from './views/workouts/workouts.vue'
 import WorkoutDetails from './views/workouts/workout-details.vue'
+import WorkoutDetailsGrouped from './views/workouts/workout-details-grouped.vue'
 import Exercises from './views/exercises/exercises.vue'
 import ExerciseDetails from './views/exercises/exercise-details.vue'
 import Routines from './views/routines/routines.vue'
-//import RoutineDetails from './views/routines/routine-details.vue'
+import RoutineDetails from './views/routines/routine-details.vue'
+import RoutineDetailsGrouped from './views/routines/routine-details-grouped.vue'
 import RepCalculator from './views/rep-calculator.vue'
 
 Vue.use(VueRouter)
@@ -99,13 +101,7 @@ export default new VueRouter({
           component: load('NutritionGoals'),
           meta: { title: 'nutritionGoals' }
         },
-        
-        {
-          path: '/workouts/:id',
-          name: 'workout-details',
-          component: load('WorkoutDetails'),
-          meta: { title: 'workoutDetails' }
-        },
+
         */
         {
           path: '/workouts',
@@ -116,7 +112,7 @@ export default new VueRouter({
         {
           path: '/workouts/:id',
           name: 'workout-details',
-          component: WorkoutDetails,
+          component: WorkoutDetailsGrouped,
           meta: { title: 'workoutDetails' }
         },
         {
@@ -135,17 +131,15 @@ export default new VueRouter({
         {
           path: '/routines',
           name: 'routines',
-          component: load('Routines'),
+          component: Routines,
           meta: { title: 'routines' }
         },
-        /*
         {
           path: '/routines/:id',
           name: 'routine-details',
-          component: load('RoutineDetails'),
+          component: RoutineDetailsGrouped,
           meta: { title: 'routineDetails' }
         },
-        */
         {
           path: '/rep-calculator',
           name: 'rep-calculator',

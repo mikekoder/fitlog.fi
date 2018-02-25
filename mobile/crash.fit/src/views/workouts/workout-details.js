@@ -73,7 +73,7 @@ export default {
     cancel() {
         this.$router.go(-1);
     },
-    deleteRecipe() {
+    deleteWorkout() {
         var self = this;
         self.$store.dispatch(constants.DELETE_WORKOUT, {
             recipe: { id: self.id },

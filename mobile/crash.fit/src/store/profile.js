@@ -74,9 +74,7 @@ export default
             });
         },
         [constants.LOGOUT]({ commit, state }, { success, failure }) {
-            alert('store 1');
             api.logout().then(function () {
-                alert('store 2');
                 storage.removeItem('refresh_token');
                 storage.removeItem('access_token');
                 commit(constants.LOGOUT_SUCCESS);
@@ -84,8 +82,6 @@ export default
                     success();
                 }
             }).fail(function (xhr) {
-                alert('fail');
-                alert(JSON.stringify(xhr));
                 if (failure) {
                     failure();
                 }
