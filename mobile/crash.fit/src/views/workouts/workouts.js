@@ -1,14 +1,14 @@
 import { openURL } from 'quasar'
 import moment from 'moment'
 import constants from '../../store/constants'
-import { QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator,QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem,QDatetime, QSearch,QAutocomplete, QInput, QTooltip} from 'quasar'
+import { QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator,QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem,QDatetime, QSearch,QAutocomplete, QInput, QTooltip, QBtnDropdown} from 'quasar'
 import api from '../../api'
 import exercisesMixin from '../../mixins/exercises'
 import utils from '../../utils'
 
 export default {
   components: {
-    QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator, QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem, QDatetime,QSearch,QAutocomplete, QInput,  QTooltip
+    QIcon,QCard,QCardTitle,QCardMain,QCardActions,QCardSeparator, QModal,QBtn,QTabs,QTab,QTabPane,QScrollArea,QFab,QFabAction,QContextMenu, QItem, QDatetime,QSearch,QAutocomplete, QInput,  QTooltip, QBtnDropdown
   },
   mixins: [exercisesMixin],
   data() {

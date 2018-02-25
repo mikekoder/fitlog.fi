@@ -297,12 +297,13 @@ export default {
                     self.$store.commit(constants.LOADING_DONE);
                  }
             });
+            /*
             self.$store.dispatch(constants.FETCH_NUTRIENTS, {
                 force: true,
                 success() { },
                 failure() { }
             });
-            
+            */
             self.$store.dispatch(constants.FETCH_LATEST_FOODS, {
                 success() { },
                 failure() { }

@@ -31,8 +31,8 @@
       <!--
         <q-btn @click="cancel">{{ $t('cancel')}}</q-btn>
           -->
-        <q-btn @click="addMeal" color="secondary">{{ $t('add')}}</q-btn>
-        <q-btn @click="save" color="primary">{{ $t('save')}}</q-btn>
+        <q-btn glossy @click="addMeal" color="secondary" icon="fa-plus">{{ $t('meal')}}</q-btn>
+        <q-btn glossy @click="save" color="primary">{{ $t('save')}}</q-btn>
     </div>
     
 </div>

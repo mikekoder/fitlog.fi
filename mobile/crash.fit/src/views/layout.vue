@@ -140,8 +140,9 @@ export default {
     logout(){
       var self = this;
       self.$store.dispatch(constants.LOGOUT, {
-          
-          success: () => { },
+          success: () => {
+            self.$router.replace({name: 'login'});
+           },
           failure: () => { }
       });
     }
@@ -149,7 +150,6 @@ export default {
   created(){
       var self = this;
       self.updateTitle();
-      //self.$store.dispatch(constants.FETCH_PROFILE, {});
       self.refreshTokens();
       setInterval(() => {
           self.refreshTokens();

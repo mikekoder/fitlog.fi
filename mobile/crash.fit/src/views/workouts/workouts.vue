@@ -11,6 +11,16 @@
             <q-datetime v-model="end" type="date" @change="changeEnd" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" />
           </div>
           <div class="col-2">
+            <q-btn-dropdown label="Button">
+              <!-- dropdown content -->
+              <q-list link>
+                <q-item>
+                  <q-item-main>
+                    <q-item-tile label>Item</q-item-tile>
+                  </q-item-main>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
             <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="down" @open="showTooltips" @close="hideTooltips">
                 <q-fab-action color="negative" icon="fa-plus"><q-tooltip anchor="center left" self="center right" :offset="[20, 0]" ref="tooltip1">Yläkroppa</q-tooltip></q-fab-action>
                 <q-fab-action color="secondary" icon="fa-plus" @click="createWorkout"></q-fab-action>

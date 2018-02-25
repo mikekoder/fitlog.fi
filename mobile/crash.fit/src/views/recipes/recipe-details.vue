@@ -19,33 +19,26 @@
                 </div>
               </q-item>
           </q-list>
-            <q-btn round glossy color="primary" icon="fa-plus" small @click="addIngredient"></q-btn>
+          <div class="row">
+              <div class="col">
+                <q-btn glossy color="primary" icon="fa-plus" small @click="addIngredient">{{ $t('food') }}</q-btn>
+              </div>
+            </div>
+            
 
             <div class="row">
-                <div class="col-6">
-                    {{ $t("rawWeight") }}
-                </div>
-                <div class="col-3">
-                    {{ formatDecimal(recipeWeight) }}
+                <div class="col-12">
+                    <q-input type="number" :value="formatDecimal(recipeWeight)" :float-label="$t('rawWeight')" readonly />
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
-                    {{ $t("cookedWeight") }}
-                </div>
-           
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <q-input type="number" v-model="cookedWeight"  />
+                <div class="col-12">
+                    <q-input type="number" v-model="cookedWeight" :float-label="$t('cookedWeight')" />
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
-                    {{ $t("weightChange") }}
-                </div>
-                <div class="col-3">
-                    <span v-if="cookedWeight">{{ formatDecimal(weightChange, 1) }} %</span>
+                <div class="col-12">
+                    <q-input type="number" :value="formatDecimal(weightChange, 1)" suffix="%" :float-label="$t('weightChange')" readonly />
                 </div>
             </div>
 
@@ -59,7 +52,7 @@
             <div class="col col-1"><q-btn round small color="primary" icon="fa-trash" @click="removePortion(index)"></q-btn></div>
           </div>
           <div class="row">
-            <q-btn round small color="primary" icon="fa-plus" @click="addPortion"></q-btn>
+            <q-btn small color="primary" icon="fa-plus" @click="addPortion">{{ $t('portion') }}</q-btn>
           </div>
         </q-tab-pane>
         <q-tab-pane name="tab-3">
