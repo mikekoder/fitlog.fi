@@ -25,7 +25,7 @@ function load (component) {
   return () => import(`@/${component}.vue`)
 }
 
-export default new VueRouter({
+var router = new VueRouter({
   /*
    * NOTE! VueRouter "history" mode DOESN'T works for Cordova builds,
    * it is only to be used only for websites.
@@ -161,3 +161,5 @@ export default new VueRouter({
     { path: '*', component: load('Error404') } // Not found
   ]
 })
+router.replace({name: 'login'});
+export default router;

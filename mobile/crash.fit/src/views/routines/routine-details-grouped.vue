@@ -4,15 +4,15 @@
         <div class="col-8">
             <q-input type="text" v-model="name" :float-label="$t('name')" />
         </div>
-        <div class="col-4">
-            <q-btn round color="primary" glossy small icon="fa-plus" @click="addWorkout"></q-btn>
+        <div class="col-4 col-button">
+            <q-btn color="primary" glossy small icon="fa-plus" @click="addWorkout">{{ $t('workout') }}</q-btn>
         </div>
       
     </div>
     <q-tabs v-model="tab">
       <q-tab slot="title" v-for="(workout, index) in workouts" :name="'tab-' + index" :label="workout.name" :key="index" />
       
-      <q-scroll-area style="height: 75vh;">
+      <q-scroll-area style="height: 66vh;">
           <q-tab-pane v-for="(workout, index) in workouts" :name="'tab-' + index" :key="index">
             <div class="row">
                 <q-input type="text" v-model="workout.name" :float-label="$t('name')" />
@@ -58,11 +58,11 @@
                     </div>
                 </q-card-main>
                 <q-card-actions align="end">
-                    <q-btn round glossy color="primary" icon="fa-plus" small @click="addRow(group)"></q-btn>
+                    <q-btn color="primary" icon="fa-plus" small glossy @click="addRow(group)">{{ $t('set') }}</q-btn>
                 </q-card-actions>
             </q-card>
             <div class="row pad buttons">
-                <q-btn round glossy color="primary" icon="fa-plus" small @click="addGroup(workout)"></q-btn>
+                <q-btn glossy color="primary" icon="fa-plus" small @click="addGroup(workout)">{{ $t('exercise') }}</q-btn>
             </div>  
           </q-tab-pane>
       </q-scroll-area>

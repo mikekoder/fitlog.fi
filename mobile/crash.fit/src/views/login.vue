@@ -62,14 +62,13 @@ export default {
           refreshToken: response.refreshToken,
           accessToken: response.accessToken,
           success() {
-            self.$router.replace({name: 'meals'});
+            self.$router.replace({name: 'home'});
           },
           failure() {
             Toast.create(self.$t('failed'));
           }
         });
       }).fail(xhr => {
-          alert(JSON.stringify(xhr));
 
       });
     },
@@ -100,7 +99,7 @@ export default {
               }
             },
             function (msg) {
-              alert('error: ' + msg);
+              Toast.create('error: ' + msg);
             }
           );
         }
@@ -122,7 +121,6 @@ export default {
         }
       }
       else {
-        console.log(window.location.href);
         window.location = config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile&returnUrl='+ encodeURIComponent(window.location.href);
       }
     },
@@ -135,7 +133,7 @@ export default {
           success() {
             self.$store.dispatch(constants.FETCH_PROFILE, {
               success(){
-                self.$router.replace({name: 'meals'});
+                self.$router.replace({name: 'home'});
               }
             });
           },
@@ -143,6 +141,17 @@ export default {
             Toast.create(self.$t('failed'));
           }
         });
+      }
+    },
+    checkLoggedIn(){
+      var self = this;
+      if(self.isLoggedIn){
+        self.$router.replace({name: 'home'});
+      }
+      else{
+        setTimeout(() => {
+          self.checkLoggedIn();
+        }, 100);
       }
     }
   },
@@ -154,6 +163,9 @@ export default {
     if(refreshToken && accessToken){
       self.finishLogin(refreshToken, accessToken);
     }
+
+    self.checkLoggedIn();
+
   },
   beforeDestroy () {
   }

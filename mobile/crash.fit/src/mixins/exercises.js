@@ -8,13 +8,26 @@ export default {
     },
     created() {
         var self = this;
-        this.$store.dispatch(constants.FETCH_EXERCISES, {
-            success(exercises) {
-                if (self.$exercisesLoaded) {
-                    self.$exercisesLoaded(exercises);
-                }
-            },
-            failure() { }
-        });
+        var delay = 100;
+        var loader = () => {
+            if(self.isLoggedIn){
+                self.$store.dispatch(constants.FETCH_EXERCISES, {
+                    success(exercises) {
+                        if (self.$exercisesLoaded) {
+                            self.$exercisesLoaded(exercises);
+                        }
+                    },
+                    failure() { }
+                });
+            }
+            else {
+                setTimeout(() => {
+                    delay = delay * 2;
+                    loader();
+                }, delay);
+            }
+        };
+
+        loader();
     }
 }

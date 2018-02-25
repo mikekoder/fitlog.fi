@@ -8,9 +8,22 @@ export default {
     },
     created() {
         var self = this;
-        this.$store.dispatch(constants.FETCH_ACTIVE_NUTRITION_GOAL, {
-            success() { },
-            failure() { }
-        });
+        var delay = 100;
+        var loader = () => {
+            if(self.isLoggedIn){
+                self.$store.dispatch(constants.FETCH_ACTIVE_NUTRITION_GOAL, {
+                    success() { },
+                    failure() { }
+                });
+            }
+            else {
+                setTimeout(() => {
+                    delay = delay * 2;
+                    loader();
+                }, delay);
+            }
+        };
+
+        loader();
     }
 }

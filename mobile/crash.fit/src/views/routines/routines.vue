@@ -8,7 +8,7 @@
           </q-list>
       </q-scroll-area>
     <div class="row pad">
-      <q-btn round color="primary" glossy small icon="fa-plus" @click="createRoutine"></q-btn>
+      <q-btn color="primary" glossy icon="fa-plus" @click="createRoutine">{{ $t('routine') }}</q-btn>
     </div>
   </div>
 </template>

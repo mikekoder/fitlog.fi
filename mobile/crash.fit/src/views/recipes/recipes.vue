@@ -6,7 +6,7 @@
           </q-list>
       </q-scroll-area>
     <div class="row pad">
-      <q-btn round color="primary" glossy small icon="fa-plus" @click="createRecipe"></q-btn>
+      <q-btn color="primary" glossy  icon="fa-plus" @click="createRecipe">{{ $t('recipe') }}</q-btn>
     </div>
   </div>
 </template>

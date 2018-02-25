@@ -79,7 +79,7 @@
         <q-card-actions align="end">
           <q-btn v-if="rowCopy" round glossy color="secondary" icon="fa-paste" small @click="pasteRows(mealdef)"></q-btn>
           <q-btn v-if="mealCopy" round glossy color="secondary" icon="fa-paste" small @click="pasteMeal(mealdef)"></q-btn>
-          <q-btn round glossy color="primary" icon="fa-plus" small @click="addRow(mealdef)"></q-btn>
+          <q-btn glossy color="primary" icon="fa-plus" small @click="addRow(mealdef)">{{ $t('food') }}</q-btn>
         </q-card-actions>
       </q-card>
     </q-scroll-area>
