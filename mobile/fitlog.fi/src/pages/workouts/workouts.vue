@@ -1,0 +1,52 @@
+<template>
+  <q-page class="q-pa-sm">
+    <q-card>
+      <q-card-main>
+        <div class="row">
+          <div class="col-4">
+            <q-datetime :value="start" type="date" @change="changeStart" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames"  />
+          </div>
+          <div class="col-1" style="padding-top: 8px; text-align: center;"><q-icon name="fa-minus" /></div>
+          <div class="col-4">
+            <q-datetime :value="end" type="date" @change="changeEnd" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" />
+          </div>
+          <div class="col-3" style="padding-left: 5px;">
+            <q-btn-dropdown glossy small color="primary" icon="fa-plus" split @click="createWorkout" v-if="activeRoutine && activeRoutine.workouts.length > 0"  style="margin-top: -5px;">
+              <!-- dropdown content -->
+              <q-list>
+                <q-item v-for="workout in activeRoutine.workouts" @click.native="createWorkout(activeRoutine.id, workout.id)">
+                  <q-item-main>
+                    <q-item-tile label>{{ workout.name }}</q-item-tile>
+                  </q-item-main>
+                </q-item>
+                <q-item @click.native="createWorkout">
+                  <q-item-main>
+                    <q-item-tile label>{{ $t('freeWorkout') }}</q-item-tile>
+                  </q-item-main>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <q-btn icon="fa-plus" v-else :label="$t('workout')"></q-btn>
+          </div>
+        </div>
+      </q-card-main>
+    </q-card>
+    <template v-for="(workout,index) in workouts">
+      <q-card :key="index" @click.native="showWorkout(workout)" class="q-mt-sm">
+        <q-card-title :class="cardTitleBackground">
+          {{ formatDateTime(workout.time) }}
+        </q-card-title>
+        <q-card-separator />
+        <q-card-main>
+          <span v-for="exercise in workout.exercises" style="padding: 0px 5px;">{{ exercise }}</span>
+        </q-card-main>
+      </q-card>
+      </template>
+  </q-page>
+</template>
+
+<script src="./workouts.js">
+</script>
+
+<style lang="stylus">
+</style>
