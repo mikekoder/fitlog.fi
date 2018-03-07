@@ -92,7 +92,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(result);
         }
         [HttpPut("me")]
-        public IActionResult SaveProfile([FromBody]ProfileRequest model)
+        public async Task<IActionResult> SaveProfile([FromBody]ProfileRequest model)
         {
             var profile = _profileRepository.GetProfile(CurrentUserId);
             if (profile == null)
@@ -138,9 +138,8 @@ namespace Crash.Fit.Web.Controllers
             }
 
             _profileRepository.SaveProfile(profile);
-            var result = AutoMapper.Mapper.Map<ProfileResponse>(profile);
 
-            return Ok(result);
+            return await GetProfile();
         }
         [HttpDelete("me")]
         public async Task<IActionResult> DeleteProfile()
