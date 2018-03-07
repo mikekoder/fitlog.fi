@@ -222,8 +222,45 @@ VALUES(@Id,@UserId,@Name,@Sleep,@Inactivity,@LightActivity,@ModerateActivity,@He
                     throw;
                 }
             }
+        }
+        public void SetActivityPresetForDay(Guid userId, DateTimeOffset date, Guid activityPresetId)
+        {
 
-           
+            var sql = @"MERGE INTO Day
+USING(SELECT @userId AS UserId, @date as Date) AS Source
+ON(Day.UserId = Source.UserId AND Day.Date = Source.Date)
+WHEN MATCHED THEN
+    UPDATE SET ActivityPresetId=@activityPresetId
+WHEN NOT MATCHED THEN
+    INSERT(UserId,Date,ActivityPresetId) 
+VALUES(@userId,@date,@activityPresetId);";
+
+            using (var conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Execute(sql, new { userId, date, activityPresetId });
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+        }
+        public Dictionary<DateTimeOffset, Guid> GetActivityPresetsForDays(Guid userId, DateTimeOffset start, DateTimeOffset end)
+        {
+            using (var conn = CreateConnection())
+            {
+                try
+                {
+                    return conn.Query("SELECT Date,ActivityPresetId FROM Day WHERE UserId=@userId AND Date >= @start AND Date <= @end", new { userId, start, end })
+                        .ToDictionary(x => (DateTimeOffset)x.Date, x => (Guid)x.ActivityPresetId);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
         }
 
         class EnergyExpenditureRaw : EnergyExpenditure
