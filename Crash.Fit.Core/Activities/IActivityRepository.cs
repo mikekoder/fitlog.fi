@@ -20,5 +20,7 @@ namespace Crash.Fit.Activities
 
         IEnumerable<ActivityPreset> GetActivityPresets(Guid userId);
         void SaveActivityPresets(IEnumerable<ActivityPreset> presets);
+        void SetActivityPresetForDay(Guid userId, DateTimeOffset date, Guid activityPresetId);
+        Dictionary<DateTimeOffset,Guid> GetActivityPresetsForDays(Guid currentUserId, DateTimeOffset start, DateTimeOffset end);
     }
 }
