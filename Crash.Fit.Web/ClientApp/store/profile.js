@@ -20,7 +20,6 @@ export default
             }
         },
         [constants.REFRESH_TOKEN]({ commit, state }, { success, failure }) {
-            //var client = storage.getItem('client');
             var refreshToken = storage.getItem('refresh_token');
             api.refreshToken(refreshToken).then(function (response) {
                 if(response.accessToken){
@@ -81,7 +80,7 @@ export default
                 if (success) {
                     success();
                 }
-            }).fail(function () {
+            }).fail((xhr) => {
                 if (failure) {
                     failure();
                 }

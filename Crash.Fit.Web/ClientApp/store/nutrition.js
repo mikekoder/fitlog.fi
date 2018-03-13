@@ -61,9 +61,9 @@ export default {
                 success();
             }
         },
-        [constants.FETCH_MEALS]({ commit, state }, { start, end, success, failure }) {
+        [constants.FETCH_MEALS]({ commit, state }, { start, end, force, success, failure }) {
             if (state.mealsStart && state.mealsEnd) {
-                if (moment(start).isBefore(state.mealsStart) || moment(end).isAfter(state.mealsEnd)) {
+                if (moment(start).isBefore(state.mealsStart) || moment(end).isAfter(state.mealsEnd) || force) {
                     start = moment.min(moment(start), moment(state.mealsEnd));
                     end = moment.max(moment(end), moment(state.mealsStart));
                 }
@@ -552,6 +552,13 @@ export default {
                 meal.time = new Date(meal.time);
                 meal.definition = state.mealDefinitions.find(d => d.id == meal.definitionId);
                 if (!state.mealsStart || !state.mealsEnd || moment(meal.time).isBefore(state.mealsStart) || moment(meal.time).isAfter(state.mealsEnd)) {
+                    addMeal(meal, state);
+                }
+                else{
+                    var old = state.meals.find(m => m.id == meal.id);
+                    if (old) {
+                        deleteMeal(old, state)
+                    }
                     addMeal(meal, state);
                 }
             }

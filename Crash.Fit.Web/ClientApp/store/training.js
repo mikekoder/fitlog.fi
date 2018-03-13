@@ -99,18 +99,19 @@ export default {
             });
         },
         [constants.FETCH_WORKOUT]({ commit, state }, { id, success, failure }) {
-            api.getWorkout(id).then(function (workout) {
+            api.getWorkout(id).then(workout => {
                 if (success) {
                     success(workout);
                 }
-            }).fail(function () {
+            }).fail((xhr) => {
                 if (failure) {
-                    failure();
+                    failure(xhr);
                 }
             });
         },
         [constants.SAVE_WORKOUT]({ commit, state }, { workout, success, failure }) {
-            api.saveWorkout(workout).then(function (savedWorkout) {
+            api.saveWorkout(workout).then(savedWorkout => {
+                savedWorkout.time = new Date(savedWorkout.time);
                 commit(constants.SAVE_WORKOUT_SUCCESS, { id: workout.id, workout: savedWorkout })
                 if (success) {
                     success(savedWorkout);
@@ -122,7 +123,7 @@ export default {
             });
         },
         [constants.DELETE_WORKOUT]({ commit, state }, { workout, success, failure }) {
-            api.deleteWorkout(workout.id).then(function () {
+            api.deleteWorkout(workout.id).then(() => {
                 commit(constants.DELETE_WORKOUT_SUCCESS, { workout })
                 if (success) {
                     success();
