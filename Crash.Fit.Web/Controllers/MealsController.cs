@@ -346,6 +346,11 @@ namespace Crash.Fit.Web.Controllers
 
             if (energy.HasValue || calculatedEnergy.HasValue)
             {
+                if((calculatedEnergy ?? energy).Value == 0)
+                {
+                    return newNutrients;
+                }
+
                 if (protein.HasValue)
                 {
                     newNutrients.Add(Constants.Nutrition.ProteinEnergyId, (4 * protein.Value) / (calculatedEnergy ?? energy).Value * 100 );
