@@ -60,6 +60,9 @@ export default {
             data: JSON.stringify(login)
         });
     },
+    loginWithToken(provider, token){
+        return $.get(`${this.baseUrl}users/token-login?provider=${provider}&token=${token}`);
+    },
 
     // Meals
     listMeals(start, end) {
