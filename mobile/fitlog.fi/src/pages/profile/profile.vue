@@ -8,7 +8,7 @@
           <q-tab-pane name="tab-1">
               <div class="row q-ma-sm">
                     <div class="col">
-                        <q-datetime :value="dob" :float-label="$t('dob')" type="date" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" />
+                        <q-datetime v-model="dob" :float-label="$t('dob')" type="date" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" />
                     </div>
                 </div>
                 <div class="row q-ma-sm">

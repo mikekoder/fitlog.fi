@@ -6,7 +6,7 @@
       <q-input v-model="password2" type="password" :float-label="$t('confirmPassword')" />
       <div class="row">
         <div class="col">
-          <q-btn @click="register" :label="$t('register')"></q-btn>
+          <q-btn @click="register" :label="$t('register')" :disabled="!isValid"></q-btn>
         </div>
         <div class="col">
           <q-btn @click="$router.push({ name: 'login' })" :flat="true" :label="$t('login')"></q-btn>
@@ -32,17 +32,22 @@ export default {
   data () {
     return {
       email: undefined,
-      password: undefined
+      password: undefined,
+      password2: undefined
     }
   },
   computed: {
+    isValid(){
+      return this.password && this.password.length >= 6 && this.password == this.password2 && this.email;
+    }
   },
   methods: {
     register(){
       var self = this;
       var data = {
           email: this.email,
-          password: this.password
+          password: this.password,
+          password2: this.password2
       };
       api.register(data).then(function (response) {
           self.$store.dispatch(constants.STORE_TOKENS, {

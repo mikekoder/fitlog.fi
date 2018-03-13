@@ -138,7 +138,9 @@ export default {
             }
           },
           failure: () => {
-            self.$router.push({name: 'login'});
+            if(self.$route.name != 'login' && self.$route.name != 'register'){
+              self.$router.push({name: 'login'});
+            }
           }
       });
     },
