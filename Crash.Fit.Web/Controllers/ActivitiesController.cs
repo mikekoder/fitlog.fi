@@ -157,6 +157,22 @@ namespace Crash.Fit.Web.Controllers
             return GetActivityPresets();
         }
 
+        [HttpPut("day-preset")]
+        public IActionResult SetActivityPresetForDay([FromBody]ActivityPresetDayRequest request)
+        {
+            var date = DateTimeUtils.ToLocal(request.Date);
+            activityRepository.SetActivityPresetForDay(CurrentUserId, date.Date, request.ActivityPresetId);
+            return Ok();
+        }
+        [HttpGet("day-presets")]
+        public IActionResult GetActivityPresetDays(DateTimeOffset start, DateTimeOffset end)
+        {
+            var presets = activityRepository.GetActivityPresetsForDays(CurrentUserId, start, end);
+
+            var response = presets.Select(kvp => new ActivityPresetDayResponse { Date = kvp.Key, ActivityPresetId = kvp.Value });
+            return Ok(response);
+        }
+
         private void CalculateEnergy(EnergyExpenditure expenditure)
         {
             var userWeight = measurementRepository.GetUserWeight(CurrentUserId);

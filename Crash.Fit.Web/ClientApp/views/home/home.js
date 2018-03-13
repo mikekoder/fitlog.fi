@@ -26,8 +26,7 @@ export default {
             row: undefined,
             selectedNutrients: [],
             editNutrients: false,
-            eatenEnergy: undefined,
-            activityPreset: undefined
+            eatenEnergy: undefined
         }
     },
     computed: {
@@ -156,6 +155,21 @@ export default {
                 }
             }
             return '';
+        },
+        activityPreset: {
+            get() {
+                var self = this;
+                var dayPreset = self.$store.state.activities.activityPresetDays.find(p => moment(p.date).isSame(self.selectedDate, 'day'));
+                if (dayPreset) {
+                    return self.$activityPresets.find(p => p.id == dayPreset.activityPresetId);
+                }
+                else {
+                    //return this.getActivityPreset();
+                }
+            },
+            set(value) {
+                this.changeActivityPreset(value);
+            }
         }
     },
     components: {
@@ -179,6 +193,18 @@ export default {
             });
             self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
             self.$store.dispatch(constants.FETCH_ENERGY_EXPENDITURES, { start: start, end: end });
+            self.$store.dispatch(constants.FETCH_ACTIVITY_PRESET_DAYS, {
+                start: start,
+                end: end,
+                success: (presets) =>
+                {
+                    var preset = presets.find(p => moment(p.date).isSame(self.selectedDate, 'day'));
+                    if (!preset) {
+                        preset = self.getActivityPreset();
+                        self.changeActivityPreset(preset);
+                    }
+                }
+            });
         },
         changeDate(date) {
             var newDate;
@@ -200,8 +226,11 @@ export default {
             if (!moment(newDate).isSame(this.selectedDate, 'd')) {
                 this.$store.dispatch(constants.SELECT_MEAL_DIARY_DATE, { date: newDate });
                 this.fetchData();
-                this.selectActivityPreset();
             }
+        },
+        changeActivityPreset(preset) {
+            var date = this.selectedDate;
+            this.$store.dispatch(constants.SAVE_ACTIVITY_PRESET_DAY, { date, preset });
         },
         mealName(defMeal) {
             if (defMeal.definition) {
@@ -327,7 +356,7 @@ export default {
         updateComputedValues() {
             this.eatenEnergy = this.dayNutrients ? this.dayNutrients[this.energyId] ? this.dayNutrients[this.energyId] : 0 : 0;
         },
-        selectActivityPreset() {
+        getActivityPreset() {
             var preset;
             switch (this.selectedDate.getDay()) {
                 case 0:
@@ -353,10 +382,7 @@ export default {
                     break;
             }
 
-            this.activityPreset = preset;
-        },
-        $activityPresetsLoaded() {
-            this.selectActivityPreset();
+            return preset;
         }
     },
     created() {

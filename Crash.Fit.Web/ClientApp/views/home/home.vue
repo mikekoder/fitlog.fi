@@ -43,7 +43,7 @@
                                     <div class="col-xs-2 col-text-20">
                                         <label class="hidden-md hidden-lg">{{ $t('activityLevel') }}</label>
                                         <select class="form-control" v-model="activityPreset">
-                                            <option :value="undefined"></option>
+                                            <option :value="undefined" v-if="!activityPreset"></option>
                                             <option v-for="preset in $activityPresets" :value="preset">
                                                 {{ preset.name }} ({{ formatDecimal(preset.factor, 2) }})
                                             </option>
