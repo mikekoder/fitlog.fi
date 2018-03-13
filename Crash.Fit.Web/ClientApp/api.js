@@ -514,6 +514,24 @@ export default {
             contentType: 'text/json',
             data: JSON.stringify(presets)
         });
-
-    }
+    },
+    saveActivityPresetForDay(date, activityPresetId) {
+        var url = this.baseUrl + 'activities/day-preset';
+        return $.ajax({
+            url: url,
+            type: 'PUT',
+            contentType: 'text/json',
+            data: JSON.stringify({ date, activityPresetId })
+        });
+    },
+    listActivityPresetDays(start, end){
+        var query = {};
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(this.baseUrl + 'activities/day-presets', query);
+    },
 };
