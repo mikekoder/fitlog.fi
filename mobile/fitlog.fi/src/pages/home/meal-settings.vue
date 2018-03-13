@@ -77,7 +77,7 @@ export default {
             self.$store.dispatch(constants.SAVE_MEAL_DIARY_SETTINGS, {
                 settings,
                 success() {
-                    self.close();
+                    self.$refs.modal.hide();
                 },
                 failure() { }
             });

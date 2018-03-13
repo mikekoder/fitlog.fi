@@ -7,17 +7,16 @@ export default {
     data () {
         return {
             tab: 'tab-1',
-            days: [],
-            months: [],
-            years: [],
             pals: [
                 { value: 1.2, name: '1.2 Makaaminen s&auml;ngyssä' }
             ],
             genders: [],
-
+            dob: undefined,
+            /*
             day: undefined,
             month: undefined,
             year: undefined,
+            */
             gender: undefined,
             height: undefined,
             weight: undefined,
@@ -40,12 +39,14 @@ export default {
         }
     },
     computed: {
+        /*
         dob() {
             if (this.year && this.month && this.day) {
-                return new Date(this.year, this.month.number - 1, this.day)
+                return new Date(this.year, this.month - 1, this.day)
             }
             return undefined;
         },
+        */
         rmrEstimate() {
             if (!this.gender || !this.height || !this.weight || !this.dob) {
                 return undefined;
@@ -93,6 +94,15 @@ export default {
     },
     components: {},
     methods: {
+        /*
+        changeDoB(newVal){  
+            var dob = new Date(newVal);
+            console.log(newVal, dob);
+            this.year = dob.getFullYear();
+            this.month = dob.getMonth() + 1;
+            this.day = dob.getDate();
+        },
+        */
         checkUsername() {
             this.usernameError = null;
             if (this.username && !this.usernameIsValid) {
@@ -114,7 +124,8 @@ export default {
             var self = this;
             //self.$ga.event('profile', 'save');
             var profile = {
-                doB: new Date(this.year, this.month.number - 1, this.day,12),
+                //doB: new Date(this.year, this.month.number - 1, this.day,12),
+                doB: this.dob,
                 gender: this.gender,
                 height: this.height,
                 weight: this.weight,
@@ -171,11 +182,17 @@ export default {
             success() {
                 var profile = self.$store.state.profile.profile;
                 if (profile) {
+                    
                     if (profile.doB) {
+                        self.dob = new Date(profile.doB);
+                        /*
                         self.day = profile.doB.getDate();
                         self.month = self.months.find(m => m.number == profile.doB.getMonth() + 1);
                         self.year = profile.doB.getFullYear();
+                        */
                     }
+                    
+                    
                     self.gender = profile.gender;
                     self.height = profile.height;
                     self.weight = profile.weight;
@@ -199,14 +216,5 @@ export default {
                 self.$store.commit(constants.LOADING_DONE);
             }
         });
-        
-        moment.locale('fi');
-        for (var i = 1; i <= 31; i++) {
-            this.days.push(i);
-        }
-        this.months = moment.months().map((m, i) => { return { number: i + 1, name: m } });
-        for (var i = 1900; i <= new Date().getFullYear(); i++) {
-            this.years.push(i);
-        }
     }
 }

@@ -20,9 +20,6 @@
                     <q-item v-for="(f, index) in searchResults" @click.native="load(f.id)" :class="{selected: food && f.id == food.id }" :key="index" :separator="true">{{ f.text }}</q-item>
                 </q-list>
                 <div v-else>
-                    <q-inner-loading :visible="searching">
-                        <q-spinner-dots size="100" />
-                    </q-inner-loading>
                     <span v-if="!searching && (searchText && searchText.length >= 2)">{{ $t('noFoods') }}</span>
                 </div>
             </q-tab-pane>
