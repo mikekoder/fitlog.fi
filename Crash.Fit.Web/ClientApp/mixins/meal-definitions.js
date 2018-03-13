@@ -8,13 +8,26 @@ export default {
     },
     created() {
         var self = this;
-        this.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-            success(mealDefinitions) {
-                if (self.$mealDefinitionsLoaded) {
-                    self.$mealDefinitionsLoaded(mealDefinitions);
-                }
-            },
-            failure() { }
-        });
+        var delay = 100;
+        var loader = () => {
+            if(self.isLoggedIn){
+                self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
+                    success(mealDefinitions) {
+                        if (self.$mealDefinitionsLoaded) {
+                            self.$mealDefinitionsLoaded(mealDefinitions);
+                        }
+                    },
+                    failure() { }
+                });
+            }
+            else {
+                setTimeout(() => {
+                    delay = delay * 2;
+                    loader();
+                }, delay);
+            }
+        };
+
+        loader();
     }
 }
