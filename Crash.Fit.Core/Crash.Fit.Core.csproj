@@ -12,6 +12,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>Crash.Fit</RootNamespace>
+    <Configurations>Debug;Release;Dev;Prod</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
