@@ -48,9 +48,6 @@
                 <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
                 <span class="sr-only">Loading...</span>
             </div>
-            <div class="alert alert-danger" role="alert">
-                Fitlog siirret&auml;&auml;n uudelle palvelimelle 13.3. klo 23 alkaen. Siirtoon menee noin tunti. Palvelu on j&auml;lleen k&auml;ytett&auml;viss&auml;, kun t&auml;m&auml; ilmoitus on poistunut.
-            </div>
             <transition name="slide-left">
                 <router-view></router-view>
             </transition>
