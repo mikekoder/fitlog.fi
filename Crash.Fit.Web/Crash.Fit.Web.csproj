@@ -10,6 +10,7 @@
     <RuntimeFrameworkVersion>2.0</RuntimeFrameworkVersion>
     -->
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <Configurations>Debug;Release;Dev;Prod</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

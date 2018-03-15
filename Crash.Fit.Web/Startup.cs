@@ -41,9 +41,13 @@ namespace Crash.Fit.Web
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+#if DEV
+            builder = builder.AddJsonFile($"appsettings.Development.json", optional: true);
+#elif PROD
+            builder = builder.AddJsonFile($"appsettings.Production.json", optional: true);
+#endif
+            builder = builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
 
