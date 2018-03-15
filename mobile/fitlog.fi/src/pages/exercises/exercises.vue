@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-sm">
       <q-scroll-area>
-        <q-list>
+        <q-list v-if="ownExercises.length > 0">
             <q-item>
               <div class="col-8"></div>
               <div class="col-2">{{ $t('sets') }}</div>
@@ -13,8 +13,9 @@
               <div class="col-2">{{ formatDecimal(exercise.oneRepMax) }}</div>
             </q-item>
         </q-list>
+        <div v-else>{{ $t('noExercises') }}</div>
       </q-scroll-area>
-    <div class="row pad">
+    <div class="row q-my-lg">
       <q-btn color="primary" glossy icon="fa-plus" @click="createExercise" :label="$t('exercise')"></q-btn>
     </div>
   </q-page>

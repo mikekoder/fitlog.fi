@@ -16,6 +16,9 @@ export default {
         }
     },
     computed: {
+        canSave(){
+            return this.name && this.workouts.length > 0;
+        }
     },
     methods: {
         frequencyText(value) {
@@ -31,6 +34,7 @@ export default {
         addWorkout(){
             var count = this.workouts.length;
             this.workouts.push({ name: 'Päivä ' + (count + 1), groups: [], frequency: 1 });
+            this.addGroup(this.workouts[count]);
         },
         deleteWorkout(index) {
             this.workouts.splice(index, 1);
@@ -106,7 +110,7 @@ export default {
                     self.$router.replace({ name: 'routines' });
                 },
                 failure() {
-                    toaster.error(self.$t('saveFailed'));
+                    self.notifyError(self.$t('saveFailed'));
                 }
             })
         },
@@ -121,7 +125,7 @@ export default {
                     self.$router.push({ name: 'routines' });
                 },
                 failure() {
-                    toaster.error(self.$t('deleteFailed'));
+                    self.notifyError(self.$t('deleteFailed'));
                 }
             });
         },
@@ -180,7 +184,7 @@ export default {
                     self.$store.commit(constants.LOADING_DONE);
                 },
                 failure() {
-                    toaster.error(self.$t('fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
 
@@ -208,7 +212,7 @@ export default {
                     self.populate(routine);
                 },
                 failure() {
-                    toaster.error(self.$t('routineDetails.fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
         }

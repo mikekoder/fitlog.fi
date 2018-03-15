@@ -3,7 +3,6 @@ import constants from './constants'
 
 export default {
     state: {
-        loading: false,
         bugsLoaded: false,
         improvementsLoaded: false,
         votesLoaded: false,
@@ -93,6 +92,14 @@ export default {
         }
     },
     mutations: {
+        [constants.LOGOUT_SUCCESS](state) {
+            state.bugsLoaded = false;
+            state.bugs = [];
+            state.improvementsLoaded = false;
+            state.improvements = [];
+            state.votesLoaded = false;
+            state.votes = [];
+        },
         [constants.SAVE_FEEDBACK_SUCCESS](state, { feedback }) {
             if (feedback.type === 'Bug') {
                 state.bugs.push(feedback);

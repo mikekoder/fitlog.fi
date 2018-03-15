@@ -62,7 +62,7 @@ export default {
                 self.$router.replace({ name: 'workouts' });
             },
             failure() {
-                toaster.error(self.$t('saveFailed'));
+                self.notifyError(self.$t('saveFailed'));
             }
         });
     },
@@ -77,7 +77,7 @@ export default {
                 self.$router.push({ name: 'workouts' });
             },
             failure() {
-                toaster(self.$t('deleteFailed'));
+                self.notifyError(self.$t('deleteFailed'));
             }
         });
     },

@@ -101,7 +101,7 @@ export default {
               workout,
               success() { },
               failure() {
-                  toaster(self.$t('deleteFailed'));
+                self.notifyError(self.$t('deleteFailed'));
               }
           });
       },

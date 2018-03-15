@@ -139,7 +139,7 @@ export default {
                     self.selectExercise = false;
                 },
                 failure () {
-                    //toaster.error(self.$t('fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
         },

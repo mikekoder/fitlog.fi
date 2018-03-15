@@ -55,12 +55,12 @@
                     </div>
                 </div>
                 <div class="row q-ma-sm">
-                    <div class="col-sm-6">
+                    <div class="col">
                         <q-input type="password" class="form-control" v-model="newPassword2" @blur="checkPassword" :float-label="$t('confirmNewPassword')" />
                     </div>
                 </div>
                 <div class="row q-ma-sm">
-                    <div class="col-sm-6">
+                    <div class="col">
                         <q-btn glossy @click="updateLogin" :disabled="!isValid" :label="$t('save')"></q-btn>
                     </div>
                 </div>

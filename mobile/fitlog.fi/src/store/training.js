@@ -438,6 +438,34 @@ export default {
 
     // mutations
     mutations: {
+        [constants.LOGOUT_SUCCESS](state) {
+            state.diaryDate = new Date();
+            state.muscleGroupsLoaded = false;
+            state.muscleGroups = [];
+            state.exercisesLoaded = false;
+            state.exercises = [];
+            state.routinesLoaded = false;
+            state.routines = [];
+            state.activeRoutineLoaded = false;
+            state.activateRoutine = undefined;
+            state.workoutsStart = undefined;
+            state.workoutsEnd = undefined;
+            state.workouts = [];
+            state.workoutDays = {};
+            state.workoutsDisplayStart = undefined;
+            state.workoutsDisplayEnd = undefined;
+            state.activeTrainingGoalLoaded = false;
+            state.activateTrainingGoal = undefined;
+            state.trainingGoalsLoaded = false;
+            state.trainingGoals = [];
+            state.activitiesLoaded = false;
+            state.activities = [];
+            state.energyExpenditures = [];
+            state.energyExpendituresStart = undefined;
+            state.energyExpendituresEnd = undefined;
+            state.energyExpendituresDisplayStart = undefined;
+            state.energyExpendituresDisplayEnd = undefined;
+        },
         [constants.FETCH_MUSCLEGROUPS_SUCCESS](state, { muscleGroups }) {
             state.muscleGroups = muscleGroups;
             state.muscleGroupsLoaded = true;

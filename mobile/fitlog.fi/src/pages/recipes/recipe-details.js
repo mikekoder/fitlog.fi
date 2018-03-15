@@ -74,15 +74,18 @@ export default {
         visibleNutrients() {
           return this.$store.state.nutrition.nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1,n2) => n1.homeOrder - n2.homeOrder);
       },
+      canSave(){
+        return this.name && true;
+        }
     },
   methods: {
-    toggleGroup(group){
-      if(this.selectedGroup == group){
-        this.selectedGroup = undefined;
-      }
-      else{
-        this.selectedGroup = group;
-      }
+    toggleGroup(group) {
+        if (this.selectedGroup == group) {
+            this.selectedGroup = undefined;
+        }
+        else {
+            this.selectedGroup = group;
+        }
     },
     addIngredient() {
         var row = { 
@@ -98,7 +101,7 @@ export default {
         this.$refs.editRow.show(row);
     },
     saveIngredient(row){
-        this.$refs.editRow.close();
+        this.$refs.editRow.hide();
 
         var weight = this.weight(row.quantity, row.portion);
         row.nutrients = {};
@@ -152,7 +155,7 @@ export default {
                 self.$router.replace({ name: 'recipes' });
             },
             failure() {
-                toaster.error(self.$t('recipeDetails.saveFailed'));
+                self.notifyError(self.$t('saveFailed'));
             }
         });
     },
@@ -167,12 +170,9 @@ export default {
                 self.$router.push({ name: 'recipes' });
             },
             failure() {
-                toaster(self.$t('recipeDetails.deleteFailed'));
+                self.notifyError(self.$t('deleteFailed'));
             }
         });
-    },
-    toggleGroup(group) {
-        this.$set(this.groupOpenStates, group, !(this.groupOpenStates[group] && true))
     },
     groupIsExpanded(group) {
         return this.groupOpenStates[group] && true;
@@ -193,10 +193,11 @@ export default {
                         var portion = food.portions.find(p => p.id === i.portionId);
                         return { food: food, quantity: i.quantity, portion: portion};
                     });
+                    
                     self.$store.commit(constants.LOADING_DONE);
                 },
                 failure() {
-                    toaster(self.$t('fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
         }
@@ -218,13 +219,15 @@ export default {
                 self.populate(recipe);
             },
             failure() {
-                toaster(self.$t('fetchFailed'));
+                self.notifyError(self.$t('fetchFailed'));
             }
         });
     }
 
     self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-        success() { },
+        success() { 
+            self.selectedGroup = self.nutrientGroups[0];
+        },
         failure() { }
     });
     self.$store.dispatch(constants.FETCH_LATEST_FOODS, {

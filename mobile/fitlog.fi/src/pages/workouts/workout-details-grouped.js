@@ -16,6 +16,9 @@ export default {
     }
   },
     computed: {
+        canSave(){
+            return this.time && this.groups.length > 0 && this.groups.find(g => g.exercise);
+        }
     },
   methods: {
     addGroup(){
@@ -79,7 +82,7 @@ export default {
                 self.$router.replace({ name: 'workouts' });
             },
             failure() {
-                toaster.error(self.$t('saveFailed'));
+                self.notifyError(self.$t('saveFailed'));
             }
         });
     },
@@ -176,12 +179,13 @@ export default {
                     self.populate(workout);
                 },
                 failure() {
-                    toaster.error(self.$t('fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
         }
         else {
             self.populate(workout);
+            self.addGroup();
         }  
     }
     else {
