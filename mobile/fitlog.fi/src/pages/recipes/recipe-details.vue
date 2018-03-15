@@ -8,9 +8,9 @@
         <q-tab slot="title" name="tab-1" :label="$t('ingredients')" />
         <q-tab slot="title" name="tab-2" :label="$t('portions')" />
         <q-tab slot="title" name="tab-3" :label="$t('nutrients')" />
+        <q-scroll-area style="height: 60vh;">
         <!-- Targets -->
         <q-tab-pane name="tab-1">
-          <q-scroll-area style="height: 60vh;">
           <q-list v-if="ingredients.length > 0">
               <q-item v-for="(row,index) in ingredients" @click="editIngredient(row)" :key="index" :separator="true">
                   <div class="row ingredient">
@@ -43,7 +43,6 @@
             </div>
 
             <meal-row-editor ref="editRow" v-on:save="saveIngredient(arguments[0])" />
-            </q-scroll-area>
         </q-tab-pane>
         <q-tab-pane name="tab-2">
           <div class="row" v-for="(portion,index) in portions" :key="index">
@@ -52,48 +51,32 @@
             <div class="col col-1"><q-btn round small color="primary" icon="fa-trash" @click="removePortion(index)"></q-btn></div>
           </div>
           <div class="row">
-            <q-btn small color="primary" icon="fa-plus" @click="addPortion" :label="$t('portion')"></q-btn>
+            <q-btn glossy small color="primary" icon="fa-plus" @click="addPortion" :label="$t('portion')"></q-btn>
           </div>
         </q-tab-pane>
         <q-tab-pane name="tab-3">
-            <q-scroll-area style="height: 60vh;">
-                <table class="nutrients">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>{{ $t("recipe") }}</th>
-                            <th>100g</th>
-                            <template v-for="portion in portions">
-                                <th>{{ portion.name }}</th>
-                            </template>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody v-for="group in $nutrientGroups">
-                        <tr>
-                            <th class="clickable" colspan="2" @click="toggleGroup(group.id)">
-                                <i v-if="!groupOpenStates[group.id]" class="fa fa-chevron-down"></i>
-                                <i v-if="groupOpenStates[group.id]" class="fa fa-chevron-up"></i>
-                                {{ group.name }}
-                            </th>
-                        </tr>
-                        <tr v-for="nutrient in allNutrients[group.id]" v-if="groupOpenStates[group.id] && !nutrient.computed">
-                            <td>{{ nutrient.name }}</td>
-                            <td>{{ formatDecimal(recipeNutrients[nutrient.id], nutrient.precision) }}</td>
-                            <td>{{ formatDecimal(recipeNutrients[nutrient.id] * 100 / recipeWeight, nutrient.precision) }}</td>
-                            <template v-for="portion in portions">
-                                <td><span v-if="portion.amount">{{ formatDecimal(recipeNutrients[nutrient.id] / recipeWeight * ((cookedWeight || recipeWeight)/portion.amount), nutrient.precision) }}</span></td>
-                            </template>
-                            <td>{{ formatUnit(nutrient.unit)}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </q-scroll-area>
+            <template v-for="(group,index) in nutrientGroups">
+                <div :key="index">
+                  <div class="row">
+                      <q-btn flat @click="toggleGroup(group)" :label="$t(group.id)" :icon="selectedGroup == group ? 'fa-chevron-up' : 'fa-chevron-down'"></q-btn>
+                  </div>
+                  <div v-if="selectedGroup == group">
+                    <div class="row" v-for="(nutrient,index_n) in nutrientsGrouped[group.id]" :key="index_n">
+                        <template v-if="!nutrient.computed">
+                            <div class="col"><q-input type="number" :value="formatDecimal(recipeNutrients[nutrient.id], nutrient.precision)" :float-label="nutrient.name" readonly /></div>
+                            <div class="col q-pt-md">{{ formatUnit(nutrient.unit)}}</div>
+                        </template>
+                    </div>
+                  </div>
+                </div>
+              </template>
         </q-tab-pane>
+        </q-scroll-area>
     </q-tabs>
+    
     <div class="row">
-      <q-btn @click="cancel" :label="$t('cancel')"></q-btn>
-      <q-btn color="primary" @click="save" v-if="name" :label="$t('save')"></q-btn>
+      <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
+      <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
     </div>
   </q-page>
 </template>

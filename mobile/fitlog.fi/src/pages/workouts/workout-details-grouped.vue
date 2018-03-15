@@ -1,8 +1,5 @@
 <template>
   <q-page class="q-pa-sm">
-    <div class="row pad">
-    </div>
-
     <q-scroll-area style="height: 90vh;">
         <q-card>
             <q-card-main>
@@ -36,15 +33,15 @@
         </q-card-title>
         <q-card-separator />
         <q-card-main>
-            <div class="row pad set" v-if="group.sets.length == 0">
+            <div class="row q-my-md" v-if="group.sets.length == 0">
                 <div class="col-10">
                 </div>
                 <div class="col-2">
                     <q-btn round glossy color="primary" icon="fa-plus" small @click="addSet(group)"></q-btn>
                 </div>
             </div>
-            <div class="row pad set" v-else v-for="(set,index) in group.sets" :key="index">
-                <div class="col-3">
+            <div class="row q-my-md" v-else v-for="(set,index) in group.sets" :key="index">
+                <div class="col-3 q-pr-sm">
                     <q-input v-model="set.reps" type="number" :float-label="index == 0 ? $t('reps') : ''" />
                 </div>
                 <div class="col-3">
@@ -71,13 +68,13 @@
         </q-card-actions>
       </q-card>
         
-        <div class="row pad buttons">
+        <div class="row q-my-md">
             <q-btn glossy color="primary" icon="fa-plus" @click="addGroup" :label="$t('exercise')"></q-btn>
         </div>
 
-        <div class="row pad buttons">
-            <q-btn glossy @click="cancel" :label="$t('cancel')"></q-btn>
-            <q-btn glossy color="primary" @click="save" :label="$t('save')"></q-btn>
+        <div class="row q-my-md">
+            <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
+            <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
         </div>
     </q-scroll-area>
     

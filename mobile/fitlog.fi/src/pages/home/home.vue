@@ -23,7 +23,7 @@
                   </q-item-main>
                 </q-item>
                 <q-item-separator />
-                <q-list-header>{{ $t('activityLevel') }}</q-list-header>
+                <q-list-header v-if="$activityPresets.length > 0">{{ $t('activityLevel') }}</q-list-header>
                 <q-item v-for="preset in $activityPresets" @click.native="changeActivityPreset" :class="{selected: activityPreset && activityPreset.id == preset.id }">
                   <q-item-main>
                     <q-item-tile label>{{ preset.name }}</q-item-tile>
@@ -87,7 +87,7 @@
      
     </q-pull-to-refresh>
 
-    <q-scroll-area style="height: 70vh;">
+    <q-scroll-area style="height: 66vh;">
       <q-card v-for="(mealdef, index) in meals" :key="index" class="q-mb-sm">
         <q-card-title class="card-title bg-grey-3">
           <div class="row">{{ mealName(mealdef) }}</div>
@@ -114,7 +114,7 @@
                   <energy-distribution-bar v-bind:protein="row.nutrients[proteinId]" v-bind:carb="row.nutrients[carbId]" v-bind:fat="row.nutrients[fatId]"></energy-distribution-bar>
                 </div>
                 <div v-else>
-                  {{ formatDecimal(row.nutrients[nutrient.id]) }}
+                  {{ formatDecimal(row.nutrients[nutrient.id], nutrient.precision) }}
                 </div>
               </div>
             </div>

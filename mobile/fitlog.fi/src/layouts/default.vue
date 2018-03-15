@@ -79,6 +79,16 @@
           <q-item-side icon="fa-sign-out-alt" />
           <q-item-main :label="$t('logout')" />
         </q-item>
+
+        <q-list-header>{{ $t('getInvolved') }}</q-list-header>
+        <q-item :to="{ name: 'improvements' }">  
+          <q-item-side icon="fa-lightbulb" />
+          <q-item-main :label="$t('improvements')" />
+        </q-item>
+        <q-item :to="{ name: 'bugs' }">  
+          <q-item-side icon="fa-bug" />
+          <q-item-main :label="$t('bugs')" />
+        </q-item>
         <!--
         <q-list-header>Debug</q-list-header>
         <q-item v-if="profile">{{ profile.username }}</q-item>

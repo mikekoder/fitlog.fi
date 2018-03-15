@@ -1,13 +1,11 @@
 <template>
   <q-page class="q-pa-sm">
-    <div class="row pad">
-    </div>
 
     <q-scroll-area style="height: 90vh;">
-        <div class="row pad">
+        <div class="row q-my-md">
             <q-datetime v-model="time" type="datetime" :format="$t('datetimeFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" :float-label="$t('time')" format24h />
         </div>
-        <div class="row pad" v-for="(set,index) in sets" :key="index">
+        <div class="row q-my-md" v-for="(set,index) in sets" :key="index">
             <div class="col-6">
                 <div v-if="exercises.length > 20">
                     <q-input color="amber" v-model="set.exerciseName" :float-label="$t('exercise')" >
@@ -32,11 +30,11 @@
             </div>
         </div>
         
-        <div class="row pad buttons">
-            <q-btn glossy color="primary" icon="fa-plus" small @click="addSet" :label="$t('exercise')"></q-btn>
+        <div class="row q-my-md">
+            <q-btn glossy small color="primary" icon="fa-plus" @click="addSet" :label="$t('exercise')"></q-btn>
         </div>
 
-        <div class="row pad buttons">
+        <div class="row q-my-md">
             <q-btn glossy @click="cancel" :label="$t('cancel')"></q-btn>
             <q-btn glossy color="primary" @click="save" :label="$t('save')"></q-btn>
         </div>

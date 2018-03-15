@@ -9,9 +9,9 @@
                 <q-item-main>
                     <select v-model="selectedNutrients[index]">
                         <option v-bind:value="undefined"></option>
-                        <template v-for="(group,index_g) in nutrientGroups">
+                        <template v-for="group in nutrientGroups">
                             <option disabled>{{ group.name }}</option>
-                            <option v-for="(nutrient,index_n) in group.nutrients" v-bind:value="nutrient.id">
+                            <option v-for="nutrient in group.nutrients" v-bind:value="nutrient.id">
                             {{ nutrient.name }} ({{ formatUnit(nutrient.unit) }})
                             </option>
                         </template>

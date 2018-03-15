@@ -52,6 +52,9 @@ export default {
         },
         isValid() {
             return this.errors.length === 0;
+        },
+        canSave(){
+            return this.name && true;
         }
     },
     methods: {
@@ -110,7 +113,7 @@ export default {
                     self.$router.replace({ name: 'foods' });
                 },
                 failure() {
-                    toaster.error(self.$t('saveFailed'));
+                    self.notifyError(self.$t('saveFailed'));
                 }
             });
         },
@@ -125,7 +128,7 @@ export default {
                     self.$router.push({ name: 'foods' });
                 },
                 failure() {
-                    toaster.error(self.$t('deleteFailed'));
+                    self.notifyError(self.$t('deleteFailed'));
                 }
             });
         },
@@ -161,7 +164,7 @@ export default {
                     self.$store.commit(constants.LOADING_DONE);
                 },
                 failure() {
-                    toaster.error(self.$t('foodDetails.fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
         }
@@ -179,7 +182,7 @@ export default {
                     self.populate(food);
                 },
                 failure() {
-                    toaster(self.$t('foodDetails.fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
         }

@@ -55,7 +55,7 @@
           </div>  
       </div>
       <div class="row q-ma-sm q-mt-lg">
-        <q-btn glossy @click="cancel" :label="$t('cancel')"></q-btn>
+        <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
         <q-btn glossy color="primary" @click="save" v-if="food && quantity" :label="$t('save')"></q-btn>
       </div>
         
@@ -176,7 +176,7 @@ export default {
                     
                 },
                 failure () {
-                    //toaster.error(self.$t('fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
         },

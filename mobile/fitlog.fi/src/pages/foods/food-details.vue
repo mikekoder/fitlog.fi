@@ -17,18 +17,14 @@
               </div>
               <template v-for="(group,index) in nutrientGroups">
                 <div :key="index">
-                  <div class="row" @click="toggleGroup(group)">
-                    <h6>
-                      <i v-if="selectedGroup != group" class="fa fa-chevron-down"></i>
-                      <i v-if="selectedGroup == group" class="fa fa-chevron-up"></i>
-                      {{ $t(group.id) }}
-                    </h6>
+                  <div class="row">
+                    <q-btn flat @click="toggleGroup(group)" :label="$t(group.id)" :icon="selectedGroup == group ? 'fa-chevron-up' : 'fa-chevron-down'"></q-btn>
                   </div>
                   <div v-if="selectedGroup == group">
                     <div class="row" v-for="(nutrient,index_n) in nutrientsGrouped[group.id]" :key="index_n">
                         <template v-if="!nutrient.computed">
-                            <div class="col col-sm-3 col-lg-2"><q-input type="number" v-model="nutrients[nutrient.id]" :float-label="nutrient.name" /></div>
-                            <div class="col unit">{{ formatUnit(nutrient.unit)}}</div>
+                            <div class="col"><q-input type="number" v-model="nutrients[nutrient.id]" :float-label="nutrient.name" /></div>
+                            <div class="col q-pt-md">{{ formatUnit(nutrient.unit)}}</div>
                         </template>
                     </div>
                   </div>
@@ -49,8 +45,8 @@
         </q-scroll-area>
     </q-tabs>
     <div class="row pad buttons">
-      <q-btn glossy @click="cancel" :label="$t('cancel')"></q-btn>
-      <q-btn glossy color="primary" @click="save" :label="$t('save')"></q-btn>
+      <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
+      <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
     </div>
   </q-page>
 </template>

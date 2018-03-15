@@ -13,6 +13,9 @@ export default {
     computed: {
         muscleGroups() {
             return this.$store.state.training.muscleGroups;
+        },
+        canSave(){
+            return this.name && true;
         }
     },
     methods: {

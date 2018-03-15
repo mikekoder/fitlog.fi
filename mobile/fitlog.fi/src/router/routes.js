@@ -127,6 +127,31 @@ export default [
         meta: { title: 'measurements' }
       }
       */
+
+      {
+        path: '/improvements',
+        name: 'improvements',
+        component: () => import('pages/feedback/feedback.vue'), 
+        meta: { title: 'improvements', type:'Improvement' }
+      },
+      {
+        path: '/improvements/:id',
+        name: 'improvement-details',
+        component: () => import('pages/feedback/feedback-details.vue'), 
+        meta: { title: 'improvement', type:'Improvement' }
+      },
+      {
+        path: '/bugs',
+        name: 'bugs',
+        component: () => import('pages/feedback/feedback.vue'), 
+        meta: { title: 'bugs', type:'Bug' }
+      },
+      {
+        path: '/bugs/:id',
+        name: 'bug-details',
+        component: () => import('pages/feedback/feedback-details.vue'), 
+        meta: { title: 'bugDetails', type:'Bug' }
+      }
     ]
   },
 

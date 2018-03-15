@@ -24,10 +24,10 @@ export default {
         self.$store.dispatch(constants.SAVE_MEAL_DEFINITIONS, {
             definitions: defs,
             success() {
-                toaster.info(self.$t('saved'));
+                self.notifySuccess(self.$t('saveSuccessful'));
             },
             failure() {
-                toaster.error(self.$t('saveFailed'));
+                self.notifyError(self.$t('saveFailed'));
             }
         });
     }
@@ -45,7 +45,7 @@ export default {
             self.$store.commit(constants.LOADING_DONE);
         },
         failure() {
-            toaster.error(self.$t('fetchFailed'));
+            self.notifyError(self.$t('fetchFailed'));
         }
     });
   },

@@ -24,7 +24,7 @@ methods: {
         self.recipes.splice(self.recipes.findIndex(r => r.id == recipe.id), 1);
       },
       failure() {
-        toaster(self.$t('recipes.deleteFailed'));
+        self.notifyError(self.$t('deleteFailed'));
       }
     });
   }
@@ -37,7 +37,7 @@ methods: {
         self.$store.commit(constants.LOADING_DONE);
       },
       failure() {
-        toaster(self.$t('recipes.fetchFailed'));
+        self.notifyError(self.$t('fetchFailed'));
       }
     });
     

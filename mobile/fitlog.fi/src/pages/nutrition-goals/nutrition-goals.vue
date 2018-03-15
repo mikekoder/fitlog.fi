@@ -94,10 +94,10 @@ export default {
             self.$store.dispatch(constants.SAVE_NUTRITION_GOALS, {
                 goals,
                 success() {
-                    toaster.info(self.$t('nutrientGoals.saved'));
+                    self.notifySuccess(self.$t('saveSuccessful'));
                 },
                 failure() {
-                    toaster.error(self.$t('nutrientGoals.saveFailed'));
+                    self.notifyError(self.$t('saveFailed'));
                 }
             });
         },

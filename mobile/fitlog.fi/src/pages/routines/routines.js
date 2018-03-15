@@ -29,7 +29,7 @@ methods: {
             routine,
             success() { },
             failure() {
-                toaster(this.$t('activationFailed'));
+                self.notifyError(self.$t('activationFailed'));
             }
         });
     },
@@ -39,7 +39,7 @@ methods: {
             routine,
             success() { },
             failure() {
-                toaster(this.$t('deleteFailed'));
+                self.notifyError(self.$t('deleteFailed'));
             }
         });
     }

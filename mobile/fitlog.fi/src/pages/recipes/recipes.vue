@@ -7,7 +7,7 @@
           <div v-else>{{ $t('noRecipes') }}</div>
       </q-scroll-area>
     <div class="row q-my-lg">
-      <q-btn color="primary" glossy  icon="fa-plus" @click="createRecipe" :label="$t('recipe')"></q-btn>
+      <q-btn color="primary" glossy icon="fa-plus" @click="createRecipe" :label="$t('recipe')"></q-btn>
     </div>
   </q-page>
 </template>

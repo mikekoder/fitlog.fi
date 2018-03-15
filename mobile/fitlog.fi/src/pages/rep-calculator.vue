@@ -2,9 +2,9 @@
   <q-page class="q-pa-sm">
     <div class="row">
         <div class="col-3"><q-input v-model="reps" type="number" :float-label="$t('reps')" /></div>
-        <div class="col-1" style="padding: 25px 10px;">x</div>
+        <div class="col-1 q-pa-md q-px-lg">x</div>
         <div class="col-3"><q-input v-model="weights" type="number" :float-label="$t('weights')" /></div>
-        <div class="col-3" style="padding: 15px 10px;">
+        <div class="col-3 q-pa-sm">
           <q-btn glossy color="primary" @click="calculate" :label="$t('calculate')"></q-btn>
         </div>
     </div>

@@ -99,11 +99,11 @@ export default {
             self.$store.dispatch(constants.SAVE_ROUTINE, {
                 routine,
                 success() {
-                    toaster.info(self.$t('saveSuccessful'));
+                    self.notifySuccess(self.$t('saveSuccessful'));
                     self.$router.replace({ name: 'routines' });
                 },
                 failure() {
-                    toaster.error(self.$t('saveFailed'));
+                    self.notifyError(self.$t('saveFailed'));
                 }
             })
         },
@@ -118,7 +118,7 @@ export default {
                     self.$router.push({ name: 'routines' });
                 },
                 failure() {
-                    toaster.error(self.$t('deleteFailed'));
+                    self.notifyError(self.$t('deleteFailed'));
                 }
             });
         },
@@ -157,7 +157,7 @@ export default {
                     self.$store.commit(constants.LOADING_DONE);
                 },
                 failure() {
-                    toaster.error(self.$t('fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
 
@@ -185,7 +185,7 @@ export default {
                     self.populate(routine);
                 },
                 failure() {
-                    toaster.error(self.$t('routineDetails.fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                 }
             });
         }

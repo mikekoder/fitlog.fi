@@ -3,15 +3,15 @@
     <q-card>
       <q-card-main>
         <div class="row">
-          <div class="col-4">
+          <div class="col-4 q-pt-sm">
             <q-datetime :value="start" type="date" @change="changeStart" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames"  />
           </div>
-          <div class="col-1" style="padding-top: 8px; text-align: center;"><q-icon name="fa-minus" /></div>
-          <div class="col-4">
+          <div class="col-1 q-pt-sm" style="text-align: center;"><q-icon name="fa-minus" /></div>
+          <div class="col-4 q-pt-sm">
             <q-datetime :value="end" type="date" @change="changeEnd" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" />
           </div>
-          <div class="col-3" style="padding-left: 5px;">
-            <q-btn-dropdown glossy small color="primary" icon="fa-plus" split @click="createWorkout" v-if="activeRoutine && activeRoutine.workouts.length > 0"  style="margin-top: -5px;">
+          <div class="col-3 q-pl-sm">
+            <q-btn-dropdown glossy color="primary" icon="fa-plus" split @click="createWorkout" v-if="activeRoutine && activeRoutine.workouts.length > 0"  style="margin-top: -5px;">
               <!-- dropdown content -->
               <q-list>
                 <q-item v-for="workout in activeRoutine.workouts" @click.native="createWorkout(activeRoutine.id, workout.id)">
@@ -26,7 +26,7 @@
                 </q-item>
               </q-list>
             </q-btn-dropdown>
-            <q-btn icon="fa-plus" v-else :label="$t('workout')"></q-btn>
+            <q-btn glossy small color="primary" icon="fa-plus" v-else :label="$t('workout')" @click="createWorkout"></q-btn>
           </div>
         </div>
       </q-card-main>
@@ -38,7 +38,7 @@
         </q-card-title>
         <q-card-separator />
         <q-card-main>
-          <span v-for="exercise in workout.exercises" style="padding: 0px 5px;">{{ exercise }}</span>
+          <span v-for="exercise in workout.exercises" class="q-pa-sm">{{ exercise }}</span>
         </q-card-main>
       </q-card>
       </template>

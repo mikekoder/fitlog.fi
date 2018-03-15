@@ -76,6 +76,13 @@ export default {
         }
     },
     mutations: {
+        [constants.LOGOUT_SUCCESS](state) {
+            state.activityPresetsLoaded = false;
+            state.activityPresets = [];
+            state.activityPresetsStart = undefined;
+            state.activityPresetsEnd = undefined;
+            state.activityPresetDays = [];
+        },
         [constants.FETCH_ACTIVITY_PRESETS_SUCCESS](state, { presets }) {
             state.activityPresetsLoaded = true;
             state.activityPresets = presets;

@@ -7,14 +7,14 @@ export default {
 
         diaryDate: new Date(),
 
-        mealsStart: null,
-        mealsEnd: null,
+        mealsStart: undefined,
+        mealsEnd: undefined,
         mealDays: [],
         meals: [],
-        mealsDisplayStart: null,
-        mealsDisplayEnd: null,
-        mealDraft: null,
-        rowDraft: null,
+        mealsDisplayStart: undefined,
+        mealsDisplayEnd: undefined,
+        mealDraft: undefined,
+        rowDraft: undefined,
 
         nutrientGroups: [
             { id: 'MACROCMP', name: 'Makrot' },
@@ -488,6 +488,28 @@ export default {
         }*/
     },
     mutations: {
+        [constants.LOGOUT_SUCCESS](state) {
+            state.diaryDate = new Date();
+            state.mealsStart = undefined;
+            state.mealsEnd = undefined;
+            state.meals = [];
+            state.mealsDisplayStart = undefined;
+            state.mealsDisplayEnd = undefined;
+            state.mealDraft = undefined;
+            state.rowDraft = undefined;
+            state.nutrientsLoaded = false;
+            state.nutrients = [];
+            state.nutrientsGrouped = {};
+            state.activeNutritionGoalLoaded = false;
+            state.activateNutritionGoal = undefined;
+            state.nutritionGoalsLoaded = false;
+            state.nutritionGoals = [];
+            state.mealDefinitionsLoaded = false;
+            state.mealDefinitions = [];
+            state.latestFoods = [];
+            state.mostUsedFoods = [];
+            state.ownFoods = [];
+        },
         [constants.SELECT_MEAL_DIARY_DATE_SUCCESS](state, { date }) {
             state.diaryDate = date;
         },
