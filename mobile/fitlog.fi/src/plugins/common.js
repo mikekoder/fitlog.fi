@@ -100,6 +100,12 @@ export default ({ app, Vue }) => {
                 return 'kcal';
             case 'KJ':
                 return 'kJ';
+            case 'CM':
+                return 'cm';
+            case 'KG':
+                return 'kg';
+            case 'KCAL_DAY':
+                return 'kcal/' + this.$t('day');
             default:
                 return unit;
         }

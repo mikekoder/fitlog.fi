@@ -5,11 +5,7 @@
             <q-input type="text" v-model="name" :float-label="$t('name')" ref="nameInput" />
         </div>
         <div class="col-4 col-button">
-            <!--
-            <q-btn color="primary" glossy small icon="fa-plus" @click="addWorkout" :label="$t('workout')"></q-btn>
-            -->
         </div>
-      
     </div>
     <q-tabs v-model="tab">
       <q-tab slot="title" v-for="(workout, t_index) in workouts" :name="'tab-' + t_index" :label="workout.name" :key="t_index" />

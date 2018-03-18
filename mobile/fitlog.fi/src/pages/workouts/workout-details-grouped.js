@@ -1,7 +1,6 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
 import exercisesMixin from '../../mixins/exercises'
-import { Toast } from 'quasar'
 
 export default {
     mixins:{
@@ -97,7 +96,7 @@ export default {
                 self.$router.push({ name: 'workouts' });
             },
             failure() {
-                Toast.create(self.$t('deleteFailed'));
+                self.notifyError(self.$t('deleteFailed'));
             }
         });
     },
@@ -142,7 +141,7 @@ export default {
                 self.$store.commit(constants.LOADING_DONE);
             },
             failure() {
-                Toast.create(self.$t('fetchFailed'));
+                self.notifyError(self.$t('fetchFailed'));
             }
         });
         
@@ -195,7 +194,7 @@ export default {
                 self.populate(workout);
             },
             failure(xhr) {
-                Toast.create(self.$t('fetchFailed'));
+                self.notifyError(self.$t('fetchFailed'));
             }
         });
     }

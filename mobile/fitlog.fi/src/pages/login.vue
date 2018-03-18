@@ -28,7 +28,6 @@
 import { openURL } from 'quasar'
 import config from '../config'
 import constants from '../store/constants'
-import { Toast } from 'quasar'
 import api from '../api'
 
 export default {
@@ -62,7 +61,7 @@ export default {
             self.$router.replace({name: 'home'});
           },
           failure() {
-            Toast.create(self.$t('failed'));
+            self.notifyError(self.$t('failed'));
           }
         });
       }).fail(xhr => {
@@ -96,7 +95,7 @@ export default {
               }
             },
             function (msg) {
-              Toast.create('error: ' + msg);
+              self.notifyError('error: ' + msg);
             }
           );
         }
@@ -135,7 +134,7 @@ export default {
             });
           },
           failure() {
-            Toast.create(self.$t('failed'));
+            self.notifyError(self.$t('failed'));
           }
         });
       }

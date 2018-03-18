@@ -15,7 +15,7 @@
                 <q-search v-model="searchText" :placeholder="$t('exercise')" @change="exerciseChange">
                     <q-autocomplete @search="search" @selected="exerciseSelected" :min-characters="2" :max-results="20" />
                 </q-search>
-                <q-btn @click="selectExercise=false" v-if="exercise" :label="$t('ok')"></q-btn>
+                <q-btn @click="selectExercise=false" v-if="exercise" :label="$t('OK')"></q-btn>
             </q-tab-pane>
             <q-tab-pane name="tab-2">
                 <q-scroll-area>

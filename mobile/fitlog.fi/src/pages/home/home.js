@@ -10,7 +10,6 @@ import mealDefinitionsMixin from '../../mixins/meal-definitions'
 import nutritionGoalMixin from '../../mixins/nutrition-goal'
 import activityPresetsMixin from '../../mixins/activity-presets'
 import NutrientKnob from '../../components/nutrient-knob'
-import { Toast } from 'quasar'
 
 export default {
   mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin, activityPresetsMixin],
@@ -393,7 +392,7 @@ export default {
                     self.fetchData(done);
                 },
                 failure() {
-                    Toast.create(self.$t('fetchFailed'));
+                    self.notifyError(self.$t('fetchFailed'));
                     self.$store.commit(constants.LOADING_DONE);
                  }
             });
