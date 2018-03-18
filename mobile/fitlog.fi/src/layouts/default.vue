@@ -25,7 +25,7 @@
           <q-item-main :label="$t('diary')" />
         </q-item>
         <q-item :to="{ name: 'activity-levels' }" exact>  
-          <q-item-side icon="fa-tachometer" />
+          <q-item-side icon="fa-tachometer-alt" />
           <q-item-main :label="$t('activityLevels')" />
         </q-item>
         <q-list-header>{{ $t('nutrition') }}</q-list-header>
@@ -42,12 +42,10 @@
           <q-item-side icon="fa-book" />
           <q-item-main :label="$t('recipes')" />
         </q-item>
-        <!--
-        <q-side-link item :to="{ name: 'nutrition-goals' }">  
+        <q-item :to="{ name: 'nutrition-goals' }">  
           <q-item-side icon="fa-crosshairs" />
           <q-item-main :label="$t('nutritionGoals')" />
-        </q-side-link>
--->
+        </q-item>
         
         <q-list-header>{{ $t('training') }}</q-list-header>
         <q-item :to="{ name: 'workouts' }">  
@@ -66,13 +64,12 @@
           <q-item-side icon="fa-calculator" />
           <q-item-main :label="$t('repCalculator')" />
         </q-item>
-        <!--
+
         <q-list-header>{{ $t('measurements') }}</q-list-header>
-        <q-side-link item :to="{ name: 'measurements' }">  
+        <q-item item :to="{ name: 'measurements' }">  
           <q-item-side icon="fa-balance-scale" />
           <q-item-main :label="$t('measurements')" />
-        </q-side-link>
-        -->
+        </q-item>
 
         <q-list-header>{{ $t('profile') }}</q-list-header>
         <q-item :to="{ name: 'profile' }">  

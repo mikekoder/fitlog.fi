@@ -1,6 +1,5 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
-import { Toast } from 'quasar'
 import Vue from 'vue'
 
 export default {
@@ -106,7 +105,7 @@ export default {
             self.$store.dispatch(constants.SAVE_ROUTINE, {
                 routine,
                 success() {
-                    Toast.create(self.$t('saveSuccessful'));
+                    self.notifySuccess(self.$t('saveSuccessful'));
                     self.$router.replace({ name: 'routines' });
                 },
                 failure() {

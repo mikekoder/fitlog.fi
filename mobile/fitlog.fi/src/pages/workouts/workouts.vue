@@ -4,11 +4,11 @@
       <q-card-main>
         <div class="row">
           <div class="col-4 q-pt-sm">
-            <q-datetime :value="start" type="date" @change="changeStart" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames"  />
+            <q-datetime :value="start" type="date" @change="changeStart" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames"  />
           </div>
           <div class="col-1 q-pt-sm" style="text-align: center;"><q-icon name="fa-minus" /></div>
           <div class="col-4 q-pt-sm">
-            <q-datetime :value="end" type="date" @change="changeEnd" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" />
+            <q-datetime :value="end" type="date" @change="changeEnd" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" />
           </div>
           <div class="col-3 q-pl-sm">
             <q-btn-dropdown glossy color="primary" icon="fa-plus" split @click="createWorkout" v-if="activeRoutine && activeRoutine.workouts.length > 0"  style="margin-top: -5px;">

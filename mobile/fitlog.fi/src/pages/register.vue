@@ -25,7 +25,6 @@
 import { openURL } from 'quasar'
 import config from '../config'
 import api from '../api'
-import { Toast } from 'quasar'
 import constants from '../store/constants'
 
 export default {
@@ -58,11 +57,11 @@ export default {
                   self.$router.replace({ name: 'meals' });
               },
               failure() {
-                Toast.create(self.$t('failed'));
+                self.notifyError(self.$t('failed'));
               }
           });
       }).fail(function (response) {
-          Toast.create(self.$t('failed'));
+          self.notifyError(self.$t('failed'));
       });
     },
     fbLogin(){

@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-pa-sm">
-      <q-scroll-area>
+      <q-scroll-area style="height: 72vh;">
         <q-list v-if="ownExercises.length > 0">
             <q-item>
               <div class="col-8"></div>

@@ -1,6 +1,5 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
-import { Toast } from 'quasar'
 
 export default {
     data () {

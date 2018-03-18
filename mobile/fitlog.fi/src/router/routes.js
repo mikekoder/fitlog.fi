@@ -64,18 +64,18 @@ export default [
         component: () => import('pages/profile/profile.vue'), 
         meta: { title: 'profile' }
       },
-      
-      /*
-      
       {
         path: '/nutrition-goals',
         name: 'nutrition-goals',
-        component: load('NutritionGoals'),
+        component: () => import('pages/nutrition-goals/nutrition-goals.vue'), 
         meta: { title: 'nutritionGoals' }
       },
-
-      */
-     
+      {
+        path: '/nutrition-goals/:id',
+        name: 'nutrition-goal-details',
+        component: () => import('pages/nutrition-goals/nutrition-goal-details.vue'), 
+        meta: { title: 'nutritionGoals' }
+      },
       {
         path: '/workouts',
         name: 'workouts',
@@ -119,14 +119,18 @@ export default [
         meta: { title: 'repCalculator' }
       },
       
-      /*
       {
         path: '/measurements',
         name: 'measurements',
-        component: load('Measurements'),
+        component: () => import('pages/measurements/measurements.vue'), 
         meta: { title: 'measurements' }
-      }
-      */
+      },
+      {
+        path: '/measurement-details',
+        name: 'measurement-details',
+        component: () => import('pages/measurements/measurement-details.vue'), 
+        meta: { title: 'measurements' }
+      },
 
       {
         path: '/improvements',

@@ -8,7 +8,7 @@
               <q-btn round size="md" glossy color="grey-6" @click="changeDate(-1)"><q-icon name="fa-chevron-left" /></q-btn>
             </div>
             <div class="col col-lg-2" align="center">
-              <q-datetime :value="selectedDate" type="date" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('ok')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" @change="changeDate" @blur="datepickerVisible=false;" ref="datepicker" v-show="datepickerVisible" />
+              <q-datetime :value="selectedDate" type="date" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" @change="changeDate" @blur="datepickerVisible=false;" ref="datepicker" v-show="datepickerVisible" />
               <q-btn :flat="true" @click="()=> {datepickerVisible=true; $refs.datepicker.show();}" :label="dateText"></q-btn>
               </div>
             <div class="col col-lg-2" align="left">
