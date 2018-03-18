@@ -241,7 +241,18 @@ export default {
       });
       self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
       self.$store.dispatch(constants.FETCH_ENERGY_EXPENDITURES, { start: start, end: end });
-      self.$store.dispatch(constants.FETCH_ACTIVITY_PRESET_DAYS, { start: start, end: end });
+      self.$store.dispatch(constants.FETCH_ACTIVITY_PRESET_DAYS, {
+        start: start,
+        end: end,
+        success: (presets) =>
+        {
+            var preset = presets.find(p => moment(p.date).isSame(self.selectedDate, 'day'));
+            if (!preset) {
+                preset = self.getActivityPreset();
+                self.changeActivityPreset(preset);
+            }
+        }
+    });
     },
     refresh(done){
         this.init(done);

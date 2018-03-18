@@ -151,6 +151,12 @@ export default [
         name: 'bug-details',
         component: () => import('pages/feedback/feedback-details.vue'), 
         meta: { title: 'bugDetails', type:'Bug' }
+      },
+      {
+        path: '/activitylevels',
+        name: 'activity-levels',
+        component: () => import('pages/activity-levels/activity-levels.vue'), 
+        meta: { title: 'activityLevels' }
       }
     ]
   },
