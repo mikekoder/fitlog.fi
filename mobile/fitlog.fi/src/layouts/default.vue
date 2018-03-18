@@ -24,6 +24,10 @@
           <q-item-side icon="fa-utensils" />
           <q-item-main :label="$t('diary')" />
         </q-item>
+        <q-item :to="{ name: 'activity-levels' }" exact>  
+          <q-item-side icon="fa-tachometer" />
+          <q-item-main :label="$t('activityLevels')" />
+        </q-item>
         <q-list-header>{{ $t('nutrition') }}</q-list-header>
        
         <q-item :to="{ name: 'foods' }">  

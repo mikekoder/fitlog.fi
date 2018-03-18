@@ -80,7 +80,8 @@ module.exports = function (ctx) {
         'QSpinnerDots',
         'QFab',
         'QFabAction',
-        'QItemSeparator'
+        'QItemSeparator',
+        'QCheckbox'
       ],
       directives: [
         'Ripple'

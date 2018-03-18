@@ -24,7 +24,7 @@
                 </q-item>
                 <q-item-separator />
                 <q-list-header v-if="$activityPresets.length > 0">{{ $t('activityLevel') }}</q-list-header>
-                <q-item v-for="preset in $activityPresets" @click.native="changeActivityPreset" :class="{selected: activityPreset && activityPreset.id == preset.id }">
+                <q-item v-for="preset in $activityPresets" @click.native="changeActivityPreset(preset)" :class="{selected: activityPreset && activityPreset.id == preset.id }">
                   <q-item-main>
                     <q-item-tile label>{{ preset.name }}</q-item-tile>
                   </q-item-main>
