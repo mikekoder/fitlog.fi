@@ -18,6 +18,45 @@ export default {
     createExercise(){
       this.$router.push({ name: 'exercise-details', params: { id: constants.NEW_ID } });
     },
+    showProgress(exercise){
+      this.$router.push({ name: 'exercise-progress', params: { exerciseId: exercise.id} });
+    },
+    clickExercise(exercise){
+      var self = this;
+      this.$q.actionSheet({
+        title: exercise.name,
+        grid: true,
+        actions: [
+          {
+            label: self.$t('edit'),
+            icon: 'fa-edit',
+            handler: () => {
+              self.showExercise(exercise);
+            }
+          },
+          {
+            label: self.$t('progress'),
+            icon: 'fa-chart-line',
+            handler: () => {
+              self.showProgress(exercise);
+            }
+          },
+          {
+            label: self.$t('delete'),
+            icon: 'fa-trash',
+            handler: () => {
+              self.deleteExercise(exercise);
+            }
+          }
+        ],
+        dismiss: {
+            label: self.$t('cancel'),
+            handler: () => {
+                
+            }
+        }
+      });
+    }
   },
   created () {
     var self = this;

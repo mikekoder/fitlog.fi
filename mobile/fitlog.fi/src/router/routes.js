@@ -99,7 +99,13 @@ export default [
         name: 'exercise-details',
         component: () => import('pages/exercises/exercise-details.vue'), 
         meta: { title: 'exerciseDetails' }
-      },      
+      },     
+      {
+        path: '/exercise-progress/:exerciseId',
+        name: 'exercise-progress',
+        component: () => import('pages/exercises/exercise-progress.vue'), 
+        meta: { title: 'progress' }
+      }, 
       {
         path: '/routines',
         name: 'routines',

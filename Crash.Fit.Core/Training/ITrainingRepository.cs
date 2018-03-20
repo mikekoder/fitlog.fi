@@ -41,5 +41,6 @@ namespace Crash.Fit.Training
         void DeleteTrainingGoal(TrainingGoal goal);     
         void SaveOneRepMaxs(IEnumerable<OneRepMax> maxs);
         IEnumerable<OneRepMax> GetOneRepMaxs(Guid userId, DateTimeOffset start);
+        IEnumerable<OneRepMax> GetExerciseHistory(Guid exerciseId, Guid userId, DateTimeOffset start, DateTimeOffset end);
     }
 }

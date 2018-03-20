@@ -1,4 +1,7 @@
 ﻿export default {
+    '1rm': '1RM',
+    '1rmBW': '1RM paino huomioiden',
+    '1rmInclBW': '1RM + paino',
     active: 'Aktiivinen',
     activate: 'Aktivoi',
     activity: 'Toiminta',
