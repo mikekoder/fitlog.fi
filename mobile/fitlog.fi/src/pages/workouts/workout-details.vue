@@ -23,7 +23,7 @@
                 <q-input v-model="set.weights" type="number" :float-label="$t('weights')" />
             </div>
             <div class="col-2">
-                <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
                     <q-fab-action color="negative" @click="deleteSet(index)" icon="delete"></q-fab-action>
                     <q-fab-action color="secondary" @click="copySet(index)" icon="content_copy"></q-fab-action>
                 </q-fab>
@@ -31,7 +31,7 @@
         </div>
         
         <div class="row q-my-md">
-            <q-btn glossy small color="primary" icon="fa-plus" @click="addSet" :label="$t('exercise')"></q-btn>
+            <q-btn glossy size="sm" color="primary" icon="fa-plus" @click="addSet" :label="$t('exercise')"></q-btn>
         </div>
 
         <div class="row q-my-md">

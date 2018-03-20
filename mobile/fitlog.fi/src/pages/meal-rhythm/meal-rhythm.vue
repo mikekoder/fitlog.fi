@@ -12,7 +12,7 @@
                 <div class="col-5">   
                     <q-datetime v-model="def.end" format24h type="time" :float-label="$t('ends')" />
                 </div>
-                <div class="col-2"><q-btn round glossy small color="primary" icon="fa-trash"/></div>
+                <div class="col-2"><q-btn round glossy size="sm" color="primary" icon="fa-trash"/></div>
             </div>
           </q-card-main>
         </q-card>
@@ -26,7 +26,7 @@
         </q-card-main>
         </q-card>
     <div class="row q-ma-sm q-my-lg">
-        <q-btn glossy @click="addMeal" color="secondary" icon="fa-plus" :label="$t('meal')" class="q-mr-sm"></q-btn>
+        <q-btn glossy @click="addMeal" color="primary" icon="fa-plus" :label="$t('meal')" class="q-mr-sm"></q-btn>
         <q-btn glossy @click="save" color="primary" :label="$t('save')"></q-btn>
     </div>
     

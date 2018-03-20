@@ -10,7 +10,7 @@
                             <q-input type="text" v-model="preset.name" :float-label="$t('name')" />
                         </div>
                         <div class="col-2">
-                            <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                            <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
                                 <q-fab-action color="negative" @click="deletePreset(p_index)" icon="delete"></q-fab-action>
                             </q-fab>
                         </div>
