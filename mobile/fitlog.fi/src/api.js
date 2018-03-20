@@ -358,6 +358,18 @@ export default {
             type: 'DELETE'
         });
     },
+    getExerciseHistory(exerciseId, start, end){
+        var query = {
+            exerciseId
+        };
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(this.baseUrl + 'exercises/history', query);
+    },
 
     // Routines
     listRoutines() {

@@ -85,7 +85,8 @@ module.exports = function (ctx) {
         'QRadio'
       ],
       directives: [
-        'Ripple'
+        'Ripple',
+        'CloseOverlay'
       ],
       plugins: [
         'Notify',

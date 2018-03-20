@@ -664,7 +664,13 @@ WHERE TGE.TrainingGoalId IN (SELECT Id FROM TrainingGoal WHERE {filter}) ORDER B
                 return maxs.GroupBy(m => m.ExerciseId).Select(m => m.OrderByDescending(m2 => m2.Time).First());
             }
         }
-
+        public IEnumerable<OneRepMax> GetExerciseHistory(Guid exerciseId, Guid userId, DateTimeOffset start, DateTimeOffset end)
+        {
+            using (var conn = CreateConnection())
+            {
+                return conn.Query<OneRepMax>("SELECT * FROM OneRepMax WHERE ExerciseId=@exerciseId AND UserId=@userId AND Time >= @start AND Time <= @end", new { exerciseId, userId, start, end });
+            }
+        }
 
         class WorkoutTargetRaw
         {

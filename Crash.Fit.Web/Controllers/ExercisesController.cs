@@ -124,5 +124,13 @@ namespace Crash.Fit.Web.Controllers
 
             return Ok();
         }
+        [HttpGet("history")]
+        public IActionResult GetHistory(Guid exerciseId, DateTimeOffset start, DateTimeOffset end)
+        {
+            var exercises = trainingRepository.GetExerciseHistory(exerciseId, CurrentUserId, start, end);
+
+            var response = AutoMapper.Mapper.Map<OneRepMaxResponse[]>(exercises);
+            return Ok(response);
+        }
     }
 }
