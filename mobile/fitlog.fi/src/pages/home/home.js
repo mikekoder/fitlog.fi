@@ -287,31 +287,39 @@ export default {
       var self = this;
       this.$q.actionSheet({
         title: `${row.foodName} ${ row.quantity } ${ row.portionName || 'g' }`,
-        grid: true,
+        //grid: true,
         actions: [
           {
             label: self.$t('edit'),
             icon: 'fa-edit',
-            handler: function() {
+            handler: () => {
               self.editRow(row);
             }
           },
           {
             label: self.$t('copy'),
             icon: 'fa-copy',
-            handler: function() {
+            handler: () => {
               self.copyRow(row);
             }
           },
           {
             label: self.$t('delete'),
             icon: 'fa-trash',
-            handler: function() {
+            handler: () => {
               self.deleteRow(mealDef, row);
             }
           }
-        ]
+        ],
+        dismiss: {
+            label: self.$t('cancel'),
+            handler: () => {
+                
+            }
+        }
       });
+      
+     
     },
     editRow(row){
       this.selectedRow = row;
