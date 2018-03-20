@@ -55,6 +55,14 @@ namespace Crash.Fit.Web.Controllers
             }
             return Ok();
         }
+        [HttpGet("history")]
+        public IActionResult GetMeasurementHistory(Guid measureId, DateTimeOffset start, DateTimeOffset end)
+        {
+            var measures = measurementRepository.GetMeasurementHistory(measureId, CurrentUserId, start, end);
+
+            var response = AutoMapper.Mapper.Map<MeasurementResponse[]>(measures);
+            return Ok(response);
+        }
         /*
         [HttpGet]
         [Route("daily-intakes")]

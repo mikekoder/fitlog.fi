@@ -88,12 +88,12 @@ WHERE rownumber=1;";
                 }
             }
         }
-        public IEnumerable<Measurement> GetMeasurementHistory(Guid measurementId, Guid userId, DateTimeOffset start, DateTimeOffset end)
+        public IEnumerable<Measurement> GetMeasurementHistory(Guid measureId, Guid userId, DateTimeOffset start, DateTimeOffset end)
         {
-            var sql = @"SELECT * FROM Measurement WHERE MeasurementId=@measurementId AND UserId=@userId AND Time >= @start AND Time <= @end";
+            var sql = @"SELECT * FROM Measurement WHERE MeasureId=@measureId AND UserId=@userId AND Time >= @start AND Time <= @end";
             using (var conn = CreateConnection())
             {
-                return conn.Query<Measurement>(sql, new { measurementId, userId, start, end });
+                return conn.Query<Measurement>(sql, new { measureId, userId, start, end });
             }
         }
 

@@ -311,6 +311,7 @@ namespace Crash.Fit.Web
 
                 // Measurements
                 m.CreateMap<MeasureSummary, MeasureSummaryResponse>();
+                m.CreateMap<Measurement, MeasurementResponse>();
 
                 // Profile
                 m.CreateMap<Profile.Profile, ProfileResponse>();

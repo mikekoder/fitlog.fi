@@ -7,7 +7,7 @@
               <div class="col-2">{{ $t('measure') }}</div>
               <div class="col-2">{{ $t('time') }}</div>
             </q-item>
-            <q-item v-for="(measure,index) in measures" :key="index" :separator="true">
+            <q-item v-for="(measure,index) in measures" @click.native="showProgress(measure)" :key="index" :separator="true">
               <div class="col-7">{{ measure.name }}</div>
               <div class="col-2">{{ measure.latestValue }}<span v-if="measure.latestValue"> {{ formatUnit(measure.unit) }}</span></div>
               <div class="col-2">{{ formatDateTime(measure.latestTime) }}</div>

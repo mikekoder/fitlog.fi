@@ -20,7 +20,7 @@
                     <q-select v-model="measurement.unit" :options="units" v-if="!measurement.id" :float-label="$t('unit')"></q-select>
                 </div>
                 <div class="col-1">
-                    <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left" v-if="!measurement.id">
+                    <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left" v-if="!measurement.id">
                         <q-fab-action color="negative" @click="deleteMeasurement(index)" icon="delete"></q-fab-action>
                     </q-fab>
                 </div>

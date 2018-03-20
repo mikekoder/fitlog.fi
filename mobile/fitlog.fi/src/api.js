@@ -442,6 +442,18 @@ export default {
             data: JSON.stringify(measurements)
         });
     },
+    getMeasurementHistory(measureId, start, end){
+        var query = {
+            measureId
+        };
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(this.baseUrl + 'measurements/history', query);
+    },
 
     // Feedback
     saveFeedback (feedback) {
