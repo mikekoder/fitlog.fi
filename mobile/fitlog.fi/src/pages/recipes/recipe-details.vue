@@ -15,13 +15,13 @@
               <q-item v-for="(row,index) in ingredients" @click="editIngredient(row)" :key="index" :separator="true">
                   <div class="row ingredient">
                     <div class="col-10">{{ row.food.name}} {{ row.quantity }} {{ row.portion ? row.portion.name : 'g' }}</div>  
-                    <div class="col-2"><q-btn round glossy color="primary" small icon="fa-trash" v-on:click.stop="deleteIngredient(index)"></q-btn></div>
+                    <div class="col-2"><q-btn round glossy color="primary" size="sm" icon="fa-trash" v-on:click.stop="deleteIngredient(index)"></q-btn></div>
                 </div>
               </q-item>
           </q-list>
           <div class="row">
               <div class="col">
-                <q-btn glossy color="primary" icon="fa-plus" small @click="addIngredient" :label="$t('food')"></q-btn>
+                <q-btn glossy color="primary" icon="fa-plus" size="sm" @click="addIngredient" :label="$t('food')"></q-btn>
               </div>
             </div>
             
@@ -48,10 +48,10 @@
           <div class="row" v-for="(portion,index) in portions" :key="index">
             <div class="col col-5"><q-input type="text" v-model="portion.name" :float-label="$t('name')" /></div>
             <div class="col col-5"><q-input type="number" v-model="portion.amount" :float-label="$t('portions') + '/' + $t('recipe')" /></div>
-            <div class="col col-1"><q-btn round small color="primary" icon="fa-trash" @click="removePortion(index)"></q-btn></div>
+            <div class="col col-1"><q-btn round size="sm" color="primary" icon="fa-trash" @click="removePortion(index)"></q-btn></div>
           </div>
           <div class="row">
-            <q-btn glossy small color="primary" icon="fa-plus" @click="addPortion" :label="$t('portion')"></q-btn>
+            <q-btn glossy size="sm" color="primary" icon="fa-plus" @click="addPortion" :label="$t('portion')"></q-btn>
           </div>
         </q-tab-pane>
         <q-tab-pane name="tab-3">

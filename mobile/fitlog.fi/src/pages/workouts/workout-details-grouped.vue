@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="col-2 group-actions">
-                    <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                    <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
                         <q-fab-action color="negative" @click="deleteGroup(index)" icon="delete"></q-fab-action>
                         <q-fab-action color="secondary" @click="copyGroup(group)" icon="content_copy"></q-fab-action>
                     </q-fab>
@@ -37,7 +37,7 @@
                 <div class="col-10">
                 </div>
                 <div class="col-2">
-                    <q-btn round glossy color="primary" icon="fa-plus" small @click="addSet(group)"></q-btn>
+                    <q-btn round glossy color="primary" icon="fa-plus" size="sm" @click="addSet(group)"></q-btn>
                 </div>
             </div>
             <div class="row q-my-md" v-else v-for="(set,index) in group.sets" :key="index">
@@ -48,7 +48,7 @@
                     <q-input v-model="set.weights" type="number" :float-label="index == 0 ? $t('weights') : ''" />
                 </div>
                 <div class="col-2">
-                    <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                    <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
                         <q-fab-action color="negative" @click="deleteSet(group, index)" icon="delete"></q-fab-action>
                         <q-fab-action color="secondary" @click="copySet(group, set)" icon="content_copy"></q-fab-action>
                     </q-fab>
@@ -56,14 +56,14 @@
                 <div class="col-2">
                 </div>
                 <div class="col-2">
-                    <q-btn round glossy color="primary" icon="fa-plus" small @click="addSet(group)" v-if="index == group.sets.length - 1"></q-btn>
+                    <q-btn round glossy color="primary" icon="fa-plus" size="sm" @click="addSet(group)" v-if="index == group.sets.length - 1"></q-btn>
                 </div>
             </div>
             
         </q-card-main>
         <q-card-actions align="end">
             <!--
-            <q-btn round glossy color="primary" icon="fa-plus" small @click="addSet(group)"></q-btn>
+            <q-btn round glossy color="primary" icon="fa-plus" size="sm" @click="addSet(group)"></q-btn>
             -->
         </q-card-actions>
       </q-card>

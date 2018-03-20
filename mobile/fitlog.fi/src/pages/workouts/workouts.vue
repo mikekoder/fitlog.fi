@@ -26,7 +26,7 @@
                 </q-item>
               </q-list>
             </q-btn-dropdown>
-            <q-btn glossy small color="primary" icon="fa-plus" v-else :label="$t('workout')" @click="createWorkout"></q-btn>
+            <q-btn glossy size="sm" color="primary" icon="fa-plus" v-else :label="$t('workout')" @click="createWorkout"></q-btn>
           </div>
         </div>
       </q-card-main>

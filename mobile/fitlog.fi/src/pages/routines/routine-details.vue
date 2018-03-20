@@ -5,7 +5,7 @@
             <q-input type="text" v-model="name" :float-label="$t('name')" />
         </div>
         <div class="col-4">
-            <q-btn round color="primary" glossy small icon="fa-plus" @click="addWorkout"></q-btn>
+            <q-btn round color="primary" glossy size="sm" icon="fa-plus" @click="addWorkout"></q-btn>
         </div>
       
     </div>
@@ -38,14 +38,14 @@
                 <q-input v-model="exercise.loadFrom" type="number" :float-label="$t('load')" />
             </div>
             <div class="col-2">
-                <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
                     <q-fab-action color="negative" @click="deleteExercise(workout, index)" icon="delete"></q-fab-action>
                     <q-fab-action color="secondary" @click="copyExercise(workout, index)" icon="content_copy"></q-fab-action>
                 </q-fab>
             </div>
         </div>
         <div class="row pad buttons">
-            <q-btn round glossy color="primary" icon="fa-plus" small @click="addExercise(workout)"></q-btn>
+            <q-btn round glossy color="primary" icon="fa-plus" size="sm" @click="addExercise(workout)"></q-btn>
         </div>  
           </q-tab-pane>
       </q-scroll-area>

@@ -17,14 +17,14 @@
             <q-btn-dropdown glossy size="sm" color="grey-6" icon="fa-cogs" style="margin-top: -5px;">
               <!-- dropdown content -->
               <q-list>
-                <q-item @click.native="showMealSettings">
+                <q-item @click.native="showMealSettings" v-close-overlay>
                   <q-item-main>
                     <q-item-tile label>{{ $t('nutrients') }}</q-item-tile>
                   </q-item-main>
                 </q-item>
                 <q-item-separator />
                 <q-list-header v-if="$activityPresets.length > 0">{{ $t('activityLevel') }}</q-list-header>
-                <q-item v-for="preset in $activityPresets" @click.native="changeActivityPreset(preset)" :class="{selected: activityPreset && activityPreset.id == preset.id }">
+                <q-item v-for="preset in $activityPresets" @click.native="changeActivityPreset(preset)" :class="{selected: activityPreset && activityPreset.id == preset.id }" v-close-overlay>
                   <q-item-main>
                     <q-item-tile label>{{ preset.name }}</q-item-tile>
                   </q-item-main>
@@ -32,7 +32,7 @@
               </q-list>
             </q-btn-dropdown>
             <!--
-            <q-btn round small glossy color="grey-6" class="pull-right" icon="fa-cogs" @click="showMealSettings"></q-btn>
+            <q-btn round size="sm" glossy color="grey-6" class="pull-right" icon="fa-cogs" @click="showMealSettings"></q-btn>
             -->
           </div>
         </q-card-title>
@@ -119,14 +119,14 @@
               </div>
             </div>
             <!--
-            <q-btn round class="float-right" color="primary" style="top: -55px; right:-10px;" small icon="keyboard_arrow_up" v-on:click.stop="showFab=true"></q-btn>
+            <q-btn round class="float-right" color="primary" style="top: -55px; right:-10px;" size="sm" icon="keyboard_arrow_up" v-on:click.stop="showFab=true"></q-btn>
             -->
           </div>
         </q-card-main>
         <q-card-actions align="end">
-          <q-btn v-if="rowCopy" round glossy color="secondary" icon="fa-paste" small @click="pasteRows(mealdef)"></q-btn>
-          <q-btn v-if="mealCopy" round glossy color="secondary" icon="fa-paste" small @click="pasteMeal(mealdef)"></q-btn>
-          <q-btn glossy color="primary" icon="fa-plus" small @click="addRow(mealdef)" :label="$t('food')"></q-btn>
+          <q-btn v-if="rowCopy" round glossy color="secondary" icon="fa-paste" size="sm" @click="pasteRows(mealdef)"></q-btn>
+          <q-btn v-if="mealCopy" round glossy color="secondary" icon="fa-paste" size="sm" @click="pasteMeal(mealdef)"></q-btn>
+          <q-btn glossy color="primary" icon="fa-plus" size="sm" @click="addRow(mealdef)" :label="$t('food')"></q-btn>
         </q-card-actions>
       </q-card>
     </q-scroll-area>

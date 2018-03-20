@@ -17,7 +17,7 @@
                     <q-input type="text" v-model="workout.name" :float-label="$t('name')" />
                 </div>
                 <div class="col-2">
-                    <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                    <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
                         <q-fab-action color="negative" @click="deleteWorkout(w_index)" icon="delete"></q-fab-action>
                      </q-fab>
                 </div>
@@ -39,7 +39,7 @@
                             </div>
                         </div>
                         <div class="col-2">
-                            <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                            <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
                                 <q-fab-action color="negative" @click="deleteGroup(workout, g_index)" icon="delete"></q-fab-action>
                             </q-fab>
                         </div>
@@ -58,7 +58,7 @@
                             <q-input v-model="row.loadFrom" type="number" :float-label="r_index == 0 ? $t('load') : ''" suffix="%" />
                         </div>
                         <div class="col-2">
-                            <q-fab small flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                            <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
                                 <q-fab-action color="negative" @click="deleteRow(group, r_index)" icon="delete"></q-fab-action>
                                 <q-fab-action color="secondary" @click="copyRow(group, row)" icon="content_copy"></q-fab-action>
                             </q-fab>
