@@ -26,6 +26,9 @@ export default {
         },
         cancelMeasurements() {
             this.create = false;
+        },
+        showProgress(measure){
+            this.$router.push({ name: 'measurement-progress', params: { measureId: measure.id} });
         }
     },
     created() {

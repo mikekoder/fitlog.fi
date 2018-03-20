@@ -163,6 +163,8 @@
     monday: 'Maanantai',
     mondayAbbr:'Ma',
     mondayShort: 'M',
+    month: 'Kuukausi',
+    months: 'Kuukautta',
     most: 'Eniten',
     mostUsed: 'Käytetyimmät',
     muscleGroups: 'Lihasryhmät',
@@ -208,6 +210,7 @@
     portions: 'Annokset',
     preset: 'Asetus',
     profile: 'Profiili',
+    progress: 'Kehitys',
     protein: 'Proteiini',
     proteinAbbr: 'P',
     quantity: 'Määrä',
@@ -293,6 +296,8 @@
     workoutDetails: 'Treenin tiedot',
     workouts: 'Treenit',
     workoutsPerWeek: 'Kertaa / vk',
+    year: 'Vuosi',
+    years: 'Vuotta',
     yesterday:'Eilen',
     youHaveVoted: 'Olet äänestänyt'
 }

@@ -131,7 +131,12 @@ export default [
         component: () => import('pages/measurements/measurement-details.vue'), 
         meta: { title: 'measurements' }
       },
-
+      {
+        path: '/measurement-progress/:measureId',
+        name: 'measurement-progress',
+        component: () => import('pages/measurements/measurement-progress.vue'), 
+        meta: { title: 'progress' }
+      },
       {
         path: '/improvements',
         name: 'improvements',
