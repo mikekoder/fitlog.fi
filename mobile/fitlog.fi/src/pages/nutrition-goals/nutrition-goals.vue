@@ -2,10 +2,6 @@
   <q-page class="q-pa-sm">
       <q-scroll-area>
         <q-list v-if="goals.length > 0">
-            <q-item>
-              <div class="col-10"></div>
-              <div class="col-2"></div>
-            </q-item>
             <q-item v-for="(goal,index) in goals" @click.native="showGoal(goal)" :key="index" :separator="true">
               <div class="col-10">{{ goal.name }}</div>
               <div class="col-2"></div>

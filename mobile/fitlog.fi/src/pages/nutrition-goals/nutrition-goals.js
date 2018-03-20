@@ -11,6 +11,9 @@ export default {
     },
     components: {},
     methods: {
+        showGoal(goal){
+            this.$router.push({ name: 'nutrition-goal-details', params: { id: goal.id } });
+        },
         createGoal(){
             this.$router.push({ name: 'nutrition-goal-details', params: { id: constants.NEW_ID } });
         },
