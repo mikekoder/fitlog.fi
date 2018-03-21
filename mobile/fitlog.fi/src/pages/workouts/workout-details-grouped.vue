@@ -11,14 +11,16 @@
         <q-card-title class="card-title" :class="cardTitleBackground">
             <div class="row">
                 <div class="col-10">
+                    <!--
                     <div v-if="exercises.length > 20">
-                        <!--
+                        
                         <q-input color="amber" v-model="group.exerciseName" :float-label="$t('exercise')" >
                             <q-autocomplete @search="searchExercise" :min-characters="1" @selected="(exercise) => exerciseSelected(group,exercise)" />
                         </q-input>
-                        -->
+                       
                     </div>
-                    <div v-else>
+                     -->
+                    <div>
                         <q-select v-model="group.exercise" :options="exercises" :float-label="$t('exercise')" :display-value="group.exercise ? group.exercise.name : ''"/>
                     </div>
                 </div>

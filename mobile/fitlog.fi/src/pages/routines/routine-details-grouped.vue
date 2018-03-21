@@ -26,15 +26,15 @@
             <q-card v-for="(group, g_index) in workout.groups" :key="g_index" class="q-mx-sm q-mb-sm">
                 <q-card-title class="bg-grey-3">
                     <div class="row">
-                        <div class="col-10">
+                        <div class="col-10"><!--
                             <div v-if="exercises.length > 20">
-                                <!--
+                                
                                 <q-input color="amber" v-model="group.exerciseName" :float-label="$t('exercise')" >
                                     <q-autocomplete @search="searchExercise" :min-characters="1" @selected="(exercise) => exerciseSelected(group,exercise)" />
                                 </q-input>
-                                -->
-                            </div>
-                            <div v-else>
+                                
+                            </div>-->
+                            <div>
                                 <q-select v-model="group.exercise" :options="exercises" :float-label="$t('exercise')" :display-value="group.exercise ? group.exercise.name : ''"/>
                             </div>
                         </div>

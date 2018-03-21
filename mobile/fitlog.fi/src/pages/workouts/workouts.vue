@@ -1,5 +1,6 @@
 <template>
   <q-page class="q-pa-sm">
+    <q-pull-to-refresh :handler="refresh" :pull-message="$t('')" :release-message="$t('')" :refresh-message="$t('')" :distance="20" style="height: 70px;">
     <q-card>
       <q-card-main>
         <div class="row">
@@ -31,8 +32,9 @@
         </div>
       </q-card-main>
     </q-card>
+    </q-pull-to-refresh>
     <template v-for="(workout,index) in workouts">
-      <q-card :key="index" @click.native="showWorkout(workout)" class="q-mt-sm">
+      <q-card :key="index" class="q-mt-sm" @click.native="clickWorkout(workout)">
         <q-card-title :class="cardTitleBackground">
           {{ formatDateTime(workout.time) }}
         </q-card-title>

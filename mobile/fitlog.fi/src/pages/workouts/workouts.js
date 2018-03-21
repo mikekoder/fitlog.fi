@@ -74,13 +74,18 @@ export default {
               }
           });
       },
-      fetchWorkouts() {
+      fetchWorkouts(refreshCallback) {
           var self = this;
+          var force = refreshCallback && true;
           this.$store.dispatch(constants.FETCH_WORKOUTS, {
               start: self.start,
               end: self.end,
+              force,
               success() {
                   self.$store.commit(constants.LOADING_DONE);
+                  if(refreshCallback){
+                    refreshCallback();
+                  }
               }
           });
       },
@@ -194,7 +199,39 @@ export default {
       hideTooltips(){
         var self = this;
         self.$refs.tooltip1.close();
-    }
+    },
+    refresh(done){
+        this.fetchWorkouts(done);
+    },
+    clickWorkout(workout){
+        var self = this;
+        this.$q.actionSheet({
+          title: self.formatDateTime(workout.time),
+          grid: true,
+          actions: [
+            {
+              label: self.$t('edit'),
+              icon: 'fa-edit',
+              handler: () => {
+                self.showWorkout(workout);
+              }
+            },
+            {
+              label: self.$t('delete'),
+              icon: 'fa-trash',
+              handler: () => {
+                self.deleteWorkout(workout);
+              }
+            }
+          ],
+          dismiss: {
+              label: self.$t('cancel'),
+              handler: () => {
+                  
+              }
+          }
+        });
+      }
   },
   watch: {
       activeRoutine() {
