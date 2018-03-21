@@ -72,9 +72,9 @@ export default {
                 success();
             }
         },
-        [constants.FETCH_WORKOUTS]({ commit, state }, { start, end, success, failure }) {
+        [constants.FETCH_WORKOUTS]({ commit, state }, { start, end, force, success, failure }) {
             if (state.workoutsStart && state.workoutsEnd) {
-                if (moment(start).isBefore(state.workoutsStart) || moment(end).isAfter(state.workoutsEnd)) {
+                if (moment(start).isBefore(state.workoutsStart) || moment(end).isAfter(state.workoutsEnd) || force) {
                     start = moment.min(moment(start), moment(state.workoutsEnd));
                     end = moment.max(moment(end), moment(state.workoutsStart));
                 }

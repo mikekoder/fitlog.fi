@@ -335,6 +335,7 @@ export default {
         var self = this;
         var meal = self.$store.state.clipboard.data;
         self.appendRows(mealDef, meal.rows);
+        self.$store.dispatch(constants.CLIPBOARD_CLEAR, {});
     },
     copyRow(row) {
         this.$store.dispatch(constants.CLIPBOARD_COPY, {
@@ -346,6 +347,7 @@ export default {
         var self = this;
         var rows = self.$store.state.clipboard.data;
         self.appendRows(mealDef, rows);
+        self.$store.dispatch(constants.CLIPBOARD_CLEAR, {});
     },
     appendRows(mealDef, rows) {
         var self = this;
