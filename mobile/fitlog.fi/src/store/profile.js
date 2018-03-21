@@ -73,10 +73,15 @@ export default
             });
         },
         [constants.LOGOUT]({ commit, state }, { success, failure }) {
-            api.logout().then(function () {
+            api.logout().then(() => {
                 storage.removeItem('refresh_token');
                 storage.removeItem('access_token');
-                commit(constants.LOGOUT_SUCCESS);
+                commit(constants.ACTIVITIES_CLEAR);
+                commit(constants.CLIPBOARD_CLEAR);
+                commit(constants.FEEDBACK_CLEAR);
+                commit(constants.NUTRITION_CLEAR);
+                commit(constants.PROFILE_CLEAR);
+                commit(constants.TRAINING_CLEAR);
                 if (success) {
                     success();
                 }
@@ -106,8 +111,10 @@ export default
             state.loading = false;
             state.profile = profile;
         },
-        [constants.LOGOUT_SUCCESS](state) {
+        [constants.PROFILE_CLEAR](state) {
+            console.log('profile.logout 1');
             state.profile = undefined;
+            console.log('profile.logout 2');
         },
         [constants.FETCH_PROFILE_FAILURE](state) {
             state.loading = false;

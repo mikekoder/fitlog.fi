@@ -126,7 +126,6 @@ export default ({ app, Vue }) => {
   created(){
   },
   beforeRouteLeave(to, from, next) {
-      console.log('leaving route');
         //this.$store.commit(constants.LOADING);
         next();
     }   

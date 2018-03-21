@@ -92,7 +92,7 @@ export default {
         }
     },
     mutations: {
-        [constants.LOGOUT_SUCCESS](state) {
+        [constants.FEEDBACK_CLEAR](state) {
             state.bugsLoaded = false;
             state.bugs = [];
             state.improvementsLoaded = false;
