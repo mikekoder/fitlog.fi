@@ -668,7 +668,7 @@ WHERE TGE.TrainingGoalId IN (SELECT Id FROM TrainingGoal WHERE {filter}) ORDER B
         {
             using (var conn = CreateConnection())
             {
-                return conn.Query<OneRepMax>("SELECT * FROM OneRepMax WHERE ExerciseId=@exerciseId AND UserId=@userId AND Time >= @start AND Time <= @end", new { exerciseId, userId, start, end });
+                return conn.Query<OneRepMax>("SELECT * FROM OneRepMax WHERE ExerciseId=@exerciseId AND UserId=@userId AND Time >= @start AND Time <= @end ORDER BY Time", new { exerciseId, userId, start, end });
             }
         }
 
