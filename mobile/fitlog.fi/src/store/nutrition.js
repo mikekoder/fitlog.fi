@@ -423,9 +423,9 @@ export default {
                 if (success) {
                     success(savedGoal);
                 }
-            }).fail(function () {
+            }).fail((xhr)=> {
                 if (failure) {
-                    failure();
+                    failure(xhr);
                 }
             });
         },
@@ -488,7 +488,7 @@ export default {
         }*/
     },
     mutations: {
-        [constants.LOGOUT_SUCCESS](state) {
+        [constants.NUTRITION_CLEAR](state) {
             state.diaryDate = new Date();
             state.mealsStart = undefined;
             state.mealsEnd = undefined;

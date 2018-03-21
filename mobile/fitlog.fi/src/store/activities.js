@@ -76,7 +76,7 @@ export default {
         }
     },
     mutations: {
-        [constants.LOGOUT_SUCCESS](state) {
+        [constants.ACTIVITIES_CLEAR](state) {
             state.activityPresetsLoaded = false;
             state.activityPresets = [];
             state.activityPresetsStart = undefined;

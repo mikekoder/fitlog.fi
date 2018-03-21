@@ -14,7 +14,7 @@ export default {
         }
     },
     mutations: {
-        [constants.LOGOUT_SUCCESS](state) {
+        [constants.CLIPBOARD_CLEAR](state) {
             state.type = undefined;
             state.data = undefined;
         },

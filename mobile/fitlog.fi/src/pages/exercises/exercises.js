@@ -62,6 +62,7 @@ export default {
     var self = this;
     
     self.$store.dispatch(constants.FETCH_EXERCISES, {
+      forceRefresh: true,
       success(){
         self.$store.commit(constants.LOADING_DONE);
       },
