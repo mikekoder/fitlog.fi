@@ -418,10 +418,10 @@ export default {
             });
         },
         [constants.ACTIVATE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
-            api.activateNutritionGoal(goal.id).then(function () {
+            api.activateNutritionGoal(goal.id).then(() => {
                 commit(constants.ACTIVATE_NUTRITION_GOAL_SUCCESS, { goal })
                 if (success) {
-                    success(savedGoal);
+                    success(goal);
                 }
             }).fail((xhr)=> {
                 if (failure) {
