@@ -22,7 +22,8 @@ FROM
   LEFT JOIN Measurement ON Measurement.MeasureId=Measure.Id AND Measurement.UserId=@userId
   WHERE Measure.UserId=@userId OR Measure.UserId IS NULL
 ) x
-WHERE rownumber=1;";
+WHERE rownumber=1
+ORDER BY Name";
             using (var conn = CreateConnection())
             {
                 return conn.Query<MeasureSummary>(sql, new { userId });
@@ -90,7 +91,7 @@ WHERE rownumber=1;";
         }
         public IEnumerable<Measurement> GetMeasurementHistory(Guid measureId, Guid userId, DateTimeOffset start, DateTimeOffset end)
         {
-            var sql = @"SELECT * FROM Measurement WHERE MeasureId=@measureId AND UserId=@userId AND Time >= @start AND Time <= @end";
+            var sql = @"SELECT * FROM Measurement WHERE MeasureId=@measureId AND UserId=@userId AND Time >= @start AND Time <= @end ORDER BY Time";
             using (var conn = CreateConnection())
             {
                 return conn.Query<Measurement>(sql, new { measureId, userId, start, end });
