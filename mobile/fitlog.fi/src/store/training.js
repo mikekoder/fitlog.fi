@@ -433,6 +433,18 @@ export default {
                     failure();
                 }
             });
+        },
+        [constants.DELETE_ENERGY_EXPENDITURE]({ commit, state }, { energyExpenditure, success, failure }) {
+            api.deleteEnergyExpenditure(energyExpenditure.id).then(() => {
+                commit(constants.DELETE_ENERGY_EXPENDITURE_SUCCESS, { energyExpenditure })
+                if (success) {
+                    success(energyExpenditure);
+                }
+            }).fail(() => {
+                if (failure) {
+                    failure();
+                }
+            });
         }
     },
 
@@ -633,6 +645,9 @@ export default {
 
             state.energyExpenditures.push(energyExpenditure);
         },
+        [constants.DELETE_ENERGY_EXPENDITURE_SUCCESS](state, { energyExpenditure }) {
+            deleteEnergyExpenditure(energyExpenditure, state); 
+        }
     }
 }
 function deleteExercise(exercise, state){
