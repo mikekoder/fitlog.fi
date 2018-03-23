@@ -2,19 +2,15 @@
   <q-page class="q-pa-sm">
       <q-scroll-area style="height: 72vh;">
         <q-list v-if="ownExercises.length > 0">
-            <q-item>
-              <div class="col-9"></div>
-              <!--
+            <q-item class="text-bold">
+              <div class="col-9"></div>            
               <div class="col-1">{{ $t('sets') }}</div>
-              -->
               <div class="col-2">{{ $t('1RM') }}</div>
               <div class="col-1"></div>
             </q-item>
             <q-item v-for="(exercise,index) in ownExercises"  :key="index" :separator="true"  @click.native="clickExercise(exercise)">
               <div class="col-9">{{ exercise.name }}</div>
-              <!--
               <div class="col-1">{{ exercise.usageCount }}</div>
-              -->
               <div class="col-2">{{ formatDecimal(exercise.oneRepMax) }}</div>
               <div class="col-1">
               </div>

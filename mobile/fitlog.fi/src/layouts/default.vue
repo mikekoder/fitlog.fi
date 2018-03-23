@@ -65,7 +65,7 @@
           <q-item-main :label="$t('repCalculator')" />
         </q-item>
         <q-item :to="{ name: 'energy-expenditures' }">  
-          <q-item-side icon="fa-calculator" />
+          <q-item-side icon="fa-fire" />
           <q-item-main :label="$t('energyExpenditures')" />
         </q-item>
         <q-list-header>{{ $t('measurements') }}</q-list-header>
