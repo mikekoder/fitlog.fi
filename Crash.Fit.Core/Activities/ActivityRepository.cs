@@ -135,7 +135,10 @@ WHERE E.UserId=@userId AND E.Time >= @start AND E.Time <= @end AND E.Deleted IS 
 
         public EnergyExpenditure GetEnergyExpenditure(Guid id)
         {
-            throw new NotImplementedException();
+            using (var conn = CreateConnection())
+            {
+                return conn.QuerySingleOrDefault<EnergyExpenditure>("SELECT * FROM EnergyExpenditure WHERE Id=@id", new { id });
+            }
         }
         public EnergyExpenditure GetEnergyExpenditureForWorkout(Guid workoutId)
         {
