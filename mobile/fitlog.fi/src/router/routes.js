@@ -172,6 +172,12 @@ export default [
         name: 'activity-levels',
         component: () => import('pages/activity-levels/activity-levels.vue'), 
         meta: { title: 'activityLevels' }
+      },
+      {
+        path: '/energy-expenditures',
+        name: 'energy-expenditures',
+        component: () => import('pages/energy-expenditures/energy-expenditures.vue'), 
+        meta: { title: 'energyExpenditures' }
       }
     ]
   },

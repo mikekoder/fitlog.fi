@@ -64,7 +64,10 @@
           <q-item-side icon="fa-calculator" />
           <q-item-main :label="$t('repCalculator')" />
         </q-item>
-
+        <q-item :to="{ name: 'energy-expenditures' }">  
+          <q-item-side icon="fa-calculator" />
+          <q-item-main :label="$t('energyExpenditures')" />
+        </q-item>
         <q-list-header>{{ $t('measurements') }}</q-list-header>
         <q-item item :to="{ name: 'measurements' }">  
           <q-item-side icon="fa-balance-scale" />

@@ -88,6 +88,10 @@ export default ({ app, Vue }) => {
         format = format || 'DD.MM.YYYY HH:mm';
         return m.format(format);
     },
+    formatDuration(hours, minutes) {
+        var time = '01.01.2000 ' + (hours || 0) + ':' + (minutes || 0);
+        return this.formatTime(time);
+    },
     formatUnit(unit){
         switch(unit){
             case 'G':
