@@ -1,8 +1,5 @@
 <template>
-    <q-modal ref="modal">
-        <!--
-        <h4>Ruoka-aine</h4>
-        -->
+    <q-modal ref="modal" class="q-pa-sm">
         <div class="row q-ma-sm">
             {{ $t('food') }}
         </div>

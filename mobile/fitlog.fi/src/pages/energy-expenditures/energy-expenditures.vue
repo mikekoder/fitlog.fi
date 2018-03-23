@@ -18,7 +18,7 @@
     </q-card>
       <q-scroll-area style="height: 72vh;">
         <q-list v-if="energyExpenditures.length > 0">
-            <q-item>
+            <q-item class="text-bold">
               <div class="col-4">{{ $t("activity") }}</div>
               <div class="col-2">{{ $t("duration") }}</div>
               <div class="col-2">{{ $t("expenditure") }} (kcal)</div>
