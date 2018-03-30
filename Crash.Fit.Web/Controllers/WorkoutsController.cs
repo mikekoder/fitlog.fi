@@ -57,7 +57,7 @@ namespace Crash.Fit.Web.Controllers
             Update1RMs(maxs);
             CalculateLoads(workout.Sets, exercises, userWeight);
             trainingRepository.CreateWorkout(workout);
-            var burnedCalories = CalculateEnergyExpenditure(workout.Duration, userWeight);
+            var burnedCalories = request.EnergyExpenditure ?? CalculateEnergyExpenditure(workout.Duration, userWeight);
             var energyExpenditure = new EnergyExpenditure
             {
                 UserId = CurrentUserId,
@@ -106,7 +106,7 @@ namespace Crash.Fit.Web.Controllers
             CalculateLoads(workout.Sets, exercises, userWeight);
             trainingRepository.UpdateWorkout(workout);
 
-            var burnedCalories = CalculateEnergyExpenditure(workout.Duration, userWeight);
+            var burnedCalories = request.EnergyExpenditure ?? CalculateEnergyExpenditure(workout.Duration, userWeight);
             var energyExpenditure = activityRepository.GetEnergyExpenditureForWorkout(id);
             if (energyExpenditure == null)
             {

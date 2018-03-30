@@ -92,7 +92,8 @@ export default {
                 time: self.time,
                 hours: time ? time.getHours() : undefined,
                 minutes: time ? time.getMinutes() : undefined,
-                sets: self.sets.filter(s => s.exercise && s.reps).map(s => { return { exerciseId: s.exercise.id, exerciseName: s.exercise.name, reps: utils.parseFloat(s.reps), weights: utils.parseFloat(s.weights) } })
+                sets: self.sets.filter(s => s.exercise && s.reps).map(s => { return { exerciseId: s.exercise.id, exerciseName: s.exercise.name, reps: utils.parseFloat(s.reps), weights: utils.parseFloat(s.weights) } }),
+                energyExpenditure: self.energySpecified ? self.energyExpenditure : undefined
             };
             self.$store.dispatch(constants.SAVE_WORKOUT, {
                 workout,
