@@ -1,15 +1,15 @@
 <template>
-    <q-modal ref="modal" class="q-pa-sm">
-        <div class="row q-ma-sm">
+    <q-modal ref="modal">
+        <div class="row q-ma-sm text-bold">
             {{ $t('food') }}
         </div>
         <q-tabs v-model="tab" v-if="selectFood" style="height: 82vh;" @select="changeTab">
-            <!-- Tabs - notice slot="title" -->
-            <q-tab slot="title" name="tab-1" icon="fa-search" :label="$t('search')" />
-            <q-tab slot="title" name="tab-2" icon="fa-clock" :label="$t('latest')" />
-            <q-tab slot="title" name="tab-3" icon="fa-star" :label="$t('mostUsed')" />
-            <q-tab slot="title" name="tab-4" icon="fa-user" :label="$t('my')" />
-            <!-- Targets -->
+            
+            <q-tab slot="title" name="tab-1"  :label="$t('search')" />
+            <q-tab slot="title" name="tab-2"  :label="$t('latest')" />
+            <q-tab slot="title" name="tab-3" :label="$t('mostUsed')" />
+            <q-tab slot="title" name="tab-4"  :label="$t('my')" />
+           
             <q-scroll-area style="height: 72vh;">
             <q-tab-pane name="tab-1">
                 <q-search v-model="searchText" :float-label="$t('search')" :placeholder="$t('food')" @input="search" :debounce="500" clearable></q-search>
@@ -165,7 +165,7 @@ export default {
                     portions.splice(0,0,{ label: 'g', value: undefined});
                     self.portions = portions;
                     if(portionId){
-                        self.portion = self.portion.find(p => p.id == portionId);
+                        self.portion = self.portions.find(p => p.id == portionId);
                     }
                     else{
                         self.portion = self.portions[0];        

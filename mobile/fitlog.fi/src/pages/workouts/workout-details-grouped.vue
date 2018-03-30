@@ -3,7 +3,19 @@
     <q-scroll-area style="height: 90vh;">
         <q-card>
             <q-card-main>
-                <q-datetime v-model="time" type="datetime" :format="$t('datetimeFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" :float-label="$t('time')" format24h ref="timeInput" />
+                <div class="row">
+                    <div class="col-6">
+                         <q-datetime v-model="time" type="datetime" :format="$t('datetimeFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" :float-label="$t('time')" format24h ref="timeInput" />
+                    </div>
+                    <div class="col-3 q-pl-sm">
+                         <q-datetime v-model="duration" type="time" :format="$t('timeFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" :float-label="$t('duration')" format24h />
+                    </div>
+                    <div class="col-3 q-pl-sm">
+                        <q-input v-model="energyExpenditure" type="number" :float-label="$t('expenditure')" suffix="kcal" @blur="energySpecified=(energyExpenditure && true)" />
+                    </div>
+                </div>
+               
+            
             </q-card-main>
         </q-card>
 
@@ -42,7 +54,7 @@
                     <q-btn round glossy color="primary" icon="fa-plus" size="sm" @click="addSet(group)"></q-btn>
                 </div>
             </div>
-            <div class="row q-my-md" v-else v-for="(set,index) in group.sets" :key="index">
+            <div class="row q-mt-sm" v-else v-for="(set,index) in group.sets" :key="index">
                 <div class="col-3 q-pr-sm">
                     <q-input v-model="set.reps" type="number" :float-label="index == 0 ? $t('reps') : ''" />
                 </div>

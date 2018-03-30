@@ -59,7 +59,7 @@ export default {
                     }
                 });
             }
-            self.toggleGroup(self.$nutrientGroups[0].id);
+            self.toggleGroup(self.$nutrientGroups[0]);
         },
         addPeriod() {
             var period = {

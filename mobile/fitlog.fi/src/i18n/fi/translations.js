@@ -168,6 +168,7 @@
     mondayShort: 'M',
     month: 'Kuukausi',
     months: 'Kuukautta',
+    monthsAbbr: 'kk',
     most: 'Eniten',
     mostUsed: 'Käytetyimmät',
     muscleGroups: 'Lihasryhmät',

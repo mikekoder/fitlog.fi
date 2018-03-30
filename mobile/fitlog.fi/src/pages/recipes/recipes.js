@@ -27,6 +27,35 @@ methods: {
         self.notifyError(self.$t('deleteFailed'));
       }
     });
+  },
+  clickRecipe(recipe){
+    var self = this;
+    this.$q.actionSheet({
+      title: recipe.name,
+      grid: true,
+      actions: [
+        {
+          label: self.$t('edit'),
+          icon: 'fa-edit',
+          handler: () => {
+            self.showRecipe(recipe);
+          }
+        },
+        {
+          label: self.$t('delete'),
+          icon: 'fa-trash',
+          handler: () => {
+            self.deleteRecipe(recipe);
+          }
+        }
+      ],
+      dismiss: {
+          label: self.$t('cancel'),
+          handler: () => {
+              
+          }
+      }
+    });
   }
 },
   created () {

@@ -106,7 +106,7 @@
                         </div>
                         <div v-if="selectedGroup == group">
                             <div class="row" v-for="(nutrient,index_n) in nutrientsGrouped[group.id]" :key="index_n" v-if="nutrient.id != energyDistributionId">
-                                <div class="col-6">{{ nutrient.name }}</div>
+                                <div class="col-6 q-pt-sm">{{ nutrient.name }}</div>
                                 <div class="col-2"><q-input type="number" v-model="period.nutrients[nutrient.id].min" /></div>
                                 <div class="col-1 q-pt-sm" style="text-align: center"><q-icon name="fa-minus" /></div>
                                 <div class="col-2"><q-input type="number" v-model="period.nutrients[nutrient.id].max" /></div>
