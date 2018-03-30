@@ -12,6 +12,7 @@ namespace Crash.Fit.Api.Models.Training
         public int? Minutes { get; set; }
         public string Name { get; set; }
         public WorkoutSetRequest[] Sets { get; set; }
+        public decimal? EnergyExpenditure { get; set; }
     }
     public class WorkoutSetRequest
     {
