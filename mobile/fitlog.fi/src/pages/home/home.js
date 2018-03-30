@@ -182,9 +182,6 @@ export default {
             if (dayPreset) {
                 return self.$activityPresets.find(p => p.id == dayPreset.activityPresetId);
             }
-            else {
-                //return this.getActivityPreset();
-            }
         },
         set(value) {
             this.changeActivityPreset(value);
@@ -213,7 +210,8 @@ export default {
         if (!moment(newDate).isSame(this.selectedDate, 'd')) {
             this.$store.dispatch(constants.SELECT_MEAL_DIARY_DATE, { date: newDate });
             this.fetchData();
-            this.selectActivityPreset();
+            preset = this.getActivityPreset();
+            this.changeActivityPreset(preset);
         }
     },
     changeActivityPreset(preset) {
@@ -287,7 +285,7 @@ export default {
       var self = this;
       this.$q.actionSheet({
         title: `${row.foodName} ${ row.quantity } ${ row.portionName || 'g' }`,
-        //grid: true,
+        grid: true,
         actions: [
           {
             label: self.$t('edit'),
@@ -367,22 +365,27 @@ export default {
         });
     },
     deleteRow(mealdef, row){
+        var self = this;
       this.$store.dispatch(constants.DELETE_MEAL_ROW, {
           row,
           success() { 
             if(mealdef.meal.rows.length == 0){
               mealdef.meal = undefined;
             }
+            self.updateComputedValues();
           },
           failure() { }
       });
       return true;
     },
     saveRow(row){
+        var self = this;
       row.date = this.selectedDate;
       this.$store.dispatch(constants.SAVE_MEAL_ROW, {
           row,
-          success() {},
+          success() {
+            self.updateComputedValues();
+          },
           failure() { }
       });
       this.selectedRow = {};
@@ -463,15 +466,10 @@ export default {
                 preset = this.$activityPresets.find(p => p.saturday == true);
                 break;
         }
-
-        this.activityPreset = preset;
-    },
-    $activityPresetsLoaded() {
-        this.selectActivityPreset();
+        return preset;
     }
   },
   created(){
     this.init();
-    
   }
 }

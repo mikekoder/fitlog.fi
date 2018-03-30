@@ -1,6 +1,6 @@
 ﻿<template>
-    <q-modal ref="modal" class="q-pa-sm">
-        <div class="row q-ma-sm">
+    <q-modal ref="modal">
+        <div class="row q-ma-sm text-bold">
             {{ $t('energyExpenditure') }}
         </div>
         <div class="row q-ma-sm q-mb-md">

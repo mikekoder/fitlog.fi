@@ -3,19 +3,19 @@
     <div class="q-tab-pane">
       <q-input v-model="username" type="email" :float-label="$t('username')+'/' + $t('email')" />
       <q-input v-model="password" type="password" :float-label="$t('password')" />
-      <div class="row">
+      <div class="row q-pt-md">
         <div class="col">
-          <q-btn @click="login" :label="$t('login')"></q-btn>
+          <q-btn glossy color="primary" @click="login" :label="$t('login')"></q-btn>
         </div>
         <div class="col">
-          <q-btn @click="$router.push({ name: 'register' })" :flat="true" :label="$t('register')"></q-btn>
+          <q-btn @click="$router.push({ name: 'register' })" :flat="true" color="primary" :label="$t('register')"></q-btn>
         </div>
       </div>
       
     </div>
     <div class="q-tab-pane">
-      <q-btn @click="fbLogin" icon="fa-facebook-official">Facebook</q-btn>
-      <q-btn @click="googleLogin" icon="fa-google-plus-official">Google</q-btn>
+      <q-btn glossy color="primary" @click="fbLogin" icon="fa-facebook-official">Facebook</q-btn>
+      <q-btn glossy color="primary" @click="googleLogin" icon="fa-google-plus-official">Google</q-btn>
     </div>
     <div class="q-tab-pane">
       {{ url }}<br />
@@ -36,8 +36,8 @@ export default {
       url: undefined,
       refreshToken: undefined,
       accessToken: undefined,
-      username: 'testi@fitlog.fi',
-      password: 'testi123',
+      username: '',
+      password: '',
       debugInfo: ''
     }
   },

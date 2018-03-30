@@ -4,19 +4,19 @@
       <q-input v-model="email" type="text" :float-label="$t('email')" />
       <q-input v-model="password" type="password" :float-label="$t('password')" />
       <q-input v-model="password2" type="password" :float-label="$t('confirmPassword')" />
-      <div class="row">
+      <div class="row q-pt-md">
         <div class="col">
-          <q-btn @click="register" :label="$t('register')" :disabled="!isValid"></q-btn>
+          <q-btn glossy color="primary" @click="register" :label="$t('register')" :disabled="!isValid"></q-btn>
         </div>
         <div class="col">
-          <q-btn @click="$router.push({ name: 'login' })" :flat="true" :label="$t('login')"></q-btn>
+          <q-btn color="primary" @click="$router.push({ name: 'login' })" :flat="true" :label="$t('login')"></q-btn>
         </div>
       </div>
       
     </div>
     <div class="q-tab-pane">
-      <q-btn @click="fbLogin" icon="fa-facebook-official">Facebook</q-btn>
-      <q-btn @click="googleLogin" icon="fa-google-plus-official">Google</q-btn>
+      <q-btn glossy color="primary" @click="fbLogin" icon="fa-facebook-official">Facebook</q-btn>
+      <q-btn glossy color="primary" @click="googleLogin" icon="fa-google-plus-official">Google</q-btn>
     </div>
   </q-page>
 </template>

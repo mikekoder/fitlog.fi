@@ -10,13 +10,42 @@ export default {
     return {
         id: null,
         time: undefined,
+        duration: undefined,
         groups:[],
-        exercises: []
+        exercises: [],
+        energyExpenditure: undefined,
+        energySpecified: false
     }
   },
     computed: {
         canSave(){
             return this.time && this.groups.length > 0 && this.groups.find(g => g.exercise);
+        },
+        totalMinutes() {
+            var time = this.duration ? new Date(this.duration) : undefined;
+            if (time) {
+                return time.getHours() * 60 + time.getMinutes();
+            }
+            return null;
+        },
+        weight() {
+            if (this.$profile) {
+                return this.$profile.weight;
+            }
+            return null;
+        },
+        energyExpenditureEstimate() {
+            if (this.totalMinutes && this.weight) {
+                return constants.WORKOUT_ENERGY_EXPENDITURE * this.totalMinutes * this.weight;
+            }
+            return null;
+        }
+    },
+    watch: {
+        energyExpenditureEstimate() {
+            if (!this.energySpecified || !this.energyExpenditure ) {
+                this.energyExpenditure = this.formatDecimal(this.energyExpenditureEstimate);
+            }
         }
     },
   methods: {
@@ -65,10 +94,14 @@ export default {
     },
     save() {
         var self = this;
+        var time = self.duration ? new Date(self.duration) : undefined;
         var workout = {
             id: self.id,
             time: self.time,
-            sets: [] 
+            hours: time ? time.getHours() : undefined,
+            minutes: time ? time.getMinutes() : undefined,
+            sets: [],
+            energyExpenditure: self.energySpecified ? self.energyExpenditure : undefined
         };
         self.groups.forEach(g => {
             g.sets.forEach(s => {
@@ -105,6 +138,7 @@ export default {
         var self = this;
         self.id = workout.id;
         self.time = workout.time;
+        self.duration = '01.01.2000 ' + (workout.hours || 0) + ':' + (workout.minutes || 0);
         self.groups = [];
         self.$store.dispatch(constants.FETCH_EXERCISES, {
             success(exercises) {
