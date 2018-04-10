@@ -38,26 +38,40 @@ export default {
                 var values1 = data.map(d => d.max);
                 var values2 = data.map(d => d.maxBW);
                 var values3 = data.map(d => d.maxInclBW);
+                var values4 = data.map(d => d.totalVolume);
+
+                var datasets = [
+                    {
+                        ...graph.datasets[0],
+                        label: self.$t('1rm'),
+                        data: values1,
+                        yAxisID: '1rm'
+                    },
+                    {
+                        ...graph.datasets[1],
+                        label: self.$t('1rmBW'),
+                        data: values2,
+                        yAxisID: '1rm'
+                    },
+                    {
+                        ...graph.datasets[2],
+                        label: self.$t('1rmInclBW'),
+                        data: values3,
+                        yAxisID: '1rm'
+                    },
+                    {
+                        ...graph.datasets[3],
+                        label: self.$t('volume') + '/' + self.$t('workout'),
+                        data: values4,
+                        yAxisID: 'volume'
+                    }
+                    ];
+          
+                
 
                 self.data = {
                     labels,
-                    datasets: [
-                      {
-                        ...graph.datasets[0],
-                        label: self.$t('1rm'),
-                        data: values1
-                      },
-                      {
-                        ...graph.datasets[1],
-                        label: self.$t('1rmBW'),
-                        data: values2
-                      },
-                      {
-                        ...graph.datasets[2],
-                        label: self.$t('1rmInclBW'),
-                        data: values3
-                      }
-                    ]
+                    datasets
                 };
 
                 self.options = {
@@ -77,6 +91,27 @@ export default {
                             }
                         }],
                         yAxes: [{
+                            id: '1rm',
+                            position: 'left',
+                            scaleLabel: {
+                                display: true,
+                                labelString: self.$t('1rm')
+                            },
+                            fill: false,
+                            ticks: {
+                                //max: 5,
+                                min: 0,
+                                //max: max,
+                                //stepSize: step 
+                            }
+                        },
+                        {
+                            id: 'volume',
+                            position: 'right',
+                            scaleLabel: {
+                                display: true,
+                                labelString: self.$t('volume')
+                            },
                             fill: false,
                             ticks: {
                                 //max: 5,
@@ -107,7 +142,6 @@ export default {
         var self = this;
         self.end = new Date();
         self.start = moment(self.end).subtract(6,'month').toDate();
-
         self.$store.dispatch(constants.FETCH_EXERCISES, {
             success(exercises){
                 self.exercises = exercises.map(e => {return {...e, label: e.name, value: e }});

@@ -285,6 +285,7 @@
     value: 'Arvo',
     visibility: 'Näkyvyys',
     VITAM: 'Vitamiinit',
+    volume: 'Volyymi',
     vote: 'Äänestä',
     wednesday: 'Keskiviikko',
     wednesdayAbbr: 'Ke',
