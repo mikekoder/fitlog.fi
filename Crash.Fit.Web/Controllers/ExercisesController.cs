@@ -127,10 +127,27 @@ namespace Crash.Fit.Web.Controllers
         [HttpGet("history")]
         public IActionResult GetHistory(Guid exerciseId, DateTimeOffset start, DateTimeOffset end)
         {
-            var exercises = trainingRepository.GetExerciseHistory(exerciseId, CurrentUserId, start, end);
-
-            var response = AutoMapper.Mapper.Map<OneRepMaxResponse[]>(exercises);
-            return Ok(response);
+            var oneRepMaxHistory = trainingRepository.GetOneRepMaxHistory(exerciseId, CurrentUserId, start, end);
+            var volumeHistory = trainingRepository.GetExerciseVolumeHistory(exerciseId, CurrentUserId, start, end);
+            var response = AutoMapper.Mapper.Map<List<ExerciseHistoryResponse>>(oneRepMaxHistory);
+            foreach(var volume in volumeHistory)
+            {
+                var match = response.FirstOrDefault(h => h.Time == volume.Time);
+                if(match != null)
+                {
+                    match.TotalVolume = volume.TotalVolume;
+                }
+                else
+                {
+                    response.Add(new ExerciseHistoryResponse
+                    {
+                        ExerciseId = volume.ExerciseId,
+                        Time = volume.Time,
+                        TotalVolume = volume.TotalVolume
+                    });
+                }
+            }
+            return Ok(response.OrderBy(r => r.Time).ToArray());
         }
     }
 }
