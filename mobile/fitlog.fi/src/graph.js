@@ -28,6 +28,12 @@ export default {
           borderColor: color3,
           pointBackgroundColor: color3,
           backgroundColor: color3
+        },
+        {
+          ...dataset,
+          borderColor: color4,
+          pointBackgroundColor: color4,
+          backgroundColor: color4
         }
     ]
 }
