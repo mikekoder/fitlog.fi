@@ -2,8 +2,12 @@
 import api from '../../api'
 import activityPresetsMixin from '../../mixins/activity-presets'
 import utils from '../../utils'
+import Help from './activity-levels-help.vue'
 
 export default {
+    components:{
+        'activity-levels-help': Help
+    },
     mixins:[activityPresetsMixin],
     data () {
         return {
@@ -82,6 +86,9 @@ export default {
             var moderate = utils.parseFloat(preset.moderateActivity ? preset.moderateActivity : 0);
             var heavy = utils.parseFloat(preset.heavyActivity ? preset.heavyActivity : 0);
             return this.formatDecimal((constants.ACTIVITY_FACTOR_SLEEP * sleep + constants.ACTIVITY_FACTOR_INACTIVITY * inactivity + constants.ACTIVITY_FACTOR_LIGHT_ACTIVITY * light + constants.ACTIVITY_FACTOR_MODERATE_ACTIVITY * moderate + constants.ACTIVITY_FACTOR_HEAVY_ACTIVITY * heavy) / 24, 2);
+        },
+        showHelp(){
+            this.$refs.help.open();
         }
     },
     created() {

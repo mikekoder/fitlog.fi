@@ -3,8 +3,12 @@ import constants from '../../store/constants'
 import api from '../../api'
 import exercisesMixin from '../../mixins/exercises'
 import utils from '../../utils'
+import Help from './workouts-help.vue'
 
 export default {
+    components:{
+        'workouts-help': Help
+    },
   mixins: [exercisesMixin],
   data() {
       return {
@@ -231,6 +235,9 @@ export default {
               }
           }
         });
+      },
+      showHelp(){
+          this.$refs.help.open();
       }
   },
   watch: {

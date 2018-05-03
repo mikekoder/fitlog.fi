@@ -3,6 +3,7 @@ import utils from '../../utils'
 import MealRowEditor from '../../components/meal-row-editor'
 import nutrientsMixin from '../../mixins/nutrients'
 import nutrientGroupsMixin from '../../mixins/nutrient-groups'
+import Help from './recipe-help'
 
 var defaultNutrientPortion = { id: undefined, name: '100g' };
 export default {
@@ -22,7 +23,8 @@ export default {
     }
   },
   components: {
-        MealRowEditor
+        MealRowEditor,
+        'recipe-help': Help
     },
     computed: {
         nutrientGroups() {
@@ -204,6 +206,9 @@ export default {
         else{
             self.$store.commit(constants.LOADING_DONE);
         }
+    },
+    showHelp(){
+        this.$refs.help.open();
     }
 },
   created () {

@@ -1,7 +1,11 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
+import Help from './exercise-help'
 
 export default {
+    components: {
+        'exercise-help': Help
+    },
     data() {
         return {
             id: null,
@@ -51,6 +55,9 @@ export default {
                 failure() {
                 }
             });
+        },
+        showHelp(){
+            this.$refs.help.open();
         }
     },
     created() {

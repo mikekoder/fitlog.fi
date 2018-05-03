@@ -5,8 +5,12 @@ import DAYS from '../../enums/days'
 import nutrientsMixin from '../../mixins/nutrients'
 import nutrientGroupsMixin from '../../mixins/nutrient-groups'
 import mealDefinitionsMixin from '../../mixins/meal-definitions'
+import Help from './nutrition-goal-help.vue'
 
 export default {
+    components:{
+        'nutrition-goal-help': Help
+    },
     mixins:[nutrientsMixin, nutrientGroupsMixin, mealDefinitionsMixin],
     data () {
         return {
@@ -29,7 +33,6 @@ export default {
             return this.name && true;
         }
     },
-    components: {},
     methods: {
         toggleGroup(group) {
             if (this.selectedGroup == group) {
@@ -266,6 +269,9 @@ export default {
         },
         cancel() {
             this.$router.go(-1);
+        },
+        showHelp(){
+            this.$refs.help.open();
         }
     },
     created() {

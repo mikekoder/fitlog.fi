@@ -1,8 +1,12 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
 import Vue from 'vue'
+import Help from './routine-help'
 
 export default {
+    components: {
+        'routine-help': Help
+    },
     data () {
         return {
             tab: 'tab-0',
@@ -187,6 +191,9 @@ export default {
                 }
             });
 
+        },
+        showHelp(){
+            this.$refs.help.open();
         }
     },
     created() {
