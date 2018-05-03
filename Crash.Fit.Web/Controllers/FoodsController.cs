@@ -9,6 +9,7 @@ using Crash.Fit.Api.Models.Nutrition;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Crash.Fit.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Crash.Fit.External.Foodin;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -39,6 +40,90 @@ namespace Crash.Fit.Web.Controllers
                 .ThenBy(f => f.Name);
             var response = AutoMapper.Mapper.Map<FoodSearchResultResponse[]>(foods);
             return Ok(response);
+        }
+        [HttpGet("search-external")]
+        [AllowAnonymous]
+        public IActionResult SearchExternal(string ean)
+        {
+            var foodinClient = new FoodinClient("https://www.foodie.fi");
+            var entry = foodinClient.GetEntry(ean);
+            if(entry != null)
+            {
+                var nutrients = new List<FoodNutrientAmountResponse>();
+                if (entry.Carbohydrate.HasValue)
+                {
+                    nutrients.Add(new FoodNutrientAmountResponse
+                    {
+                        NutrientId = Constants.Nutrition.CarbId,
+                        Amount = entry.Carbohydrate.Value
+                    });
+                }
+                if (entry.Fat.HasValue)
+                {
+                    nutrients.Add(new FoodNutrientAmountResponse
+                    {
+                        NutrientId = Constants.Nutrition.FatId,
+                        Amount = entry.Fat.Value
+                    });
+                }
+                if (entry.FatSaturated.HasValue)
+                {
+                    nutrients.Add(new FoodNutrientAmountResponse
+                    {
+                        NutrientId = Constants.Nutrition.FatSaturatedId,
+                        Amount = entry.FatSaturated.Value
+                    });
+                }
+                if (entry.Fiber.HasValue)
+                {
+                    nutrients.Add(new FoodNutrientAmountResponse
+                    {
+                        NutrientId = Constants.Nutrition.FiberId,
+                        Amount = entry.Fiber.Value
+                    });
+                }
+                if (entry.Kcal.HasValue)
+                {
+                    nutrients.Add(new FoodNutrientAmountResponse
+                    {
+                        NutrientId = Constants.Nutrition.EnergyKcalId,
+                        Amount = entry.Kcal.Value
+                    });
+                }
+                if (entry.Kj.HasValue)
+                {
+                    nutrients.Add(new FoodNutrientAmountResponse
+                    {
+                        NutrientId = Constants.Nutrition.EnergyKjId,
+                        Amount = entry.Kj.Value
+                    });
+                }
+                if (entry.Protein.HasValue)
+                {
+                    nutrients.Add(new FoodNutrientAmountResponse
+                    {
+                        NutrientId = Constants.Nutrition.ProteinId,
+                        Amount = entry.Protein.Value
+                    });
+                }
+                if (entry.Sugar.HasValue)
+                {
+                    nutrients.Add(new FoodNutrientAmountResponse
+                    {
+                        NutrientId = Constants.Nutrition.SugarId,
+                        Amount = entry.Sugar.Value
+                    });
+                }
+                var response = new FoodExternalDetailsResponse
+                {
+                    Ean = entry.Ean,
+                    Name = entry.Name,
+                    Manufacturer = entry.Subname,
+                    Nutrients = nutrients.ToArray()
+                };
+                return Ok(response);
+            }
+            return NoContent();
         }
         [HttpGet("search/most-nutrients")]
         [AllowAnonymous]
