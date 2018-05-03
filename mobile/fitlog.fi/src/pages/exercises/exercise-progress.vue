@@ -51,11 +51,36 @@
       </div>
     </div>
     <div class="row q-pa-sm">
-      <div class="col" style="height: 60vh;">
-          <graph-line :chartData="data" :options="options" v-if="data"/>
+      <div class="col">
+          <graph-bar :chartData="data" :options="options" v-if="data"/>
           <div v-else>{{ $t('noData') }}</div>
       </div>
     </div>
+    <div class="row q-pa-sm">
+      <div class="col">
+        <table>
+          <thead>
+            <tr>
+              <th class="q-pr-md">{{ $t('time') }}</th>
+              <th class="q-pr-md">{{ $t('1rm') }}</th>
+              <th class="q-pr-md">{{ $t('1rmBW') }}</th>
+              <th class="q-pr-md">{{ $t('1rmInclBW') }}</th>
+              <th>{{ $t('volume') }} / {{ $t('workout') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in tableData">
+              <td class="q-pr-md">{{ formatDateTime(row.time) }}</td>
+              <td class="q-pr-md">{{ formatDecimal(row.max, 2) }}</td>
+              <td class="q-pr-md">{{ formatDecimal(row.maxBW, 2) }}</td>
+              <td class="q-pr-md">{{ formatDecimal(row.maxInclBW, 2) }}</td>
+              <td>{{ formatDecimal(row.totalVolume, 2) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <exercise-progress-help ref="help" />
   </q-page>
 </template>
 

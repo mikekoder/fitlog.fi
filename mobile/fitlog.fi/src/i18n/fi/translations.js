@@ -248,6 +248,7 @@
     selectActivity: 'Valitse toiminta',
     september: 'Syyskuu',
     set: 'Sarja',
+    settings: 'Asetukset',
     sets: 'Sarjat',
     sleep: 'Uni',
     show: 'Näytä',
@@ -304,5 +305,58 @@
     year: 'Vuosi',
     years: 'Vuotta',
     yesterday:'Eilen',
-    youHaveVoted: 'Olet äänestänyt'
+    youHaveVoted: 'Olet äänestänyt',
+
+    help: {
+        activityLevels:{
+            intro: 'Voit määritellä kuinka monta tuntia päivästä käytät raskaudeltaan eritasoisiin aktiviteetteihin. Näiden perusteella voidaan laskea lepoaineenvaihdunnan päälle tuleva energiankulutus (päiväkirjalla aktiivisuus).',
+            sleep: 'Kuinka paljon nukut.',
+            light: 'Esim. toimistotyö.',
+            moderate: 'Esim. kävely tai kevyet kotityöt.',
+            heavy: 'Esim. raskaiden tavaroiden nostelu.',
+            inactivity: 'Löhöily. Lasketaan automaattisesti.',
+            factor: 'Automaattisesti laskettu kerroin kulutukselle.',
+            defaultDays: 'Valitsemalla päivät tulee päiväkirjalle oikea aktiivisuustaso automaattisesti.'
+        },
+        exercise: {
+            muscleGroups: 'Lihasryhmät joihin liike vaikuttaa. Näkyy selainversion treenilistassa.',
+            bodyWeightPercentage: 'Kuinka monta % kehonpainosta liikkeessä nostetaan. Tarkentaa maksimipainojen arviointia.'
+        },
+        exerciseProgress: {
+            '1rm': 'Yhden toiston maksimi.',
+            '1rmBW': 'Yhden toiston maksimi, jossa on huomioitu nostettu kehonpaino. Voit asettaa kehonpainon osuuden liikkeen tiedoissa.',
+            '1rmInclBW':'Yhdentoiston maksimi + nostettu kehonpaino',
+            'volume': 'Volyymi yhdessä treenissä. Kaikkien sarjojen toistot * painot laskettuna yhteen.'
+        },
+        food: {
+            amount: 'Onko ravintoarvot annettu /100g vai jotakin annosta kohden.'
+        },
+        home: {
+            eaten: 'Syöty energiamäärä',
+            rmr: 'Lepoaineenvaihdunta',
+            activity2: 'Aktiivisuuden tuoma lisä energiankulutukseen',
+            expenditure: 'Erikseen kirjatut kulutukset',
+            total: 'Päivän plus-/miinuskalorit',
+            nutrients: 'Voit valita ravintoaineet, joiden määrä näytetään päiväkirjalla',
+            activityLevel: 'Voit valita mitä aktiivisuustasoa käytetään valitulle päivälle. Oletuspäivät voi valita Aktiivisuustasot-näkymästä.'
+        },
+        nutritionGoals: {
+            intro: 'Voit asettaa ravintoainekohtaisesti minimi- ja/tai maksimiarvot päivälle tai aterialle.',
+            onlyDays: 'Minä päivinä sääntö on voimassa. Treeni- ja lepopäivä päätellään automaattisesti siitä onko ko. päivälle kirjattu treeni.',
+            perMeal: 'Sääntö on voimassa vain valituilla aterioilla. Voit määritellä ateriat Ateriarytmi-näkymässä.'
+        },
+        recipe: {
+            rawWeight: 'Kokonaispaino ennen kypsennystä.',
+            cookedWeight: 'Kokonaispaino kypsennyksen jälkeen. Korjaa haihtumisesta tai nesteen imeytymisestä johtuvia ravintoainetiheyden muutoksia. ',
+            weightChange: 'Painonmuutos valmistuksessa.'
+        },
+        routine: {
+            intro: 'Ohjelma koostuu yhdestä tai useammasta treenistä. Treenikertaa kirjatessa voi valita mitä ohjelman treeniä se vastaa ja liikkeet/sarjat/painot tulevat valmiiksi.',
+            load: '% maksimipainoista. Kun tämä on syötetty ja maksimipainot tiedossa, treeniin lasketaan oikeat painot valmiiksi.'
+        },
+        title: 'Ohjeet',
+        workouts: {
+            create: 'Nuolesta avautuu lista aktiivisen ohjelman treeneistä. Valitsemalla sellaisen, treeniin lisätään oikeat liikkeet, sarjat ja painot (mikäli maksimipainot ja kuorma tiedetään).'
+        }
+    }
 }

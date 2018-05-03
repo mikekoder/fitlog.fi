@@ -1,11 +1,14 @@
 import constants from '../../store/constants'
 import api from '../../api'
-import GraphLine from '../../components/graph-line'
+import GraphBar from '../../components/graph-bar'
 import moment from 'moment'
 import graph from '../../graph'
+import Help from './exercise-progress-help'
+
 export default {
     components: {
-        GraphLine
+        GraphBar,
+        'exercise-progress-help': Help
     },
     data () {
         return {
@@ -14,7 +17,8 @@ export default {
             start: undefined,
             end: undefined,
             data: undefined,
-            options: undefined
+            options: undefined,
+            tableData: []
         }
     },
     computed:{
@@ -33,37 +37,45 @@ export default {
                     self.data = undefined;
                     return;
                 }
+                self.tableData = data;
 
                 var labels = data.map(d => new Date(d.time));
                 var values1 = data.map(d => d.max);
                 var values2 = data.map(d => d.maxBW);
                 var values3 = data.map(d => d.maxInclBW);
                 var values4 = data.map(d => d.totalVolume);
+                var start = moment(data[0].time).startOf('day');
+                var end = moment(data[data.length-1].time).endOf('day');
 
                 var datasets = [
                     {
                         ...graph.datasets[0],
                         label: self.$t('1rm'),
                         data: values1,
-                        yAxisID: '1rm'
+                        yAxisID: '1rm',
+                        type: 'line'
                     },
                     {
                         ...graph.datasets[1],
                         label: self.$t('1rmBW'),
                         data: values2,
-                        yAxisID: '1rm'
+                        yAxisID: '1rm',
+                        type: 'line'
                     },
                     {
                         ...graph.datasets[2],
                         label: self.$t('1rmInclBW'),
                         data: values3,
-                        yAxisID: '1rm'
+                        yAxisID: '1rm',
+                        type: 'line'
                     },
                     {
                         ...graph.datasets[3],
+                        fill: true,
                         label: self.$t('volume') + '/' + self.$t('workout'),
                         data: values4,
-                        yAxisID: 'volume'
+                        yAxisID: 'volume',
+                        type: 'bar'
                     }
                     ];
           
@@ -87,7 +99,9 @@ export default {
                                 displayFormats: {
                                     day: 'DD.MM.YYYY',
                                     //hour: 'HH:mm'
-                                }
+                                },
+                                min: start,
+                                max: end
                             }
                         }],
                         yAxes: [{
@@ -107,10 +121,15 @@ export default {
                         },
                         {
                             id: 'volume',
+                            //type: 'bar',
                             position: 'right',
                             scaleLabel: {
                                 display: true,
                                 labelString: self.$t('volume')
+                            },
+                            gridLines: {
+                                display:false
+                                //color: graph.axisColor2
                             },
                             fill: false,
                             ticks: {
@@ -136,6 +155,9 @@ export default {
             }).always(() => {
                 self.$store.commit(constants.LOADING_DONE);
             });
+        },
+        showHelp(){
+            this.$refs.help.open();
         }
     },
     created() {

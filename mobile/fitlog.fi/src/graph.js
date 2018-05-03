@@ -5,10 +5,13 @@ const dataset = {
     pointRadius,
     pointHitRadius
 };
-const color1 = '#5cbae6';
-const color2 = '#b6d957';
-const color3 = '#fac364';
-const color4 = '#d998cb';
+
+const color1 = '#b6d957';
+const color2 = '#fac364';
+const color3 = '#d998cb';
+const color4 = '#5cbae6';
+
+const color5 = '#abdbf2';
 export default {   
     datasets: [
         {
@@ -35,5 +38,6 @@ export default {
           pointBackgroundColor: color4,
           backgroundColor: color4
         }
-    ]
+    ],
+    axisColor2: color5
 }

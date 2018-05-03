@@ -103,6 +103,8 @@
             -->
             <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
         </div>
+
+        <activity-levels-help ref="help" />
     </q-page>
 </template>
 

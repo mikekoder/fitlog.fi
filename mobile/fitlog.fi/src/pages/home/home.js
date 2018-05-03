@@ -10,6 +10,7 @@ import mealDefinitionsMixin from '../../mixins/meal-definitions'
 import nutritionGoalMixin from '../../mixins/nutrition-goal'
 import activityPresetsMixin from '../../mixins/activity-presets'
 import NutrientKnob from '../../components/nutrient-knob'
+import Help from './home-help.vue'
 
 export default {
   mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin, activityPresetsMixin],
@@ -18,7 +19,8 @@ export default {
     NutrientBar,
     MealRowEditor,
     MealSettings,
-    NutrientKnob
+    NutrientKnob,
+    'home-help': Help
   },
   data () {
     return {
@@ -467,6 +469,9 @@ export default {
                 break;
         }
         return preset;
+    },
+    showHelp(){
+        this.$refs.help.open();
     }
   },
   created(){

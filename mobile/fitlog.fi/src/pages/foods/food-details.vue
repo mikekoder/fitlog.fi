@@ -41,7 +41,7 @@
           </q-tab-pane>
           <q-tab-pane name="tab-2">
             <div class="row" v-for="(portion,index) in portions" :key="index">
-              <div class="col col-8"><q-input type="text" v-model="portion.name" :float-label="$t('name')" /></div>
+              <div class="col col-8 q-pr-sm"><q-input type="text" v-model="portion.name" :float-label="$t('name')" /></div>
               <div class="col col-3"><q-input type="number" v-model="portion.weight" :float-label="$t('weight')" /></div>
               <div class="col col-1 q-pa-sm"><q-btn round size="sm" glossy color="primary" icon="fa-trash" @click="removePortion(index)"></q-btn></div>
             </div>
@@ -55,6 +55,7 @@
       <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
       <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
     </div>
+    <food-help ref="help" />
   </q-page>
 </template>
 

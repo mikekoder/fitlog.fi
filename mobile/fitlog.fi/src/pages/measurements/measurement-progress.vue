@@ -51,9 +51,27 @@
       </div>
     </div>
     <div class="row q-pa-sm">
-      <div class="col" style="height: 60vh;">
-          <graph-line :chartData="data" :options="options" v-if="data"/>
+      <div class="col">
+          <graph-bar :chartData="data" :options="options" v-if="data"/>
           <div v-else>{{ $t('noMeasurements') }}</div>
+      </div>
+    </div>
+    <div class="row q-pa-sm">
+      <div class="col">
+        <table>
+          <thead>
+            <tr>
+              <th class="q-pr-md">{{ $t('time') }}</th>
+              <th class="q-pr-md">{{ $t('value') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in tableData">
+              <td class="q-pr-md">{{ formatDateTime(row.time) }}</td>
+              <td class="q-pr-md">{{ formatDecimal(row.value, 2) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </q-page>

@@ -13,6 +13,7 @@
       <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
       <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
     </div>
+    <exercise-help ref="help" />
   </q-page>
 </template>
 

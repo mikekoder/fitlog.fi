@@ -1,9 +1,13 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
+import Help from './food-help'
 
 var defaultNutrientPortion = { id: undefined, name: '100g', value: undefined, label: '100g' };
 
 export default {
+    components: {
+        'food-help': Help
+    },
     data() {
         return {
             id: null,
@@ -169,6 +173,22 @@ export default {
                     self.notifyError(self.$t('fetchFailed'));
                 }
             });
+        },
+        showHelp(){
+            this.$refs.help.open();
+        },
+        readBarcode(){
+            cordova.plugins.barcodeScanner.scan(
+                result => {
+                    alert("We got a barcode\n" +
+                          "Result: " + result.text + "\n" +
+                          "Format: " + result.format + "\n" +
+                          "Cancelled: " + result.cancelled);
+                },
+                error => {
+                    alert("Scanning failed: " + error);
+                }
+             );
         }
     },
     created() {

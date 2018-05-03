@@ -44,6 +44,7 @@
         </q-card-main>
       </q-card>
       </template>
+      <workouts-help ref="help" />
   </q-page>
 </template>
 

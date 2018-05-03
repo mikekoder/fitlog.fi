@@ -1,12 +1,12 @@
 import constants from '../../store/constants'
 import api from '../../api'
-import GraphLine from '../../components/graph-line'
+import GraphBar from '../../components/graph-bar'
 import moment from 'moment'
 import graph from '../../graph'
 
 export default {
     components: {
-        GraphLine
+        GraphBar
     },
     data () {
         return {
@@ -15,7 +15,8 @@ export default {
             start: undefined,
             end: undefined,
             data: undefined,
-            options: undefined
+            options: undefined,
+            tableData: []
         }
     },
     computed:{
@@ -35,16 +36,21 @@ export default {
                     self.data = undefined;
                     return;
                 }
-
+                this.tableData = data;
+                
                 var labels = data.map(d => new Date(d.time));
                 var values = data.map(d => d.value);
-                
+                var start = moment(data[0].time).startOf('day');
+                var end = moment(data[data.length-1].time).endOf('day');
+
                 self.data = {
                     labels,
                     datasets: [  
                       {
                         ...graph.datasets[0],
+                        type: 'line',
                         data: values
+
                       }
                     ]
                 };
@@ -63,7 +69,9 @@ export default {
                                     displayFormats: {
                                         day: 'DD.MM.YYYY',
                                         hour: 'HH:mm'
-                                    }
+                                    },
+                                    min: start,
+                                    max: end
                                 }
                             }
                         ],

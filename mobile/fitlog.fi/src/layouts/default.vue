@@ -8,6 +8,9 @@
         <q-toolbar-title>
           {{ title }}
         </q-toolbar-title>
+        <q-btn flat dense round @click="showHelp" v-if="hasHelp">
+          <q-icon name="help" />
+        </q-btn>
       </q-toolbar>
     </q-layout-header>
 
@@ -104,8 +107,8 @@
     </q-layout-drawer>
 
     <q-page-container>
-      <router-view v-show="!loading" />
-        <q-inner-loading :visible="loading">
+      <router-view v-show="!loading" ref="page" />
+      <q-inner-loading :visible="loading">
         <q-spinner-dots size="100" />
       </q-inner-loading>
     </q-page-container>
@@ -122,7 +125,8 @@ export default {
   data () {
     return {
       title: 'fitlog',
-      leftDrawerOpen: true
+      leftDrawerOpen: true,
+      hasHelp: false
     }
   },
   computed: {
@@ -135,11 +139,11 @@ export default {
     },
     loading() {
           return this.$store.state.loading;
-      },
+    }
   },
   watch:{
     $route(){
-      this.updateTitle();
+      this.handleMeta();
     }
   },
   methods: {
@@ -158,9 +162,17 @@ export default {
           }
       });
     },
-    updateTitle(){
+    handleMeta(){
       var title = this.$route.meta.title;
       this.title = this.$t(title);
+
+      this.help = this.$route.meta.help;
+      this.$nextTick(() => {
+        var page = this.$refs.page;
+        console.log(page);
+        this.hasHelp = page.showHelp && true;
+      });
+      
     },
     logout(){
       var self = this;
@@ -168,13 +180,20 @@ export default {
           success: () => {
             self.$router.replace({name: 'login'});
            },
-          failure: () => { }
+          failure: (err) => {
+            console.log(err);
+           }
       });
+    },
+    showHelp(){
+      this.$refs.page.showHelp();
     }
   },
   created(){
+console.log(process);
+
       var self = this;
-      self.updateTitle();
+      self.handleMeta();
       self.refreshTokens();
       setInterval(() => {
           self.refreshTokens();

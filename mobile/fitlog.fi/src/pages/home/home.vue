@@ -1,6 +1,6 @@
 <template>
   <q-page v-touch-swipe.horizontal="swipe">
-    <q-pull-to-refresh :handler="refresh" :pull-message="$t('')" :release-message="$t('')" :refresh-message="$t('')" :distance="20" style="height: 170px;">
+    <q-pull-to-refresh :handler="refresh" :pull-message="$t('')" :release-message="$t('')" :refresh-message="$t('')" :distance="20" style="height: 175px;">
       <q-card>
         <q-card-title class=" bg-grey-4">
           <div class="row">
@@ -87,10 +87,10 @@
      
     </q-pull-to-refresh>
 
-    <q-scroll-area style="height: 66vh;">
+    <q-scroll-area style="height: 70vh;">
       <q-card v-for="(mealdef, index) in meals" :key="index" class="q-mb-sm">
         <q-card-title class="card-title bg-grey-3">
-          <div class="row">{{ mealName(mealdef) }}</div>
+          <div class="row text-weight-medium">{{ mealName(mealdef) }}</div>
           <div class="row" v-if="mealdef.meal">
             <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="'meal'+index" align="center">
               <div v-if="nutrient.id == energyDistributionId">
@@ -106,14 +106,14 @@
         <q-card-main v-if="mealdef.meal">
           <div v-for="(row,index) in mealdef.meal.rows" @click="clickRow(mealdef, row)" v-touch-hold="x => clickRow(mealdef, row)" :key="index">
             <div class="row food-portion">
-              <div class="col">{{ row.foodName }} {{ row.quantity }} {{ row.portionName || 'g' }}</div>  
+              <div class="col">{{ row.foodName }} <span class="text-weight-light">{{ row.quantity }} {{ row.portionName || 'g' }}</span></div>  
             </div>
             <div class="row nutrients">
               <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="'row'+index" align="center">
                 <div v-if="nutrient.id == energyDistributionId">
                   <energy-distribution-bar v-bind:protein="row.nutrients[proteinId]" v-bind:carb="row.nutrients[carbId]" v-bind:fat="row.nutrients[fatId]"></energy-distribution-bar>
                 </div>
-                <div v-else>
+                <div v-else class="text-weight-light">
                   {{ formatDecimal(row.nutrients[nutrient.id], nutrient.precision) }}
                 </div>
               </div>
@@ -133,6 +133,7 @@
   
     <meal-row-editor ref="editRow" @save="saveRow(arguments[0])" />
     <meal-settings ref="mealSettings" @save="saveSettings(arguments[0])" />
+    <home-help ref="help" />
   </q-page>
 </template>
 
