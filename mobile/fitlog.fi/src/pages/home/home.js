@@ -212,7 +212,7 @@ export default {
         if (!moment(newDate).isSame(this.selectedDate, 'd')) {
             this.$store.dispatch(constants.SELECT_MEAL_DIARY_DATE, { date: newDate });
             this.fetchData();
-            preset = this.getActivityPreset();
+            var preset = this.getActivityPreset();
             this.changeActivityPreset(preset);
         }
     },
@@ -318,9 +318,34 @@ export default {
             }
         }
       });
-      
-     
     },
+    clickMeal(mealDef){
+        if(!mealDef.meal){
+            return;
+        }
+
+        var self = this;
+        var mealName =this.mealName(mealDef);
+        this.$q.actionSheet({
+          title: mealName,
+          grid: true,
+          actions: [
+            {
+              label: self.$t('copy'),
+              icon: 'fa-copy',
+              handler: () => {
+                self.copyMeal(mealDef.meal);
+              }
+            }
+          ],
+          dismiss: {
+              label: self.$t('cancel'),
+              handler: () => {
+                  
+              }
+          }
+        });
+      },
     editRow(row){
       this.selectedRow = row;
       this.$refs.editRow.show(this.selectedRow);

@@ -2,18 +2,24 @@
   <q-page class="q-pa-sm">
     <div class="row">
       <div class="col">
-        <q-input type="text" v-model="name" :float-label="$t('name')" ref="nameInput" />
+        <div class="row">
+          <div class="col">
+            <q-input type="text" v-model="name" :float-label="$t('name')" ref="nameInput" />
+          </div>
+        </div>
+        <div class="row q-my-sm">
+          <div class="col">
+            <q-input type="text" v-model="manufacturer" :float-label="$t('manufacturer')" />
+          </div>
+        </div>
       </div>
     </div>
-    <div class="row q-my-sm">
-      <div class="col">
-        <q-input type="text" v-model="manufacturer" :float-label="$t('manufacturer')" />
-      </div>
-    </div>
+    
     <q-tabs v-model="tab">
         <!-- Tabs - notice slot="title" -->
         <q-tab slot="title" name="tab-1" :label="$t('nutrients')" />
         <q-tab slot="title" name="tab-2" :label="$t('portions')" />
+        <q-tab slot="title" name="tab-3" :label="$t('furtherInformation')" />
         <!-- Targets -->
         <q-scroll-area style="height: 66vh;">
           <q-tab-pane name="tab-1">
@@ -47,6 +53,18 @@
             </div>
             <div class="row q-mt-md">
               <q-btn size="sm" glossy color="primary" icon="fa-plus" @click="addPortion" :label="$t('portion')"></q-btn>
+            </div>
+          </q-tab-pane>
+          <q-tab-pane name="tab-3">
+            <div class="row" >
+              <div class="col">
+                <q-input type="text" v-model="ean" :float-label="$t('ean')" @blur="loadInfoByEan" />
+              </div>
+              <!--
+              <div class="col-2">
+                <q-btn icon="refresh" @click="loadInfoByEan"></q-btn>
+              </div>
+              -->
             </div>
           </q-tab-pane>
         </q-scroll-area>

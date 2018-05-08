@@ -89,7 +89,7 @@
 
     <q-scroll-area style="height: 70vh;">
       <q-card v-for="(mealdef, index) in meals" :key="index" class="q-mb-sm">
-        <q-card-title class="card-title bg-grey-3">
+        <q-card-title class="card-title bg-grey-3" @click.native="clickMeal(mealdef)" v-touch-hold="x => clickMeal(mealdef)">
           <div class="row text-weight-medium">{{ mealName(mealdef) }}</div>
           <div class="row" v-if="mealdef.meal">
             <div class="col" v-for="(nutrient,index) in visibleNutrients" :key="'meal'+index" align="center">

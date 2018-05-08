@@ -66,12 +66,12 @@
                     </div>
                 </q-card-main>
                 <q-card-actions align="end">
-                    <q-btn color="primary" icon="fa-plus" glossy @click="addRow(group)" :label="$t('set')"></q-btn>
+                    <q-btn size="sm" glossy color="primary" icon="fa-plus" @click="addRow(group)" :label="$t('set')"></q-btn>
                 </q-card-actions>
             </q-card>
             <div class="row q-ma-sm">
                 <div class="col">
-                    <q-btn glossy color="primary" icon="fa-plus" @click="addGroup(workout)" :label="$t('exercise')"></q-btn>
+                    <q-btn size="md" glossy color="primary" icon="fa-plus" @click="addGroup(workout)" :label="$t('exercise')"></q-btn>
                 </div>
                 <div class="col">
                     
