@@ -34,7 +34,7 @@ import Measurements from './views/measurements/measurements.vue'
 import Feedback from './views/feedback/feedback.vue'
 import FeedbackDetails from './views/feedback/feedback-details.vue'
 
-
+import PrivacySecurity from './views/privacy-security.vue'
 
 import NotFound from './views/notfound.vue'
 
@@ -188,7 +188,13 @@ export default [
                 name: 'improvement-details',
                 component: FeedbackDetails,
                 meta: { type: 'Improvement' }
-            }
+            },
+            {
+                path: '/tietosuoja',
+                name: 'privacy-security',
+                component: PrivacySecurity,
+                meta: { anon: true }
+            },
         ]
     },
     {
@@ -209,6 +215,7 @@ export default [
         component: Register,
         meta: { anon: true }
     },
+    
     {
         path: '*',
         name: 'notfound',

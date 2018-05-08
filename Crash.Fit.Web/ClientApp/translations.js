@@ -205,6 +205,8 @@
     perMeal: 'Ateriakohtaisesti',
     portion: 'Annos',
     portions: 'Annokset',
+    privacy: 'Tietosuoja',
+    privacyInfo: 'Ulkoisten palveluiden (Facebook, Google) kautta kirjautuessa fitlog.fi tallentaa näistä palveluista kirjautumiseen vaaditut tiedot (kirjautumisavain ja sähköpostiosoite). Kaikki muut tallennetut tiedot ovat palvelun kautta itse syötettyjä.',
     profile: 'Profiili',
     protein: 'Proteiini',
     proteinAbbr: 'P',
