@@ -45,6 +45,16 @@ namespace Crash.Fit.Web.Controllers
         [AllowAnonymous]
         public IActionResult SearchExternal(string ean)
         {
+            if (string.IsNullOrWhiteSpace(ean))
+            {
+                return NoContent();
+            }
+
+            if ( EanUtils.IsInternalEan13(ean))
+            {
+                ean = EanUtils.NormalizeInternalEan13(ean);
+            }
+
             var foodinClient = new FoodinClient("https://www.foodie.fi");
             var entry = foodinClient.GetEntry(ean);
             if(entry != null)

@@ -20,6 +20,15 @@
 
                 </div>
             </div>
+          <div class="row">
+            <div class="col-sm-6 col-text-40">
+              <div class="form-group">
+                <label>{{ $t("ean") }}</label>
+                <input class="form-control" v-model="ean" @blur="loadInfoByEan" />
+              </div>
+
+            </div>
+          </div>
             <div class="row">&nbsp;</div>
             <div class="row">
                 <div class="col-sm-12">

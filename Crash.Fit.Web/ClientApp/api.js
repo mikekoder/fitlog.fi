@@ -135,6 +135,9 @@ export default {
     searchFoodsLeastNutrients(nutrientId){
         return $.get(this.baseUrl + 'foods/search/least-nutrients', { nutrientId, count: 100 });
     },
+    searchExternalFood(ean) {
+        return $.get(this.baseUrl + 'foods/search-external', { ean });
+    },
     getLatestFoods() {
         return $.get(this.baseUrl + 'foods/latest');
     },

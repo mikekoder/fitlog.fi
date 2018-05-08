@@ -13,6 +13,7 @@ export default {
             id: null,
             name: null,
             manufacturer: null,
+            ean: null,
             nutrients: {},
             portions: [],
             tab: 'nutrients',
@@ -90,6 +91,7 @@ export default {
                 id: self.id,
                 name: self.name,
                 manufacturer: self.manufacturer,
+                ean: self.ean,
                 nutrients: [],
                 portions: self.portions ? self.portions.map(p => { return { id: p.id, name: p.name, weight: utils.parseFloat(p.weight), nutrientPortion: p === self.nutrientPortion }}) : []
             };
@@ -148,6 +150,7 @@ export default {
             self.id = food.id;
             self.name = food.name;
             self.manufacturer = food.manufacturer;
+            self.ean = food.ean;
             self.portions = food.portions || [];
             if(food.nutrientPortionId){
                 self.nutrientPortion = self.portions.find(p => p.id === food.nutrientPortionId);
@@ -177,6 +180,24 @@ export default {
                 failure() {
                     toaster.error(self.$t('foodDetails.fetchFailed'));
                 }
+            });
+        },
+        loadInfoByEan() {
+            var self = this;
+            api.searchExternalFood(this.ean).then(food => {
+                if (!self.name) {
+                    self.name = food.name;
+                }
+                if (!self.manufacturer) {
+                    self.manufacturer = food.manufacturer;
+                }
+                food.nutrients.forEach(n => {
+                    if (!self.nutrients[n.nutrientId]) {
+                        self.nutrients[n.nutrientId] = n.amount;
+                    }
+                });
+                toaster.info(self.$t('informationUpdated'));
+            }).fail(xhr => {
             });
         }
     },
