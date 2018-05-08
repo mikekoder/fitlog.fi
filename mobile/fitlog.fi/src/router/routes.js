@@ -171,7 +171,7 @@ export default [
         path: '/activitylevels',
         name: 'activity-levels',
         component: () => import('pages/activity-levels/activity-levels.vue'), 
-        meta: { title: 'activityLevels' }
+        meta: { title: 'activityLevels', help: 'activity-levels-help' }
       },
       {
         path: '/energy-expenditures',
@@ -181,7 +181,18 @@ export default [
       }
     ]
   },
-
+  /*
+  {
+    path: '/help/',
+    component: () => import('layouts/help'),
+    children: [
+      {
+        path: 'activity-levels',
+        name: 'activity-levels-help',
+        component: () => import('pages/activity-levels/activity-levels-help.vue')
+      },
+    ]
+  },*/
   { // Always leave this as last one
     path: '*',
     component: () => import('pages/404')

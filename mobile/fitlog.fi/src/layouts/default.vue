@@ -11,6 +11,9 @@
         <q-btn flat dense round @click="showHelp" v-if="hasHelp">
           <q-icon name="help" />
         </q-btn>
+        <q-btn flat dense round @click="readBarcode" v-if="hasBarcode">
+          <q-icon name="fa-barcode" />
+        </q-btn>
       </q-toolbar>
     </q-layout-header>
 
@@ -126,7 +129,8 @@ export default {
     return {
       title: 'fitlog',
       leftDrawerOpen: true,
-      hasHelp: false
+      hasHelp: false,
+      hasBarcode: false
     }
   },
   computed: {
@@ -171,6 +175,7 @@ export default {
         var page = this.$refs.page;
         console.log(page);
         this.hasHelp = page.showHelp && true;
+        this.hasBarcode = page.onBarcodeRead && true;
       });
       
     },
@@ -187,6 +192,24 @@ export default {
     },
     showHelp(){
       this.$refs.page.showHelp();
+    },
+    readBarcode(){
+      try {
+          var self = this;
+          cordova.plugins.barcodeScanner.scan(
+              result => {
+                  if(!result.canceled){
+                      this.$refs.page.onBarcodeRead(result.text, result.format);
+                  }
+              },
+              error => {
+                  self.notifyError(error);
+              }
+          );
+      }
+      catch(err){
+          self.notifyError(err);
+      }
     }
   },
   created(){
