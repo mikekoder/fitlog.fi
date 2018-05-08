@@ -12,5 +12,6 @@ namespace Crash.Fit.Api.Models.Nutrition
         public string Name { get; set; }
         public string Manufacturer { get; set; }
         public Guid? NutrientPortionId { get; set; }
+        public string Ean { get; set; }
     }
 }

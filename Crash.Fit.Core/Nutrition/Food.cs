@@ -17,6 +17,7 @@ namespace Crash.Fit.Nutrition
         /// For which portion nutrient amounts are given
         /// </summary>
         public Guid? NutrientPortionId { get; set; }
+        public string Ean { get; set; }
     }
     public class FoodSearchResult : Food
     {

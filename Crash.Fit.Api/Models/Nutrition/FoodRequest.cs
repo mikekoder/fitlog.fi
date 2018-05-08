@@ -9,6 +9,7 @@ namespace Crash.Fit.Api.Models.Nutrition
     {
         public string Name { get; set; }
         public string Manufacturer { get; set; }
+        public string Ean { get; set; }
         public NutrientAmountModel[] Nutrients { get; set; }
         public PortionRequest[] Portions { get; set; }
     }
