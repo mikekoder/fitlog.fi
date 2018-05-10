@@ -14,6 +14,7 @@ export default {
             id: null,
             name: null,
             manufacturer: null,
+            ean: null,
             nutrients: {},
             portions: [],
             tab: 'tab-1',
@@ -181,8 +182,8 @@ export default {
             this.$refs.help.open();
         },
         onBarcodeRead(barcode, format){
-            self.ean = barcode;
-            self.loadInfoByEan();
+            this.ean = barcode;
+            this.loadInfoByEan();
         },
         loadInfoByEan() {
             var self = this;
