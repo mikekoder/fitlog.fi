@@ -173,7 +173,6 @@ export default {
       this.help = this.$route.meta.help;
       this.$nextTick(() => {
         var page = this.$refs.page;
-        console.log(page);
         this.hasHelp = page.showHelp && true;
         this.hasBarcode = page.onBarcodeRead && true;
       });
@@ -208,12 +207,11 @@ export default {
           );
       }
       catch(err){
-          self.notifyError(err);
+          self.notifyError(err.message);
       }
     }
   },
   created(){
-console.log(process);
 
       var self = this;
       self.handleMeta();
