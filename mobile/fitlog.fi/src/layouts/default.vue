@@ -8,10 +8,10 @@
         <q-toolbar-title>
           {{ title }}
         </q-toolbar-title>
-        <q-btn flat dense round @click="showHelp" v-if="hasHelp">
+        <q-btn size="lg" flat dense @click="showHelp" v-if="hasHelp">
           <q-icon name="help" />
         </q-btn>
-        <q-btn flat dense round @click="readBarcode" v-if="hasBarcode">
+        <q-btn size="lg" flat dense @click="readBarcode" v-if="hasBarcode">
           <q-icon name="fa-barcode" />
         </q-btn>
       </q-toolbar>
