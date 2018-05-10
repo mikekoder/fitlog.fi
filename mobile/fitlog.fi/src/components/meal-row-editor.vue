@@ -1,8 +1,15 @@
 <template>
     <q-modal ref="modal">
-        <div class="row q-ma-sm text-bold">
-            {{ $t('food') }}
-        </div>
+        <q-toolbar color="tertiary" glossy>
+            <q-toolbar-title>
+                <span v-if="id">{{ $t('editRow') }}</span>
+                <span v-else>{{ $t('addRow') }}</span>
+            </q-toolbar-title>
+            <q-btn size="lg" flat dense @click="readBarcode">
+                <q-icon name="fa-barcode" />
+            </q-btn>
+        </q-toolbar>
+
         <q-tabs v-model="tab" v-if="selectFood" style="height: 82vh;" @select="changeTab">
             
             <q-tab slot="title" name="tab-1"  :label="$t('search')" />
@@ -210,6 +217,26 @@ export default {
                 portionName: self.portion ? self.portion.name : undefined
             };
             this.$emit('save', row);
+        },
+        readBarcode(){
+            try {
+                var self = this;
+                cordova.plugins.barcodeScanner.scan(
+                    result => {
+                        if(!result.canceled){
+                            self.searchText = result.text;
+                            self.search(result.text);
+                            self.tab = 'tab-1';
+                        }
+                    },
+                    error => {
+                        self.notifyError(error);
+                    }
+                );
+            }
+            catch(err){
+                self.notifyError(err);
+            }
         }
     },
     mounted () {
