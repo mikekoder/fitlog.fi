@@ -847,6 +847,20 @@ ORDER BY FoodNutrient.Amount{( descending ? " DESC" : "")}";
                 return conn.Query<FoodSearchNutrientResult>(sql, new { userId, nutrientId, count });
             }
         }
+
+        public IEnumerable<FoodSearchResult> SearchFoodsByEan(string ean, Guid? userId = null)
+        {
+            var  sql = @"SELECT Food.*, FoodUsage.UsageCount, FoodUsage.LatestUse
+FROM Food 
+LEFT JOIN FoodUsage ON FoodUsage.FoodId=Food.Id AND FoodUsage.UserId=@userId
+WHERE Food.Ean=@ean AND (Food.UserId=@userId OR Food.UserId IS NULL) ORDER BY Name";
+
+            using (var conn = CreateConnection())
+            {
+                return conn.Query<FoodSearchResult>(sql, new { ean, userId });
+            }
+        }
+
         private class MealRaw : MealDetails
         {
             public string NutrientsJson { get; set; }
