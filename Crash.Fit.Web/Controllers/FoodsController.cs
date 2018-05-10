@@ -34,13 +34,22 @@ namespace Crash.Fit.Web.Controllers
         [AllowAnonymous]
         public IActionResult Search(string name)
         {
-            var foods = nutritionRepository.SearchFoods(name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries), CurrentUserId);
+            IEnumerable<FoodSearchResult> foods;
+            if (EanUtils.IsAllNumbers(name))
+            {
+                foods = nutritionRepository.SearchFoodsByEan(name, CurrentUserId);
+            }
+            else
+            {
+                foods = nutritionRepository.SearchFoods(name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries), CurrentUserId);
+            }
             foods = foods.OrderBy(f => f.LatestUse.HasValue || f.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase) ? 1 : 2)
                 .ThenBy(f => f.Name.StartsWith(name, StringComparison.CurrentCultureIgnoreCase) ? 1 : 2)
                 .ThenBy(f => f.Name);
             var response = AutoMapper.Mapper.Map<FoodSearchResultResponse[]>(foods);
             return Ok(response);
         }
+
         [HttpGet("search-external")]
         [AllowAnonymous]
         public IActionResult SearchExternal(string ean)

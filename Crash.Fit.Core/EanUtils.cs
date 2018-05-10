@@ -30,7 +30,7 @@ namespace Crash.Fit
             ean += CalculateCheckNumberEan13(ean);
             return ean;
         }
-        private static bool IsAllNumbers(string text)
+        public static bool IsAllNumbers(string text)
         {
             foreach (var c in text)
             {
