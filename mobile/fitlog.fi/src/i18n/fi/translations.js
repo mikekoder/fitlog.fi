@@ -197,6 +197,7 @@
     nutrients: 'Ravintoaineet',
     nutrientsToShow: 'Näytettävät ravintoaineet',
     nutrition: 'Ravinto',
+    nutritionGoal: 'Ravintotavoite',
     nutritionGoals: 'Ravintotavoitteet',
     nutritionGoalsInfo: '',
     october: 'Lokakuu',

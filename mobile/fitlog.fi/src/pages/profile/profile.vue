@@ -1,4 +1,9 @@
 <template>
+<layout >
+
+  <span slot="title">{{ $t('profile') }}</span>
+
+  <div slot="toolbar"></div>
     <q-page class="q-pa-sm">
         <q-tabs v-model="tab">
       <q-tab slot="title" name="tab-1" :label="$t('basicInformation')" />
@@ -85,6 +90,7 @@
       
     </q-tabs>
     </q-page>
+    </layout>
 </template>
 
 <script src="./profile.js">

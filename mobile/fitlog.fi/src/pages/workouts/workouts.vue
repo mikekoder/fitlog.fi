@@ -1,4 +1,31 @@
 <template>
+<layout>
+
+  <span slot="title">{{ $t('workouts') }}</span>
+
+  <div slot="toolbar">
+    <!--
+    <q-btn flat size="lg" icon="help" @click="showHelp"></q-btn>
+    -->
+    <q-btn-dropdown flat icon="fa-plus" :label="$t('workout')"  v-if="activeRoutine && activeRoutine.workouts.length > 0" id="workout-options">
+      <q-list>
+        <q-list-header>{{ activeRoutine.name }}</q-list-header>
+        <q-item v-for="workout in activeRoutine.workouts" @click.native="createWorkout(activeRoutine.id, workout.id)">
+          <q-item-main>
+            <q-item-tile label>{{ workout.name }}</q-item-tile>
+          </q-item-main>
+        </q-item>
+        <q-item-separator />
+        <q-item @click.native="createWorkout">
+          <q-item-main>
+            <q-item-tile label>{{ $t('freeWorkout') }}</q-item-tile>
+          </q-item-main>
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
+    <q-btn flat icon="fa-plus" v-else :label="$t('workout')" @click="createWorkout"></q-btn>
+  </div>
+  
   <q-page class="q-pa-sm">
     <q-pull-to-refresh :handler="refresh" :pull-message="$t('')" :release-message="$t('')" :refresh-message="$t('')" :distance="20" style="height: 70px;">
     <q-card>
@@ -10,24 +37,6 @@
           <div class="col-1 q-pt-sm" style="text-align: center;"><q-icon name="fa-minus" /></div>
           <div class="col-4 q-pt-sm">
             <q-datetime :value="end" type="date" @change="changeEnd" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" />
-          </div>
-          <div class="col-3 q-pl-sm">
-            <q-btn-dropdown glossy color="primary" icon="fa-plus" split @click="createWorkout" v-if="activeRoutine && activeRoutine.workouts.length > 0"  style="margin-top: -5px;">
-              <!-- dropdown content -->
-              <q-list>
-                <q-item v-for="workout in activeRoutine.workouts" @click.native="createWorkout(activeRoutine.id, workout.id)">
-                  <q-item-main>
-                    <q-item-tile label>{{ workout.name }}</q-item-tile>
-                  </q-item-main>
-                </q-item>
-                <q-item @click.native="createWorkout">
-                  <q-item-main>
-                    <q-item-tile label>{{ $t('freeWorkout') }}</q-item-tile>
-                  </q-item-main>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
-            <q-btn glossy size="sm" color="primary" icon="fa-plus" v-else :label="$t('workout')" @click="createWorkout"></q-btn>
           </div>
         </div>
       </q-card-main>
@@ -46,10 +55,14 @@
       </template>
       <workouts-help ref="help" />
   </q-page>
+  </layout>
 </template>
 
 <script src="./workouts.js">
 </script>
 
 <style lang="stylus">
+#workout-options .q-btn-dropdown-arrow {
+  display:none;
+}
 </style>

@@ -1,8 +1,10 @@
 ﻿import constants from '../../store/constants'
 import api from '../../api'
+import PageMixin from '../../mixins/page'
 
 export default {
     name: 'energy-expenditure-details',
+    mixins: [PageMixin],
     data () {
         return {
             id: undefined,

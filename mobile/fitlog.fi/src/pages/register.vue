@@ -1,4 +1,9 @@
 <template>
+<layout >
+
+  <span slot="title">{{ $t('register') }}</span>
+
+  <div slot="toolbar"></div>
   <q-page class="q-pa-sm">
     <div class="q-tab-pane">
       <q-input v-model="email" type="text" :float-label="$t('email')" />
@@ -19,6 +24,7 @@
       <q-btn glossy color="primary" @click="googleLogin" icon="fa-google-plus-official">Google</q-btn>
     </div>
   </q-page>
+  </layout>
 </template>
 
 <script>
@@ -26,8 +32,10 @@ import { openURL } from 'quasar'
 import config from '../config'
 import api from '../api'
 import constants from '../store/constants'
+import PageMixin from '../mixins/page'
 
 export default {
+  mixins: [PageMixin],
   data () {
     return {
       email: undefined,
