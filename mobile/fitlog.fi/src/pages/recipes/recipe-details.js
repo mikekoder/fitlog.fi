@@ -4,10 +4,11 @@ import MealRowEditor from '../../components/meal-row-editor'
 import nutrientsMixin from '../../mixins/nutrients'
 import nutrientGroupsMixin from '../../mixins/nutrient-groups'
 import Help from './recipe-help'
+import PageMixin from '../../mixins/page'
 
 var defaultNutrientPortion = { id: undefined, name: '100g' };
 export default {
-    mixins:[nutrientsMixin,nutrientGroupsMixin],
+    mixins:[nutrientsMixin,nutrientGroupsMixin,PageMixin],
 
   data () {
     return {

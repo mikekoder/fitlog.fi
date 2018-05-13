@@ -1,8 +1,10 @@
 import constants from '../../store/constants'
 import api from '../../api'
 import utils from '../../utils'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
   data () {
     return {
         selectedRoutine: null

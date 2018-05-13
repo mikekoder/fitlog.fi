@@ -4,12 +4,13 @@ import api from '../../api'
 import exercisesMixin from '../../mixins/exercises'
 import utils from '../../utils'
 import Help from './workouts-help.vue'
+import PageMixin from '../../mixins/page'
 
 export default {
     components:{
         'workouts-help': Help
     },
-  mixins: [exercisesMixin],
+  mixins: [exercisesMixin, PageMixin],
   data() {
       return {
           startDatepickerVisible: false,

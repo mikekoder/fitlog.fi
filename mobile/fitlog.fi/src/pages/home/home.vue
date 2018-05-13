@@ -1,4 +1,28 @@
 <template>
+<layout>
+
+  <span slot="title">{{ $t('diary') }}</span>
+
+  <div slot="toolbar">
+    <q-btn flat size="lg" icon="help" @click="showHelp"></q-btn>
+    <q-btn-dropdown flat size="lg" icon="fa-cogs" id="home-options">
+        <q-list>
+          <q-item @click.native="showMealSettings" v-close-overlay>
+            <q-item-main>
+              <q-item-tile label>{{ $t('nutrients') }}</q-item-tile>
+            </q-item-main>
+          </q-item>
+          <q-item-separator />
+          <q-list-header v-if="$activityPresets.length > 0">{{ $t('activityLevel') }}</q-list-header>
+          <q-item v-for="preset in $activityPresets" @click.native="changeActivityPreset(preset)" :class="{selected: activityPreset && activityPreset.id == preset.id }" v-close-overlay>
+            <q-item-main>
+              <q-item-tile label>{{ preset.name }}</q-item-tile>
+            </q-item-main>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+  </div>
+
   <q-page v-touch-swipe.horizontal="swipe">
     <q-pull-to-refresh :handler="refresh" :pull-message="$t('')" :release-message="$t('')" :refresh-message="$t('')" :distance="20" style="height: 175px;">
       <q-card>
@@ -14,26 +38,6 @@
             <div class="col col-lg-2" align="left">
               <q-btn round size="md" glossy color="grey-6" @click="changeDate(1)"><q-icon name="fa-chevron-right" /></q-btn>
             </div>
-            <q-btn-dropdown glossy size="sm" color="grey-6" icon="fa-cogs" style="margin-top: -5px;">
-              <!-- dropdown content -->
-              <q-list>
-                <q-item @click.native="showMealSettings" v-close-overlay>
-                  <q-item-main>
-                    <q-item-tile label>{{ $t('nutrients') }}</q-item-tile>
-                  </q-item-main>
-                </q-item>
-                <q-item-separator />
-                <q-list-header v-if="$activityPresets.length > 0">{{ $t('activityLevel') }}</q-list-header>
-                <q-item v-for="preset in $activityPresets" @click.native="changeActivityPreset(preset)" :class="{selected: activityPreset && activityPreset.id == preset.id }" v-close-overlay>
-                  <q-item-main>
-                    <q-item-tile label>{{ preset.name }}</q-item-tile>
-                  </q-item-main>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
-            <!--
-            <q-btn round size="sm" glossy color="grey-6" class="pull-right" icon="fa-cogs" @click="showMealSettings"></q-btn>
-            -->
           </div>
         </q-card-title>
         <q-card-separator />
@@ -118,9 +122,6 @@
                 </div>
               </div>
             </div>
-            <!--
-            <q-btn round class="float-right" color="primary" style="top: -55px; right:-10px;" size="sm" icon="keyboard_arrow_up" v-on:click.stop="showFab=true"></q-btn>
-            -->
           </div>
         </q-card-main>
         <q-card-actions align="end">
@@ -135,6 +136,7 @@
     <meal-settings ref="mealSettings" @save="saveSettings(arguments[0])" />
     <home-help ref="help" />
   </q-page>
+  </layout>
 </template>
 
 <script src="./home.js">
@@ -149,5 +151,8 @@
     letter-spacing: normal;
     line-height: 2rem;
     */
+}
+#home-options .q-btn-dropdown-arrow {
+  display:none;
 }
 </style>

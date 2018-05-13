@@ -2,8 +2,10 @@ import constants from '../../store/constants'
 import utils from '../../utils'
 import Vue from 'vue'
 import Help from './routine-help'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
     components: {
         'routine-help': Help
     },

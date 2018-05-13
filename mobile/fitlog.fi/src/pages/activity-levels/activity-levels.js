@@ -3,12 +3,13 @@ import api from '../../api'
 import activityPresetsMixin from '../../mixins/activity-presets'
 import utils from '../../utils'
 import Help from './activity-levels-help.vue'
+import PageMixin from '../../mixins/page'
 
 export default {
     components:{
         'activity-levels-help': Help
     },
-    mixins:[activityPresetsMixin],
+    mixins:[activityPresetsMixin, PageMixin],
     data () {
         return {
             tab: 'tab-0',

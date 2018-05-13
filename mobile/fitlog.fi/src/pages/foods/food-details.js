@@ -2,10 +2,12 @@ import constants from '../../store/constants'
 import utils from '../../utils'
 import Help from './food-help'
 import api from '../../api'
+import PageMixin from '../../mixins/page'
 
 var defaultNutrientPortion = { id: undefined, name: '100g', value: undefined, label: '100g' };
 
 export default {
+    mixins: [PageMixin],
     components: {
         'food-help': Help
     },

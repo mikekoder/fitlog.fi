@@ -1,4 +1,12 @@
 <template>
+<layout >
+
+  <span slot="title">{{ $t('nutritionGoal') }}</span>
+
+  <div slot="toolbar">
+        <q-btn flat size="lg" @click="showHelp" icon="help"></q-btn>
+        <q-btn flat size="lg" @click="save" icon="save" :disabled="!canSave"></q-btn>
+  </div>
     <q-page class="q-pa-sm">
         <div class="row q-mx-sm q-mb-sm">
             <div class="col">
@@ -8,7 +16,6 @@
         <q-tabs v-model="tab" two-lines>
             <q-tab slot="title" v-for="(period, p_index) in periods" :name="'tab-' + p_index" :label="daysFormatted(period) + ' | ' + mealsFormatted(period)" :key="p_index" />
             <q-tab slot="title" :name="'tab-' + periods.length" :label="$t('preset')" icon="fa-plus" @click="addPeriod" />
-            <q-scroll-area style="height: 64vh;">
                 <q-tab-pane v-for="(period, p_index) in periods" :name="'tab-' + p_index" :key="p_index">
                     <div class="row">
                         <div class="col-10">
@@ -116,15 +123,10 @@
                     </template>
                         
                 </q-tab-pane>
-            </q-scroll-area>
         </q-tabs>
-    <div class="row">
-        <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
-        <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
-    </div>
-
     <nutrition-goal-help ref="help" />
 </q-page>
+</layout>
 </template>
 
 <script src="./nutrition-goal-details.js">

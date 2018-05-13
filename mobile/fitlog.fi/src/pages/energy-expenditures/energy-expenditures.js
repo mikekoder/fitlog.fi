@@ -3,8 +3,10 @@ import api from '../../api'
 import moment from 'moment'
 import utils from '../../utils'
 import EnergyExpenditureDetails from './energy-expenditure-details.vue'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
     components:{
         EnergyExpenditureDetails
     },
