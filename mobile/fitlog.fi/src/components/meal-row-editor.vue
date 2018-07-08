@@ -5,7 +5,7 @@
                 <span v-if="id">{{ $t('editRow') }}</span>
                 <span v-else>{{ $t('addRow') }}</span>
             </q-toolbar-title>
-            <q-btn flat size="lg" icon="fa-barcode"  @click="readBarcode" v-if="selectFood"></q-btn>
+            <q-btn flat icon="fa-barcode"  @click="readBarcode" v-if="selectFood"></q-btn>
         </q-toolbar>
 
         <q-tabs v-model="tab" v-if="selectFood" style="height: 82vh;" @select="changeTab">
@@ -211,15 +211,15 @@ export default {
                 foodId: self.food.id,
                 foodName: self.food.name,
                 quantity: self.quantity,
-                portion: self.portion.value,
+                portion: self.portion,
                 portionId: self.portion ? self.portion.id : undefined,
                 portionName: self.portion ? self.portion.name : undefined
             };
             this.$emit('save', row);
         },
         readBarcode(){
+            var self = this;
             try {
-                var self = this;
                 cordova.plugins.barcodeScanner.scan(
                     result => {
                         if(!result.canceled){

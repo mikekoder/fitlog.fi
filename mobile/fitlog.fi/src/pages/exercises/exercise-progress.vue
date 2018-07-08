@@ -4,7 +4,7 @@
   <span slot="title">{{ $t('progress') }}</span>
 
   <div slot="toolbar">
-    <q-btn flat size="lg" icon="help" @click="showHelp"></q-btn>
+    <q-btn flat icon="help" @click="showHelp"></q-btn>
   </div>
   <q-page class="q-pa-sm">
     <div class="row">

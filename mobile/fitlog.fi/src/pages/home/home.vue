@@ -4,8 +4,8 @@
   <span slot="title">{{ $t('diary') }}</span>
 
   <div slot="toolbar">
-    <q-btn flat size="lg" icon="help" @click="showHelp"></q-btn>
-    <q-btn-dropdown flat size="lg" icon="fa-cogs" id="home-options">
+    <q-btn flat icon="help" @click="showHelp"></q-btn>
+    <q-btn-dropdown flat icon="fa-cogs" id="home-options">
         <q-list>
           <q-item @click.native="showMealSettings" v-close-overlay>
             <q-item-main>

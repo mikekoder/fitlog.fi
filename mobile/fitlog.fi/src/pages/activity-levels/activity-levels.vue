@@ -4,8 +4,8 @@
   <span slot="title">{{ $t('activityLevels') }}</span>
 
   <div slot="toolbar">
-      <q-btn flat size="lg" @click="showHelp" icon="help"></q-btn>
-      <q-btn flat size="lg" icon="save" @click="save" :disabled="!canSave"></q-btn>
+      <q-btn flat @click="showHelp" icon="help"></q-btn>
+      <q-btn flat icon="save" @click="save" :disabled="!canSave"></q-btn>
   </div>
 
     <q-page>

@@ -5,7 +5,7 @@
 
   <div slot="toolbar">
     <!--
-    <q-btn flat size="lg" icon="help" @click="showHelp"></q-btn>
+    <q-btn flat icon="help" @click="showHelp"></q-btn>
     -->
     <q-btn-dropdown flat icon="fa-plus" :label="$t('workout')"  v-if="activeRoutine && activeRoutine.workouts.length > 0" id="workout-options">
       <q-list>
@@ -25,7 +25,7 @@
     </q-btn-dropdown>
     <q-btn flat icon="fa-plus" v-else :label="$t('workout')" @click="createWorkout"></q-btn>
   </div>
-  
+
   <q-page class="q-pa-sm">
     <q-pull-to-refresh :handler="refresh" :pull-message="$t('')" :release-message="$t('')" :refresh-message="$t('')" :distance="20" style="height: 70px;">
     <q-card>

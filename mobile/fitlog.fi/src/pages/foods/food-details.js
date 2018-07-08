@@ -183,9 +183,24 @@ export default {
         showHelp(){
             this.$refs.help.open();
         },
-        onBarcodeRead(barcode, format){
-            this.ean = barcode;
-            this.loadInfoByEan();
+        readBarcode(){
+            var self = this;
+            try {    
+                cordova.plugins.barcodeScanner.scan(
+                    result => {
+                        if(!result.canceled){
+                            self.ean = result.text;
+                            self.loadInfoByEan();
+                        }
+                    },
+                    error => {
+                        self.notifyError(error);
+                    }
+                );
+            }
+            catch(err){
+                self.notifyError(err.message);
+            }
         },
         loadInfoByEan() {
             var self = this;

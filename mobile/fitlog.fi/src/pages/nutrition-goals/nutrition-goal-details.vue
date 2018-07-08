@@ -4,8 +4,8 @@
   <span slot="title">{{ $t('nutritionGoal') }}</span>
 
   <div slot="toolbar">
-        <q-btn flat size="lg" @click="showHelp" icon="help"></q-btn>
-        <q-btn flat size="lg" @click="save" icon="save" :disabled="!canSave"></q-btn>
+        <q-btn flat @click="showHelp" icon="help"></q-btn>
+        <q-btn flat @click="save" icon="save" :disabled="!canSave"></q-btn>
   </div>
     <q-page class="q-pa-sm">
         <div class="row q-mx-sm q-mb-sm">
