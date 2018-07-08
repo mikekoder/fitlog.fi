@@ -20,8 +20,11 @@
       <q-tab slot="title" :name="'tab-' + workouts.length" :label="$t('workout')" icon="fa-plus" @click="addWorkout" />
           <q-tab-pane v-for="(workout, w_index) in workouts" :name="'tab-' + w_index" :key="w_index">
             <div class="row q-mx-md">
-                <div class="col-10">
+                <div class="col-6">
                     <q-input type="text" v-model="workout.name" :float-label="$t('name')" />
+                </div>
+                 <div class="col-4 q-pl-sm">
+                     <q-select v-model="workout.frequency" :options="frequencyPresets" :float-label="$t('frequency')"></q-select>
                 </div>
                 <div class="col-2">
                     <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">

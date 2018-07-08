@@ -201,13 +201,13 @@ export default {
     created() {
         var self = this;
          self.frequencyPresets = [
-            { value: 1, text: `1 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
-            { value: 2, text: `2 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
-            { value: 3, text: `3 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
-            { value: 4, text: `4 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
-            { value: 1/2, text: `1 ${self.$t('timesAbbr')} / 2 ${this.$t('weekAbbr')}` },
-            { value: 3/2, text: `3 ${self.$t('timesAbbr')} / 2 ${this.$t('weekAbbr')}` },
-            { value: 5/2, text: `5 ${self.$t('timesAbbr')} / 2 ${this.$t('weekAbbr')}` },
+            { value: 1, label: `1 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
+            { value: 2, label: `2 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
+            { value: 3, label: `3 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
+            { value: 4, label: `4 ${self.$t('timesAbbr')} / ${this.$t('weekAbbr')}` },
+            { value: 1/2, label: `1 ${self.$t('timesAbbr')} / 2 ${this.$t('weekAbbr')}` },
+            { value: 3/2, label: `3 ${self.$t('timesAbbr')} / 2 ${this.$t('weekAbbr')}` },
+            { value: 5/2, label: `5 ${self.$t('timesAbbr')} / 2 ${this.$t('weekAbbr')}` },
         ];
         var id = self.$route.params.id;
         if (id == constants.NEW_ID) {

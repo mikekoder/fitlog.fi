@@ -9,6 +9,13 @@
             </div>
 
             <div class="row q-mt-sm text-bold">
+                <div class="col">{{ $t('frequency') }}</div>
+            </div>
+            <div class="row">
+                <div class="col">{{ $t('help.routine.frequency') }}</div>
+            </div>
+
+            <div class="row q-mt-sm text-bold">
                 <div class="col">{{ $t('load') }}</div>
             </div>
             <div class="row">
