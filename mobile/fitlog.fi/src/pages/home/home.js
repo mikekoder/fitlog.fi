@@ -288,7 +288,7 @@ export default {
       var self = this;
       this.$q.actionSheet({
         title: `${row.foodName} ${ row.quantity } ${ row.portionName || 'g' }`,
-        grid: false,
+        grid: true,
         actions: [
           {
             label: self.$t('edit'),
@@ -474,7 +474,9 @@ export default {
         
     },
     updateComputedValues() {
-        this.eatenEnergy = this.dayNutrients ? this.dayNutrients[this.energyId] ? this.dayNutrients[this.energyId] : 0 : 0;
+        this.$nextTick(() => {
+            this.eatenEnergy = this.dayNutrients ? this.dayNutrients[this.energyId] ? this.dayNutrients[this.energyId] : 0 : 0;
+        });
     },
     getActivityPreset() {
         var preset;
