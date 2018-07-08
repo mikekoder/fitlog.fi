@@ -4,7 +4,7 @@
             <q-toolbar-title>
                 {{ $t('help.title') }}
             </q-toolbar-title>
-            <q-btn flat size="lg" icon="close" @click="close" />
+            <q-btn flat icon="close" @click="close" />
         </q-toolbar>
         <div class="row q-pa-md">
             <div class="col">

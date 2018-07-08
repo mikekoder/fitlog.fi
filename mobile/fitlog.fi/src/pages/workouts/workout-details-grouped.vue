@@ -4,7 +4,7 @@
   <span slot="title">{{ $t('workout') }}</span>
 
   <div slot="toolbar">
-      <q-btn flat size="lg" icon="save" @click="save"></q-btn>
+      <q-btn flat icon="save" @click="save"></q-btn>
   </div>
     <!--
     <q-toolbar slot="footer">

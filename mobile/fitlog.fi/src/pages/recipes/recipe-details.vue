@@ -4,8 +4,8 @@
   <span slot="title">{{ $t('recipe') }}</span>
 
   <div slot="toolbar">
-      <q-btn flat size="lg" icon="help" @click="showHelp"></q-btn>
-      <q-btn flat size="lg" icon="save" @click="save" :disabled="!canSave"></q-btn>
+      <q-btn flat icon="help" @click="showHelp"></q-btn>
+      <q-btn flat icon="save" @click="save" :disabled="!canSave"></q-btn>
   </div>
   <q-page class="q-pa-sm">
     <div class="row q-mb-sm">

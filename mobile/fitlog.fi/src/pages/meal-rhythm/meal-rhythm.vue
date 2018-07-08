@@ -5,7 +5,7 @@
 
   <div slot="toolbar">
         <q-btn flat @click="addMeal" icon="fa-plus" :label="$t('meal')" class="q-mr-sm"></q-btn>
-        <q-btn size="lg" flat @click="save"><q-icon name="save"></q-icon></q-btn>
+        <q-btn flat size="md" @click="save"><q-icon name="save"></q-icon></q-btn>
   </div>
 <q-page class="q-pa-sm">
         <q-card v-for="(def, index) in definitions" :key="index" class="q-ma-sm">

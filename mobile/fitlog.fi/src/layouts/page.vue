@@ -8,7 +8,9 @@
         <q-toolbar-title>
           <slot name="title"></slot>
         </q-toolbar-title>
-        <slot name="toolbar"></slot>
+        <div class="page-toolbar">
+          <slot name="toolbar"></slot>
+        </div>
       </q-toolbar>
     </q-layout-header>
     
