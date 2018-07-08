@@ -258,7 +258,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                 try
                 {
                     conn.Execute("DELETE FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineWorkout WHERE RoutineId=@Id)", new { routine.Id }, tran);               
-                    conn.Execute("DELETE FROM RoutineWorkout WHERE Id NOT IN @ids", new { ids = routine.Workouts.Where(w => w.Id != Guid.Empty).Select(w => w.Id) }, tran);
+                    conn.Execute("DELETE FROM RoutineWorkout WHERE RoutineId=@Id", new { routine.Id }, tran);
 
                     for(var i = 0; i< routine.Workouts.Length; i++)
                     {
@@ -266,24 +266,16 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
                         if(workout.Id == Guid.Empty)
                         {
                             workout.Id = Guid.NewGuid();
-                            conn.Execute("INSERT INTO RoutineWorkout(Id,RoutineId,[Index],Name,Frequency) VALUES(@Id,@RoutineId,@Index,@Name,@Frequency)", new
-                            {
-                                workout.Id,
-                                RoutineId = routine.Id,
-                                Index = i,
-                                workout.Name,
-                                workout.Frequency
-                            }, tran);
+                            
                         }
-                        else
+                        conn.Execute("INSERT INTO RoutineWorkout(Id,RoutineId,[Index],Name,Frequency) VALUES(@Id,@RoutineId,@Index,@Name,@Frequency)", new
                         {
-                            conn.Execute("UPDATE RoutineWorkout SET [Index]=@Index, Name=@Name WHERE Id=@Id", new
-                            {
-                                workout.Id,
-                                Index = i,
-                                workout.Name
-                            }, tran);
-                        }
+                            workout.Id,
+                            RoutineId = routine.Id,
+                            Index = i,
+                            workout.Name,
+                            workout.Frequency
+                        }, tran);
                     }
 
                     conn.Execute("UPDATE Routine SET Name=@Name WHERE Id=@Id", routine, tran);
