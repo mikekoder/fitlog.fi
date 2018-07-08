@@ -358,6 +358,7 @@
         },
         routine: {
             intro: 'Ohjelma koostuu yhdestä tai useammasta treenistä. Treenikertaa kirjatessa voi valita mitä ohjelman treeniä se vastaa ja liikkeet/sarjat/painot tulevat valmiiksi.',
+            frequency: 'Kuinka usein tavoittelet tekeväsi ko. treenin. Käytetään ohjelman toteutumisen seurantaan (tulossa oleva toiminnallisuus).',
             load: '% maksimipainoista. Kun tämä on syötetty ja maksimipainot tiedossa, treeniin lasketaan oikeat painot valmiiksi.'
         },
         title: 'Ohjeet',
