@@ -1,8 +1,10 @@
 ﻿<template>
     <q-modal ref="modal">
-        <div class="row q-ma-sm text-bold">
-            {{ $t('energyExpenditure') }}
-        </div>
+        <q-toolbar color="tertiary" glossy>
+            <q-toolbar-title>
+                {{ $t('energyExpenditure') }}
+            </q-toolbar-title>
+        </q-toolbar>
         <div class="row q-ma-sm q-mb-md">
             <div class="col">
                 <q-radio v-model="manual" :val="false" :label="$t('selectActivity')"></q-radio>

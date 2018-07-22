@@ -11,9 +11,10 @@ import nutritionGoalMixin from '../../mixins/nutrition-goal'
 import activityPresetsMixin from '../../mixins/activity-presets'
 import NutrientKnob from '../../components/nutrient-knob'
 import Help from './home-help.vue'
+import PageMixin from '../../mixins/page'
 
 export default {
-  mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin, activityPresetsMixin],
+  mixins: [nutrientsMixin, mealDefinitionsMixin, nutritionGoalMixin, activityPresetsMixin, PageMixin],
   components: {
     EnergyDistributionBar,
     NutrientBar,
@@ -24,7 +25,6 @@ export default {
   },
   data () {
     return {
-      showFab: false,
       proteinId: constants.PROTEIN_ID,
       carbId: constants.CARB_ID,
       fatId: constants.FAT_ID,
@@ -33,7 +33,8 @@ export default {
       energyDifferenceId: constants.ENERGY_DIFFERENCE_ID,
       selectedRow: undefined,
       datepickerVisible: false,
-      eatenEnergy: undefined
+      eatenEnergy: undefined,
+      rightMenuOpen: true
     }
   },
   computed: {
@@ -312,11 +313,18 @@ export default {
           }
         ],
         dismiss: {
-            label: self.$t('cancel'),
-            handler: () => {
-                
+            // label is used only for iOS theme
+            label: 'Cancel',
+        
+            // tell what to do when Action Sheet
+            // is dismised (doesn't trigger when
+            // any of the actions above are clicked/tapped)
+            handler: function() {
+              console.log('Cancelled...')
             }
-        }
+          }
+      }).catch(() => {
+          this.$q.notify('cancelled');
       });
     },
     clickMeal(mealDef){
@@ -466,7 +474,9 @@ export default {
         
     },
     updateComputedValues() {
-        this.eatenEnergy = this.dayNutrients ? this.dayNutrients[this.energyId] ? this.dayNutrients[this.energyId] : 0 : 0;
+        this.$nextTick(() => {
+            this.eatenEnergy = this.dayNutrients ? this.dayNutrients[this.energyId] ? this.dayNutrients[this.energyId] : 0 : 0;
+        });
     },
     getActivityPreset() {
         var preset;

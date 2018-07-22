@@ -3,8 +3,10 @@ import api from '../../api'
 import GraphBar from '../../components/graph-bar'
 import moment from 'moment'
 import graph from '../../graph'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
     components: {
         GraphBar
     },

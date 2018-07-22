@@ -1,4 +1,9 @@
 <template>
+<layout >
+
+  <span slot="title">{{ $t('progress') }}</span>
+
+  <div slot="toolbar"></div>
   <q-page class="q-pa-sm">
     <div class="row">
       <div class="col">
@@ -75,6 +80,7 @@
       </div>
     </div>
   </q-page>
+  </layout>
 </template>
 
 <script src="./measurement-progress.js">

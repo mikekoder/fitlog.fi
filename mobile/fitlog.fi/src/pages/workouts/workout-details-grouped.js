@@ -1,11 +1,10 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
 import exercisesMixin from '../../mixins/exercises'
+import PageMixin from '../../mixins/page'
 
 export default {
-    mixins:{
-        exercisesMixin
-    },
+    mixins:[exercisesMixin, PageMixin],
   data () {
     return {
         id: null,

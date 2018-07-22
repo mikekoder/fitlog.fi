@@ -3,196 +3,154 @@ export default [
     path: '/',
     component: () => import('layouts/default'),
     children: [
-      /*
-      { 
-        path: '', 
-        component: () => import('pages/index')
-      },
-      */
       {
         path: '/',
         name: 'home',
-        component: () => import('pages/home/home.vue'),
-        meta: { title: 'diary' }
+        component: () => import('pages/home/home.vue')
       },
       
       {
           path: '/foods',
           name: 'foods',
-          component: () => import('pages/foods/foods.vue'),
-          meta: { title: 'foods' }
+          component: () => import('pages/foods/foods.vue')
         },
         {
           path: '/foods/:id',
           name: 'food-details',
-          component: () => import('pages/foods/food-details.vue'),
-          meta: { title: 'foodDetails' }
+          component: () => import('pages/foods/food-details.vue')
       },       
       {
         path: '/recipes',
         name: 'recipes',
-        component: () => import('pages/recipes/recipes.vue'),
-        meta: { title: 'recipes' }
+        component: () => import('pages/recipes/recipes.vue')
       },
       {
         path: '/recipes/:id',
         name: 'recipe-details',
-        component: () => import('pages/recipes/recipe-details.vue'),
-        meta: { title: 'recipeDetails' }
+        component: () => import('pages/recipes/recipe-details.vue')
       },
       {
         path: '/meal-rhythm',
         name: 'meal-rhythm',
-        component: () => import('pages/meal-rhythm/meal-rhythm.vue'), 
-        meta: { title: 'mealRhythm' }
+        component: () => import('pages/meal-rhythm/meal-rhythm.vue')
       },      
       {
         path: '/login/:refreshToken?/:accessToken?',
         name: 'login',
-        component: () => import('pages/login.vue'),
-        meta: { title: 'login' }
+        component: () => import('pages/login.vue')
       },
       {
         path: '/register',
         name: 'register',
-        component: () => import('pages/register'), 
-        meta: { title: 'register' }
+        component: () => import('pages/register')
       },
       {
         path: '/profile',
         name: 'profile',
-        component: () => import('pages/profile/profile.vue'), 
-        meta: { title: 'profile' }
+        component: () => import('pages/profile/profile.vue')
       },
       {
         path: '/nutrition-goals',
         name: 'nutrition-goals',
-        component: () => import('pages/nutrition-goals/nutrition-goals.vue'), 
-        meta: { title: 'nutritionGoals' }
+        component: () => import('pages/nutrition-goals/nutrition-goals.vue')
       },
       {
         path: '/nutrition-goals/:id',
         name: 'nutrition-goal-details',
-        component: () => import('pages/nutrition-goals/nutrition-goal-details.vue'), 
-        meta: { title: 'nutritionGoals' }
+        component: () => import('pages/nutrition-goals/nutrition-goal-details.vue')
       },
       {
         path: '/workouts',
         name: 'workouts',
-        component: () => import('pages/workouts/workouts.vue'), 
-        meta: { title: 'workouts' }
+        component: () => import('pages/workouts/workouts.vue')
       },
       {
         path: '/workouts/:id',
         name: 'workout-details',
-        component: () => import('pages/workouts/workout-details-grouped.vue'), 
-        meta: { title: 'workoutDetails' }
+        component: () => import('pages/workouts/workout-details-grouped.vue')
       },
       {
         path: '/exercises',
         name: 'exercises',
-        component: () => import('pages/exercises/exercises.vue'), 
-        meta: { title: 'exercises' }
+        component: () => import('pages/exercises/exercises.vue')
       },
       {
         path: '/exercises/:id',
         name: 'exercise-details',
-        component: () => import('pages/exercises/exercise-details.vue'), 
-        meta: { title: 'exerciseDetails' }
+        component: () => import('pages/exercises/exercise-details.vue')
       },     
       {
         path: '/exercise-progress/:exerciseId',
         name: 'exercise-progress',
-        component: () => import('pages/exercises/exercise-progress.vue'), 
-        meta: { title: 'progress' }
+        component: () => import('pages/exercises/exercise-progress.vue')
       }, 
       {
         path: '/routines',
         name: 'routines',
-        component: () => import('pages/routines/routines.vue'), 
-        meta: { title: 'routines' }
+        component: () => import('pages/routines/routines.vue')
       },
       {
         path: '/routines/:id',
         name: 'routine-details',
-        component: () => import('pages/routines/routine-details-grouped.vue'), 
-        meta: { title: 'routineDetails' }
+        component: () => import('pages/routines/routine-details-grouped.vue')
       },
       {
         path: '/rep-calculator',
         name: 'rep-calculator',
-        component: () => import('pages/rep-calculator.vue'), 
-        meta: { title: 'repCalculator' }
+        component: () => import('pages/rep-calculator.vue')
       },
       
       {
         path: '/measurements',
         name: 'measurements',
-        component: () => import('pages/measurements/measurements.vue'), 
-        meta: { title: 'measurements' }
+        component: () => import('pages/measurements/measurements.vue')
       },
       {
         path: '/measurement-details',
         name: 'measurement-details',
-        component: () => import('pages/measurements/measurement-details.vue'), 
-        meta: { title: 'measurements' }
+        component: () => import('pages/measurements/measurement-details.vue')
       },
       {
         path: '/measurement-progress/:measureId',
         name: 'measurement-progress',
-        component: () => import('pages/measurements/measurement-progress.vue'), 
-        meta: { title: 'progress' }
+        component: () => import('pages/measurements/measurement-progress.vue')
       },
       {
         path: '/improvements',
         name: 'improvements',
         component: () => import('pages/feedback/feedback.vue'), 
-        meta: { title: 'improvements', type:'Improvement' }
+        meta: { type:'Improvement' }
       },
       {
         path: '/improvements/:id',
         name: 'improvement-details',
         component: () => import('pages/feedback/feedback-details.vue'), 
-        meta: { title: 'improvement', type:'Improvement' }
+        meta: { type:'Improvement' }
       },
       {
         path: '/bugs',
         name: 'bugs',
         component: () => import('pages/feedback/feedback.vue'), 
-        meta: { title: 'bugs', type:'Bug' }
+        meta: { type:'Bug' }
       },
       {
         path: '/bugs/:id',
         name: 'bug-details',
         component: () => import('pages/feedback/feedback-details.vue'), 
-        meta: { title: 'bugDetails', type:'Bug' }
+        meta: { type:'Bug' }
       },
       {
         path: '/activitylevels',
         name: 'activity-levels',
-        component: () => import('pages/activity-levels/activity-levels.vue'), 
-        meta: { title: 'activityLevels', help: 'activity-levels-help' }
+        component: () => import('pages/activity-levels/activity-levels.vue')
       },
       {
         path: '/energy-expenditures',
         name: 'energy-expenditures',
-        component: () => import('pages/energy-expenditures/energy-expenditures.vue'), 
-        meta: { title: 'energyExpenditures' }
+        component: () => import('pages/energy-expenditures/energy-expenditures.vue')
       }
     ]
   },
-  /*
-  {
-    path: '/help/',
-    component: () => import('layouts/help'),
-    children: [
-      {
-        path: 'activity-levels',
-        name: 'activity-levels-help',
-        component: () => import('pages/activity-levels/activity-levels-help.vue')
-      },
-    ]
-  },*/
   { // Always leave this as last one
     path: '*',
     component: () => import('pages/404')

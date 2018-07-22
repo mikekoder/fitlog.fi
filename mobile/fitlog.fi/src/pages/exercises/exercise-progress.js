@@ -4,8 +4,10 @@ import GraphBar from '../../components/graph-bar'
 import moment from 'moment'
 import graph from '../../graph'
 import Help from './exercise-progress-help'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
     components: {
         GraphBar,
         'exercise-progress-help': Help

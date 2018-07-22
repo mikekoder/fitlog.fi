@@ -5,9 +5,7 @@
                 <span v-if="id">{{ $t('editRow') }}</span>
                 <span v-else>{{ $t('addRow') }}</span>
             </q-toolbar-title>
-            <q-btn size="lg" flat dense @click="readBarcode">
-                <q-icon name="fa-barcode" />
-            </q-btn>
+            <q-btn flat icon="fa-barcode"  @click="readBarcode" v-if="selectFood"></q-btn>
         </q-toolbar>
 
         <q-tabs v-model="tab" v-if="selectFood" style="height: 82vh;" @select="changeTab">
@@ -17,7 +15,7 @@
             <q-tab slot="title" name="tab-3" :label="$t('mostUsed')" />
             <q-tab slot="title" name="tab-4"  :label="$t('my')" />
            
-            <q-scroll-area style="height: 72vh;">
+            <q-scroll-area style="height: 75vh;">
             <q-tab-pane name="tab-1">
                 <q-search v-model="searchText" :float-label="$t('search')" :placeholder="$t('food')" @input="search" :debounce="500" clearable></q-search>
                 <q-list v-if="searchResults.length > 0">
@@ -60,7 +58,7 @@
       </div>
       <div class="row q-ma-sm q-mt-lg">
         <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
-        <q-btn glossy color="primary" @click="save" v-if="food && quantity" :label="$t('save')"></q-btn>
+        <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
       </div>
         
     </q-modal>
@@ -117,6 +115,7 @@ export default {
     methods: {
         show(row){
             var self = this;
+            self.tab = 'tab-1';
             self.id = row.id;
             self.mealDefinitionId = row.mealDefinitionId;
             self.mealId = row.mealId;
@@ -212,15 +211,15 @@ export default {
                 foodId: self.food.id,
                 foodName: self.food.name,
                 quantity: self.quantity,
-                portion: self.portion.value,
+                portion: self.portion,
                 portionId: self.portion ? self.portion.id : undefined,
                 portionName: self.portion ? self.portion.name : undefined
             };
             this.$emit('save', row);
         },
         readBarcode(){
+            var self = this;
             try {
-                var self = this;
                 cordova.plugins.barcodeScanner.scan(
                     result => {
                         if(!result.canceled){
@@ -235,7 +234,7 @@ export default {
                 );
             }
             catch(err){
-                self.notifyError(err);
+                self.notifyError(err.message);
             }
         }
     },
