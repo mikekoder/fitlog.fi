@@ -1,4 +1,9 @@
 <template>
+<layout >
+
+  <span slot="title">{{ $t('repCalculator') }}</span>
+
+  <div slot="toolbar"></div>
   <q-page class="q-pa-sm">
     <div class="row">
         <div class="col-3"><q-input v-model="reps" type="number" :float-label="$t('reps')" /></div>
@@ -41,11 +46,15 @@
         </div>
     </div>
   </q-page>
+</layout>
 </template>
 
 <script>
 import constants from '../store/constants'
+import PageMixin from '../mixins/page'
+
 export default {
+    mixins: [PageMixin],
   data () {
     return {
       reps: undefined,

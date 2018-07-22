@@ -22,7 +22,7 @@
 import HelpModal from '../../components/help-modal.vue'
 import HelpMixin from '../../mixins/help-modal'
 export default {
-    name: 'exercise-progress-help',
+    name: 'exercise-help',
     components: { HelpModal },
     mixins:[ HelpMixin ]
 }

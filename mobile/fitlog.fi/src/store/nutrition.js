@@ -651,14 +651,10 @@ export default {
             deleteMealRow(row, state);
         },
         [constants.SAVE_MEAL_DIARY_NUTRIENTS_SUCCESS](state, { nutrients }) {
-            state.nutrients.forEach(n => {
+            state.nutrients = state.nutrients.map(n => {
                 var index = nutrients.findIndex(id => n.id == id);
-                if (index >= 0) {
-                    n.homeOrder = index;
-                }
-                else {
-                    n.HomeOrder = undefined;
-                }
+
+                return {...n, homeOrder: index >= 0 ? index : undefined};
             });
         },
         [constants.FETCH_LATEST_FOODS_SUCCESS](state, { foods }) {
