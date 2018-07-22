@@ -265,7 +265,7 @@ GROUP BY R.FoodId;";
                     }
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -425,7 +425,7 @@ SELECT MR.*, F.Name AS FoodName, FP.Name AS PortionName FROM MealRow MR
                     */
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -482,7 +482,7 @@ UPDATE Meal SET Time=@Time,DefinitionId=@DefinitionId,NutrientsJson=@NutrientsJs
                     */
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -545,7 +545,7 @@ WHEN NOT MATCHED THEN
 
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -577,7 +577,7 @@ WHEN NOT MATCHED THEN
 
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -663,7 +663,7 @@ SELECT * FROM NutritionGoalValue WHERE NutritionGoalPeriodId IN (SELECT Id FROM 
                     })), tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -717,7 +717,7 @@ SELECT * FROM NutritionGoalValue WHERE NutritionGoalPeriodId IN (SELECT Id FROM 
                     })), tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -786,7 +786,7 @@ WHEN NOT MATCHED THEN
                     conn.Execute(sql, definitions, tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -802,7 +802,7 @@ WHEN NOT MATCHED THEN
                 {
                     return conn.Query<MealDefinition>(sql, new { userId });
                 }
-                catch (Exception ex)
+                catch
                 {
                     throw;
                 }
