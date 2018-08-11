@@ -9,7 +9,7 @@ namespace Crash.Fit.Activities
 {
     public class ActivityRepository : RepositoryBase, IActivityRepository
     {
-        public ActivityRepository(DbProviderFactory dbFactory, string connectionString) : base(dbFactory, connectionString)
+        public ActivityRepository(string connectionString) : base(connectionString)
         {
         }
 
@@ -43,7 +43,7 @@ namespace Crash.Fit.Activities
                     conn.Execute("INSERT INTO Activity(Id, Name,EnergyExpenditure, Created) VALUES(@Id, @Name,@EnergyExpenditure, @Created)", activity, tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     activity.Id = Guid.Empty;
@@ -62,7 +62,7 @@ namespace Crash.Fit.Activities
                     conn.Execute("UPDATE Activity SET Name=@Name,EnergyExpenditure=@EnergyExpenditure WHERE Id=@Id", activity, tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -80,7 +80,7 @@ namespace Crash.Fit.Activities
                     conn.Execute("UPDATE Activity SET Deleted=@Deleted WHERE Id=@Id", new { activity.Id, Deleted = DateTimeOffset.Now }, tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -124,7 +124,7 @@ WHERE E.UserId=@userId AND E.Time >= @start AND E.Time <= @end AND E.Deleted IS 
                     conn.Execute("INSERT INTO EnergyExpenditure(Id,UserId,Time,ActivityId,Duration,ActivityName,EnergyKcal,WorkoutId,Created) VALUES(@Id,@UserId,@Time,@ActivityId,@Duration,@ActivityName,@EnergyKcal,@WorkoutId,@Created)", expenditure, tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     expenditure.Id = Guid.Empty;
@@ -157,7 +157,7 @@ WHERE E.UserId=@userId AND E.Time >= @start AND E.Time <= @end AND E.Deleted IS 
                     conn.Execute("UPDATE EnergyExpenditure SET Time=@Time,ActivityId=@ActivityId,Duration=@Duration,ActivityName=@ActivityName,EnergyKcal=@EnergyKcal WHERE Id=@Id", expenditure, tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -175,7 +175,7 @@ WHERE E.UserId=@userId AND E.Time >= @start AND E.Time <= @end AND E.Deleted IS 
                     conn.Execute("UPDATE EnergyExpenditure SET Deleted=@Deleted WHERE Id=@Id", new { expenditure.Id, Deleted = DateTimeOffset.Now }, tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -219,7 +219,7 @@ VALUES(@Id,@UserId,@Name,@Sleep,@Inactivity,@LightActivity,@ModerateActivity,@He
                     conn.Execute(sql, presets, tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -244,7 +244,7 @@ VALUES(@userId,@date,@activityPresetId);";
                 {
                     conn.Execute(sql, new { userId, date, activityPresetId });
                 }
-                catch (Exception ex)
+                catch
                 {
                     throw;
                 }
@@ -259,7 +259,7 @@ VALUES(@userId,@date,@activityPresetId);";
                     return conn.Query("SELECT Date,ActivityPresetId FROM Day WHERE UserId=@userId AND Date >= @start AND Date <= @end", new { userId, start, end })
                         .ToDictionary(x => (DateTimeOffset)x.Date, x => (Guid)x.ActivityPresetId);
                 }
-                catch (Exception ex)
+                catch
                 {
                     throw;
                 }
