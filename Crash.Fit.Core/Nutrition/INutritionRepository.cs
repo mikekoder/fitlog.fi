@@ -31,6 +31,9 @@ namespace Crash.Fit.Nutrition
         void UpdateMeal(MealDetails meal);
         void DeleteMeal(Meal meal);
         void RestoreMeal(Guid id, out MealDetails meal);
+        void CreateMealRow(MealRow row, int index);
+        void UpdateMealRow(MealRow row);
+        void DeleteMealRow(MealRow row);
 
         void SaveNutrientSettings(IEnumerable<NutrientSetting> settings);
         IEnumerable<NutritionGoalDetails> GetNutritionGoals(Guid userId);

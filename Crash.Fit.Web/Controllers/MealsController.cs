@@ -27,6 +27,12 @@ namespace Crash.Fit.Web.Controllers
             var meals = nutritionRepository.SearchMeals(CurrentUserId, start, end ?? DateTimeOffset.Now);
 
             var response = AutoMapper.Mapper.Map<MealDetailsResponse[]>(meals.OrderByDescending(m => m.Time));
+
+            foreach(var meal in response)
+            {
+                meal.Nutrients = AppendComputedNutrients(meal.Nutrients);
+            }
+
             return Ok(response);
         }
         [HttpGet("{id}")]
@@ -35,6 +41,9 @@ namespace Crash.Fit.Web.Controllers
             var meal = nutritionRepository.GetMeal(id);
 
             var response = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
+
+            response.Nutrients = AppendComputedNutrients(response.Nutrients);
+
             return Ok(response);
         }
         [HttpPost("")]
@@ -75,6 +84,7 @@ namespace Crash.Fit.Web.Controllers
             nutritionRepository.UpdateMeal(meal);
 
             var result = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
+
             return Ok(result);
         }
 
@@ -201,7 +211,7 @@ namespace Crash.Fit.Web.Controllers
             }
             else
             {
-                nutritionRepository.UpdateMeal(meal);
+                nutritionRepository.CreateMealRow(mealRow, meal.Rows.Length - 1);
             }
 
             var result = AutoMapper.Mapper.Map<MealRowModel>(mealRow);
@@ -235,7 +245,7 @@ namespace Crash.Fit.Web.Controllers
             row.Nutrients = null;
             CalculateNutrients(meal);
 
-            nutritionRepository.UpdateMeal(meal);
+            nutritionRepository.UpdateMealRow(row);
 
             var result = AutoMapper.Mapper.Map<MealRowModel>(row);
             return Ok(result);
@@ -252,15 +262,19 @@ namespace Crash.Fit.Web.Controllers
             {
                 return Unauthorized();
             }
-            meal.Rows = meal.Rows.Where(r => r.Id != id).ToArray();
-            if (meal.Rows.Length == 0)
+            var row = meal.Rows.FirstOrDefault(r => r.Id == id);
+            if(row == null)
+            {
+                return NotFound();
+            }
+
+            if (meal.Rows.Where(r => r.Id != id).Count() == 0)
             {
                 nutritionRepository.DeleteMeal(meal);
             }
             else
             {
-                CalculateNutrients(meal);
-                nutritionRepository.UpdateMeal(meal);
+                nutritionRepository.DeleteMealRow(row);
             }
             return Ok();
         }
@@ -317,50 +331,24 @@ namespace Crash.Fit.Web.Controllers
                 {
                     row.Weight = row.Quantity;
                 }
-                row.Nutrients  = AppendCalculatedNutrients(food.Nutrients
+                row.Nutrients  = AppendComputedNutrients(food.Nutrients
                     .Where(n => !Constants.Nutrition.ComputedNutrientIds.Contains(n.NutrientId))
                     .ToDictionary(n => n.NutrientId,n => row.Weight * n.Amount / 100m));
             }
 
 
-            meal.Nutrients = AppendCalculatedNutrients(meal.Rows
+            meal.Nutrients = AppendComputedNutrients(meal.Rows
                 .SelectMany(r => r.Nutrients.Where(n => !Constants.Nutrition.ComputedNutrientIds.Contains(n.Key)))
                 .GroupBy(n => n.Key, n => n.Value)
                 .ToDictionary(g => g.Key, g => g.Sum()));
 
         }
-        private Dictionary<int,decimal> AppendCalculatedNutrients(Dictionary<int,decimal> nutrients)
+        private Dictionary<int,decimal> AppendComputedNutrients(Dictionary<int,decimal> nutrients)
         {
-            var energy = nutrients.ContainsKey(Constants.Nutrition.EnergyKcalId) ? nutrients[Constants.Nutrition.EnergyKcalId] : null as decimal?;
-            var protein = nutrients.ContainsKey(Constants.Nutrition.ProteinId) ? nutrients[Constants.Nutrition.ProteinId] : null as decimal?;
-            var carbs = nutrients.ContainsKey(Constants.Nutrition.CarbId) ? nutrients[Constants.Nutrition.CarbId] : null as decimal?;
-            var fat = nutrients.ContainsKey(Constants.Nutrition.FatId) ? nutrients[Constants.Nutrition.FatId] : null as decimal?;
-            var calculatedEnergy = 4 * protein + 4 * carbs + 9 * fat;
-
-            var newNutrients = new Dictionary<int,decimal>(nutrients);
-
-            if (energy.HasValue || calculatedEnergy.HasValue)
-            {
-                if((calculatedEnergy ?? energy).Value == 0)
-                {
-                    return newNutrients;
-                }
-
-                if (protein.HasValue)
-                {
-                    newNutrients.Add(Constants.Nutrition.ProteinEnergyId, (4 * protein.Value) / (calculatedEnergy ?? energy).Value * 100 );
-                }
-                if (carbs.HasValue)
-                {
-                    newNutrients.Add(Constants.Nutrition.CarbEnergyId, (4 * carbs.Value) / (calculatedEnergy ?? energy).Value * 100 );
-                }
-                if (fat.HasValue)
-                {
-                    newNutrients.Add(Constants.Nutrition.FatEnergyId, (9 * fat.Value) / (calculatedEnergy ?? energy).Value * 100);
-                }
-            }
-
+            var newNutrients = new Dictionary<int, decimal>(nutrients);
+            NutritionUtils.AppendComputedNutrients(newNutrients);
             return newNutrients;
         }
+
     }
 }
