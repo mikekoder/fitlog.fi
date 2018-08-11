@@ -72,12 +72,7 @@ namespace Crash.Fit.Web.Controllers
             meal = MergeBySameDefinition(meal);
             CalculateNutrients(meal);
 
-            var sw = Stopwatch.StartNew();
-
             nutritionRepository.UpdateMeal(meal);
-
-            sw.Stop();
-            Logger.LogDuration("nutritionRepository.UpdateMeal", sw.Elapsed);
 
             var result = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
             return Ok(result);
