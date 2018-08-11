@@ -932,6 +932,24 @@ WHERE Food.Ean=@ean AND (Food.UserId=@userId OR Food.UserId IS NULL) ORDER BY Na
             }
         }
 
+        public IEnumerable<DayNutrient> GetDailyNutrients(Guid userId, DateTimeOffset start, DateTimeOffset end)
+        {
+            var sql = @"
+SELECT M.Time, MN.NutrientId, MN.Amount 
+FROM Meal M
+JOIN MealNutrient MN ON MN.MealId=M.Id
+WHERE M.UserId=@userId AND M.Time >= @start AND M.Time <= @end";
+            using (var conn = CreateConnection())
+            {
+                var mealNutrients = conn.Query<MealNutrientRaw>(sql, new { userId, start, end });
+                return mealNutrients.GroupBy(d => d.Time.Date).Select(g => new DayNutrient
+                {
+                    Date = g.Key,
+                    Nutrients = g.ToDictionary(d => d.NutrientId, d => d.Amount)
+                }).ToArray();
+            }
+        }
+
         private class PortionRaw : Portion
         {
             public Guid FoodId { get; set; }
