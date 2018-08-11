@@ -181,7 +181,7 @@ namespace Crash.Fit.Web.Controllers
                 return BadRequest();
             }
 
-            return await TokenResult(user.Id);
+            return TokenResult(user.Id);
         }
         [HttpPut("login")]
         public async Task<IActionResult> UpdateLogin([FromBody]ChangeLoginRequest model)
@@ -237,7 +237,7 @@ namespace Crash.Fit.Web.Controllers
 
             InitProfile(user);
 
-            return await TokenResult(user.Id);
+            return TokenResult(user.Id);
         }
 
         private void InitProfile(User user)
@@ -481,7 +481,7 @@ namespace Crash.Fit.Web.Controllers
             {
                 refreshToken = _profileRepository.UpdateRefreshToken(user.Id);
             }
-            var jwtToken = await GetJwtSecurityToken(user.Id);
+            var jwtToken = GetJwtSecurityToken(user.Id);
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
             if (!string.IsNullOrWhiteSpace(returnUrl))
@@ -493,7 +493,7 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpGet("refresh-token")]
         [AllowAnonymous]
-        public async Task<IActionResult> RefreshAccessToken(string refreshToken)
+        public IActionResult RefreshAccessToken(string refreshToken)
         {
             var userId = _profileRepository.GetUserIdByRefreshToken(refreshToken);
             if (!userId.HasValue)
@@ -501,7 +501,7 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
 
-            return await TokenResult(userId.Value);
+            return TokenResult(userId.Value);
         }
         [HttpGet("token-login")]
         [AllowAnonymous]
@@ -549,20 +549,20 @@ namespace Crash.Fit.Web.Controllers
             {
                 refreshToken = _profileRepository.UpdateRefreshToken(user.Id);
             }
-            var jwtToken = await GetJwtSecurityToken(user.Id);
+            var jwtToken = GetJwtSecurityToken(user.Id);
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
-            return await TokenResult(user.Id);
+            return TokenResult(user.Id);
         }
 
-        private async Task<IActionResult> TokenResult(Guid userId)
+        private IActionResult TokenResult(Guid userId)
         {
             var refreshToken = _profileRepository.GetRefreshToken(userId);
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
                 refreshToken = _profileRepository.UpdateRefreshToken(userId);
             }
-            var jwtToken = await GetJwtSecurityToken(userId);
+            var jwtToken = GetJwtSecurityToken(userId);
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
 
@@ -574,7 +574,7 @@ namespace Crash.Fit.Web.Controllers
             });
         }
 
-        private async Task<JwtSecurityToken> GetJwtSecurityToken(Guid userId)
+        private JwtSecurityToken GetJwtSecurityToken(Guid userId)
         {
             var claims = new[] 
             {
