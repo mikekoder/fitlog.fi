@@ -22,6 +22,7 @@ namespace Crash.Fit.Nutrition
             foreach (var row in rows)
             {
                 table.Rows.Add(row.Id, row.MealId, index, row.FoodId, row.PortionId, row.Quantity, row.Weight);
+                index++;
             }
 
             return table;
