@@ -11,7 +11,7 @@ namespace Crash.Fit.Nutrition
 {
     public class NutritionRepository : RepositoryBase, INutritionRepository
     {
-        public NutritionRepository(DbProviderFactory dbFactory, string connectionString) : base(dbFactory, connectionString)
+        public NutritionRepository(string connectionString) : base(connectionString)
         {
         }
 

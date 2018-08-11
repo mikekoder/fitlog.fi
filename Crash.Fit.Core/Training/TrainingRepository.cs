@@ -10,7 +10,7 @@ namespace Crash.Fit.Training
 {
     public class TrainingRepository : RepositoryBase, ITrainingRepository
     {
-        public TrainingRepository(DbProviderFactory dbFactory, string connectionString) : base(dbFactory, connectionString)
+        public TrainingRepository(string connectionString) : base(connectionString)
         {
         }
 
@@ -117,7 +117,7 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                     }
                     tran.Commit();
                 }
-                catch(Exception ex)
+                catch
                 {
                     exercise.Id = Guid.Empty;
                     throw;
@@ -236,7 +236,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
 
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     routine.Id = Guid.Empty;
                     foreach (var workout in routine.Workouts)
@@ -301,7 +301,7 @@ SELECT * FROM RoutineExercise WHERE RoutineWorkoutId IN (SELECT Id FROM RoutineW
 
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     for(var i = 0; i < routine.Workouts.Length; i++)
                     {
@@ -441,7 +441,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                     }
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     workout.Id = Guid.Empty;
                     foreach (var set in workout.Sets ?? Enumerable.Empty<WorkoutSet>())
@@ -481,7 +481,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                     }), tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -563,7 +563,7 @@ WHERE TGE.TrainingGoalId IN (SELECT Id FROM TrainingGoal WHERE {filter}) ORDER B
                     }), tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -597,7 +597,7 @@ WHERE TGE.TrainingGoalId IN (SELECT Id FROM TrainingGoal WHERE {filter}) ORDER B
                     }), tran);
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
