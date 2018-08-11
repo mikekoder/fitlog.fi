@@ -262,6 +262,16 @@ export default {
             data: JSON.stringify(settings)
         });
     },
+    getNutrientHistory(start, end) {
+        var query = {};
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(this.baseUrl + 'nutrition/nutrients/history', query);
+    },
     // Meal rhythm
     getMealDefinitions() {
         return $.get(this.baseUrl + 'meals/definitions');

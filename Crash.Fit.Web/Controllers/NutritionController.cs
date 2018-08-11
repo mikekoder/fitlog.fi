@@ -152,6 +152,21 @@ namespace Crash.Fit.Web.Controllers
             return Ok(response);
         }
 
+        [HttpGet("nutrients/history")]
+        public IActionResult GetNutrientHistory(DateTimeOffset start, DateTimeOffset end)
+        {
+            var measures = nutritionRepository.GetDailyNutrients(CurrentUserId, start, end);
+
+            var response = AutoMapper.Mapper.Map<NutrientHistoryResponse[]>(measures);
+
+            foreach(var day in response)
+            {
+                NutritionUtils.AppendComputedNutrients(day.Nutrients);
+            }
+
+            return Ok(response);
+        }
+
         /*
         [HttpGet]
         [Route("daily-intakes")]

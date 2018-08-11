@@ -200,6 +200,9 @@ namespace Crash.Fit.Web
                         model.Max = temp;
                     }
                 });
+
+                m.CreateMap<DayNutrient, NutrientHistoryResponse>();
+
                 // Foods
                 m.CreateMap<FoodSearchResult, FoodSearchResultResponse>();
                 m.CreateMap<FoodSearchNutrientResult, FoodSearchNutrientResultResponse>();
