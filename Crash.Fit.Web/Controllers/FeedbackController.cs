@@ -50,7 +50,7 @@ namespace Crash.Fit.Web.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> Create([FromBody]FeedbackRequest model)
+        public IActionResult Create([FromBody]FeedbackRequest model)
         {
             if (!ModelState.IsValid)
             {
@@ -65,7 +65,7 @@ namespace Crash.Fit.Web.Controllers
             return Ok(result);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody]FeedbackRequest model)
+        public IActionResult Update(Guid id, [FromBody]FeedbackRequest model)
         {
             if (!ModelState.IsValid)
             {
@@ -89,14 +89,14 @@ namespace Crash.Fit.Web.Controllers
             return Ok(result);
         }
         [HttpGet("votes")]
-        public async Task<IActionResult> GetVotes()
+        public IActionResult GetVotes()
         {
             var votes = _feedbackRepository.GetVotes(CurrentUserId);
             return Ok(votes);
         }
 
         [HttpPost("{id}/vote")]
-        public async Task<IActionResult> Vote(Guid id)
+        public IActionResult Vote(Guid id)
         {
             if(_feedbackRepository.UserHasVoted(id, CurrentUserId))
             {

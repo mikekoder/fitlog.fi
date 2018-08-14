@@ -24,6 +24,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Crash.Fit.Measurements;
+using Crash.Fit.Training;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -180,7 +181,7 @@ namespace Crash.Fit.Web.Controllers
                 return BadRequest();
             }
 
-            return await TokenResult(user.Id);
+            return TokenResult(user.Id);
         }
         [HttpPut("login")]
         public async Task<IActionResult> UpdateLogin([FromBody]ChangeLoginRequest model)
@@ -236,7 +237,7 @@ namespace Crash.Fit.Web.Controllers
 
             InitProfile(user);
 
-            return await TokenResult(user.Id);
+            return TokenResult(user.Id);
         }
 
         private void InitProfile(User user)
@@ -247,54 +248,155 @@ namespace Crash.Fit.Web.Controllers
             };
             _profileRepository.SaveProfile(profile);
 
-            var mealDefinitions = new[]
+            
+            try
             {
-                new Nutrition.MealDefinition
+                var mealDefinitions = new[]
                 {
-                    UserId = user.Id,
-                    Name = "Aamiainen",
-                    Start = new TimeSpan(6,0,0),
-                    End = new TimeSpan(10,0,0)
-                },
-                new Nutrition.MealDefinition
+                    new Nutrition.MealDefinition
+                    {
+                        UserId = user.Id,
+                        Name = "Aamiainen",
+                        Start = new TimeSpan(6,0,0),
+                        End = new TimeSpan(10,0,0)
+                    },
+                    new Nutrition.MealDefinition
+                    {
+                        UserId = user.Id,
+                        Name = "Lounas",
+                        Start = new TimeSpan(10,0,0),
+                        End = new TimeSpan(14,0,0)
+                    },
+                    new Nutrition.MealDefinition
+                    {
+                        UserId = user.Id,
+                        Name = "Päivällinen",
+                        Start = new TimeSpan(14,0,0),
+                        End = new TimeSpan(19,0,0)
+                    },
+                    new Nutrition.MealDefinition
+                    {
+                        UserId = user.Id,
+                        Name = "Iltapala",
+                        Start = new TimeSpan(19,0,0),
+                        End = new TimeSpan(23,0,0)
+                    },
+                    new Nutrition.MealDefinition
+                    {
+                        UserId = user.Id,
+                        Name = "Välipalat",
+                        Start = null,
+                        End = null
+                    }
+                };
+                _nutritionRepository.SaveMealDefinitions(mealDefinitions);
+            
+                _nutritionRepository.SaveHomeNutrients(user.Id, new[] 
                 {
-                    UserId = user.Id,
-                    Name = "Lounas",
-                    Start = new TimeSpan(10,0,0),
-                    End = new TimeSpan(14,0,0)
-                },
-                new Nutrition.MealDefinition
-                {
-                    UserId = user.Id,
-                    Name = "Päivällinen",
-                    Start = new TimeSpan(14,0,0),
-                    End = new TimeSpan(19,0,0)
-                },
-                new Nutrition.MealDefinition
-                {
-                    UserId = user.Id,
-                    Name = "Iltapala",
-                    Start = new TimeSpan(19,0,0),
-                    End = new TimeSpan(23,0,0)
-                },
-                new Nutrition.MealDefinition
-                {
-                    UserId = user.Id,
-                    Name = "Välipalat",
-                    Start = null,
-                    End = null
-                }
-            };
-            _nutritionRepository.SaveMealDefinitions(mealDefinitions);
+                    Constants.Nutrition.EnergyDistributionId,
+                    Constants.Nutrition.EnergyKcalId,
+                    Constants.Nutrition.ProteinId,
+                    Constants.Nutrition.CarbId,
+                    Constants.Nutrition.FatId
+                });
 
-            _nutritionRepository.SaveHomeNutrients(user.Id, new[] 
-            {
-                Constants.Nutrition.EnergyDistributionId,
-                Constants.Nutrition.EnergyKcalId,
-                Constants.Nutrition.ProteinId,
-                Constants.Nutrition.CarbId,
-                Constants.Nutrition.FatId
-            });
+                /*
+                var exercises = new[]
+                {
+                    new Exercise
+                    {
+                        UserId = user.Id,
+                        Name = "Kyykky",
+                        PercentageBW = 70m
+                    },
+                    new Exercise
+                    {
+                        UserId = user.Id,
+                        Name="Penkkipunnerrus",
+                        PercentageBW = 0m
+                    },
+                    new Exercise
+                    {
+                        UserId = user.Id,
+                        Name="Leuanveto",
+                        PercentageBW = 95m
+                    },
+                    new Exercise
+                    {
+                        UserId = user.Id,
+                        Name="Pystypunnerrus",
+                        PercentageBW = 0
+                    },
+                    new Exercise
+                    {
+                        UserId = user.Id,
+                        Name="Hauiskääntö mutkatangolla",
+                        PercentageBW = 0
+                    },
+                    new Exercise
+                    {
+                        UserId = user.Id,
+                        Name="Vatsalihasliike",
+                        PercentageBW = 0
+                    },
+                };
+
+                var goldenSix = new RoutineDetails
+                {
+                    UserId = user.Id,
+                    Name = "Kultainen kuusikko",
+                    Active = true,
+                    Workouts = new[]
+                    {
+                        new RoutineWorkout
+                        {
+                            Name = "Treeni",
+                            Frequency = 3m,
+                            Exercises = new[]
+                            {
+                                new RoutineExercise
+                                {
+                                    ExerciseId = exercises[0].Id,
+                                    Sets = 4,
+                                    Reps = 10
+                                },
+                                new RoutineExercise
+                                {
+                                    ExerciseId = exercises[1].Id,
+                                    Sets = 3,
+                                    Reps = 10
+                                },
+                                new RoutineExercise
+                                {
+                                    ExerciseId = exercises[2].Id,
+                                    Sets = 3,
+                                    Reps = 10
+                                },
+                                new RoutineExercise
+                                {
+                                    ExerciseId = exercises[3].Id,
+                                    Sets = 4,
+                                    Reps = 10
+                                },
+                                new RoutineExercise
+                                {
+                                    ExerciseId = exercises[4].Id,
+                                    Sets = 3,
+                                    Reps = 10
+                                },
+                                new RoutineExercise
+                                {
+                                    ExerciseId = exercises[5].Id,
+                                    Sets = 3,
+                                    Reps = 10
+                                }
+                            }
+                        }
+                    }
+                };
+                */
+            }
+            catch { }
         }
 
         [HttpPost("logout")]
@@ -379,7 +481,7 @@ namespace Crash.Fit.Web.Controllers
             {
                 refreshToken = _profileRepository.UpdateRefreshToken(user.Id);
             }
-            var jwtToken = await GetJwtSecurityToken(user.Id);
+            var jwtToken = GetJwtSecurityToken(user.Id);
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
             if (!string.IsNullOrWhiteSpace(returnUrl))
@@ -391,7 +493,7 @@ namespace Crash.Fit.Web.Controllers
         }
         [HttpGet("refresh-token")]
         [AllowAnonymous]
-        public async Task<IActionResult> RefreshAccessToken(string refreshToken)
+        public IActionResult RefreshAccessToken(string refreshToken)
         {
             var userId = _profileRepository.GetUserIdByRefreshToken(refreshToken);
             if (!userId.HasValue)
@@ -399,7 +501,7 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
 
-            return await TokenResult(userId.Value);
+            return TokenResult(userId.Value);
         }
         [HttpGet("token-login")]
         [AllowAnonymous]
@@ -447,20 +549,20 @@ namespace Crash.Fit.Web.Controllers
             {
                 refreshToken = _profileRepository.UpdateRefreshToken(user.Id);
             }
-            var jwtToken = await GetJwtSecurityToken(user.Id);
+            var jwtToken = GetJwtSecurityToken(user.Id);
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
-            return await TokenResult(user.Id);
+            return TokenResult(user.Id);
         }
 
-        private async Task<IActionResult> TokenResult(Guid userId)
+        private IActionResult TokenResult(Guid userId)
         {
             var refreshToken = _profileRepository.GetRefreshToken(userId);
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
                 refreshToken = _profileRepository.UpdateRefreshToken(userId);
             }
-            var jwtToken = await GetJwtSecurityToken(userId);
+            var jwtToken = GetJwtSecurityToken(userId);
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
 
@@ -472,7 +574,7 @@ namespace Crash.Fit.Web.Controllers
             });
         }
 
-        private async Task<JwtSecurityToken> GetJwtSecurityToken(Guid userId)
+        private JwtSecurityToken GetJwtSecurityToken(Guid userId)
         {
             var claims = new[] 
             {

@@ -9,7 +9,7 @@ namespace Crash.Fit.Measurements
 {
     public class MeasurementRepository : RepositoryBase, IMeasurementRepository
     {
-        public MeasurementRepository(DbProviderFactory dbFactory, string connectionString) : base(dbFactory, connectionString)
+        public MeasurementRepository(string connectionString) : base(connectionString)
         {
         }
         public IEnumerable<MeasureSummary> GetMeasures(Guid userId)

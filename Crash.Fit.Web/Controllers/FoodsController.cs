@@ -18,7 +18,7 @@ namespace Crash.Fit.Web.Controllers
     public class FoodsController : ApiControllerBase
     {
         private readonly INutritionRepository nutritionRepository;
-        public FoodsController(INutritionRepository nutritionRepository, ILogRepository logger):base(logger)
+        public FoodsController(INutritionRepository nutritionRepository, ILogRepository logger) : base(logger)
         {
             this.nutritionRepository = nutritionRepository;
         }
@@ -38,6 +38,38 @@ namespace Crash.Fit.Web.Controllers
             if (EanUtils.IsAllNumbers(name))
             {
                 foods = nutritionRepository.SearchFoodsByEan(name, CurrentUserId);
+                if (!foods.Any())
+                {
+                    var extFood = SearchExternalFood(name);
+                    if (extFood != null)
+                    {
+                        var newFood = new FoodDetails
+                        {
+                            UserId = CurrentUserId,
+                            Ean = name,
+                            Manufacturer = extFood.Manufacturer,
+                            Name = extFood.Name,
+                            Nutrients = extFood.Nutrients.Select(n => new FoodNutrientAmount
+                            {
+                                NutrientId = n.NutrientId,
+                                Amount = n.Amount
+                            }).ToArray()
+                        };
+
+                        nutritionRepository.CreateFood(newFood);
+                        foods = new[]
+                        {
+                            new FoodSearchResult
+                            {
+                                Created = newFood.Created,
+                                Ean = newFood.Ean,
+                                Manufacturer = newFood.Manufacturer,
+                                Name = newFood.Name,
+                                UserId = newFood.UserId
+                            }
+                        };
+                    }
+                }
             }
             else
             {
@@ -59,97 +91,25 @@ namespace Crash.Fit.Web.Controllers
                 return NoContent();
             }
 
-            if ( EanUtils.IsInternalEan13(ean))
+            if (EanUtils.IsInternalEan13(ean))
             {
                 ean = EanUtils.NormalizeInternalEan13(ean);
             }
 
-            var foodinClient = new FoodinClient("https://www.foodie.fi");
-            var entry = foodinClient.GetEntry(ean);
-            if(entry != null)
+            var response = SearchExternalFood(ean);
+            if (response != null)
             {
-                var nutrients = new List<FoodNutrientAmountResponse>();
-                if (entry.Carbohydrate.HasValue)
-                {
-                    nutrients.Add(new FoodNutrientAmountResponse
-                    {
-                        NutrientId = Constants.Nutrition.CarbId,
-                        Amount = entry.Carbohydrate.Value
-                    });
-                }
-                if (entry.Fat.HasValue)
-                {
-                    nutrients.Add(new FoodNutrientAmountResponse
-                    {
-                        NutrientId = Constants.Nutrition.FatId,
-                        Amount = entry.Fat.Value
-                    });
-                }
-                if (entry.FatSaturated.HasValue)
-                {
-                    nutrients.Add(new FoodNutrientAmountResponse
-                    {
-                        NutrientId = Constants.Nutrition.FatSaturatedId,
-                        Amount = entry.FatSaturated.Value
-                    });
-                }
-                if (entry.Fiber.HasValue)
-                {
-                    nutrients.Add(new FoodNutrientAmountResponse
-                    {
-                        NutrientId = Constants.Nutrition.FiberId,
-                        Amount = entry.Fiber.Value
-                    });
-                }
-                if (entry.Kcal.HasValue)
-                {
-                    nutrients.Add(new FoodNutrientAmountResponse
-                    {
-                        NutrientId = Constants.Nutrition.EnergyKcalId,
-                        Amount = entry.Kcal.Value
-                    });
-                }
-                if (entry.Kj.HasValue)
-                {
-                    nutrients.Add(new FoodNutrientAmountResponse
-                    {
-                        NutrientId = Constants.Nutrition.EnergyKjId,
-                        Amount = entry.Kj.Value
-                    });
-                }
-                if (entry.Protein.HasValue)
-                {
-                    nutrients.Add(new FoodNutrientAmountResponse
-                    {
-                        NutrientId = Constants.Nutrition.ProteinId,
-                        Amount = entry.Protein.Value
-                    });
-                }
-                if (entry.Sugar.HasValue)
-                {
-                    nutrients.Add(new FoodNutrientAmountResponse
-                    {
-                        NutrientId = Constants.Nutrition.SugarId,
-                        Amount = entry.Sugar.Value
-                    });
-                }
-                var response = new FoodExternalDetailsResponse
-                {
-                    Ean = entry.Ean,
-                    Name = entry.Name,
-                    Manufacturer = entry.Subname,
-                    Nutrients = nutrients.ToArray()
-                };
                 return Ok(response);
             }
             return NoContent();
         }
+
         [HttpGet("search/most-nutrients")]
         [AllowAnonymous]
         public IActionResult SearchMostNutrients(int nutrientId, int? count)
         {
             var foods = nutritionRepository.SearchFoodsTopNutrients(nutrientId, CurrentUserId, count ?? 50);
- 
+
             var response = AutoMapper.Mapper.Map<FoodSearchNutrientResultResponse[]>(foods);
             return Ok(response);
         }
@@ -182,7 +142,7 @@ namespace Crash.Fit.Web.Controllers
         public IActionResult Details(Guid id)
         {
             var food = nutritionRepository.GetFood(id);
-            if(food == null || (food.UserId != null && food.UserId != CurrentUserId))
+            if (food == null || (food.UserId != null && food.UserId != CurrentUserId))
             {
                 return NotFound();
             }
@@ -224,7 +184,7 @@ namespace Crash.Fit.Web.Controllers
         public IActionResult Delete(Guid id)
         {
             var food = nutritionRepository.GetFood(id);
-            if(food.UserId != CurrentUserId)
+            if (food.UserId != CurrentUserId)
             {
                 return Unauthorized();
             }
@@ -249,12 +209,96 @@ namespace Crash.Fit.Web.Controllers
                 food.NutrientPortionId = nutrientPortion.Id;
 
                 var portionWeight = nutrientPortion.Weight;
-                foreach(var nutrientAmount in food.Nutrients)
+                foreach (var nutrientAmount in food.Nutrients)
                 {
                     nutrientAmount.PortionAmount = nutrientAmount.Amount;
                     nutrientAmount.Amount = nutrientAmount.Amount * (100m / portionWeight);
                 }
             }
+        }
+
+        private FoodExternalDetailsResponse SearchExternalFood(string ean)
+        {
+            var foodinClient = new FoodinClient("https://www.foodie.fi");
+            var entry = foodinClient.GetEntry(ean);
+            if (entry == null)
+            {
+                return null;
+            }
+
+            var nutrients = new List<FoodNutrientAmountResponse>();
+            if (entry.Carbohydrate.HasValue)
+            {
+                nutrients.Add(new FoodNutrientAmountResponse
+                {
+                    NutrientId = Constants.Nutrition.CarbId,
+                    Amount = entry.Carbohydrate.Value
+                });
+            }
+            if (entry.Fat.HasValue)
+            {
+                nutrients.Add(new FoodNutrientAmountResponse
+                {
+                    NutrientId = Constants.Nutrition.FatId,
+                    Amount = entry.Fat.Value
+                });
+            }
+            if (entry.FatSaturated.HasValue)
+            {
+                nutrients.Add(new FoodNutrientAmountResponse
+                {
+                    NutrientId = Constants.Nutrition.FatSaturatedId,
+                    Amount = entry.FatSaturated.Value
+                });
+            }
+            if (entry.Fiber.HasValue)
+            {
+                nutrients.Add(new FoodNutrientAmountResponse
+                {
+                    NutrientId = Constants.Nutrition.FiberId,
+                    Amount = entry.Fiber.Value
+                });
+            }
+            if (entry.Kcal.HasValue)
+            {
+                nutrients.Add(new FoodNutrientAmountResponse
+                {
+                    NutrientId = Constants.Nutrition.EnergyKcalId,
+                    Amount = entry.Kcal.Value
+                });
+            }
+            if (entry.Kj.HasValue)
+            {
+                nutrients.Add(new FoodNutrientAmountResponse
+                {
+                    NutrientId = Constants.Nutrition.EnergyKjId,
+                    Amount = entry.Kj.Value
+                });
+            }
+            if (entry.Protein.HasValue)
+            {
+                nutrients.Add(new FoodNutrientAmountResponse
+                {
+                    NutrientId = Constants.Nutrition.ProteinId,
+                    Amount = entry.Protein.Value
+                });
+            }
+            if (entry.Sugar.HasValue)
+            {
+                nutrients.Add(new FoodNutrientAmountResponse
+                {
+                    NutrientId = Constants.Nutrition.SugarId,
+                    Amount = entry.Sugar.Value
+                });
+            }
+            return new FoodExternalDetailsResponse
+            {
+                Ean = entry.Ean,
+                Name = entry.Name,
+                Manufacturer = entry.Subname,
+                Nutrients = nutrients.ToArray()
+            };
+
         }
     }
 }

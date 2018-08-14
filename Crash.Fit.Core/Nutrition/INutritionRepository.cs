@@ -31,6 +31,9 @@ namespace Crash.Fit.Nutrition
         void UpdateMeal(MealDetails meal);
         void DeleteMeal(Meal meal);
         void RestoreMeal(Guid id, out MealDetails meal);
+        void CreateMealRow(MealRow row, int index);
+        void UpdateMealRow(MealRow row);
+        void DeleteMealRow(MealRow row);
 
         void SaveNutrientSettings(IEnumerable<NutrientSetting> settings);
         IEnumerable<NutritionGoalDetails> GetNutritionGoals(Guid userId);
@@ -46,6 +49,6 @@ namespace Crash.Fit.Nutrition
         IEnumerable<MealDefinition> GetMealDefinitions(Guid userId);
         void SaveHomeNutrients(Guid userId, int[] nutrientIds);
         IEnumerable<FoodSearchResult> SearchMostUsedFoods(Guid userId, int count);
-
+        IEnumerable<DayNutrient> GetDailyNutrients(Guid userId, DateTimeOffset start, DateTimeOffset end);
     }
 }
