@@ -593,9 +593,9 @@ export default {
                 state.energyExpendituresEnd = end;
             }
         },
-        [constants.SAVE_ENERGY_EXPENDITURE_SUCCESS](state, { id, energyExpenditure }) {
-            if (id) {
-                var old = state.energyExpenditures.find(x => x.id == id);
+        [constants.SAVE_ENERGY_EXPENDITURE_SUCCESS](state, { energyExpenditure }) {
+            if (energyExpenditure.id) {
+                var old = state.energyExpenditures.find(x => x.id == energyExpenditure.id);
                 if (old) {
                     deleteEnergyExpenditure(old, state);
                 }
