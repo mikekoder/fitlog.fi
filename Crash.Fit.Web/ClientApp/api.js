@@ -519,6 +519,12 @@ export default {
             data: JSON.stringify(energyExpenditure)
         });
     },
+    deleteEnergyExpenditure(id){
+        return $.ajax({
+            url: this.baseUrl + 'activities/energyexpenditures/' + id,
+            type: 'DELETE'
+        });
+    },
     listActivityPresets() {
         return $.get(this.baseUrl + 'activities/presets');
     },
