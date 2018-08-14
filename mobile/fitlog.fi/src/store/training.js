@@ -276,10 +276,12 @@ export default {
         },
         [constants.ACTIVATE_ROUTINE]({ commit, state }, { routine, success, failure }) {
             api.activateRoutine(routine.id).then(() => {
-                commit(constants.ACTIVATE_ROUTINE_SUCCESS, { routine })
-                if (success) {
-                    success();
-                }
+                api.getRoutine(routine.id).then(routineDetails => {
+                    commit(constants.ACTIVATE_ROUTINE_SUCCESS, { routine: routineDetails })
+                    if (success) {
+                        success();
+                    }
+                });
             }).fail(() => {
                 if (failure) {
                     failure();
@@ -460,7 +462,7 @@ export default {
             state.routinesLoaded = false;
             state.routines = [];
             state.activeRoutineLoaded = false;
-            state.activateRoutine = undefined;
+            state.activeRoutine = undefined;
             state.workoutsStart = undefined;
             state.workoutsEnd = undefined;
             state.workouts = [];
@@ -468,7 +470,7 @@ export default {
             state.workoutsDisplayStart = undefined;
             state.workoutsDisplayEnd = undefined;
             state.activeTrainingGoalLoaded = false;
-            state.activateTrainingGoal = undefined;
+            state.activeTrainingGoal = undefined;
             state.trainingGoalsLoaded = false;
             state.trainingGoals = [];
             state.activitiesLoaded = false;
@@ -575,7 +577,7 @@ export default {
             state.routines.forEach(r => {
                 if (r.id === routine.id) {
                     r.active = true;
-                    state.activeRoutine = r;
+                    state.activeRoutine = routine;
                     state.activeRoutineLoaded = true;
                 }
                 else {
@@ -635,9 +637,9 @@ export default {
                 state.energyExpendituresEnd = end;
             }
         },
-        [constants.SAVE_ENERGY_EXPENDITURE_SUCCESS](state, { id, energyExpenditure }) {
-            if (id) {
-                var old = state.energyExpenditures.find(x => x.id == id);
+        [constants.SAVE_ENERGY_EXPENDITURE_SUCCESS](state, { energyExpenditure }) {
+            if (energyExpenditure.id) {
+                var old = state.energyExpenditures.find(x => x.id == energyExpenditure.id);
                 if (old) {
                     deleteEnergyExpenditure(old, state);
                 }

@@ -9,7 +9,7 @@ namespace Crash.Fit.Profile
 {
     public class ProfileRepository : RepositoryBase, IProfileRepository
     {
-        public ProfileRepository(DbProviderFactory dbFactory, string connectionString) : base(dbFactory, connectionString)
+        public ProfileRepository(string connectionString) : base(connectionString)
         {
         }
         public Profile GetProfile(Guid userId)
@@ -41,7 +41,7 @@ WHEN NOT MATCHED THEN
 
                     tran.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;
@@ -70,7 +70,7 @@ WHEN NOT MATCHED THEN
                     tran.Commit();
                     return token;
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     throw;

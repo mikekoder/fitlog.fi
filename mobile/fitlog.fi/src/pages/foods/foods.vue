@@ -1,11 +1,18 @@
 <template>
+<layout >
+
+  <span slot="title">{{ $t('foods') }}</span>
+
+  <div slot="toolbar">
+    <q-btn flat icon="fa-plus" @click="createFood" :label="$t('food')"></q-btn>
+  </div>
   <q-page class="q-pa-sm">
     <q-tabs v-model="tab">
       <q-tab slot="title" name="tab-1" :label="$t('own')" />
       <q-tab slot="title" name="tab-2" :label="$t('search')" />
       <q-tab slot="title" name="tab-3" :label="$t('top100')" />
       
-      <q-scroll-area style="height: 75vh;">
+      <q-scroll-area style="height: 85vh;">
           <q-tab-pane name="tab-1">
             <q-list v-if="ownFoods.length > 0">
                 <q-item v-for="(food,index) in ownFoods" @click.native="showFood(food)" :key="index" :separator="true">{{ food.name }}<span v-if="food.manufacturer" class="text-weight-light">&nbsp;({{ food.manufacturer }})</span></q-item>
@@ -40,11 +47,8 @@
       </q-scroll-area>
       
     </q-tabs>
-      
-    <div class="row pad">
-      <q-btn color="primary" glossy icon="fa-plus" @click="createFood" :label="$t('food')"></q-btn>
-    </div>
   </q-page>
+  </layout>
 </template>
 
 <script src="./foods.js">

@@ -133,31 +133,31 @@ namespace Crash.Fit.Web
 
             services.AddTransient<INutritionRepository>(s => 
             {
-                return new NutritionRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+                return new NutritionRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
             services.AddTransient<ITrainingRepository>(s =>
             {
-                return new TrainingRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+                return new TrainingRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
             services.AddTransient<IMeasurementRepository>(s =>
             {
-                return new MeasurementRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+                return new MeasurementRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
             services.AddTransient<IProfileRepository>(s =>
             {
-                return new ProfileRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+                return new ProfileRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
             services.AddTransient<ILogRepository>(s =>
             {
-                return new LogRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+                return new LogRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
             services.AddTransient<IFeedbackRepository>(s =>
             {
-                return new FeedbackRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+                return new FeedbackRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
             services.AddTransient<IActivityRepository>(s =>
             {
-                return new ActivityRepository(SqlClientFactory.Instance, Configuration.GetConnectionString("Crash.Fit"));
+                return new ActivityRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
             services.AddSingleton<IConfigurationRoot>(Configuration);
             AutoMapper.Mapper.Initialize(m => {
@@ -200,6 +200,9 @@ namespace Crash.Fit.Web
                         model.Max = temp;
                     }
                 });
+
+                m.CreateMap<DayNutrient, NutrientHistoryResponse>();
+
                 // Foods
                 m.CreateMap<FoodSearchResult, FoodSearchResultResponse>();
                 m.CreateMap<FoodSearchNutrientResult, FoodSearchNutrientResultResponse>();

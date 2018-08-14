@@ -1,9 +1,17 @@
 ﻿<template>
+<layout>
+
+  <span slot="title">{{ $t('activityLevels') }}</span>
+
+  <div slot="toolbar">
+      <q-btn flat @click="showHelp" icon="help"></q-btn>
+      <q-btn flat icon="save" @click="save" :disabled="!canSave"></q-btn>
+  </div>
+
     <q-page>
         <q-tabs v-model="tab">
             <q-tab slot="title" v-for="(preset, p_index) in presets" :name="'tab-' + p_index" :label="preset.name" :key="p_index" />
             <q-tab slot="title" :name="'tab-' + presets.length" :label="$t('preset')" icon="fa-plus" @click="addPreset" />
-            <q-scroll-area style="height: 72vh;">
                 <q-tab-pane v-for="(preset, p_index) in presets" :name="'tab-' + p_index" :key="p_index">
                     <div class="row">
                         <div class="col-10">
@@ -95,17 +103,11 @@
                         </div>
                     </div>
                 </q-tab-pane>
-            </q-scroll-area>
         </q-tabs>
-        <div class="row q-pa-sm">
-            <!--
-            <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
-            -->
-            <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
-        </div>
-
         <activity-levels-help ref="help" />
     </q-page>
+    </layout>
+</layout>
 </template>
 
 <script src="./activity-levels.js">

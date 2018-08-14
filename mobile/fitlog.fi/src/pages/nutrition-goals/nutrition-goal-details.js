@@ -6,12 +6,13 @@ import nutrientsMixin from '../../mixins/nutrients'
 import nutrientGroupsMixin from '../../mixins/nutrient-groups'
 import mealDefinitionsMixin from '../../mixins/meal-definitions'
 import Help from './nutrition-goal-help.vue'
+import PageMixin from '../../mixins/page'
 
 export default {
     components:{
         'nutrition-goal-help': Help
     },
-    mixins:[nutrientsMixin, nutrientGroupsMixin, mealDefinitionsMixin],
+    mixins:[nutrientsMixin, nutrientGroupsMixin, mealDefinitionsMixin,PageMixin],
     data () {
         return {
             tab: 'tab-0',

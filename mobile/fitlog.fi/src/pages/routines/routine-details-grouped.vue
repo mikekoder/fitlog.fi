@@ -1,4 +1,12 @@
 <template>
+<layout >
+
+  <span slot="title">{{ $t('routine') }}</span>
+
+  <div slot="toolbar">
+    <q-btn flat icon="help" @click="showHelp"></q-btn>
+    <q-btn flat icon="save" @click="save" :disabled="!canSave"></q-btn>
+  </div>
   <q-page class="q-pa-sm">
     <div class="row q-mx-sm q-mb-sm">
         <div class="col-8">
@@ -10,11 +18,13 @@
     <q-tabs v-model="tab">
       <q-tab slot="title" v-for="(workout, t_index) in workouts" :name="'tab-' + t_index" :label="workout.name" :key="t_index" />
       <q-tab slot="title" :name="'tab-' + workouts.length" :label="$t('workout')" icon="fa-plus" @click="addWorkout" />
-      <q-scroll-area style="height: 64vh;">
           <q-tab-pane v-for="(workout, w_index) in workouts" :name="'tab-' + w_index" :key="w_index">
             <div class="row q-mx-md">
-                <div class="col-10">
+                <div class="col-6">
                     <q-input type="text" v-model="workout.name" :float-label="$t('name')" />
+                </div>
+                 <div class="col-4 q-pl-sm">
+                     <q-select v-model="workout.frequency" :options="frequencyPresets" :float-label="$t('frequency')"></q-select>
                 </div>
                 <div class="col-2">
                     <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
@@ -80,15 +90,10 @@
 
             </div>  
           </q-tab-pane>
-      </q-scroll-area>
-      
     </q-tabs>
-    <div class="row">
-        <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
-        <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
-    </div>
     <routine-help ref="help" />
   </q-page>
+  </layout>
 </template>
 
 <script src="./routine-details-grouped.js">

@@ -1,7 +1,9 @@
 import constants from '../../store/constants'
 import api from '../../api'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
     data () {
         return {
             measures: []

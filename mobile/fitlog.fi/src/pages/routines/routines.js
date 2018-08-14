@@ -1,8 +1,10 @@
 import constants from '../../store/constants'
 import api from '../../api'
 import utils from '../../utils'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
   data () {
     return {
         selectedRoutine: null
@@ -42,7 +44,43 @@ methods: {
                 self.notifyError(self.$t('deleteFailed'));
             }
         });
-    }
+    },
+    clickRoutine(routine){
+        var self = this;
+        this.$q.actionSheet({
+          title: routine.name,
+          grid: true,
+          actions: [
+            {
+              label: self.$t('edit'),
+              icon: 'fa-edit',
+              handler: () => {
+                self.showRoutine(routine);
+              }
+            },
+            {
+                label: self.$t('activate'),
+                icon: 'fa-check',
+                handler: () => {
+                  self.activate(routine);
+                }
+            },
+            {
+              label: self.$t('delete'),
+              icon: 'fa-trash',
+              handler: () => {
+                self.deleteRoutine(routine);
+              }
+            }
+          ],
+          dismiss: {
+              label: self.$t('cancel'),
+              handler: () => {
+                  
+              }
+          }
+        });
+      }
 },
 created() {
 

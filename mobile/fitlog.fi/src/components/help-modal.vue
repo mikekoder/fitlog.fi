@@ -1,13 +1,11 @@
 <template>
     <q-modal v-model="visible" maximized>
-        <div class="row q-pa-md  q-display-1">
-            <div class="col-10 q-pt-sm">
+        <q-toolbar color="tertiary" glossy>
+            <q-toolbar-title>
                 {{ $t('help.title') }}
-            </div>
-            <div class="col-2 q-pr-md">
-                <q-btn flat size="lg" icon="close" @click="close" />
-            </div>
-        </div>
+            </q-toolbar-title>
+            <q-btn flat icon="close" @click="close" />
+        </q-toolbar>
         <div class="row q-pa-md">
             <div class="col">
                 <slot></slot>

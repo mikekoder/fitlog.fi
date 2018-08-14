@@ -1,4 +1,11 @@
 <template>
+<layout >
+
+  <span slot="title">{{ $t('progress') }}</span>
+
+  <div slot="toolbar">
+    <q-btn flat icon="help" @click="showHelp"></q-btn>
+  </div>
   <q-page class="q-pa-sm">
     <div class="row">
       <div class="col">
@@ -82,6 +89,7 @@
     </div>
     <exercise-progress-help ref="help" />
   </q-page>
+  </layout>
 </template>
 
 <script src="./exercise-progress.js">

@@ -9,7 +9,7 @@ namespace Crash.Fit.Feedback
 {
     public class FeedbackRepository : RepositoryBase, IFeedbackRepository
     {
-        public FeedbackRepository(DbProviderFactory dbFactory, string connectionString) : base(dbFactory, connectionString)
+        public FeedbackRepository(string connectionString) : base(connectionString)
         {
         }
         public IEnumerable<FeedbackSummary> GetFeedback(string type)
@@ -37,7 +37,7 @@ WHERE Feedback.Type=@type";
                     tran.Commit();
                     return true;
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
                     feedback.Id = Guid.Empty;
