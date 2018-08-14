@@ -1,8 +1,10 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
 import Help from './exercise-help'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
     components: {
         'exercise-help': Help
     },

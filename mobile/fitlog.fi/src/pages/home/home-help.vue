@@ -55,7 +55,7 @@
 import HelpModal from '../../components/help-modal.vue'
 import HelpMixin from '../../mixins/help-modal'
 export default {
-    name: 'activity-levels-help',
+    name: 'home-help',
     components: { HelpModal },
     mixins:[ HelpMixin ]
 }

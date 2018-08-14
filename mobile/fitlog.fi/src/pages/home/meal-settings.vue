@@ -1,24 +1,27 @@
 <template>
     <q-modal ref="modal">
-        <div class="row q-ma-sm">
-            {{ $t('nutrientsToShow')}}
-        </div>
+        <q-toolbar color="tertiary" glossy>
+            <q-toolbar-title>
+                {{ $t('nutrientsToShow')}}
+            </q-toolbar-title>
+        </q-toolbar>
+
         <div class="row">
-<q-list>
-            <q-item v-for="(id,index) in selectedNutrients">
-                <q-item-main>
-                    <select v-model="selectedNutrients[index]">
-                        <option v-bind:value="undefined"></option>
-                        <template v-for="group in nutrientGroups">
-                            <option disabled>{{ group.name }}</option>
-                            <option v-for="nutrient in group.nutrients" v-bind:value="nutrient.id">
-                            {{ nutrient.name }} ({{ formatUnit(nutrient.unit) }})
-                            </option>
-                        </template>
-                    </select>
-                </q-item-main>
-            </q-item>
-        </q-list>
+            <q-list>
+                <q-item v-for="(id,index) in selectedNutrients">
+                    <q-item-main>
+                        <select v-model="selectedNutrients[index]">
+                            <option v-bind:value="undefined"></option>
+                            <template v-for="group in nutrientGroups">
+                                <option disabled>{{ group.name }}</option>
+                                <option v-for="nutrient in group.nutrients" v-bind:value="nutrient.id">
+                                {{ nutrient.name }} ({{ formatUnit(nutrient.unit) }})
+                                </option>
+                            </template>
+                        </select>
+                    </q-item-main>
+                </q-item>
+            </q-list>
         </div>
         
         <div class="row q-ma-sm">

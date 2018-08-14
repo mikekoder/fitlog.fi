@@ -9,7 +9,7 @@ namespace Crash.Fit.Logging
 {
     public class LogRepository : RepositoryBase, ILogRepository
     {
-        public LogRepository(DbProviderFactory dbFactory, string connectionString) : base(dbFactory,connectionString)
+        public LogRepository(string connectionString) : base(connectionString)
         {
         }
         public void LogException(Guid userId, string requestMethod, string requestPath, string requestBody, Exception ex)

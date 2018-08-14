@@ -1,6 +1,8 @@
 import constants from '../../store/constants'
+import PageMixin from '../../mixins/page'
 
 export default {
+  mixins: [PageMixin],
   data () {
     return {
       tab: 'tab-1',

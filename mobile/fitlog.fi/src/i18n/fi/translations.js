@@ -68,6 +68,7 @@
     deleteAccount: 'Poista tili',
     deleteFailed: 'Poistaminen epäonnistui',
     deleteSelectedPeriod: 'Poista valittu ajanjakso',
+    deleteSuccessful: 'Poistaminen onnistui',
     description: 'Kuvaus',
     details: 'Yksityiskohdat',
     diary: 'Päiväkirja',
@@ -197,6 +198,7 @@
     nutrients: 'Ravintoaineet',
     nutrientsToShow: 'Näytettävät ravintoaineet',
     nutrition: 'Ravinto',
+    nutritionGoal: 'Ravintotavoite',
     nutritionGoals: 'Ravintotavoitteet',
     nutritionGoalsInfo: '',
     october: 'Lokakuu',
@@ -257,6 +259,7 @@
     sets: 'Sarjat',
     sleep: 'Uni',
     show: 'Näytä',
+    showWorkout: 'Näytä treeni',
     snacks: 'Välipalat',
     starts: 'Alkaa',
     summary: 'Yhteenveto',
@@ -357,6 +360,7 @@
         },
         routine: {
             intro: 'Ohjelma koostuu yhdestä tai useammasta treenistä. Treenikertaa kirjatessa voi valita mitä ohjelman treeniä se vastaa ja liikkeet/sarjat/painot tulevat valmiiksi.',
+            frequency: 'Kuinka usein tavoittelet tekeväsi ko. treenin. Käytetään ohjelman toteutumisen seurantaan (tulossa oleva toiminnallisuus).',
             load: '% maksimipainoista. Kun tämä on syötetty ja maksimipainot tiedossa, treeniin lasketaan oikeat painot valmiiksi.'
         },
         title: 'Ohjeet',

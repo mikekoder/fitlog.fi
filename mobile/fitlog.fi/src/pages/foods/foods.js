@@ -1,9 +1,10 @@
 import constants from '../../store/constants'
 import api from '../../api'
 import nutrientsMixin from '../../mixins/nutrients'
+import PageMixin from '../../mixins/page'
 
 export default {
-  mixins:[nutrientsMixin],
+  mixins:[nutrientsMixin, PageMixin],
   data () {
     return {
       tab: 'tab-1',

@@ -1,4 +1,9 @@
 <template>
+<layout >
+
+  <span slot="title">{{ $t('login') }}</span>
+
+  <div slot="toolbar"></div>
   <q-page class="q-pa-sm">
     <div class="q-tab-pane">
       <q-input v-model="username" type="email" :float-label="$t('username')+'/' + $t('email')" />
@@ -22,6 +27,7 @@
       {{ debugInfo }}
     </div>
   </q-page>
+  </layout>
 </template>
 
 <script>
@@ -29,8 +35,10 @@ import { openURL } from 'quasar'
 import config from '../config'
 import constants from '../store/constants'
 import api from '../api'
+import PageMixin from '../mixins/page'
 
 export default {
+  mixins: [PageMixin],
   data () {
     return {
       url: undefined,

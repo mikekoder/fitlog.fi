@@ -2,8 +2,10 @@ import constants from '../../store/constants'
 import utils from '../../utils'
 import api from '../../api'
 import moment from 'moment'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
     data () {
         return {
             tab: 'tab-1',

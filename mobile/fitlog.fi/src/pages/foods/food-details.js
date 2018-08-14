@@ -2,10 +2,12 @@ import constants from '../../store/constants'
 import utils from '../../utils'
 import Help from './food-help'
 import api from '../../api'
+import PageMixin from '../../mixins/page'
 
 var defaultNutrientPortion = { id: undefined, name: '100g', value: undefined, label: '100g' };
 
 export default {
+    mixins: [PageMixin],
     components: {
         'food-help': Help
     },
@@ -181,9 +183,24 @@ export default {
         showHelp(){
             this.$refs.help.open();
         },
-        onBarcodeRead(barcode, format){
-            this.ean = barcode;
-            this.loadInfoByEan();
+        readBarcode(){
+            var self = this;
+            try {    
+                cordova.plugins.barcodeScanner.scan(
+                    result => {
+                        if(!result.canceled){
+                            self.ean = result.text;
+                            self.loadInfoByEan();
+                        }
+                    },
+                    error => {
+                        self.notifyError(error);
+                    }
+                );
+            }
+            catch(err){
+                self.notifyError(err.message);
+            }
         },
         loadInfoByEan() {
             var self = this;

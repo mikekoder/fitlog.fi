@@ -3,8 +3,10 @@ import api from '../../api'
 import moment from 'moment'
 import utils from '../../utils'
 import EnergyExpenditureDetails from './energy-expenditure-details.vue'
+import PageMixin from '../../mixins/page'
 
 export default {
+    mixins: [PageMixin],
     components:{
         EnergyExpenditureDetails
     },
@@ -93,37 +95,45 @@ export default {
         },
         clickEnergyExpenditure(expenditure){
             var self = this;
-            if(expenditure.workoutId){
-                self.$router.push({ name: 'workout-details', params: { id: expenditure.workoutId } });
-            }
-            else {
-                this.$q.actionSheet({
-                title: self.formatDateTime(expenditure.time),
-                grid: true,
-                actions: [
-                    {
+            var actions = [
+                {
                     label: self.$t('edit'),
                     icon: 'fa-edit',
                     handler: () => {
                         self.editEnergyExpenditure(expenditure);
                     }
-                    },
-                    {
+                },
+                {
                     label: self.$t('delete'),
                     icon: 'fa-trash',
                     handler: () => {
                         self.deleteEnergyExpenditure(expenditure);
                     }
+                }
+            ];
+
+            if(expenditure.workoutId){
+                actions.splice(1, 0, {
+                    label: self.$t('showWorkout'),
+                    icon: 'fa-heartbeat',
+                    handler: () => {
+                        self.$router.push({ name: 'workout-details', params: { id: expenditure.workoutId } });
                     }
-                ],
+                });
+            }
+            
+            this.$q.actionSheet({
+                title: self.formatDateTime(expenditure.time),
+                grid: true,
+                actions: actions,
                 dismiss: {
                     label: self.$t('cancel'),
                     handler: () => {
                         
                     }
                 }
-                });
-            }
+            });
+            
         }
     },
     created() {

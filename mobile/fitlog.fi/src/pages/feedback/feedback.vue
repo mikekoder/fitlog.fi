@@ -1,9 +1,21 @@
 <template>
+<layout >
+
+  <span slot="title" v-if="type == 'Improvement'" >
+      {{ $t('improvements') }}
+  </span>
+  <span slot="title" v-if="type == 'Bug'" >
+       {{ $t('bugs') }}
+  </span>
+
+  <div slot="toolbar">
+    <q-btn flat icon="fa-plus" v-if="type == 'Improvement'" :label="$t('improvement')" @click="createFeedback"></q-btn>
+    <q-btn flat icon="fa-plus" v-if="type == 'Bug'" :label="$t('bug')" @click="createFeedback"></q-btn>
+  </div>
     <q-page class="q-pa-sm">
 
           <div class="row">
-            <q-btn glossy color="primary" v-if="type == 'Improvement'" :label="$t('askImprovement')" @click="createFeedback"></q-btn>
-            <q-btn glossy color="primary" v-if="type == 'Bug'" :label="$t('reportBug')" @click="createFeedback"></q-btn>
+            
           </div>
         <q-card v-for="item in itemsSorted" @click.native="showFeedback(item)" class="q-mt-sm">
             <q-card-title :class="cardTitleBackground">
@@ -24,6 +36,7 @@
             </q-card-actions>
         </q-card>
     </q-page>
+    </layout>
 </template>
 
 <script src="./feedback.js">
