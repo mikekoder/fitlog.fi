@@ -135,7 +135,7 @@ export default {
     searchFoodsLeastNutrients(nutrientId){
         return $.get(this.baseUrl + 'foods/search/least-nutrients', { nutrientId, count: 100 });
     },
-    searchExternalFood(ean) {
+    searchExternalFood(ean){
         return $.get(this.baseUrl + 'foods/search-external', { ean });
     },
     getLatestFoods() {
@@ -262,6 +262,16 @@ export default {
             data: JSON.stringify(settings)
         });
     },
+    getNutrientHistory(start, end) {
+        var query = {};
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(this.baseUrl + 'nutrition/nutrients/history', query);
+    },
     // Meal rhythm
     getMealDefinitions() {
         return $.get(this.baseUrl + 'meals/definitions');
@@ -361,6 +371,18 @@ export default {
             type: 'DELETE'
         });
     },
+    getExerciseHistory(exerciseId, start, end){
+        var query = {
+            exerciseId
+        };
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(this.baseUrl + 'exercises/history', query);
+    },
 
     // Routines
     listRoutines() {
@@ -445,6 +467,18 @@ export default {
             data: JSON.stringify(measurements)
         });
     },
+    getMeasurementHistory(measureId, start, end){
+        var query = {
+            measureId
+        };
+        if (start) {
+            query.start = start.toISOString();
+        }
+        if (end) {
+            query.end = end.toISOString();
+        }
+        return $.get(this.baseUrl + 'measurements/history', query);
+    },
 
     // Feedback
     saveFeedback (feedback) {
@@ -507,6 +541,12 @@ export default {
             type: method,
             contentType: 'text/json',
             data: JSON.stringify(energyExpenditure)
+        });
+    },
+    deleteEnergyExpenditure(id){
+        return $.ajax({
+            url: this.baseUrl + 'activities/energyexpenditures/' + id,
+            type: 'DELETE'
         });
     },
     listActivityPresets() {
