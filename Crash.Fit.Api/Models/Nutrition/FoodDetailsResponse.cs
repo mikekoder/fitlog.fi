@@ -9,5 +9,6 @@ namespace Crash.Fit.Api.Models.Nutrition
     {
         public FoodNutrientAmountResponse[] Nutrients { get; set; }
         public PortionResponse[] Portions { get; set; }
+        public Guid? MostUsedPortionId { get; set; }
     }
 }

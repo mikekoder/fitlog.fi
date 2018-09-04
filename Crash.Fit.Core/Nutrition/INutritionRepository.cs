@@ -18,8 +18,8 @@ namespace Crash.Fit.Nutrition
         IEnumerable<FoodSearchResult> SearchFoods(string[] nameTokens, Guid? userId = null);
         IEnumerable<FoodSummary> SearchUserFoods(Guid userId);
         IEnumerable<FoodSummary> SearchRecipes(Guid userId);
-        FoodDetails GetFood(Guid id);
-        IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids);
+        FoodDetails GetFood(Guid id, Guid? userId = null);
+        IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids, Guid? userId = null);
         void CreateFood(FoodDetails food);
         void UpdateFood(FoodDetails food);
         void DeleteFood(Food food);

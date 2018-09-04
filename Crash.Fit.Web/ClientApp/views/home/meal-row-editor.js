@@ -34,6 +34,12 @@ export default {
         FoodPicker
     },
     methods: {
+        foodSelected(food) {
+            this.food = food;
+            if (food.mostUsedPortionId) {
+                this.portion = this.food.portions.find(p => p.id == food.mostUsedPortionId);
+            }
+        },
         cancel() {
             this.$emit('close');
         },

@@ -141,7 +141,7 @@ namespace Crash.Fit.Web.Controllers
         [AllowAnonymous]
         public IActionResult Details(Guid id)
         {
-            var food = nutritionRepository.GetFood(id);
+            var food = nutritionRepository.GetFood(id, CurrentUserId);
             if (food == null || (food.UserId != null && food.UserId != CurrentUserId))
             {
                 return NotFound();
