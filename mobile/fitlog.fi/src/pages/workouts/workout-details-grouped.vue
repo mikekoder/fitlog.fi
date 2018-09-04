@@ -12,7 +12,7 @@
         <q-toolbar-title>
             Footer
         </q-toolbar-title>
-        <q-btn flat icon="fa-plus" @click="addGroup" :label="$t('exercise')"></q-btn>
+        <q-btn flat icon="fas fa-plus" @click="addGroup" :label="$t('exercise')"></q-btn>
     </q-toolbar>
     -->
   <q-page class="q-pa-sm">
@@ -53,43 +53,50 @@
     </q-card-title>
     <q-card-separator />
     <q-card-main>
-        <div class="row q-my-md" v-if="group.sets.length == 0">
-            <div class="col-10">
+        <div v-if="group.collapsed">
+            <span v-for="(set,index) in group.sets">
+                <span v-if="set.reps">{{ set.reps }} x {{ set.weights }}
+                    <span v-if="index < group.sets.length - 1">, </span>
+                </span>
+            </span>
+        </div>
+        <div v-else>
+            <div class="row q-my-md" v-if="group.sets.length == 0">
+                <div class="col-10">
+                </div>
+                <div class="col-2">
+                    <q-btn round glossy color="primary" icon="fas fa-plus" size="sm" @click="addSet(group)"></q-btn>
+                </div>
             </div>
-            <div class="col-2">
-                <q-btn round glossy color="primary" icon="fa-plus" size="sm" @click="addSet(group)"></q-btn>
+            <div class="row q-mt-sm" v-else v-for="(set,index) in group.sets" :key="index">
+                <div class="col-3 q-pr-sm">
+                    <q-input v-model="set.reps" type="number" :float-label="index == 0 ? $t('reps') : ''" />
+                </div>
+                <div class="col-3">
+                    <q-input v-model="set.weights" type="number" :float-label="index == 0 ? $t('weights') : ''" />
+                </div>
+                <div class="col-2">
+                    <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                        <q-fab-action color="negative" @click="deleteSet(group, index)" icon="delete"></q-fab-action>
+                        <q-fab-action color="secondary" @click="copySet(group, set)" icon="content_copy"></q-fab-action>
+                    </q-fab>
+                </div>
+                <div class="col-2">
+                </div>
+                <div class="col-2">
+                    <q-btn round glossy color="primary" icon="fas fa-plus" size="sm" @click="addSet(group)" v-if="index == group.sets.length - 1"></q-btn>
+                </div>
             </div>
         </div>
-        <div class="row q-mt-sm" v-else v-for="(set,index) in group.sets" :key="index">
-            <div class="col-3 q-pr-sm">
-                <q-input v-model="set.reps" type="number" :float-label="index == 0 ? $t('reps') : ''" />
-            </div>
-            <div class="col-3">
-                <q-input v-model="set.weights" type="number" :float-label="index == 0 ? $t('weights') : ''" />
-            </div>
-            <div class="col-2">
-                <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
-                    <q-fab-action color="negative" @click="deleteSet(group, index)" icon="delete"></q-fab-action>
-                    <q-fab-action color="secondary" @click="copySet(group, set)" icon="content_copy"></q-fab-action>
-                </q-fab>
-            </div>
-            <div class="col-2">
-            </div>
-            <div class="col-2">
-                <q-btn round glossy color="primary" icon="fa-plus" size="sm" @click="addSet(group)" v-if="index == group.sets.length - 1"></q-btn>
-            </div>
-        </div>
-        
     </q-card-main>
-    <q-card-actions align="end">
-        <!--
-        <q-btn round glossy color="primary" icon="fa-plus" size="sm" @click="addSet(group)"></q-btn>
-        -->
+    <q-card-actions align="center">
+        <q-btn flat color="primary" icon="expand_more" size="sm" @click="() => group.collapsed = false" v-if="group.collapsed"></q-btn>
+        <q-btn flat color="primary" icon="expand_less" size="sm" @click="() => group.collapsed = true" v-if="!group.collapsed"></q-btn>
     </q-card-actions>
     </q-card>
     
     <div class="row q-my-md">
-        <q-btn glossy color="primary" icon="fa-plus" @click="addGroup" :label="$t('exercise')"></q-btn>
+        <q-btn glossy color="primary" icon="fas fa-plus" @click="addGroup" :label="$t('exercise')"></q-btn>
     </div>
   </q-page>
   </layout>
@@ -99,15 +106,10 @@
 </script>
 
 <style lang="stylus" scoped>
-/*
-.q-tab-pane { height: 60vh;}
-.scroll { height: 100%;}
-.desktop .q-tab-pane { height: 70vh;}
-.desktop .q-scrollarea { height: 100%;}
-.row.set > div:not(:last-child) { padding-right: 5px; }
-.card-title > .col { flex-wrap: nowrap; }
-.group-actions {padding: 20px 0px 0px 10px; }
-.exercise .q-card-container { padding-top: 0px; padding-bottom: 0px;}
-.set > div:last-child{ padding-top: 12px; }
-*/
+.q-card-primary{
+    padding-top:0px;
+}
+.q-card-actions {
+    padding: 0px;
+}
 </style>

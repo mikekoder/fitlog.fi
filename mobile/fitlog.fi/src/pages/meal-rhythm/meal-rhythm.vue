@@ -4,7 +4,7 @@
   <span slot="title">{{ $t('mealRhythm') }}</span>
 
   <div slot="toolbar">
-        <q-btn flat @click="addMeal" icon="fa-plus" :label="$t('meal')" class="q-mr-sm"></q-btn>
+        <q-btn flat @click="addMeal" icon="fas fa-plus" :label="$t('meal')" class="q-mr-sm"></q-btn>
         <q-btn flat size="md" @click="save"><q-icon name="save"></q-icon></q-btn>
   </div>
 <q-page class="q-pa-sm">
@@ -20,7 +20,7 @@
                 <div class="col-5">   
                     <q-datetime v-model="def.end" format24h type="time" :float-label="$t('ends')" />
                 </div>
-                <div class="col-2"><q-btn round glossy size="sm" color="primary" icon="fa-trash" @click="removeMeal(index)" /></div>
+                <div class="col-2"><q-btn round glossy size="sm" color="primary" icon="fas fa-trash" @click="removeMeal(index)" /></div>
             </div>
           </q-card-main>
         </q-card>
@@ -35,7 +35,7 @@
         </q-card>
         <!--
     <div class="row q-ma-sm q-my-lg">
-        <q-btn glossy @click="addMeal" color="primary" icon="fa-plus" :label="$t('meal')" class="q-mr-sm"></q-btn>
+        <q-btn glossy @click="addMeal" color="primary" icon="fas fa-plus" :label="$t('meal')" class="q-mr-sm"></q-btn>
         <q-btn glossy @click="save" color="primary" :label="$t('save')"></q-btn>
     </div>
     -->

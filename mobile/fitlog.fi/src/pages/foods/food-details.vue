@@ -6,7 +6,7 @@
   <div slot="toolbar">
     <q-btn flat icon="help" @click="showHelp"></q-btn>
     <q-btn flat icon="save" @click="save" :disabled="!canSave"></q-btn>
-    <q-btn flat icon="fa-barcode"  @click="readBarcode"></q-btn>
+    <q-btn flat icon="fas fa-barcode"  @click="readBarcode"></q-btn>
   </div>
   <q-page class="q-pa-sm">
     <div class="row">
@@ -39,7 +39,7 @@
             <template v-for="(group,index) in nutrientGroups">
               <div :key="index">
                 <div class="row">
-                  <q-btn flat @click="toggleGroup(group)" :label="$t(group.id)" :icon="selectedGroup == group ? 'fa-chevron-up' : 'fa-chevron-down'"></q-btn>
+                  <q-btn flat @click="toggleGroup(group)" :label="$t(group.id)" :icon="selectedGroup == group ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></q-btn>
                 </div>
                 <div v-if="selectedGroup == group">
                   <div class="row" v-for="(nutrient,index_n) in nutrientsGrouped[group.id]" :key="index_n">
@@ -57,10 +57,10 @@
           <div class="row" v-for="(portion,index) in portions" :key="index">
             <div class="col col-8 q-pr-sm"><q-input type="text" v-model="portion.name" :float-label="$t('name')" /></div>
             <div class="col col-3"><q-input type="number" v-model="portion.weight" :float-label="$t('weight')" /></div>
-            <div class="col col-1 q-pa-sm"><q-btn round size="sm" glossy color="primary" icon="fa-trash" @click="removePortion(index)"></q-btn></div>
+            <div class="col col-1 q-pa-sm"><q-btn round size="sm" glossy color="primary" icon="fas fa-trash" @click="removePortion(index)"></q-btn></div>
           </div>
           <div class="row q-mt-md">
-            <q-btn size="sm" glossy color="primary" icon="fa-plus" @click="addPortion" :label="$t('portion')"></q-btn>
+            <q-btn size="sm" glossy color="primary" icon="fas fa-plus" @click="addPortion" :label="$t('portion')"></q-btn>
           </div>
         </q-tab-pane>
         <q-tab-pane name="tab-3">

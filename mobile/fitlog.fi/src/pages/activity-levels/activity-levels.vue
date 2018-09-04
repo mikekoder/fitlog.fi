@@ -11,7 +11,7 @@
     <q-page>
         <q-tabs v-model="tab">
             <q-tab slot="title" v-for="(preset, p_index) in presets" :name="'tab-' + p_index" :label="preset.name" :key="p_index" />
-            <q-tab slot="title" :name="'tab-' + presets.length" :label="$t('preset')" icon="fa-plus" @click="addPreset" />
+            <q-tab slot="title" :name="'tab-' + presets.length" :label="$t('preset')" icon="fas fa-plus" @click="addPreset" />
                 <q-tab-pane v-for="(preset, p_index) in presets" :name="'tab-' + p_index" :key="p_index">
                     <div class="row">
                         <div class="col-10">

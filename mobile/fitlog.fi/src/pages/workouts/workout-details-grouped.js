@@ -51,7 +51,8 @@ export default {
     addGroup(){
         var group = {
             exercise: undefined,
-            sets: []
+            sets: [],
+            collapsed: false
         }
         this.groups.push(group);
         this.addSet(group);
@@ -109,8 +110,9 @@ export default {
         });
         self.$store.dispatch(constants.SAVE_WORKOUT, {
             workout,
-            success() {
-                self.$router.replace({ name: 'workouts' });
+            success(savedWorkout) {
+                self.id = savedWorkout.id;
+                self.notifySuccess(self.$t('saveSuccessful'));
             },
             failure() {
                 self.notifyError(self.$t('saveFailed'));
@@ -157,7 +159,8 @@ export default {
                             var exercise = self.exercises.find(e => e.id == s.exerciseId);
                             group = {
                                 exercise: exercise,
-                                sets: []
+                                sets: [],
+                                collapsed: true
                             };
                             self.groups.push(group);
                         }

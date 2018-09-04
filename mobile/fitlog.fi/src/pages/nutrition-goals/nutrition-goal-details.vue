@@ -15,7 +15,7 @@
         </div>
         <q-tabs v-model="tab" two-lines>
             <q-tab slot="title" v-for="(period, p_index) in periods" :name="'tab-' + p_index" :label="daysFormatted(period) + ' | ' + mealsFormatted(period)" :key="p_index" />
-            <q-tab slot="title" :name="'tab-' + periods.length" :label="$t('preset')" icon="fa-plus" @click="addPeriod" />
+            <q-tab slot="title" :name="'tab-' + periods.length" :label="$t('preset')" icon="fas fa-plus" @click="addPeriod" />
                 <q-tab-pane v-for="(period, p_index) in periods" :name="'tab-' + p_index" :key="p_index">
                     <div class="row">
                         <div class="col-10">
@@ -47,10 +47,10 @@
                                         {{ $t("sundayShort") }}
                                 </div>
                                 <div class="col-1">
-                                    <q-icon name="fa-heartbeat" />
+                                    <q-icon name="fas fa-heartbeat" />
                                 </div>
                                 <div class="col-1">
-                                    <q-icon name="fa-bed" />
+                                    <q-icon name="fas fa-bed" />
                                 </div>
                             </div>
                             <div class="row">
@@ -108,14 +108,14 @@
                     <template v-for="(group,index) in nutrientGroups">  
                         <div class="row">
                             <div class="col">
-                                <q-btn flat @click="toggleGroup(group)" :label="$t(group.id)" :icon="selectedGroup == group ? 'fa-chevron-up' : 'fa-chevron-down'"></q-btn>
+                                <q-btn flat @click="toggleGroup(group)" :label="$t(group.id)" :icon="selectedGroup == group ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></q-btn>
                             </div>
                         </div>
                         <div v-if="selectedGroup == group">
                             <div class="row" v-for="(nutrient,index_n) in nutrientsGrouped[group.id]" :key="index_n" v-if="nutrient.id != energyDistributionId">
                                 <div class="col-6 q-pt-sm">{{ nutrient.name }}</div>
                                 <div class="col-2"><q-input type="number" v-model="period.nutrients[nutrient.id].min" /></div>
-                                <div class="col-1 q-pt-sm" style="text-align: center"><q-icon name="fa-minus" /></div>
+                                <div class="col-1 q-pt-sm" style="text-align: center"><q-icon name="fas fa-minus" /></div>
                                 <div class="col-2"><q-input type="number" v-model="period.nutrients[nutrient.id].max" /></div>
                                 <div class="col-1 q-pt-sm">{{ formatUnit(nutrient.unit)}}</div>
                             </div>

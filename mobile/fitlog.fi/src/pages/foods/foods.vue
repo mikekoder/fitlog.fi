@@ -4,7 +4,7 @@
   <span slot="title">{{ $t('foods') }}</span>
 
   <div slot="toolbar">
-    <q-btn flat icon="fa-plus" @click="createFood" :label="$t('food')"></q-btn>
+    <q-btn flat icon="fas fa-plus" @click="createFood" :label="$t('food')"></q-btn>
   </div>
   <q-page class="q-pa-sm">
     <q-tabs v-model="tab">
@@ -15,14 +15,20 @@
       <q-scroll-area style="height: 85vh;">
           <q-tab-pane name="tab-1">
             <q-list v-if="ownFoods.length > 0">
-                <q-item v-for="(food,index) in ownFoods" @click.native="showFood(food)" :key="index" :separator="true">{{ food.name }}<span v-if="food.manufacturer" class="text-weight-light">&nbsp;({{ food.manufacturer }})</span></q-item>
+                <q-item v-for="(food,index) in ownFoods" @click.native="showFood(food)" :key="index" :separator="true">
+                  {{ food.name }}
+                  <span v-if="food.manufacturer" class="text-weight-light">&nbsp;({{ food.manufacturer }})</span>
+                </q-item>
             </q-list>
             <div v-else>{{ $t('noFoods') }}</div>
           </q-tab-pane>
           <q-tab-pane name="tab-2">
             <q-search v-model="searchText" :float-label="$t('search')" placeholder="" @input="search" class="q-mb-sm"/>
             <q-list v-if="searchResults.length > 0">
-              <q-item v-for="(food,index) in searchResults" @click.native="showFood(food)" :key="index" :separator="true">{{ food.name }}<span v-if="food.manufacturer" class="text-weight-light">&nbsp;({{ food.manufacturer }})</span></q-item>
+              <q-item v-for="(food,index) in searchResults" @click.native="showFood(food)" :key="index" :separator="true">
+                {{ food.name }}
+                <span v-if="food.manufacturer" class="text-weight-light">&nbsp;({{ food.manufacturer }})</span>
+              </q-item>
             </q-list>
             <div v-else><span v-if="searchText && searchText.length >= 2">{{ $t('noFoods') }}</span></div>
           </q-tab-pane>
@@ -37,9 +43,13 @@
             </div>
             <q-list v-if="topResults.length > 0">
               <q-item v-for="(food,index) in topResults" @click.native="showFood(food)" :key="index" :separator="true">
-                  <div class="col-9">{{ food.name }}<span v-if="food.manufacturer" class="text-weight-light">&nbsp;({{ food.manufacturer }})</span></div>
-                  <div class="col-2">{{ formatDecimal(food.nutrientAmount,topNutrient.precision) }}</div>
-                  <div class="col-1">{{ formatUnit(topNutrient.unit) }}</div>
+                <q-item-main>
+                  <div class="row">
+                    <div class="col-9">{{ food.name }}<span v-if="food.manufacturer" class="text-weight-light">&nbsp;({{ food.manufacturer }})</span></div>
+                    <div class="col-2">{{ formatDecimal(food.nutrientAmount,topNutrient.precision) }}</div>
+                    <div class="col-1">{{ formatUnit(topNutrient.unit) }}</div>
+                  </div>
+                </q-item-main>
               </q-item>
             </q-list>
             <div v-else><span v-if="topDirection && topNutrient">{{ $t('noFoods') }}</span></div>

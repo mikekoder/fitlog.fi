@@ -5,7 +5,7 @@
 
   <div slot="toolbar">
     <q-btn flat icon="help" @click="showHelp"></q-btn>
-    <q-btn-dropdown flat icon="fa-cogs" id="home-options">
+    <q-btn-dropdown flat icon="fas fa-cogs" id="home-options">
         <q-list>
           <q-item @click.native="showMealSettings" v-close-overlay>
             <q-item-main>
@@ -29,14 +29,14 @@
         <q-card-title class=" bg-grey-4">
           <div class="row">
             <div class="col col-lg-2" align="right">
-              <q-btn round size="md" glossy color="grey-6" @click="changeDate(-1)"><q-icon name="fa-chevron-left" /></q-btn>
+              <q-btn round size="md" glossy color="grey-6" @click="changeDate(-1)"><q-icon name="fas fa-chevron-left" /></q-btn>
             </div>
             <div class="col col-lg-2" align="center">
               <q-datetime :value="selectedDate" type="date" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" @change="changeDate" @blur="datepickerVisible=false;" ref="datepicker" v-show="datepickerVisible" />
               <q-btn :flat="true" @click="()=> {datepickerVisible=true; $refs.datepicker.show();}" :label="dateText"></q-btn>
               </div>
             <div class="col col-lg-2" align="left">
-              <q-btn round size="md" glossy color="grey-6" @click="changeDate(1)"><q-icon name="fa-chevron-right" /></q-btn>
+              <q-btn round size="md" glossy color="grey-6" @click="changeDate(1)"><q-icon name="fas fa-chevron-right" /></q-btn>
             </div>
           </div>
         </q-card-title>
@@ -125,9 +125,9 @@
           </div>
         </q-card-main>
         <q-card-actions align="end">
-          <q-btn v-if="rowCopy" round glossy color="secondary" icon="fa-paste" size="sm" @click="pasteRows(mealdef)"></q-btn>
-          <q-btn v-if="mealCopy" round glossy color="secondary" icon="fa-paste" size="sm" @click="pasteMeal(mealdef)"></q-btn>
-          <q-btn glossy color="primary" icon="fa-plus" size="sm" @click="addRow(mealdef)" :label="$t('food')"></q-btn>
+          <q-btn v-if="rowCopy" round glossy color="secondary" icon="fas fa-paste" size="sm" @click="pasteRows(mealdef)"></q-btn>
+          <q-btn v-if="mealCopy" round glossy color="secondary" icon="fas fa-paste" size="sm" @click="pasteMeal(mealdef)"></q-btn>
+          <q-btn glossy color="primary" icon="fas fa-plus" size="sm" @click="addRow(mealdef)" :label="$t('food')"></q-btn>
         </q-card-actions>
       </q-card>
     </q-scroll-area>
