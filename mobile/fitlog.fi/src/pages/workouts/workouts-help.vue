@@ -2,7 +2,7 @@
     <help-modal :visible="visible" @close="visible=false">
         <div>
             <div class="row text-bold">
-                <div class="col"><q-icon name="fa-plus" /><q-icon name="arrow_drop_down" /></div>
+                <div class="col"><q-icon name="fas fa-plus" /><q-icon name="arrow_drop_down" /></div>
             </div>
             <div class="row">
                 <div class="col">{{ $t('help.workouts.create') }}</div>

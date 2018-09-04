@@ -31,21 +31,21 @@ export default {
         actions: [
           {
             label: self.$t('edit'),
-            icon: 'fa-edit',
+            icon: 'fas fa-edit',
             handler: () => {
               self.showExercise(exercise);
             }
           },
           {
             label: self.$t('progress'),
-            icon: 'fa-chart-line',
+            icon: 'fas fa-chart-line',
             handler: () => {
               self.showProgress(exercise);
             }
           },
           {
             label: self.$t('delete'),
-            icon: 'fa-trash',
+            icon: 'fas fa-trash',
             handler: () => {
               self.deleteExercise(exercise);
             }

@@ -98,14 +98,14 @@ export default {
             var actions = [
                 {
                     label: self.$t('edit'),
-                    icon: 'fa-edit',
+                    icon: 'fas fa-edit',
                     handler: () => {
                         self.editEnergyExpenditure(expenditure);
                     }
                 },
                 {
                     label: self.$t('delete'),
-                    icon: 'fa-trash',
+                    icon: 'fas fa-trash',
                     handler: () => {
                         self.deleteEnergyExpenditure(expenditure);
                     }
@@ -115,7 +115,7 @@ export default {
             if(expenditure.workoutId){
                 actions.splice(1, 0, {
                     label: self.$t('showWorkout'),
-                    icon: 'fa-heartbeat',
+                    icon: 'fas fa-heartbeat',
                     handler: () => {
                         self.$router.push({ name: 'workout-details', params: { id: expenditure.workoutId } });
                     }

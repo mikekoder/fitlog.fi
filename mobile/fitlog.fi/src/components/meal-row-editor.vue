@@ -5,7 +5,7 @@
                 <span v-if="id">{{ $t('editRow') }}</span>
                 <span v-else>{{ $t('addRow') }}</span>
             </q-toolbar-title>
-            <q-btn flat icon="fa-barcode"  @click="readBarcode" v-if="selectFood"></q-btn>
+            <q-btn flat icon="fas fa-barcode"  @click="readBarcode" v-if="selectFood"></q-btn>
         </q-toolbar>
 
         <q-tabs v-model="tab" v-if="selectFood" style="height: 82vh;" @select="changeTab">
@@ -19,7 +19,9 @@
             <q-tab-pane name="tab-1">
                 <q-search v-model="searchText" :float-label="$t('search')" :placeholder="$t('food')" @input="search" :debounce="500" clearable></q-search>
                 <q-list v-if="searchResults.length > 0">
-                    <q-item v-for="(f, index) in searchResults" @click.native="load(f.id)" :class="{selected: food && f.id == food.id }" :key="index" :separator="true">{{ f.text }}</q-item>
+                    <q-item v-for="(f, index) in searchResults" @click.native="load(f.id)" :class="{selected: food && f.id == food.id }" :key="index" :separator="true">
+                        {{ f.text }}
+                    </q-item>
                 </q-list>
                 <div v-else>
                     <span v-if="!searching && (searchText && searchText.length >= 2)">{{ $t('noFoods') }}</span>
@@ -27,17 +29,23 @@
             </q-tab-pane>
             <q-tab-pane name="tab-2">
                 <q-list>
-                    <q-item v-for="(f, index) in latestFoods" @click.native="load(f.id)" :class="{selected: food && f.id == food.id }" :key="index" :separator="true">{{ f.name }}</q-item>
+                    <q-item v-for="(f, index) in latestFoods" @click.native="load(f.id)" :class="{selected: food && f.id == food.id }" :key="index" :separator="true">
+                        {{ f.name }}
+                    </q-item>
                 </q-list>
             </q-tab-pane>
             <q-tab-pane name="tab-3">
                 <q-list>
-                    <q-item v-for="(f, index) in mostUsedFoods" @click.native="load(f.id)" :class="{selected: food && f.id == food.id }" :key="index" :separator="true">{{ f.name }}</q-item>
+                    <q-item v-for="(f, index) in mostUsedFoods" @click.native="load(f.id)" :class="{selected: food && f.id == food.id }" :key="index" :separator="true">
+                        {{ f.name }}
+                    </q-item>
                 </q-list>
             </q-tab-pane>
             <q-tab-pane name="tab-4">
                 <q-list>
-                    <q-item v-for="(f, index) in ownFoods" @click.native="load(f.id)" :class="{selected: food && f.id == food.id }" :key="index" :separator="true">{{ f.name }}</q-item>
+                    <q-item v-for="(f, index) in ownFoods" @click.native="load(f.id)" :class="{selected: food && f.id == food.id }" :key="index" :separator="true">
+                        {{ f.name }}
+                    </q-item>
                 </q-list>
             </q-tab-pane>
             </q-scroll-area>
@@ -143,7 +151,7 @@ export default {
           if(self.searchText.length >= 2){
             self.searching = true;
             api.searchFoods(self.searchText).then(results => {
-                self.searchResults = results.map(f => { return { ...f, text: f.manufacturer ? `${f.name} (${f.manufacturer})` : f.name, icon: f.userId ? 'fa-user' : '' }});
+                self.searchResults = results.map(f => { return { ...f, text: f.manufacturer ? `${f.name} (${f.manufacturer})` : f.name, icon: f.userId ? 'fas fa-user' : '' }});
                 self.searching = false;
             });
           }
@@ -179,7 +187,6 @@ export default {
                     else {
                         self.portion = self.portions[0];         
                     }
-                    
                 },
                 failure () {
                     self.notifyError(self.$t('fetchFailed'));

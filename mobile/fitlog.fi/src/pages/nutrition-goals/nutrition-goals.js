@@ -49,21 +49,21 @@ export default {
               actions: [
                 {
                   label: self.$t('edit'),
-                  icon: 'fa-edit',
+                  icon: 'fas fa-edit',
                   handler: () => {
                     self.showGoal(goal);
                   }
                 },
                 {
                     label: self.$t('activate'),
-                    icon: 'fa-check',
+                    icon: 'fas fa-check',
                     handler: () => {
                       self.activate(goal);
                     }
                 },
                 {
                   label: self.$t('delete'),
-                  icon: 'fa-trash',
+                  icon: 'fas fa-trash',
                   handler: () => {
                     self.deleteGoal(goal);
                   }

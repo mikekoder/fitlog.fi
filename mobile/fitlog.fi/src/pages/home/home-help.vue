@@ -33,7 +33,7 @@
             </div>
 
             <div class="row q-mt-md text-bold text-secondary">
-                <div class="col">{{ $t('settings') }} (<q-icon name="fa-cogs" />)</div>
+                <div class="col">{{ $t('settings') }} (<q-icon name="fas fa-cogs" />)</div>
             </div>
             <div class="row q-mt-sm text-bold">
                 <div class="col">{{ $t('nutrients') }}</div>

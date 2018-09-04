@@ -292,21 +292,21 @@ export default {
         actions: [
           {
             label: self.$t('edit'),
-            icon: 'fa-edit',
+            icon: 'fas fa-edit',
             handler: () => {
               self.editRow(row);
             }
           },
           {
             label: self.$t('copy'),
-            icon: 'fa-copy',
+            icon: 'fas fa-copy',
             handler: () => {
               self.copyRow(row);
             }
           },
           {
             label: self.$t('delete'),
-            icon: 'fa-trash',
+            icon: 'fas fa-trash',
             handler: () => {
               self.deleteRow(mealDef, row);
             }
@@ -340,7 +340,7 @@ export default {
           actions: [
             {
               label: self.$t('copy'),
-              icon: 'fa-copy',
+              icon: 'fas fa-copy',
               handler: () => {
                 self.copyMeal(mealDef.meal);
               }

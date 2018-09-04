@@ -21,13 +21,13 @@
             </div>
 
             <div class="row q-mt-sm text-bold">
-                <div class="col"><q-icon name="fa-heartbeat" /></div>
+                <div class="col"><q-icon name="fas fa-heartbeat" /></div>
             </div>
             <div class="row">
                 <div class="col">{{ $t('exerciseDay') }}</div>
             </div>
             <div class="row q-mt-sm text-bold">
-                <div class="col"><q-icon name="fa-bed" /></div>
+                <div class="col"><q-icon name="fas fa-bed" /></div>
             </div>
             <div class="row">
                 <div class="col">{{ $t('restDay') }}</div>

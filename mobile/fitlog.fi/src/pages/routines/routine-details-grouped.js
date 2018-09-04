@@ -45,7 +45,7 @@ export default {
             this.workouts.splice(index, 1);
         },
         addGroup(workout){
-            var group = {exercise: null, rows:[]};
+            var group = {exercise: null, rows:[], collapsed: false};
             this.addRow(group);
             workout.groups.push(group);
         },
@@ -163,7 +163,8 @@ export default {
                                     var exercise = self.exercises.find(e2 => e2.id == e.exerciseId);
                                     group = {
                                         exercise: exercise,
-                                        rows: []
+                                        rows: [],
+                                        collapsed: true
                                     };
                                     workout.groups.push(group);
                                 }

@@ -16,12 +16,12 @@
       <div class="col-4 q-pt-sm">
         <q-datetime v-model="start" type="date" @input="loadData" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames"  />
       </div>
-      <div class="col-1 q-pt-sm" style="text-align: center;"><q-icon name="fa-minus" /></div>
+      <div class="col-1 q-pt-sm" style="text-align: center;"><q-icon name="fas fa-minus" /></div>
       <div class="col-4 q-pt-sm">
         <q-datetime v-model="end" type="date" @input="loadData" :format="$t('dateFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" />
       </div>
       <div class="col-3 q-pt-md q-pl-sm" style="text-align: center;">
-        <q-btn-dropdown glossy size="sm" color="primary" icon="fa-calendar" style="margin-top: -5px;">
+        <q-btn-dropdown glossy size="sm" color="primary" icon="fas fa-calendar" style="margin-top: -5px;">
             <q-list>
               <q-item @click.native="showMonths(1)" v-close-overlay>
                 <q-item-main>

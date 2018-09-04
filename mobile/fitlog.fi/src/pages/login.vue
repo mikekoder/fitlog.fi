@@ -19,8 +19,8 @@
       
     </div>
     <div class="q-tab-pane">
-      <q-btn glossy color="primary" @click="fbLogin" icon="fa-facebook-official">Facebook</q-btn>
-      <q-btn glossy color="primary" @click="googleLogin" icon="fa-google-plus-official">Google</q-btn>
+      <q-btn glossy color="primary" @click="fbLogin" icon="fas fa-facebook-official">Facebook</q-btn>
+      <q-btn glossy color="primary" @click="googleLogin" icon="fas fa-google-plus-official">Google</q-btn>
     </div>
     <div class="q-tab-pane">
       {{ url }}<br />

@@ -216,14 +216,14 @@ export default {
           actions: [
             {
               label: self.$t('edit'),
-              icon: 'fa-edit',
+              icon: 'fas fa-edit',
               handler: () => {
                 self.showWorkout(workout);
               }
             },
             {
               label: self.$t('delete'),
-              icon: 'fa-trash',
+              icon: 'fas fa-trash',
               handler: () => {
                 self.deleteWorkout(workout);
               }

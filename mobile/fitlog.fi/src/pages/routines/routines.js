@@ -53,21 +53,21 @@ methods: {
           actions: [
             {
               label: self.$t('edit'),
-              icon: 'fa-edit',
+              icon: 'fas fa-edit',
               handler: () => {
                 self.showRoutine(routine);
               }
             },
             {
                 label: self.$t('activate'),
-                icon: 'fa-check',
+                icon: 'fas fa-check',
                 handler: () => {
                   self.activate(routine);
                 }
             },
             {
               label: self.$t('delete'),
-              icon: 'fa-trash',
+              icon: 'fas fa-trash',
               handler: () => {
                 self.deleteRoutine(routine);
               }
