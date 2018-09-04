@@ -41,5 +41,6 @@ namespace Crash.Fit.Nutrition
         public Portion[] Portions { get; set; }
         public FoodNutrientAmount[] Nutrients { get; set; }
         public decimal? CookedWeight { get; set; }
+        public Guid? MostUsedPortionId { get; set; }
     }
 }

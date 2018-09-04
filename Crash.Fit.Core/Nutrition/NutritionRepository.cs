@@ -75,21 +75,21 @@ WHERE Gender = @gender AND StartAge <= @age AND EndAge >= @age";
                 return conn.Query<DailyIntake>(sql, parameters);
             }
         }
-        public FoodDetails GetFood(Guid id)
+        public FoodDetails GetFood(Guid id, Guid? userId = null)
         {
-            return GetFoods(new[] { id }).FirstOrDefault();
+            return GetFoods(new[] { id }, userId).FirstOrDefault();
         }
-        public IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids)
+        public IEnumerable<FoodDetails> GetFoods(IEnumerable<Guid> ids, Guid? userId = null)
         {
             var sql = @"
-SELECT * FROM Food WHERE Id IN @ids;
+SELECT *, (SELECT TOP 1 PortionId FROM PortionUsage WHERE FoodId=Food.Id AND UserId=@userId ORDER BY UsageCount DESC) AS MostUsedPortionId FROM Food WHERE Id IN @ids;
 SELECT * FROM FoodPortion WHERE FoodId IN @ids;
 SELECT * FROM FoodNutrient WHERE FoodId IN @ids;
 SELECT RI.*, F.Name AS FoodName, FP.Name AS PortionName FROM RecipeIngredient RI 
     JOIN Food F ON F.Id=RI.FoodId
     LEFT JOIN FoodPortion FP ON FP.Id=RI.PortionId
     WHERE RI.RecipeId IN @ids ORDER BY [Index]";
-            var parameters = new { ids };
+            var parameters = new { ids, userId };
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, parameters))
             {

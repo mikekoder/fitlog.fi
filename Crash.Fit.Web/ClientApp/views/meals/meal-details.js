@@ -81,6 +81,9 @@ export default {
         },
         setRowFood(row, food){
             row.food = food;
+            if (food.mostUsedPortionId) {
+                row.portion = row.food.portions.find(p => p.id == food.mostUsedPortionId);
+            }
         },
         deleteRow(index) {
             this.rows.splice(index, 1);

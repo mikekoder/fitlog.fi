@@ -124,7 +124,7 @@ export default {
             var portionId = row.portion ? row.portion.id : row.portionId;
         
             if(foodId){
-                self.load(foodId, portionId);
+                self.load(foodId, portionId, true);
             }
             
             self.$refs.modal.show();
@@ -157,9 +157,9 @@ export default {
           }
         },
         foodSelected(food){
-          this.load(food.id, undefined);
+          this.load(food.id, undefined, false);
         },
-        load(foodId, portionId){
+        load(foodId, portionId, portionSelected){
             var self = this;
             self.$store.dispatch(constants.FETCH_FOOD, {
                 id: foodId,
@@ -173,8 +173,11 @@ export default {
                     if(portionId){
                         self.portion = self.portions.find(p => p.id == portionId);
                     }
-                    else{
-                        self.portion = self.portions[0];        
+                    else if(self.food.mostUsedPortionId && !portionSelected) {
+                        self.portion = self.portions.find(p => p.id == self.food.mostUsedPortionId);
+                    }
+                    else {
+                        self.portion = self.portions[0];         
                     }
                     
                 },
