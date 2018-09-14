@@ -10,7 +10,7 @@ export default {
         var self = this;
         var delay = 100;
         var loader = () => {
-            if(self.isLoggedIn){
+            if(self.isLoggedIn || delay > 3000){
                 self.$store.dispatch(constants.FETCH_NUTRIENTS, {
                     success(nutrients) {
                         if (self.$nutrientsLoaded) {
