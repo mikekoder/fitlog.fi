@@ -193,6 +193,7 @@ namespace Crash.Fit.Web.Controllers
                     {
                         UserId = CurrentUserId,
                         DefinitionId = def.Id,
+                        Created = DateTimeOffset.Now,
                         Time = DateTimeUtils.CreateLocal(dayStart, def.Time),
                         Rows = new MealRow[] { }
                     };
