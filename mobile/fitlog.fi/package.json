@@ -1,13 +1,14 @@
 {
   "name": "fitlog.fi",
-  "version": "1.0.30",
+  "version": "1.0.45",
   "description": "fitlog.fi",
   "productName": "fitlog.fi",
   "cordovaId": "fi.fitlog",
   "author": "Mika Kolari",
   "private": true,
   "scripts": {
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "build": "quasar build -m cordova -T android"
   },
   "dependencies": {
     "axios": "^0.17.1",
