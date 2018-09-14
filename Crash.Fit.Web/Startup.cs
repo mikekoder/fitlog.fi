@@ -32,6 +32,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Crash.Fit.Api.Models.Activities;
 using Crash.Fit.Activities;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace Crash.Fit.Web
 {
@@ -375,6 +376,7 @@ namespace Crash.Fit.Web
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             }
 
             app.UseStaticFiles();
