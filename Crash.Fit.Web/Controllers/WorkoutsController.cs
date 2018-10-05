@@ -49,6 +49,8 @@ namespace Crash.Fit.Web.Controllers
         [HttpPost("")]
         public IActionResult Create([FromBody]WorkoutRequest request)
         {
+            CleanSets(request);
+
             var exercises = CreateExercises(request.Sets);
             var workout = AutoMapper.Mapper.Map<WorkoutDetails>(request);
             workout.UserId = CurrentUserId;
@@ -68,6 +70,11 @@ namespace Crash.Fit.Web.Controllers
             activityRepository.CreateEnergyExpenditure(energyExpenditure);
             var response = AutoMapper.Mapper.Map<WorkoutDetailsResponse>(workout);
             return Ok(response);
+        }
+
+        private void CleanSets(WorkoutRequest request)
+        {
+            request.Sets = request.Sets.Where(s => s.ExerciseId != null || !string.IsNullOrWhiteSpace(s.ExerciseName)).ToArray();
         }
 
         private void Update1RMs(IEnumerable<OneRepMax> maxs)
@@ -93,6 +100,8 @@ namespace Crash.Fit.Web.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(Guid id, [FromBody]WorkoutRequest request)
         {
+            CleanSets(request);
+
             var workout = trainingRepository.GetWorkout(id);
             if (workout.UserId != CurrentUserId)
             {
