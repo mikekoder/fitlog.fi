@@ -8,5 +8,6 @@ namespace Crash.Fit.Api.Models.Training
     public class ExerciseDetailsResponse : ExerciseSummaryResponse
     {
         public Guid[] Targets { get; set; }
+        public ExerciseImageResponse[] Images { get; set; }
     }
 }

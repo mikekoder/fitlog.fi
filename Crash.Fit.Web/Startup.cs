@@ -295,6 +295,8 @@ namespace Crash.Fit.Web
                 m.CreateMap<ExerciseSummary, ExerciseSummaryResponse>();
                 m.CreateMap<ExerciseRequest, ExerciseDetails>();
                 m.CreateMap<OneRepMax, ExerciseHistoryResponse>();
+                m.CreateMap<ExerciseImage, ExerciseImageResponse>();
+                m.CreateMap<Equipment, EquipmentResponse>();
 
                 // Routines
                 m.CreateMap<RoutineSummary, RoutineResponse>();

@@ -9,5 +9,6 @@ namespace Crash.Fit.Api.Models.Training
     {
         public int UsageCount { get; set; }
         public decimal? OneRepMax { get; set; }
+        public DateTimeOffset? LatestUse { get; set; }
     }
 }
