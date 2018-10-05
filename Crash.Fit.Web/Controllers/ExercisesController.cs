@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Crash.Fit.Logging;
 using Crash.Fit.Api.Models.Training;
 using Crash.Fit.Measurements;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -23,6 +24,14 @@ namespace Crash.Fit.Web.Controllers
             this.trainingRepository = trainingRepository;
             this.measurementRepository = measurementRepository;
         }
+        [HttpGet("equipment")]
+        public IActionResult ListEquipment()
+        {
+            var equipment = trainingRepository.GetEquipment();
+
+            var response = AutoMapper.Mapper.Map<EquipmentResponse[]>(equipment);
+            return Ok(response);
+        }
         [HttpGet("")]
         public IActionResult List()
         {
@@ -32,24 +41,56 @@ namespace Crash.Fit.Web.Controllers
             return Ok(response);
         }
         [HttpGet("search")]
-        public IActionResult Search(string name)
+        public IActionResult Search(string name, Guid? muscleGroupId, Guid? equipmentId)
         {
-            var exercises = trainingRepository.SearchExercises(name.Split(' '), CurrentUserId).OrderBy(e => e.Name);
+            var exercises = trainingRepository.SearchExercises(name?.Split(' '), muscleGroupId, equipmentId, CurrentUserId).OrderBy(e => e.Name);
 
             var response = AutoMapper.Mapper.Map<ExerciseResponse[]>(exercises);
+            return Ok(response);
+        }
+        [HttpGet("latest")]
+        public IActionResult ListLatest()
+        {
+            var exercises = trainingRepository.ListLatestExercises(CurrentUserId, DateTimeOffset.Now.AddMonths(-1));
+
+            var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse[]>(exercises);
+            return Ok(response);
+        }
+        [HttpGet("most-used")]
+        public IActionResult ListMostUsed()
+        {
+            var exercises = trainingRepository.ListMostUsedExercises(CurrentUserId, DateTimeOffset.Now.AddMonths(-1));
+
+            var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse[]>(exercises);
             return Ok(response);
         }
         [HttpGet("{id}")]
         public IActionResult Details(Guid id)
         {
             var exercise = trainingRepository.GetExercise(id);
-            if(exercise == null || exercise.UserId != CurrentUserId)
+            if(exercise == null || (exercise.UserId.HasValue && exercise.UserId != CurrentUserId))
             {
                 return NotFound();
             }
 
             var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);
+            foreach(var image in response.Images)
+            {
+                image.Url = Url.Action("Image", "Exercises", new { id, imageId = image.Id }, Request.Scheme);
+            }
             return Ok(response);
+        }
+        [HttpGet("{id}/images/{imageId}")]
+        [AllowAnonymous]
+        public IActionResult Image(Guid id, Guid imageId)
+        {
+            var image = trainingRepository.GetExerciseImage(id,imageId);
+            if (image == null)
+            {
+                return NotFound();
+            }
+
+            return File(image.Data, "image/svg+xml");
         }
         [HttpPost("")]
         public IActionResult Create([FromBody]ExerciseRequest request)

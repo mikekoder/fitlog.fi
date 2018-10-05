@@ -334,9 +334,28 @@ export default {
         return $.get(this.baseUrl + 'muscles/groups');
     },
 
+    // Equipment
+    listEquipment(){
+        return $.get(this.baseUrl + 'exercises/equipment');
+    },
+
     // Exercises
     listExercises(){
         return $.get(this.baseUrl + 'exercises/');
+    },
+    searchExercises(name, muscleGroupId, equipmentId){
+        var query = {
+            name,
+            muscleGroupId,
+            equipmentId
+        };
+        return $.get(this.baseUrl + 'exercises/search', query);
+    },
+    listLatestExercises(){
+        return $.get(this.baseUrl + 'exercises/latest');
+    },
+    listMostUsedExercises(){
+        return $.get(this.baseUrl + 'exercises/most-used');
     },
     getExercise(id){
         return $.get(this.baseUrl + 'exercises/' + id);

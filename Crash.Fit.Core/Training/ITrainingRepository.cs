@@ -8,9 +8,11 @@ namespace Crash.Fit.Training
     public interface ITrainingRepository
     {
         IEnumerable<MuscleGroup> GetMuscleGroups();
-
-        IEnumerable<Exercise> SearchExercises(string[] nameTokens, Guid? userId);
+        IEnumerable<Equipment> GetEquipment();
+        IEnumerable<Exercise> SearchExercises(string[] nameTokens, Guid? muscleGroupId, Guid? equipmentId, Guid? userId);
         IEnumerable<ExerciseDetails> SearchUserExercises(Guid userId, DateTimeOffset start1RM);
+        IEnumerable<ExerciseDetails> ListLatestExercises(Guid userId, DateTimeOffset start1RM);
+        IEnumerable<ExerciseDetails> ListMostUsedExercises(Guid userId, DateTimeOffset start1RM);
         ExerciseDetails GetExercise(Guid id);
         IEnumerable<ExerciseDetails> GetExercises(IEnumerable<Guid> ids);
         void CreateExercise(ExerciseDetails exercise);
@@ -43,5 +45,6 @@ namespace Crash.Fit.Training
         IEnumerable<OneRepMax> GetOneRepMaxs(Guid userId, DateTimeOffset start);
         IEnumerable<OneRepMax> GetOneRepMaxHistory(Guid exerciseId, Guid userId, DateTimeOffset start, DateTimeOffset end);
         IEnumerable<ExerciseVolume> GetExerciseVolumeHistory(Guid exerciseId, Guid userId, DateTimeOffset start, DateTimeOffset end);
+        ExerciseImageDetails GetExerciseImage(Guid id, Guid imageId);
     }
 }
