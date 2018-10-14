@@ -33,10 +33,15 @@ export default [
         path: '/meal-rhythm',
         name: 'meal-rhythm',
         component: () => import('pages/meal-rhythm/meal-rhythm.vue')
-      },      
+      },   
       {
-        path: '/login/:refreshToken?/:accessToken?',
+        path: '/login',
         name: 'login',
+        component: () => import('pages/login.vue')
+      },   
+      {
+        path: '/login/:refreshToken/:accessToken',
+        name: 'login-tokens',
         component: () => import('pages/login.vue')
       },
       {
