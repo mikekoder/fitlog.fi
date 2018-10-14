@@ -18,8 +18,8 @@ export default ({ app, Vue }) => {
       isLoggedIn(){
           return this.$store.state.profile.profile && true;
       },
-      isDesktop(){
-        return !this.$q.platform.is.cordova;
+      isCordova(){
+        return this.$q.platform.is.cordova;
       },
       $profile() {
         return this.$store.state.profile.profile;

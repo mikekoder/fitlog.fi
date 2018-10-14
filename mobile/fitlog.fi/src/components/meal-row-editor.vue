@@ -5,7 +5,7 @@
                 <span v-if="id">{{ $t('editRow') }}</span>
                 <span v-else>{{ $t('addRow') }}</span>
             </q-toolbar-title>
-            <q-btn flat icon="fas fa-barcode"  @click="readBarcode" v-if="selectFood"></q-btn>
+            <q-btn flat icon="fas fa-barcode"  @click="readBarcode" v-if="selectFood && isCordova"></q-btn>
         </q-toolbar>
 
         <q-tabs v-model="tab" v-if="selectFood" style="height: 82vh;" @select="changeTab">
