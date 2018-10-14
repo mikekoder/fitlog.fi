@@ -152,11 +152,12 @@ export default {
 
                     workout.sets.forEach(s => {
                         var group;
+                        var exercise = self.exercises.find(e => e.id == s.exerciseId);
+
                         if(s.exerciseId == previousExerciseId){
                             group = previousGroup;
                         }
                         else {
-                            var exercise = self.exercises.find(e => e.id == s.exerciseId);
                             group = {
                                 exercise: exercise,
                                 sets: [],
@@ -164,8 +165,16 @@ export default {
                             };
                             self.groups.push(group);
                         }
-                        group.sets.push({ reps: s.reps, weights: s.weights});
-
+                        if(workout.id){
+                            group.sets.push({ reps: s.reps, weights: s.weights});
+                        }
+                        else {
+                            var weights = (s.load || s.load == 0) && exercise.oneRepMax ? s.load / 100 * exercise.oneRepMax : undefined;
+                            if (weights) {
+                                weights = utils.roundToNearest(weights, 2.5);
+                            }
+                            group.sets.push({ reps: s.reps, weights: weights});
+                        }
                         previousGroup = group;
                         previousExerciseId = s.exerciseId;
 
