@@ -364,6 +364,9 @@
             load: '% maksimipainoista. Kun tämä on syötetty ja maksimipainot tiedossa, treeniin lasketaan oikeat painot valmiiksi.'
         },
         title: 'Ohjeet',
+        workout: {
+            actionsMenu: 'Toimintovalikko'
+        },
         workouts: {
             create: 'Nuolesta avautuu lista aktiivisen ohjelman treeneistä. Valitsemalla sellaisen, treeniin lisätään oikeat liikkeet, sarjat ja painot (mikäli maksimipainot ja kuorma tiedetään).'
         }

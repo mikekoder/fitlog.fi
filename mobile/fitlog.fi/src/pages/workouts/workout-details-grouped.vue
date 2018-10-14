@@ -4,6 +4,7 @@
   <span slot="title">{{ $t('workout') }}</span>
 
   <div slot="toolbar">
+      <q-btn flat icon="help" @click="showHelp"></q-btn>
       <q-btn flat icon="save" @click="save"></q-btn>
   </div>
     <!--
@@ -98,6 +99,7 @@
     <div class="row q-my-md">
         <q-btn glossy color="primary" icon="fas fa-plus" @click="addGroup" :label="$t('exercise')"></q-btn>
     </div>
+    <workout-help ref="help" />
   </q-page>
   </layout>
 </template>
