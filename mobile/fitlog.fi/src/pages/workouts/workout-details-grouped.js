@@ -2,9 +2,13 @@ import constants from '../../store/constants'
 import utils from '../../utils'
 import exercisesMixin from '../../mixins/exercises'
 import PageMixin from '../../mixins/page'
+import Help from './workout-help'
 
 export default {
     mixins:[exercisesMixin, PageMixin],
+    components: {
+        'workout-help': Help
+    },
   data () {
     return {
         id: null,
@@ -189,8 +193,9 @@ export default {
                 self.notifyError(self.$t('fetchFailed'));
             }
         });
-        
-        
+    },
+    showHelp(){
+        this.$refs.help.open();
     }
 },
   created () {
