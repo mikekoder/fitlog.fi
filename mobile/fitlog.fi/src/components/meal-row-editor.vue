@@ -150,8 +150,8 @@ export default {
           var self = this;
           if(self.searchText.length >= 2){
             self.searching = true;
-            api.searchFoods(self.searchText).then(results => {
-                self.searchResults = results.map(f => { return { ...f, text: f.manufacturer ? `${f.name} (${f.manufacturer})` : f.name, icon: f.userId ? 'fas fa-user' : '' }});
+            api.searchFoods(self.searchText).then(response => {
+                self.searchResults = response.data.map(f => { return { ...f, text: f.manufacturer ? `${f.name} (${f.manufacturer})` : f.name, icon: f.userId ? 'fas fa-user' : '' }});
                 self.searching = false;
             });
           }
@@ -169,27 +169,21 @@ export default {
         },
         load(foodId, portionId, portionSelected){
             var self = this;
-            self.$store.dispatch(constants.FETCH_FOOD, {
-                id: foodId,
-                success (food) {
-                    //self.searchText = food.manufacturer ? `${food.name} (${food.manufacturer})` : food.name;
-                    self.food = food;
-                    self.selectFood = false;
-                    var portions = food.portions.map(p => {return {...p, label: p.name, value: p }});
-                    portions.splice(0,0,{ label: 'g', value: undefined});
-                    self.portions = portions;
-                    if(portionId){
-                        self.portion = self.portions.find(p => p.id == portionId);
-                    }
-                    else if(self.food.mostUsedPortionId && !portionSelected) {
-                        self.portion = self.portions.find(p => p.id == self.food.mostUsedPortionId);
-                    }
-                    else {
-                        self.portion = self.portions[0];         
-                    }
-                },
-                failure () {
-                    self.notifyError(self.$t('fetchFailed'));
+            self.$store.dispatch(constants.FETCH_FOOD, {id: foodId}).then(food => {
+                //self.searchText = food.manufacturer ? `${food.name} (${food.manufacturer})` : food.name;
+                self.food = food;
+                self.selectFood = false;
+                var portions = food.portions.map(p => {return {...p, label: p.name, value: p }});
+                portions.splice(0,0,{ label: 'g', value: undefined});
+                self.portions = portions;
+                if(portionId){
+                    self.portion = self.portions.find(p => p.id == portionId);
+                }
+                else if(self.food.mostUsedPortionId && !portionSelected) {
+                    self.portion = self.portions.find(p => p.id == self.food.mostUsedPortionId);
+                }
+                else {
+                    self.portion = self.portions[0];         
                 }
             });
         },

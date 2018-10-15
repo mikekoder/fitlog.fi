@@ -25,8 +25,8 @@ export default {
         var self = this;
         $(this.$el).typeahead({
             source (query, process) {
-                api.searchFoods(query).then(function (results) {
-                    process(results);
+                api.searchFoods(query).then(response => {
+                    process(response.data);
                 });
             },
             minLength: 2,
@@ -39,8 +39,8 @@ export default {
                 return items;
             },
             afterSelect (food) {
-                api.getFood(food.id).then(function (foodDetails) {
-                    self.$emit('change', foodDetails);
+                api.getFood(food.id).then(response => {
+                    self.$emit('change', response.data);
                 });
             },
             displayText (data) {

@@ -73,11 +73,10 @@ export default {
           self.progress = [];
           self.$store.dispatch(constants.SELECT_WORKOUT_DATE_RANGE, {
               start: start,
-              end: end,
-              success() {
-                  self.fetchWorkouts();
-              }
-          });
+              end: end
+          }).then(_ => {
+            self.fetchWorkouts();
+        });
       },
       fetchWorkouts(refreshCallback) {
           var self = this;
@@ -85,14 +84,13 @@ export default {
           this.$store.dispatch(constants.FETCH_WORKOUTS, {
               start: self.start,
               end: self.end,
-              force,
-              success() {
-                  self.$store.commit(constants.LOADING_DONE);
-                  if(refreshCallback){
-                    refreshCallback();
-                  }
-              }
-          });
+              force
+          }).then(_ => {
+            self.$store.commit(constants.LOADING_DONE);
+            if(refreshCallback){
+                refreshCallback();
+            }
+        });
       },
       showWorkout(workout){
         this.$router.push({ name: 'workout-details', params: { id: workout.id } });
@@ -108,11 +106,9 @@ export default {
       deleteWorkout(workout) {
           var self = this;
           self.$store.dispatch(constants.DELETE_WORKOUT, {
-              workout,
-              success() { },
-              failure() {
-                self.notifyError(self.$t('deleteFailed'));
-              }
+              workout
+          }).catch(_ => {
+              self.notifyError(self.$t('deleteFailed'));
           });
       },
       changeStart(date) {
@@ -252,14 +248,8 @@ export default {
   },
   created() {
       var self = this;
-      this.$store.dispatch(constants.FETCH_MUSCLEGROUPS, {
-          success() { },
-          failure() { }
-      });
-      this.$store.dispatch(constants.FETCH_ROUTINES, {
-          success() { },
-          failure() { }
-      });
+      this.$store.dispatch(constants.FETCH_MUSCLEGROUPS, { });
+      this.$store.dispatch(constants.FETCH_ROUTINES, { });
       if (self.start && self.end) {
           self.fetchWorkouts();
       }

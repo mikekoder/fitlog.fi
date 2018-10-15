@@ -54,17 +54,15 @@ export default {
         client: this.client
       };
       
-      api.login(data).done((response) => {
+      api.login(data).done(response => {
         self.$store.dispatch(constants.STORE_TOKENS, {
-          client: response.client,
-          refreshToken: response.refreshToken,
-          accessToken: response.accessToken,
-          success() {
-            self.$router.replace({name: 'home'});
-          },
-          failure() {
-            self.notifyError(self.$t('failed'));
-          }
+          client: response.data.client,
+          refreshToken: response.data.refreshToken,
+          accessToken: response.data.accessToken
+        }).then(_ => {
+          self.$router.replace({name: 'home'});
+        }).catch(_ => {
+          self.notifyError(self.$t('failed'));
         });
       }).fail(xhr => {
 
@@ -87,7 +85,7 @@ export default {
             function (obj) {
               if(obj.idToken){
                 api.loginWithToken('Google', obj.idToken).then(response => {
-                  self.finishLogin(response.refreshToken, response.accessToken);
+                  self.finishLogin(response.data.refreshToken, response.data.accessToken);
                 }).fail(xhr => {
                 });
               }
@@ -122,17 +120,11 @@ export default {
       if(refreshToken && accessToken){
         self.$store.dispatch(constants.STORE_TOKENS, {
           refreshToken,
-          accessToken,
-          success() {
-            self.$store.dispatch(constants.FETCH_PROFILE, {
-              success(){
-                self.$router.replace({name: 'home'});
-              }
-            });
-          },
-          failure() {
-            self.notifyError(self.$t('failed'));
-          }
+          accessToken
+        }).then(_ => {
+          self.$router.replace({name: 'home'});
+        }).catch(_ => {
+          self.notifyError(self.$t('failed'));
         });
       }
     },

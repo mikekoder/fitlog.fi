@@ -47,11 +47,11 @@ export default {
                 fatColor: self.fatColor
             };
             self.$store.dispatch(constants.SAVE_NUTRIENT_COLOR_SETTINGS, {
-                settings,
-                success() {
-                    self.$refs.modal.hide();
-                },
-                failure() { }
+                settings
+            }).then(_ => {
+                self.$refs.modal.hide();
+            }).catch(_ => {
+
             });
             
         }

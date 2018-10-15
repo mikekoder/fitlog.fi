@@ -28,21 +28,17 @@ methods: {
     activate(routine){
         var self = this;
         this.$store.dispatch(constants.ACTIVATE_ROUTINE, {
-            routine,
-            success() { },
-            failure() {
-                self.notifyError(self.$t('activationFailed'));
-            }
+            routine
+        }).catch(_ => {
+            self.notifyError(self.$t('activationFailed'));
         });
     },
     deleteRoutine(routine) {
         var self = this;
         this.$store.dispatch(constants.DELETE_ROUTINE, {
-            routine,
-            success() { },
-            failure() {
-                self.notifyError(self.$t('deleteFailed'));
-            }
+            routine
+        }).catch(_ => {
+            self.notifyError(self.$t('deleteFailed'));
         });
     },
     clickRoutine(routine){
@@ -85,16 +81,9 @@ methods: {
 created() {
 
     var self = this;
-    this.$store.dispatch(constants.FETCH_EXERCISES, {
-        forceRefresh: true,
-        success() { },
-        failure() { }
-    });
-    this.$store.dispatch(constants.FETCH_ROUTINES, {
-        success() {
-            self.$store.commit(constants.LOADING_DONE);
-        },
-        failure() { }
+    this.$store.dispatch(constants.FETCH_EXERCISES, { forceRefresh: true });
+    this.$store.dispatch(constants.FETCH_ROUTINES, { }).then(_ => {
+        self.$store.commit(constants.LOADING_DONE, { });
     });
 }
 }

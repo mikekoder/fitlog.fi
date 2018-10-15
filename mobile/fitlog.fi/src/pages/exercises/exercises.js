@@ -64,13 +64,11 @@ export default {
     var self = this;
     
     self.$store.dispatch(constants.FETCH_EXERCISES, {
-      forceRefresh: true,
-      success(){
-        self.$store.commit(constants.LOADING_DONE);
-      },
-      failure(){
-        self.$store.commit(constants.LOADING_DONE);
-      }
+      forceRefresh: true
+    }).then(_ => {
+      self.$store.commit(constants.LOADING_DONE, { });
+    }).catch(_ => {
+      self.$store.commit(constants.LOADING_DONE, { });
     });
     
   },

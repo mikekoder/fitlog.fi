@@ -39,20 +39,18 @@ export default {
             self.progress = [];
             self.$store.dispatch(constants.SELECT_ENERGY_EXPENDITURE_DATE_RANGE, {
                 start: start,
-                end: end,
-                success() {
-                    self.fetchEnergyExpenditures();
-                }
+                end: end
+            }).then(_ => {
+                self.fetchEnergyExpenditures();
             });
         },
         fetchEnergyExpenditures() {
             var self = this;
             this.$store.dispatch(constants.FETCH_ENERGY_EXPENDITURES, {
                 start: self.start,
-                end: self.end,
-                success() {
-                    self.$store.commit(constants.LOADING_DONE);
-                }
+                end: self.end
+            }).then(_ => {
+                self.$store.commit(constants.LOADING_DONE);
             });
         },
         changeStart(date) {
@@ -71,27 +69,23 @@ export default {
         saveEnergyExpenditure(energyExpenditure) {
             var self = this;
             self.$store.dispatch(constants.SAVE_ENERGY_EXPENDITURE, {
-                energyExpenditure,
-                success() {
-                    self.notifySuccess(self.$t('saveSuccessful'));
-                    self.$refs.editEnergyExpenditureDetails.hide();
-                },
-                failure() {
-                    self.notifyError(self.$t('saveFailed'));
-                }
+                energyExpenditure
+            }).then(_ => {
+                self.notifySuccess(self.$t('saveSuccessful'));
+                self.$refs.editEnergyExpenditureDetails.hide();
+            }).catch(_ => {
+                self.notifyError(self.$t('saveFailed'));
             });
         },
         deleteEnergyExpenditure(energyExpenditure){
             var self = this;
             self.$store.dispatch(constants.DELETE_ENERGY_EXPENDITURE, {
-                energyExpenditure,
-                success() {
-                    self.notifySuccess(self.$t('deleteSuccessful'));
-                },
-                failure() {
-                    self.notifyError(self.$t('deleteFailed'));
-                }
-            })
+                energyExpenditure
+            }).then(_ => {
+                self.notifySuccess(self.$t('deleteSuccessful'));
+            }).catch(_ => {
+                self.notifyError(self.$t('deleteFailed'));
+            });
         },
         clickEnergyExpenditure(expenditure){
             var self = this;
@@ -140,10 +134,9 @@ export default {
         var self = this;
         self.$store.dispatch(constants.FETCH_ACTIVITIES, {
             start: self.start,
-            end: self.end,
-            success() {
-                self.$store.commit(constants.LOADING_DONE);
-            }
+            end: self.end
+        }).then(_ => {
+            self.$store.commit(constants.LOADING_DONE);
         });
         if (self.start && self.end) {
             self.fetchEnergyExpenditures();

@@ -11,13 +11,10 @@ export default {
         var delay = 100;
         var loader = () => {
             if(self.isLoggedIn){
-                self.$store.dispatch(constants.FETCH_EXERCISES, {
-                    success(exercises) {
-                        if (self.$exercisesLoaded) {
-                            self.$exercisesLoaded(exercises);
-                        }
-                    },
-                    failure() { }
+                self.$store.dispatch(constants.FETCH_EXERCISES, { }).then(exercises => {
+                    if (self.$exercisesLoaded) {
+                        self.$exercisesLoaded(exercises);
+                    }
                 });
             }
             else {

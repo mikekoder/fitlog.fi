@@ -113,14 +113,12 @@ export default {
             });
         });
         self.$store.dispatch(constants.SAVE_WORKOUT, {
-            workout,
-            success(savedWorkout) {
-                self.id = savedWorkout.id;
-                self.notifySuccess(self.$t('saveSuccessful'));
-            },
-            failure() {
-                self.notifyError(self.$t('saveFailed'));
-            }
+            workout
+        }).then(savedWorkout => {
+            self.id = savedWorkout.id;
+            self.notifySuccess(self.$t('saveSuccessful'));
+        }).catch(_ => {
+            self.notifyError(self.$t('saveFailed'));
         });
     },
     cancel() {
@@ -129,13 +127,11 @@ export default {
     deleteWorkout() {
         var self = this;
         self.$store.dispatch(constants.DELETE_WORKOUT, {
-            recipe: { id: self.id },
-            success() {
-                self.$router.push({ name: 'workouts' });
-            },
-            failure() {
-                self.notifyError(self.$t('deleteFailed'));
-            }
+            recipe: { id: self.id }
+        }).then(_ => {
+            self.$router.push({ name: 'workouts' });
+        }).catch(_ => {
+            self.notifyError(self.$t('deleteFailed'));
         });
     },
 
@@ -145,53 +141,50 @@ export default {
         self.time = workout.time;
         self.duration = '01.01.2000 ' + (workout.hours || 0) + ':' + (workout.minutes || 0);
         self.groups = [];
-        self.$store.dispatch(constants.FETCH_EXERCISES, {
-            success(exercises) {
-                self.exercises = exercises.map(e => {return {...e, label: e.name, value: e }});
-                self.groups = [];
-                if(workout.sets){
+        self.$store.dispatch(constants.FETCH_EXERCISES, { }).then(exercises => {
+            self.exercises = exercises.map(e => {return {...e, label: e.name, value: e }});
+            self.groups = [];
+            if(workout.sets){
 
-                    var previousGroup = undefined;
-                    var previousExerciseId = undefined;
+                var previousGroup = undefined;
+                var previousExerciseId = undefined;
 
-                    workout.sets.forEach(s => {
-                        var group;
-                        var exercise = self.exercises.find(e => e.id == s.exerciseId);
+                workout.sets.forEach(s => {
+                    var group;
+                    var exercise = self.exercises.find(e => e.id == s.exerciseId);
 
-                        if(s.exerciseId == previousExerciseId){
-                            group = previousGroup;
+                    if(s.exerciseId == previousExerciseId){
+                        group = previousGroup;
+                    }
+                    else {
+                        group = {
+                            exercise: exercise,
+                            sets: [],
+                            collapsed: true
+                        };
+                        self.groups.push(group);
+                    }
+                    if(workout.id){
+                        group.sets.push({ reps: s.reps, weights: s.weights});
+                    }
+                    else {
+                        var weights = (s.load || s.load == 0) && exercise.oneRepMax ? s.load / 100 * exercise.oneRepMax : undefined;
+                        if (weights) {
+                            weights = utils.roundToNearest(weights, 2.5);
                         }
-                        else {
-                            group = {
-                                exercise: exercise,
-                                sets: [],
-                                collapsed: true
-                            };
-                            self.groups.push(group);
-                        }
-                        if(workout.id){
-                            group.sets.push({ reps: s.reps, weights: s.weights});
-                        }
-                        else {
-                            var weights = (s.load || s.load == 0) && exercise.oneRepMax ? s.load / 100 * exercise.oneRepMax : undefined;
-                            if (weights) {
-                                weights = utils.roundToNearest(weights, 2.5);
-                            }
-                            group.sets.push({ reps: s.reps, weights: weights});
-                        }
-                        previousGroup = group;
-                        previousExerciseId = s.exerciseId;
+                        group.sets.push({ reps: s.reps, weights: weights});
+                    }
+                    previousGroup = group;
+                    previousExerciseId = s.exerciseId;
 
-                    });
-                }
-                else {
-                    self.addGroup();
-                }
-                self.$store.commit(constants.LOADING_DONE);
-            },
-            failure() {
-                self.notifyError(self.$t('fetchFailed'));
+                });
             }
+            else {
+                self.addGroup();
+            }
+            self.$store.commit(constants.LOADING_DONE);
+        }).catch(_ => {
+            self.notifyError(self.$t('fetchFailed'));
         });
     },
     showHelp(){
@@ -214,22 +207,20 @@ export default {
         };
         if(routineId && routineWorkoutId){
             self.$store.dispatch(constants.FETCH_ROUTINE, {
-                id: routineId,
-                success(routine) {
-                    var routineWorkout = routine.workouts.find(w => w.id === routineWorkoutId);
-                    routineWorkout.exercises.forEach(e => {
-                        var loadFrom = e.loadFrom || e.loadFrom == 0 ? e.loadFrom : e.loadTo;
-                        var loadTo = e.loadTo || e.loadTo == 0 ? e.loadTo : e.loadFrom;
-                        var step = (loadFrom || loadFrom == 0) && (loadTo || loadTo == 0) ? (loadTo - loadFrom) / (e.sets - 1) : undefined;
-                        for (var i = 0; i < e.sets; i++){
-                            workout.sets.push({ exerciseId: e.exerciseId, reps: e.reps, load: (step || step == 0) ? loadFrom + i * step : undefined });
-                        }
-                    });
-                    self.populate(workout);
-                },
-                failure() {
-                    self.notifyError(self.$t('fetchFailed'));
-                }
+                id: routineId
+            }).then(routine => {
+                var routineWorkout = routine.workouts.find(w => w.id === routineWorkoutId);
+                routineWorkout.exercises.forEach(e => {
+                    var loadFrom = e.loadFrom || e.loadFrom == 0 ? e.loadFrom : e.loadTo;
+                    var loadTo = e.loadTo || e.loadTo == 0 ? e.loadTo : e.loadFrom;
+                    var step = (loadFrom || loadFrom == 0) && (loadTo || loadTo == 0) ? (loadTo - loadFrom) / (e.sets - 1) : undefined;
+                    for (var i = 0; i < e.sets; i++){
+                        workout.sets.push({ exerciseId: e.exerciseId, reps: e.reps, load: (step || step == 0) ? loadFrom + i * step : undefined });
+                    }
+                });
+                self.populate(workout);
+            }).catch(_ => {
+                self.notifyError(self.$t('fetchFailed'));
             });
         }
         else {
@@ -239,13 +230,11 @@ export default {
     }
     else {
         self.$store.dispatch(constants.FETCH_WORKOUT, {
-            id,
-            success(workout) {
-                self.populate(workout);
-            },
-            failure(xhr) {
-                self.notifyError(self.$t('fetchFailed'));
-            }
+            id
+        }).then(workout => {
+            self.populate(workout);
+        }).catch(_ => {
+            self.notifyError(self.$t('fetchFailed'));
         });
     }
   },

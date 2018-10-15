@@ -1,67 +1,52 @@
-﻿import $ from 'jquery'
-import config from './config'
+﻿import config from './config'
 import storage from './storage'
+import axios from 'axios'
 
+axios.interceptors.request.use(function (config) {
+    var token = storage.getItem("access_token");
+    config.headers = { Authorization: `Bearer ${token}`};
+    return config;
+  }, function (error) {
+    return Promise.reject(error);
+});
+/*
 $.ajaxSetup({
     beforeSend(xhr) {
         var token = storage.getItem("access_token");
         xhr.setRequestHeader('Authorization', 'bearer ' + token);
     }
 });
-
+*/
 export default {
     baseUrl: config.apiBaseUrl,
 
     // Users
     register(registration) {
-        return $.ajax({
-            url: this.baseUrl + 'users/register',
-            type: 'POST',
-            contentType: 'text/json',
-            data: JSON.stringify(registration)
-        });
+        return axios.post(this.baseUrl + 'users/register', registration);
     },
     login(login) {
-        return $.ajax({
-            url: this.baseUrl + 'users/login',
-            type: 'POST',
-            contentType: 'text/json',
-            data: JSON.stringify(login)
-        });
+        return axios.post(this.baseUrl + 'users/login', login);
     },
     getProfile(){
-        return $.get(this.baseUrl + 'users/me/');
+        return axios.get(this.baseUrl + 'users/me/');
     },
     saveProfile (profile) {
-        return $.ajax({
-            url: this.baseUrl + 'users/me/',
-            type: 'PUT',
-            contentType: 'text/json',
-            data: JSON.stringify(profile)
-        });
+        return axios.put(this.baseUrl + 'users/me/',  profile);
     },
     deleteProfile () {
-        return $.ajax({
-            url: this.baseUrl + 'users/me/',
-            type: 'DELETE'
-        });
+        return axios.delete(this.baseUrl + 'users/me/');
     },
     logout(){
-        return $.post(this.baseUrl + 'users/logout');
+        return axios.post(this.baseUrl + 'users/logout');
     },
     refreshToken(refreshToken) {
-        return $.get(this.baseUrl + 'users/refresh-token/?refreshToken=' + refreshToken);
+        return axios.get(this.baseUrl + 'users/refresh-token/?refreshToken=' + refreshToken);
     },
     updateLogin(login) {
-        return $.ajax({
-            url: this.baseUrl + 'users/login',
-            type: 'PUT',
-            contentType: 'text/json',
-            data: JSON.stringify(login)
-        });
+        return axios.put(this.baseUrl + 'users/login', login);
     },
     loginWithToken(provider, token){
-        return $.get(`${this.baseUrl}users/token-login?provider=${provider}&token=${token}`);
+        return axios.get(`${this.baseUrl}users/token-login?provider=${provider}&token=${token}`);
     },
 
     // Meals
@@ -73,194 +58,137 @@ export default {
         if (end) {
             query.end = end.toISOString();
         }
-        return $.get(this.baseUrl + 'meals', query);
+        return axios.get(this.baseUrl + 'meals', {params:query});
     },
     getMeal(id){
-        return $.get(this.baseUrl + 'meals/' + id);
+        return axios.get(this.baseUrl + 'meals/' + id);
     },
     saveMeal(meal) {
         var url = this.baseUrl + 'meals/';
-        var method = 'POST';
         if (meal.id) {
             url += meal.id;
-            method = 'PUT';
+            return axios.put(url, meal);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(meal)
-        });
+        else {
+            return axios.post(url, meal);
+        }
     },
     deleteMeal(id){
-        return $.ajax({
-            url: this.baseUrl + 'meals/' + id,
-            type: 'DELETE'
-        });
+        return axios.delete( this.baseUrl + 'meals/' + id);
     },
     restoreMeal(id) {
-        return $.ajax({
-            url: this.baseUrl + 'meals/' + id + '/restore/',
-            type: 'POST'
-        });
+        return axios.post( this.baseUrl + 'meals/' + id + '/restore/');
     },
     saveMealRow(row) {
-        var url = row.id ? `${this.baseUrl}meals/${row.mealId}/rows/${row.id}` : `${this.baseUrl}meals/rows`;
-        var method = row.id ? 'PUT' : 'POST';
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(row)
-        });
+        if(row.id){
+            return axios.put(`${this.baseUrl}meals/${row.mealId}/rows/${row.id}`, row);
+        }
+        else {
+            return axios.post(`${this.baseUrl}meals/rows`, row);
+        }
     },
     deleteMealRow(row) {
-        var url = `${this.baseUrl}meals/${row.mealId}/rows/${row.id}`;
-        var method = 'DELETE';
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json'
-        });
+        return axios.delete(`${this.baseUrl}meals/${row.mealId}/rows/${row.id}`);
     },
     // Foods
     searchFoods(name){
-        return $.get(this.baseUrl + 'foods/search', { name });
+        return axios.get(this.baseUrl + 'foods/search', { params:{name }});
     },
     searchFoodsMostNutrients(nutrientId){
-        return $.get(this.baseUrl + 'foods/search/most-nutrients', { nutrientId, count: 100 });
+        return axios.get(this.baseUrl + 'foods/search/most-nutrients', {params: { nutrientId, count: 100 }});
     },
     searchFoodsLeastNutrients(nutrientId){
-        return $.get(this.baseUrl + 'foods/search/least-nutrients', { nutrientId, count: 100 });
+        return axios.get(this.baseUrl + 'foods/search/least-nutrients', {params: { nutrientId, count: 100 }});
     },
     searchExternalFood(ean){
-        return $.get(this.baseUrl + 'foods/search-external', { ean });
+        return axios.get(this.baseUrl + 'foods/search-external', {params:{ ean }});
     },
     getLatestFoods() {
-        return $.get(this.baseUrl + 'foods/latest');
+        return axios.get(this.baseUrl + 'foods/latest');
     },
     getMostUsedFoods() {
-        return $.get(this.baseUrl + 'foods/most-used');
+        return axios.get(this.baseUrl + 'foods/most-used');
     },
     listFoods(){
-        return $.get(this.baseUrl + 'foods/');
+        return axios.get(this.baseUrl + 'foods/');
     },
     getFood(id){
-        return $.get(this.baseUrl + 'foods/' + id);
+        return axios.get(this.baseUrl + 'foods/' + id);
     },
     saveFood(food){
         var url = this.baseUrl + 'foods/';
-        var method = 'POST';
         if (food.id) {
             url += food.id;
-            method = 'PUT';
+            return axios.put(url, food);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(food)
-        });
+        else {
+            return axios.post(url, food);
+        }
     },
     deleteFood(id){
-        return $.ajax({
-            url: this.baseUrl + 'foods/' + id,
-            type: 'DELETE'
-        });
+        return axios.delete(this.baseUrl + 'foods/' + id);
     },
 
     // Recipes
     listRecipes(s) {
-        return $.get(this.baseUrl + 'recipes');
+        return axios.get(this.baseUrl + 'recipes');
     },
     getRecipe(id) {
-        return $.get(this.baseUrl + 'recipes/' + id);
+        return axios.get(this.baseUrl + 'recipes/' + id);
     },
     saveRecipe(recipe) {
         var url = this.baseUrl + 'recipes/';
-        var method = 'POST';
         if (recipe.id) {
             url += recipe.id;
-            method = 'PUT';
+            return axios.put(url, recipe);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(recipe)
-        });
+        else {
+            return axios.post(url, recipe);
+        }
     },
     deleteRecipe(id) {
-        return $.ajax({
-            url: this.baseUrl + 'recipes/' + id,
-            type: 'DELETE'
-        });
+        return axios.delete( this.baseUrl + 'recipes/' + id);
     },
     // Nutrients
     listNutrients(){
-        return $.get(this.baseUrl + 'nutrition/nutrients');
+        return axios.get(this.baseUrl + 'nutrition/nutrients');
     },
     getNutrientSettings(){
-        return $.get(this.baseUrl + 'nutrition/settings');
+        return axios.get(this.baseUrl + 'nutrition/settings');
     },
     getNutritionGoals() {
-        return $.get(this.baseUrl + 'nutrition/goals');
+        return axios.get(this.baseUrl + 'nutrition/goals');
     },
     getNutritionGoal(id) {
-        return $.get(this.baseUrl + 'nutrition/goals/' + id);
+        return axios.get(this.baseUrl + 'nutrition/goals/' + id);
     },
     getActiveNutritionGoal() {
-        return $.get(this.baseUrl + 'nutrition/goals/active');
+        return axios.get(this.baseUrl + 'nutrition/goals/active');
     },
     saveNutritionGoal(goal) {
         var url = this.baseUrl + 'nutrition/goals/';
-        var method = 'POST';
         if (goal.id) {
             url += goal.id;
-            method = 'PUT';
+            return axios.put(url, goal);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(goal)
-        });
+        else {
+            return axios.post(url, goal);
+        }
     },
     activateNutritionGoal(id){
-        return $.ajax({
-            url: this.baseUrl + 'nutrition/goals/' + id + '/activate',
-            type: 'POST'
-        });
+        return axios.post( this.baseUrl + 'nutrition/goals/' + id + '/activate');
     },
     deleteNutritionGoal(id){
-        return $.ajax({
-            url: this.baseUrl + 'nutrition/goals/' + id,
-            type: 'DELETE'
-        });
+        return axios.delete(this.baseUrl + 'nutrition/goals/' + id);
     },
     listDailyIntakes(gender, dob){
 
     },
     saveNutrientSettings(settings){
-        return $.ajax({
-            url: this.baseUrl + 'nutrition/settings',
-            type: 'PUT',
-            contentType: 'text/json',
-            data: JSON.stringify(settings)
-        });
+        return axios.put( this.baseUrl + 'nutrition/settings', settings);
     },
     saveHomeSettings(settings){
-        return $.ajax({
-            url: this.baseUrl + 'settings/home',
-            type: 'PUT',
-            contentType: 'text/json',
-            data: JSON.stringify(settings)
-        });
+        return axios.put( this.baseUrl + 'settings/home', settings);
     },
     getNutrientHistory(start, end) {
         var query = {};
@@ -270,28 +198,18 @@ export default {
         if (end) {
             query.end = end.toISOString();
         }
-        return $.get(this.baseUrl + 'nutrition/nutrients/history', query);
+        return axios.get(this.baseUrl + 'nutrition/nutrients/history', {params: query});
     },
     // Meal rhythm
     getMealDefinitions() {
-        return $.get(this.baseUrl + 'meals/definitions');
+        return axios.get(this.baseUrl + 'meals/definitions');
     },
     saveMealDefinitions(definitions) {
         var url = this.baseUrl + 'meals/definitions';
-        return $.ajax({
-            url: url,
-            type: 'PUT',
-            contentType: 'text/json',
-            data: JSON.stringify(definitions)
-        });
+        return axios.put(url, definitions);
     },
     deleteMealDefinition(definition) {
-        var url = this.baseUrl + 'meals/definitions/'+id;
-        return $.ajax({
-            url: url,
-            type: 'DELETE',
-            contentType: 'text/json'
-        });
+        return axios.delete(this.baseUrl + 'meals/definitions/'+id);
     },
     // Workouts
     listWorkouts(start, end){
@@ -302,74 +220,52 @@ export default {
         if (end) {
             query.end = end.toISOString();
         }
-        return $.get(this.baseUrl + 'workouts', query);
+        return axios.get(this.baseUrl + 'workouts', query);
     },
     getWorkout(id){
-        return $.get(this.baseUrl + 'workouts/' + id);
+        return axios.get(this.baseUrl + 'workouts/' + id);
     },
     saveWorkout(workout){
         var url = this.baseUrl + 'workouts/';
-        var method = 'POST';
         if (workout.id) {
             url += workout.id;
-            method = 'PUT';
+            return axios.put(url, workout);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(workout)
-        });
+        else {
+            return axios.post(url, workout);
+        }
     },
     deleteWorkout(id){
-        return $.ajax({
-            url: this.baseUrl + 'workouts/' + id,
-            type: 'DELETE'
-        });
+        return axios.delete( this.baseUrl + 'workouts/' + id);
     },
 
     // Muscles
     listMuscleGroups(){
-        return $.get(this.baseUrl + 'muscles/groups');
+        return axios.get(this.baseUrl + 'muscles/groups');
     },
 
     // Exercises
     listExercises(){
-        return $.get(this.baseUrl + 'exercises/');
+        return axios.get(this.baseUrl + 'exercises/');
     },
     getExercise(id){
-        return $.get(this.baseUrl + 'exercises/' + id);
+        return axios.get(this.baseUrl + 'exercises/' + id);
     },
     saveExercise(exercise){
         var url = this.baseUrl + 'exercises/';
-        var method = 'POST';
         if (exercise.id) {
             url += exercise.id;
-            method = 'PUT';
+            return axios.put(url, exercise);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(exercise)
-        });
+        else {
+            return axios.post(url, exercise);
+        }
     },
     save1RM(exerciseId, oneRepMax){
-        var url = this.baseUrl + 'exercises/' + exerciseId + '/onerepmax';
-        return $.ajax({
-            url: url,
-            type: 'PUT',
-            contentType: 'text/json',
-            data: JSON.stringify(oneRepMax)
-        });
+        return axios.put(this.baseUrl + 'exercises/' + exerciseId + '/onerepmax', oneRepMax);
     },
     deleteExercise(id){
-        return $.ajax({
-            url: this.baseUrl + 'exercises/' + id,
-            type: 'DELETE'
-        });
+        return axios.delete(this.baseUrl + 'exercises/' + id);
     },
     getExerciseHistory(exerciseId, start, end){
         var query = {
@@ -381,91 +277,64 @@ export default {
         if (end) {
             query.end = end.toISOString();
         }
-        return $.get(this.baseUrl + 'exercises/history', query);
+        return axios.get(this.baseUrl + 'exercises/history', {params: query});
     },
 
     // Routines
     listRoutines() {
-        return $.get(this.baseUrl + 'routines/');
+        return axios.get(this.baseUrl + 'routines/');
     },
     getRoutine(id){
-        return $.get(this.baseUrl + 'routines/' + id);
+        return axios.get(this.baseUrl + 'routines/' + id);
     },
     saveRoutine (routine) {
         var url = this.baseUrl + 'routines/';
-        var method = 'POST';
         if (routine.id) {
             url += routine.id;
-            method = 'PUT';
+            return axios.put(url, routine);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(routine)
-        });
+        else {
+            return axios.post(url, routine);
+        }
     },
     deleteRoutine(id){
-        return $.ajax({
-            url: this.baseUrl + 'routines/' + id,
-            type: 'DELETE'
-        });
+        return axios.delete(this.baseUrl + 'routines/' + id);
     },
     activateRoutine(id){
-        return $.ajax({
-            url: this.baseUrl + 'routines/' + id + '/activate',
-            type: 'POST'
-        });
+        return axios.post(this.baseUrl + 'routines/' + id + '/activate');
     },
     getTrainingGoals() {
-        return $.get(this.baseUrl + 'training/goals');
+        return axios.get(this.baseUrl + 'training/goals');
     },
     getTrainingGoal(id) {
-        return $.get(this.baseUrl + 'training/goals/' + id);
+        return axios.get(this.baseUrl + 'training/goals/' + id);
     },
     getActiveTrainingGoal() {
-        return $.get(this.baseUrl + 'training/goals/active');
+        return axios.get(this.baseUrl + 'training/goals/active');
     },
     saveTrainingGoal(goal) {
         var url = this.baseUrl + 'training/goals/';
-        var method = 'POST';
         if (goal.id) {
             url += goal.id;
-            method = 'PUT';
+            return axios.put(url, goal);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(goal)
-        });
+        else {
+            return axios.post(url, goal);
+        }
     },
     activateTrainingGoal(id){
-        return $.ajax({
-            url: this.baseUrl + 'training/goals/' + id + '/activate',
-            type: 'POST'
-        });
+        return axios.post(this.baseUrl + 'training/goals/' + id + '/activate');
     },
     deleteTrainingGoal(id){
-        return $.ajax({
-            url: this.baseUrl + 'training/goals/' + id,
-            type: 'DELETE'
-        });
+        return axios.delete( this.baseUrl + 'training/goals/' + id);
     },
 
     // Measurements
     listMeasures(){
-        return $.get(this.baseUrl + 'measurements/measures');
+        return axios.get(this.baseUrl + 'measurements/measures');
     },
     saveMeasurements (measurements) {
-        return $.ajax({
-            url: this.baseUrl + 'measurements/',
-            type: 'POST',
-            contentType: 'text/json',
-            data: JSON.stringify(measurements)
-        });
+        return axios.post(this.baseUrl + 'measurements/', measurements);
     },
     getMeasurementHistory(measureId, start, end){
         var query = {
@@ -477,46 +346,36 @@ export default {
         if (end) {
             query.end = end.toISOString();
         }
-        return $.get(this.baseUrl + 'measurements/history', query);
+        return axios.get(this.baseUrl + 'measurements/history', {params:query});
     },
 
     // Feedback
     saveFeedback (feedback) {
         var url = this.baseUrl + 'feedback/';
-        var method = 'POST';
         if (feedback.id) {
             url += feedback.id;
-            method = 'PUT';
+            return axios.put(url, feedback);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(feedback)
-        });
+        else {
+            return axios.post(url, feedback);
+        }
     },
     listBugs() {
-        return $.get(this.baseUrl + 'feedback/bugs');
+        return axios.get(this.baseUrl + 'feedback/bugs');
     },
     listImprovements() {
-        return $.get(this.baseUrl + 'feedback/improvements');
+        return axios.get(this.baseUrl + 'feedback/improvements');
     },
     getVotes() {
-        return $.get(this.baseUrl + 'feedback/votes');
+        return axios.get(this.baseUrl + 'feedback/votes');
     },
     saveVote(feedbackId) {
-        var url = this.baseUrl + 'feedback/' + feedbackId+'/vote';
-        return $.ajax({
-            url: url,
-            type: 'POST',
-            contentType: 'text/json'
-        });
+        return axios.post(this.baseUrl + 'feedback/' + feedbackId+'/vote');
     },
 
     // Activities
     listActivities() {
-        return $.get(this.baseUrl + 'activities');
+        return axios.get(this.baseUrl + 'activities');
     },
     listEnergyExpenditures(start, end){
         var query = {};
@@ -526,49 +385,29 @@ export default {
         if (end) {
             query.end = end.toISOString();
         }
-        return $.get(this.baseUrl + 'activities/energyexpenditures', query);
+        return axios.get(this.baseUrl + 'activities/energyexpenditures', {params: query});
     },
     saveEnergyExpenditure(energyExpenditure){
         var url = this.baseUrl + 'activities/energyexpenditures/';
-        var method = 'POST';
         if (energyExpenditure.id) {
             url += energyExpenditure.id;
-            method = 'PUT';
+            return axios.put(url, energyExpenditure);
         }
-
-        return $.ajax({
-            url: url,
-            type: method,
-            contentType: 'text/json',
-            data: JSON.stringify(energyExpenditure)
-        });
+        else {
+            return axios.post(url, energyExpenditure);
+        }
     },
     deleteEnergyExpenditure(id){
-        return $.ajax({
-            url: this.baseUrl + 'activities/energyexpenditures/' + id,
-            type: 'DELETE'
-        });
+        return axios.delete(this.baseUrl + 'activities/energyexpenditures/' + id);
     },
     listActivityPresets() {
-        return $.get(this.baseUrl + 'activities/presets');
+        return axios.get(this.baseUrl + 'activities/presets');
     },
     saveActivityPresets(presets) {
-        var url = this.baseUrl + 'activities/presets';
-        return $.ajax({
-            url: url,
-            type: 'PUT',
-            contentType: 'text/json',
-            data: JSON.stringify(presets)
-        });
+        return axios.put(this.baseUrl + 'activities/presets', presets);
     },
     saveActivityPresetForDay(date, activityPresetId) {
-        var url = this.baseUrl + 'activities/day-preset';
-        return $.ajax({
-            url: url,
-            type: 'PUT',
-            contentType: 'text/json',
-            data: JSON.stringify({ date, activityPresetId })
-        });
+        return axios.put(this.baseUrl + 'activities/day-preset', {params:{ date, activityPresetId }});
     },
     listActivityPresetDays(start, end){
         var query = {};
@@ -578,6 +417,6 @@ export default {
         if (end) {
             query.end = end.toISOString();
         }
-        return $.get(this.baseUrl + 'activities/day-presets', query);
+        return axios.get(this.baseUrl + 'activities/day-presets', {params:query});
     },
 };

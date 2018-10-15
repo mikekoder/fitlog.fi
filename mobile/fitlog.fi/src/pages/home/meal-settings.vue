@@ -78,11 +78,9 @@ export default {
                 nutrients: self.selectedNutrients
             };
             self.$store.dispatch(constants.SAVE_MEAL_DIARY_SETTINGS, {
-                settings,
-                success() {
-                    self.$refs.modal.hide();
-                },
-                failure() { }
+                settings
+            }).then(_ => {
+                self.$refs.modal.hide();
             });
             
         }

@@ -34,8 +34,8 @@ export default {
     search(text){
       var self = this;
       if(text.length >= 2){
-        api.searchFoods(text).then(results => {
-          self.searchResults = results;
+        api.searchFoods(text).then(response => {
+          self.searchResults = response.data;
         });
       }
       else {
@@ -46,13 +46,13 @@ export default {
       var self = this;
       self.topResults = [];
       if(self.topDirection == 'most'){
-        api.searchFoodsMostNutrients(self.topNutrient.id).then(results => {
-          self.topResults = results;
+        api.searchFoodsMostNutrients(self.topNutrient.id).then(response => {
+          self.topResults = response.data;
         });
       }
       else{
-        api.searchFoodsLeastNutrients(self.topNutrient.id).then(results => {
-          self.topResults = results;
+        api.searchFoodsLeastNutrients(self.topNutrient.id).then(response => {
+          self.topResults = response.data;
         });
       }
     }
@@ -63,13 +63,10 @@ export default {
       { label: self.$t('most'),  value: 'most' }, 
       { label:self.$t('least'), value:'least' } ];
     self.topDirection = self.topDirections[0].value;
-    self.$store.dispatch(constants.FETCH_MY_FOODS, {
-      success(){
-        self.$store.commit(constants.LOADING_DONE);
-      },
-      failure(){
-        self.$store.commit(constants.LOADING_DONE);
-      }
+    self.$store.dispatch(constants.FETCH_MY_FOODS, { }).then(_ => {
+      self.$store.commit(constants.LOADING_DONE, { });
+    }).catch(_ => {
+      self.$store.commit(constants.LOADING_DONE, { });
     });
     
   },
