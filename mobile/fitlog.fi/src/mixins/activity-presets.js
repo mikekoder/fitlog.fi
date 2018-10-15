@@ -12,13 +12,10 @@ export default {
         var delay = 100;
         var loader = () => {
             if(self.isLoggedIn){
-                self.$store.dispatch(constants.FETCH_ACTIVITY_PRESETS, {
-                    success(presets) {
-                        if (self.$activityPresetsLoaded) {
-                            self.$activityPresetsLoaded(presets);
-                        }
-                    },
-                    failure() { }
+                self.$store.dispatch(constants.FETCH_ACTIVITY_PRESETS, { }).then(presets => {
+                    if (self.$activityPresetsLoaded) {
+                        self.$activityPresetsLoaded(presets);
+                    }
                 });
             }
             else {

@@ -136,12 +136,10 @@ export default {
             };
             self.$store.dispatch(constants.SAVE_PROFILE, {
                 profile,
-                success() {
-                    self.notifySuccess(self.$t('saveSuccessful'));
-                },
-                failure() {
-                    self.notifyError(self.$t('saveFailed'));
-                }
+            }).then(_ => {
+                self.notifySuccess(self.$t('saveSuccessful'));
+            }).catch(_ => {
+                self.notifyError(self.$t('saveFailed'));
             });
         },
         updateLogin() {
@@ -152,11 +150,7 @@ export default {
                 newPassword: self.newPassword
             };
 
-            self.$store.dispatch(constants.UPDATE_LOGIN, {
-                login,
-                success() { },
-                failure() { }
-            });
+            self.$store.dispatch(constants.UPDATE_LOGIN, { login });
         },
         connectFacebook() {
             window.location = api.baseUrl + 'users/external-login/?provider=Facebook&client=web&add=true&returnUrl=/#/profiili';
@@ -167,10 +161,7 @@ export default {
         deleteProfile() {
             var self = this;
 
-            self.$store.dispatch(constants.DELETE_PROFILE, {
-                success() { },
-                failure() { }
-            });
+            self.$store.dispatch(constants.DELETE_PROFILE, { });
         }
     },
     created() {
@@ -180,43 +171,41 @@ export default {
             { label: self.$t('male'), value: 'male' },
             { label: self.$t('female'), value: 'female' },
         ]
-        this.$store.dispatch(constants.FETCH_PROFILE, {
-            success() {
-                var profile = self.$store.state.profile.profile;
-                if (profile) {
-                    
-                    if (profile.doB) {
-                        self.dob = new Date(profile.doB);
-                        /*
-                        self.day = profile.doB.getDate();
-                        self.month = self.months.find(m => m.number == profile.doB.getMonth() + 1);
-                        self.year = profile.doB.getFullYear();
-                        */
-                    }
-                    
-                    
-                    self.gender = profile.gender;
-                    self.height = profile.height;
-                    self.weight = profile.weight;
-                    if (profile.rmr) {
-                        self.rmr = profile.rmr;
-                        self.rmrSpecified = true;
-                    }
-                    if (profile.pal) {
-                        self.pal = self.pals.find(p => p.value == profile.pal);
-                    }
-
-                    self.hasPassword = profile.hasPassword;
-                    if (profile.hasPassword) {
-                        // don't show generated username
-                        self.username = profile.username;
-                    }
-                    self.hasFacebook = profile.logins.includes('Facebook');
-                    self.hasGoogle = profile.logins.includes('Google');
+        this.$store.dispatch(constants.FETCH_PROFILE, { }).then(_ => {
+            var profile = self.$store.state.profile.profile;
+            if (profile) {
+                
+                if (profile.doB) {
+                    self.dob = new Date(profile.doB);
+                    /*
+                    self.day = profile.doB.getDate();
+                    self.month = self.months.find(m => m.number == profile.doB.getMonth() + 1);
+                    self.year = profile.doB.getFullYear();
+                    */
+                }
+                
+                
+                self.gender = profile.gender;
+                self.height = profile.height;
+                self.weight = profile.weight;
+                if (profile.rmr) {
+                    self.rmr = profile.rmr;
+                    self.rmrSpecified = true;
+                }
+                if (profile.pal) {
+                    self.pal = self.pals.find(p => p.value == profile.pal);
                 }
 
-                self.$store.commit(constants.LOADING_DONE);
+                self.hasPassword = profile.hasPassword;
+                if (profile.hasPassword) {
+                    // don't show generated username
+                    self.username = profile.username;
+                }
+                self.hasFacebook = profile.logins.includes('Facebook');
+                self.hasGoogle = profile.logins.includes('Google');
             }
+
+            self.$store.commit(constants.LOADING_DONE);
         });
     }
 }

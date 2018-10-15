@@ -11,13 +11,10 @@ export default {
         var delay = 100;
         var loader = () => {
             if(self.isLoggedIn){
-                self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-                    success(nutrients) {
-                        if (self.$nutrientsLoaded) {
-                            self.$nutrientsLoaded(nutrients);
-                        }
-                    },
-                    failure() { }
+                self.$store.dispatch(constants.FETCH_NUTRIENTS, { }).then(nutrients => {
+                    if (self.$nutrientsLoaded) {
+                        self.$nutrientsLoaded(nutrients);
+                    }
                 });
             }
             else {

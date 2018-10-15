@@ -53,14 +53,10 @@ export default {
         },
         save() {
             var self = this;
-            self.$store.dispatch(constants.SAVE_ACTIVITY_PRESETS, {
-                presets: self.presets,
-                success() {
-                    self.notifySuccess(self.$t('saveSuccessful'));
-                },
-                failure() {
-                    self.notifyError(self.$t('saveFailed'));
-                }
+            self.$store.dispatch(constants.SAVE_ACTIVITY_PRESETS, {presets: self.presets}).then(_ => {
+                self.notifySuccess(self.$t('saveSuccessful'));
+            }).catch(reason => {
+                self.notifyError(self.$t('saveFailed'));
             });
         },
         daysChanged(preset, day) {

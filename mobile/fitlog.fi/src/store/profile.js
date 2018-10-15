@@ -10,70 +10,49 @@ export default
         profile: undefined
     },
     actions: {
-        [constants.STORE_TOKENS]({ commit, state }, { client, refreshToken, accessToken, success, failure }) {
+        [constants.STORE_TOKENS]({ commit, state }, { client, refreshToken, accessToken }) {
             storage.setItem('client', client);
             storage.setItem('refresh_token', refreshToken);
             storage.setItem('access_token', accessToken);
 
-            if (success) {
-                success();
-            }
+            return Promise.resolve();
         },
-        [constants.REFRESH_TOKEN]({ commit, state }, { success, failure }) {
+        [constants.REFRESH_TOKEN]({ commit, state }) {
             var refreshToken = storage.getItem('refresh_token');
-            api.refreshToken(refreshToken).then(function (response) {
-                if(response.accessToken){
-                    storage.setItem('access_token', response.accessToken);
-                    if (success) {
-                        success();
-                    }
+            return api.refreshToken(refreshToken).then(response => {
+                if(response.data.accessToken){
+                    storage.setItem('access_token', response.data.accessToken);
                 }
-                else if (failure) {
-                    failure();
-                }
-            }).fail(() =>{
-                if (failure) {
-                    failure();
+                else{
+                    return Promise.reject(`Couldn't refresh token`);
                 }
             });
         },
-        [constants.FETCH_PROFILE]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_PROFILE]({ commit, state }, { forceRefresh}) {
             if (state.profile && !forceRefresh) {
-                if (success) {
-                    success(state.profile);
-                }
+                return Promise.resolve(state.profile);
             }
-            api.getProfile().then(function (profile) {
+            return api.getProfile().then(response => {
+                var profile = response.data;
                 if (profile.doB) {
                     profile.doB = new Date(profile.doB);
                 }
                 commit(constants.FETCH_PROFILE_SUCCESS, { profile })
-                if (success) {
-                    success(profile);
-                }
-            }).fail(() =>{
-                if (failure) {
-                    failure();
-                }
+                return profile;
             });
         },
-        [constants.SAVE_PROFILE]({ commit, state }, { profile, success, failure }) {
-            api.saveProfile(profile).then(savedProfile => {
+        [constants.SAVE_PROFILE]({ commit, state }, { profile }) {
+            return api.saveProfile(profile).then(response => {
+                var savedProfile = response.data;
                 if (savedProfile.doB) {
                     savedProfile.doB = new Date(savedProfile.doB);
                 }
                 commit(constants.SAVE_PROFILE_SUCCESS, { profile: savedProfile })
-                if (success) {
-                    success(savedProfile);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+                return savedProfile;
             });
         },
-        [constants.LOGOUT]({ commit, state }, { success, failure }) {
-            api.logout().then(() => {
+        [constants.LOGOUT]({ commit, state }) {
+            return api.logout().then(response => {
                 storage.removeItem('refresh_token');
                 storage.removeItem('access_token');
                 commit(constants.ACTIVITIES_CLEAR);
@@ -82,19 +61,10 @@ export default
                 commit(constants.NUTRITION_CLEAR);
                 commit(constants.PROFILE_CLEAR);
                 commit(constants.TRAINING_CLEAR);
-                if (success) {
-                    success();
-                }
-            }).fail((xhr) => {
-                if (failure) {
-                    failure();
-                }
             });
         },
-        [constants.UPDATE_LOGIN]({ commit, state }, { login, success, failure }) {
-            api.updateLogin(login).then(function () {
-
-            }).fail(() => {
+        [constants.UPDATE_LOGIN]({ commit, state }, { login }) {
+            return api.updateLogin(login).then(response => {
 
             });
         }

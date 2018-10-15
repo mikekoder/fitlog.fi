@@ -19,17 +19,14 @@ export default {
   methods: {
     refreshTokens() {
       var self = this;
-      self.$store.dispatch(constants.REFRESH_TOKEN, {
-          success: () => { 
-            if(!self.isLoggedIn){
-              self.$store.dispatch(constants.FETCH_PROFILE, {});
-            }
-          },
-          failure: () => {
-            if(self.$route.name != 'login' && self.$route.name != 'register'){
-              self.$router.push({name: 'login'});
-            }
-          }
+      self.$store.dispatch(constants.REFRESH_TOKEN, { }).then(() => {
+        if(!self.isLoggedIn){
+          self.$store.dispatch(constants.FETCH_PROFILE, { });
+        }
+      }).catch(reason => {
+        if(self.$route.name != 'login' && self.$route.name != 'register'){
+          self.$router.push({name: 'login'});
+        }
       });
     }
   },

@@ -57,14 +57,10 @@ export default {
             self.activityName = energyExpenditure.activityName;
             self.energyKcal = energyExpenditure.energyKcal;
             self.duration = '01.01.2000 ' + (energyExpenditure.hours || 0) + ':' + (energyExpenditure.minutes || 0);
-            self.$store.dispatch(constants.FETCH_ACTIVITIES, {
-                success(activities) {
-                    self.activities = activities.map(a => {return { ...a, label: a.name, value: a}});
-                    if (energyExpenditure.activityId) {
-                        self.activity = self.activities.find(a => a.id == energyExpenditure.activityId);
-                    }
-                },
-                failure() {
+            self.$store.dispatch(constants.FETCH_ACTIVITIES, { }).then(activities => {
+                self.activities = activities.map(a => {return { ...a, label: a.name, value: a}});
+                if (energyExpenditure.activityId) {
+                    self.activity = self.activities.find(a => a.id == energyExpenditure.activityId);
                 }
             });
             self.$refs.modal.show();

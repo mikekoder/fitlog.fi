@@ -143,13 +143,8 @@ export default {
   methods: {
     logout(){
       var self = this;
-      self.$store.dispatch(constants.LOGOUT, {
-          success: () => {
-            self.$router.replace({name: 'login'});
-           },
-          failure: (err) => {
-            console.log(err);
-           }
+      self.$store.dispatch(constants.LOGOUT, { }).then(_ => {
+        self.$router.replace({name: 'login'});
       });
     }
   }

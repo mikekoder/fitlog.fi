@@ -26,19 +26,17 @@ export default {
             description: self.description
         };
         self.$store.dispatch(constants.SAVE_FEEDBACK, {
-            feedback,
-            success() {
-              self.notifySuccess(self.$t('saveSuccessful'));
+            feedback
+        }).then(_ => {
+          self.notifySuccess(self.$t('saveSuccessful'));
               if(feedback.type === 'Bug'){
                 self.$router.replace({ name: 'bugs' });
               }
               else if(feedback.type === 'Improvement'){
                 self.$router.replace({ name: 'improvements' });
               }
-            },
-            failure() {
-              self.notifyError(self.$t('saveFailed'));
-            }
+        }).catch(_ => {
+          self.notifyError(self.$t('saveFailed'));
         });
       },
       cancel() {

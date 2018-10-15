@@ -11,13 +11,10 @@ export default {
         var delay = 100;
         var loader = () => {
             if(self.isLoggedIn){
-                self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-                    success(mealDefinitions) {
-                        if (self.$mealDefinitionsLoaded) {
-                            self.$mealDefinitionsLoaded(mealDefinitions);
-                        }
-                    },
-                    failure() { }
+                self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, { }).then(mealDefinitions => {
+                    if (self.$mealDefinitionsLoaded) {
+                        self.$mealDefinitionsLoaded(mealDefinitions);
+                    }
                 });
             }
             else {
