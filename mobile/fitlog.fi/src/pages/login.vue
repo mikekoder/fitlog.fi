@@ -22,10 +22,6 @@
       <q-btn glossy color="primary" @click="fbLogin" icon="fas fa-facebook-official">Facebook</q-btn>
       <q-btn glossy color="primary" @click="googleLogin" icon="fas fa-google-plus-official">Google</q-btn>
     </div>
-    <div class="q-tab-pane">
-      {{ url }}<br />
-      {{ debugInfo }}
-    </div>
   </q-page>
   </layout>
 </template>
@@ -41,12 +37,10 @@ export default {
   mixins: [PageMixin],
   data () {
     return {
-      url: undefined,
       refreshToken: undefined,
       accessToken: undefined,
       username: '',
       password: '',
-      debugInfo: ''
     }
   },
   computed: {
@@ -60,17 +54,15 @@ export default {
         client: this.client
       };
       
-      api.login(data).done((response) => {
+      api.login(data).done(response => {
         self.$store.dispatch(constants.STORE_TOKENS, {
-          client: response.client,
-          refreshToken: response.refreshToken,
-          accessToken: response.accessToken,
-          success() {
-            self.$router.replace({name: 'home'});
-          },
-          failure() {
-            self.notifyError(self.$t('failed'));
-          }
+          client: response.data.client,
+          refreshToken: response.data.refreshToken,
+          accessToken: response.data.accessToken
+        }).then(_ => {
+          self.$router.replace({name: 'home'});
+        }).catch(_ => {
+          self.notifyError(self.$t('failed'));
         });
       }).fail(xhr => {
 
@@ -84,21 +76,17 @@ export default {
     },
     socialLogin(provider){
       var self = this;
-      if(self.$q.platform.is.cordova){
+      if(self.isCordova){
         if(provider == 'Google'){
           window.plugins.googleplus.login(
             {
               'webClientId': config.googleWebClientId
             },
             function (obj) {
-              self.debugInfo = JSON.stringify(obj);
               if(obj.idToken){
-                self.debugInfo = obj.idToken;
                 api.loginWithToken('Google', obj.idToken).then(response => {
-                  self.debugInfo = 'done: ' + JSON.stringify(response) +' '+ response.refreshToken + ' ' + response.accessToken;
-                  self.finishLogin(response.refreshToken, response.accessToken);
+                  self.finishLogin(response.data.refreshToken, response.data.accessToken);
                 }).fail(xhr => {
-                  self.debugInfo = 'fail: ' + JSON.stringify(xhr);
                 });
               }
             },
@@ -114,7 +102,6 @@ export default {
               var parts = event.url.split('/');
               var refreshToken = parts[parts.length - 2];
               var accessToken = parts[parts.length - 1];
-              self.url = event.url;
 
               ref.close();
               if(refreshToken && accessToken){
@@ -133,17 +120,11 @@ export default {
       if(refreshToken && accessToken){
         self.$store.dispatch(constants.STORE_TOKENS, {
           refreshToken,
-          accessToken,
-          success() {
-            self.$store.dispatch(constants.FETCH_PROFILE, {
-              success(){
-                self.$router.replace({name: 'home'});
-              }
-            });
-          },
-          failure() {
-            self.notifyError(self.$t('failed'));
-          }
+          accessToken
+        }).then(_ => {
+          self.$router.replace({name: 'home'});
+        }).catch(_ => {
+          self.notifyError(self.$t('failed'));
         });
       }
     },

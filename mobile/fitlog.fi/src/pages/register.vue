@@ -56,19 +56,17 @@ export default {
           password: this.password,
           password2: this.password2
       };
-      api.register(data).then(function (response) {
+      api.register(data).then(response => {
           self.$store.dispatch(constants.STORE_TOKENS, {
-              client: response.client,
-              refreshToken: response.refreshToken,
-              accessToken: response.accessToken,
-              success() {
-                  self.$router.replace({ name: 'meals' });
-              },
-              failure() {
-                self.notifyError(self.$t('failed'));
-              }
+              client: response.data.client,
+              refreshToken: response.data.refreshToken,
+              accessToken: response.data.accessToken
+          }).catch(_ => {
+            self.notifyError(self.$t('failed'));
           });
-      }).fail(function (response) {
+      }).then(_ => {
+          self.$router.replace({ name: 'meals' });
+      }).catch(_ => {
           self.notifyError(self.$t('failed'));
       });
     },

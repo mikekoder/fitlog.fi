@@ -229,28 +229,24 @@ export default {
       self.$store.dispatch(constants.FETCH_MEALS, {
         start,
         end,
-        force,
-        success: (meals) => {
-          self.$store.commit(constants.LOADING_DONE);
-          self.updateComputedValues();
-          if(refreshCallback){
-            refreshCallback();
-          }
-        },
-        failure: () => { }
+        force
+      }).then(meals => {
+        self.$store.commit(constants.LOADING_DONE);
+        self.updateComputedValues();
+        if(refreshCallback){
+          refreshCallback();
+        }
       });
       self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
       self.$store.dispatch(constants.FETCH_ENERGY_EXPENDITURES, { start: start, end: end });
       self.$store.dispatch(constants.FETCH_ACTIVITY_PRESET_DAYS, {
         start: start,
-        end: end,
-        success: (presets) =>
-        {
-            var preset = presets.find(p => moment(p.date).isSame(self.selectedDate, 'day'));
-            if (!preset) {
-                preset = self.getActivityPreset();
-                self.changeActivityPreset(preset);
-            }
+        end: end
+    }).then(presets => {
+        var preset = presets.find(p => moment(p.date).isSame(self.selectedDate, 'day'));
+        if (!preset) {
+            preset = self.getActivityPreset();
+            self.changeActivityPreset(preset);
         }
     });
     },
@@ -368,19 +364,27 @@ export default {
         var self = this;
         var meal = self.$store.state.clipboard.data;
         self.appendRows(mealDef, meal.rows);
-        self.$store.dispatch(constants.CLIPBOARD_CLEAR, {});
+        self.$store.dispatch(constants.CLIPBOARD_CLEAR, { }).then(_ => {
+
+        }).catch(_ => {
+
+        });
     },
     copyRow(row) {
         this.$store.dispatch(constants.CLIPBOARD_COPY, {
             type: constants.MEAL_ROWS,
             data: [row]
+        }).then(_ => {
+
+        }).catch(_ => {
+
         });
     },
     pasteRows(mealDef) {
         var self = this;
         var rows = self.$store.state.clipboard.data;
         self.appendRows(mealDef, rows);
-        self.$store.dispatch(constants.CLIPBOARD_CLEAR, {});
+        self.$store.dispatch(constants.CLIPBOARD_CLEAR, { });
     },
     appendRows(mealDef, rows) {
         var self = this;
@@ -394,37 +398,31 @@ export default {
             meal.rows.push({ foodId: r.foodId, quantity: utils.parseFloat(r.quantity), portionId: r.portionId });
         });
         self.$store.dispatch(constants.SAVE_MEAL, {
-            meal,
-            success() { },
-            failure() { }
+            meal
         });
     },
     deleteRow(mealdef, row){
         var self = this;
-      this.$store.dispatch(constants.DELETE_MEAL_ROW, {
-          row,
-          success() { 
+        this.$store.dispatch(constants.DELETE_MEAL_ROW, {
+            row
+        }).then(_ => {
             if(mealdef.meal.rows.length == 0){
-              mealdef.meal = undefined;
+                mealdef.meal = undefined;
             }
             self.updateComputedValues();
-          },
-          failure() { }
-      });
-      return true;
+        });
+        return true;
     },
     saveRow(row){
         var self = this;
-      row.date = this.selectedDate;
-      this.$store.dispatch(constants.SAVE_MEAL_ROW, {
-          row,
-          success() {
+        row.date = this.selectedDate;
+        this.$store.dispatch(constants.SAVE_MEAL_ROW, {
+            row
+        }).then(_ => {
             self.updateComputedValues();
-          },
-          failure() { }
-      });
-      this.selectedRow = {};
-      this.$refs.editRow.hide();
+        });
+        this.selectedRow = {};
+        this.$refs.editRow.hide();
     },
     showMealSettings(){
       this.$refs.mealSettings.show();
@@ -435,43 +433,20 @@ export default {
     init(done){
         var self = this;
         if(self.isLoggedIn){
-            self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {
-                success() {
-                    self.fetchData(done);
-                },
-                failure() {
-                    self.notifyError(self.$t('fetchFailed'));
-                    self.$store.commit(constants.LOADING_DONE);
-                 }
+            self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, { }).then(_ => {
+                self.fetchData(done);
+            }).catch(reason => {
+                self.$store.commit(constants.LOADING_DONE, { });
             });
-            /*
-            self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-                force: true,
-                success() { },
-                failure() { }
-            });
-            */
-            self.$store.dispatch(constants.FETCH_LATEST_FOODS, {
-                success() { },
-                failure() { }
-            });
-            self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, {
-                success() { },
-                failure() { }
-            });
-            self.$store.dispatch(constants.FETCH_MY_FOODS, {
-                success() { },
-                failure() { }
-            });
+            self.$store.dispatch(constants.FETCH_LATEST_FOODS, { });
+            self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, { });
+            self.$store.dispatch(constants.FETCH_MY_FOODS, { });
         }
         else {
             setTimeout(() => {
                 self.init();
             } , 100);
         }
-        
-    
-        
     },
     updateComputedValues() {
         this.$nextTick(() => {

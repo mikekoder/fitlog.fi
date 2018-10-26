@@ -12,66 +12,38 @@ export default {
         activityPresetDays: []
     },
     actions: {
-        [constants.FETCH_ACTIVITY_PRESETS]({ commit, state }, { success, failure }) {
-            api.listActivityPresets().then(presets => {
-                commit(constants.FETCH_ACTIVITY_PRESETS_SUCCESS, { presets });
-                if (success) {
-                    success(presets);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_ACTIVITY_PRESETS]({ commit, state }) {
+            return api.listActivityPresets().then(response => {
+                commit(constants.FETCH_ACTIVITY_PRESETS_SUCCESS, { presets: response.data });
+                return response.data;
             });
         },
-        [constants.SAVE_ACTIVITY_PRESETS]({ commit, state }, { presets, success, failure }) {
-            api.saveActivityPresets(presets).then(savedPresets => {
-                commit(constants.SAVE_ACTIVITY_PRESETS_SUCCESS, { presets: savedPresets });
-                if (success) {
-                    success(savedPresets);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_ACTIVITY_PRESETS]({ commit, state }, { presets }) {
+            return api.saveActivityPresets(presets).then(response => {
+                commit(constants.SAVE_ACTIVITY_PRESETS_SUCCESS, { presets: response.data });
+                return response.data;
             });
         },
-        [constants.FETCH_ACTIVITY_PRESET_DAYS]({ commit, state }, { start, end, success, failure }) {
+        [constants.FETCH_ACTIVITY_PRESET_DAYS]({ commit, state }, { start, end }) {
             if (state.activityPresetsStart && state.activityPresetsEnd) {
                 if (moment(start).isBefore(state.activityPresetsStart) || moment(end).isAfter(state.activityPresetsEnd)) {
                     start = moment.min(moment(start), moment(state.activityPresetsEnd));
                     end = moment.max(moment(end), moment(state.activityPresetsStart));
                 }
                 else {
-                    // within already loaded period
-                    if (success) {
-                        success(state.activityPresetDays);
-                    }
-                    return;
+                   return Promise.resolve(state.activityPresetDays);
                 }
             }
 
-            api.listActivityPresetDays(start, end).then(presets => {
-                commit(constants.FETCH_ACTIVITY_PRESET_DAYS_SUCCESS, { start, end, presets })
-                if (success) {
-                    success(presets);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            return api.listActivityPresetDays(start, end).then(response => {
+                commit(constants.FETCH_ACTIVITY_PRESET_DAYS_SUCCESS, { start, end, presets: response.data })
+                return response.data;
             });
         },
-        [constants.SAVE_ACTIVITY_PRESET_DAY]({ commit, state }, { date, preset, success, failure }) {
-            api.saveActivityPresetForDay(date, preset.id).then(_ => {
+        [constants.SAVE_ACTIVITY_PRESET_DAY]({ commit, state }, { date, preset }) {
+            return api.saveActivityPresetForDay(date, preset.id).then(response => {
                 commit(constants.SAVE_ACTIVITY_PRESET_DAY_SUCCESS, { date, preset });
-                if (success) {
-                    success();
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+                return preset;
             });
         }
     },

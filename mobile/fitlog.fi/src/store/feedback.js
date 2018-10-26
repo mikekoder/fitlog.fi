@@ -11,83 +11,43 @@ export default {
         votes: []
     },
     actions: {
-        [constants.FETCH_BUGS]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_BUGS]({ commit, state }, { forceRefresh }) {
             if (state.bugsLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.bugs);
-                }
+                return Promise.resolve(state.bugs);
             }
-            api.listBugs().then(function (bugs) {
-                commit(constants.FETCH_BUGS_SUCCESS, { bugs })
-                if (success) {
-                    success(bugs);
-                }
-            }).fail(function () {
-                commit(constants.FETCH_BUGS_FAILURE)
-                if (failure) {
-                    failure();
-                }
+            return api.listBugs().then(response => {
+                commit(constants.FETCH_BUGS_SUCCESS, { bugs: response.data })
+                return response.data;
             });
         },
-        [constants.FETCH_IMPROVEMENTS]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_IMPROVEMENTS]({ commit, state }, { forceRefresh }) {
             if (state.improvementsLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.improvements);
-                }
+               return Promise.resolve(state.improvements);
             }
-            api.listImprovements().then(function (improvements) {
-                commit(constants.FETCH_IMPROVEMENTS_SUCCESS, { improvements })
-                if (success) {
-                    success(improvements);
-                }
-            }).fail(function () {
-                commit(constants.FETCH_IMPROVEMENTS_FAILURE)
-                if (failure) {
-                    failure();
-                }
+            return api.listImprovements().then(response => {
+                commit(constants.FETCH_IMPROVEMENTS_SUCCESS, { improvements: response.data })
+                return response.data;
             });
         },
-        [constants.SAVE_FEEDBACK]({ commit, state }, { feedback, success, failure }) {
-            api.saveFeedback(feedback).then(function (savedFeedback) {
-                commit(constants.SAVE_FEEDBACK_SUCCESS, { feedback: savedFeedback })
-                if (success) {
-                    success(savedFeedback);
-                }
-            }).fail(function () {
-                commit(constants.SAVE_FEEDBACK_FAILURE)
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_FEEDBACK]({ commit, state }, { feedback }) {
+            return api.saveFeedback(feedback).then(response =>  {
+                commit(constants.SAVE_FEEDBACK_SUCCESS, { feedback: response.data })
+                return response.data;
             });
         },
-        [constants.FETCH_VOTES]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_VOTES]({ commit, state }, { forceRefresh }) {
             if (state.votesLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.votes);
-                }
+                return Promise.resolve(state.votes);
             }
-            api.getVotes().then(function (votes) {
-                commit(constants.FETCH_VOTES_SUCCESS, { votes })
-                if (success) {
-                    success(votes);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+            return api.getVotes().then(response => {
+                commit(constants.FETCH_VOTES_SUCCESS, { votes: response.data })
+                return response.data;
             });
         },
-        [constants.SAVE_VOTE]({ commit, state }, { feedbackId, success, failure }) {
-            api.saveVote(feedbackId).then(function () {
+        [constants.SAVE_VOTE]({ commit, state }, { feedbackId }) {
+            return api.saveVote(feedbackId).then(response => {
                 commit(constants.SAVE_VOTE_SUCCESS, { feedbackId })
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                commit(constants.SAVE_FEEDBACK_FAILURE)
-                if (failure) {
-                    failure();
-                }
+                return response.data;
             });
         }
     },

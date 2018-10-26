@@ -11,10 +11,7 @@ export default {
         var delay = 100;
         var loader = () => {
             if(self.isLoggedIn){
-                self.$store.dispatch(constants.FETCH_ACTIVE_NUTRITION_GOAL, {
-                    success() { },
-                    failure() { }
-                });
+                self.$store.dispatch(constants.FETCH_ACTIVE_NUTRITION_GOAL, { });
             }
             else {
                 setTimeout(() => {
