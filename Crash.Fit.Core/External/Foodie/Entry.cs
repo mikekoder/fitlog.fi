@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Crash.Fit.External.Foodin
+namespace Crash.Fit.External.Foodie
 {
     public class Entry
     {

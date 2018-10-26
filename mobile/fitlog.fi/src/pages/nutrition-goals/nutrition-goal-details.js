@@ -53,14 +53,12 @@ export default {
             }
             else {
                 self.$store.dispatch(constants.FETCH_NUTRITION_GOAL, {
-                    id,
-                    success(goal) {
-                        self.populate(goal);
-                        self.$store.commit(constants.LOADING_DONE);
-                    },
-                    failure() {
-                        self.notifyError(self.$t('fetchFailed'));
-                    }
+                    id
+                }).then(goal => {
+                    self.populate(goal);
+                    self.$store.commit(constants.LOADING_DONE);
+                }).catch(_ => {
+                    self.notifyError(self.$t('fetchFailed'));
                 });
             }
             self.toggleGroup(self.$nutrientGroups[0]);
@@ -138,14 +136,12 @@ export default {
             }
 
             self.$store.dispatch(constants.SAVE_NUTRITION_GOAL, {
-                goal,
-                success() {
-                    self.notifySuccess(self.$t('saveSuccessful'));
+                goal
+            }).then(_ => {
+                self.notifySuccess(self.$t('saveSuccessful'));
                     self.$router.replace({ name: 'nutrition-goals' });
-                },
-                failure() {
-                    self.notifyError(self.$t('saveFailed'));
-                }
+            }).catch(_ => {
+                self.notifyError(self.$t('saveFailed'));
             });
         },
         selectPeriod(period) {

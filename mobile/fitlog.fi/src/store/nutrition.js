@@ -39,161 +39,100 @@ export default {
         ownFoods: []
     },
     actions: {
-        [constants.SELECT_MEAL_DIARY_DATE]({ commit, state }, { date, success, failure }) {
+        [constants.SELECT_MEAL_DIARY_DATE]({ commit, state }, { date }) {
             commit(constants.SELECT_MEAL_DIARY_DATE_SUCCESS, { date });
         },
-        [constants.SAVE_MEAL_DIARY_SETTINGS]({ commit, state }, { settings, success, failure }) {
-            api.saveHomeSettings(settings).then(function () {
+        [constants.SAVE_MEAL_DIARY_SETTINGS]({ commit, state }, { settings}) {
+            return api.saveHomeSettings(settings).then(response => {
                 commit(constants.SAVE_MEAL_DIARY_NUTRIENTS_SUCCESS, { nutrients: settings.nutrients })
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+                return settings;
             });
         },
         // Meals
-        [constants.SELECT_MEAL_DATE_RANGE]({ commit, state }, { start, end, success, failure }) {
+        [constants.SELECT_MEAL_DATE_RANGE]({ commit, state }, { start, end }) {
             commit(constants.SELECT_MEAL_DATE_RANGE_SUCCESS, { start, end });
-            if (success) {
-                success();
-            }
+            return Promise.resolve();
         },
-        [constants.FETCH_MEALS]({ commit, state }, { start, end, force, success, failure }) {
+        [constants.FETCH_MEALS]({ commit, state }, { start, end, force }) {
             if (state.mealsStart && state.mealsEnd) {
                 if (moment(start).isBefore(state.mealsStart) || moment(end).isAfter(state.mealsEnd) || force) {
                     start = moment.min(moment(start), moment(state.mealsEnd));
                     end = moment.max(moment(end), moment(state.mealsStart));
                 }
                 else {
-                    // within already loaded period
-                    if (success) {
-                        success();
-                    }
-                    return;
+                    return Promise.resolve();
                 }
             }
 
-            api.listMeals(start, end).then(meals => {
-                commit(constants.FETCH_MEALS_SUCCESS, { start, end, meals })
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+            return api.listMeals(start, end).then(response => {
+                commit(constants.FETCH_MEALS_SUCCESS, { start, end, meals: response.data })
+                return response.data;
             });
         },
-        [constants.FETCH_MEAL]({ commit, state }, { id, success, failure }) {
-            api.getMeal(id).then(function (meal) {
+        [constants.FETCH_MEAL]({ commit, state }, { id }) {
+            return api.getMeal(id).then(response => {
+                var meal = response.data;
                 meal.time = new Date(meal.time);
                 commit(constants.FETCH_MEAL_SUCCESS, { meal });
-                if (success) {
-                    success(meal);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+                return meal;
             });
         },
-        [constants.SAVE_MEAL]({ commit, state }, { meal, success, failure }) {
-            api.saveMeal(meal).then(function (savedMeal) {
+        [constants.SAVE_MEAL]({ commit, state }, { meal }) {
+            return api.saveMeal(meal).then(response => {
+                var savedMeal = response.data;
                 savedMeal.time = new Date(savedMeal.time);
                 commit(constants.SAVE_MEAL_SUCCESS, { id: meal.id, meal: savedMeal })
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+                return savedMeal;
             });
         },
         [constants.SAVE_MEAL_DRAFT]({ commit, state }, { meal }) {
             state.mealDraft = meal;
         },
-        [constants.DELETE_MEAL]({ commit, state }, { meal, success, failure }) {
-            api.deleteMeal(meal.id).then(function () {
-                commit(constants.DELETE_MEAL_SUCCESS, { meal })
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.DELETE_MEAL]({ commit, state }, { meal}) {
+            return api.deleteMeal(meal.id).then(response => {
+                commit(constants.DELETE_MEAL_SUCCESS, { meal });
             });
         },
-        [constants.RESTORE_MEAL]({ commit, state }, { id, success, failure }) {
-            api.restoreMeal(id).then(function (meal) {
-                commit(constants.RESTORE_MEAL_SUCCESS, { meal })
-                if (success) {
-                    success(meal);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
-            });
+        [constants.RESTORE_MEAL]({ commit, state }, { id }) {
+            return api.restoreMeal(id).then(response => {
+                commit(constants.RESTORE_MEAL_SUCCESS, { meal: response.data })
+                return response.data;
+            })
         },
-        [constants.SAVE_MEAL_ROW]({ commit, state }, { row, success, failure }) {
-            api.saveMealRow(row).then(function (savedRow) {
+        [constants.SAVE_MEAL_ROW]({ commit, state }, { row }) {
+            return api.saveMealRow(row).then(response => {
+                var savedRow = response.data;
                 var meal = state.meals.find(m => m.id == savedRow.mealId);
                 if (meal) {
                     commit(constants.SAVE_MEAL_ROW_SUCCESS, { row: savedRow });
-                    if (success) {
-                        success(savedRow);
-                    }
+                    return savedRow;
                 }
                 else {
-                    api.getMeal(savedRow.mealId).then(function (createdMeal) {
+                    api.getMeal(savedRow.mealId).then(response2 => {
+                        var createdMeal = response2.data;
                         createdMeal.time = new Date(createdMeal.time);
                         commit(constants.FETCH_MEAL_SUCCESS, { meal: createdMeal });
-                        if (success) {
-                            success(createdMeal);
-                        }
+                        return createdMeal;
                     });
-                }
-
-            }).fail(function () {
-                if (failure) {
-                    failure();
                 }
             });
         },
-        [constants.DELETE_MEAL_ROW]({ commit, state }, { row, success, failure }) {
-            api.deleteMealRow(row).then(function () {
+        [constants.DELETE_MEAL_ROW]({ commit, state }, { row }) {
+            return api.deleteMealRow(row).then(response => {
                 commit(constants.DELETE_MEAL_ROW_SUCCESS, { row });
-                if(success){
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
             });
         },
         [constants.SAVE_MEAL_ROW_DRAFT]({ commit, state }, { row }) {
             state.rowDraft = row;
         },
         // Foods
-        [constants.FETCH_MY_FOODS]({ commit, state }, { success, failure }) {
-            api.listFoods().then(function (foods) {
-                commit(constants.FETCH_MY_FOODS_SUCCESS, { foods });
-                if (success) {
-                    success(foods);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_MY_FOODS]({ commit, state }) {
+            return api.listFoods().then(response => {
+                commit(constants.FETCH_MY_FOODS_SUCCESS, { foods: response.data });
+                return response.data;
             });
         },
-        [constants.FETCH_FOODS]({ commit, state }, { ids, success, failure }) {
+        [constants.FETCH_FOODS]({ commit, state }, { ids }) {
             var apiCalls = [];
             for (var i in ids) {
                 if (ids[i]) {
@@ -201,291 +140,143 @@ export default {
                 }
             }
             if (apiCalls.length == 0) {
-                if (success) {
-                    success([]);
-                }
                 return;
             }
-            Promise.all(apiCalls).then(function (foods) {
-                if (success) {
-                    success(foods);
-                }
-            }).catch(function (reason) {
-                if (failure) {
-                    failure();
-                }
+            return Promise.all(apiCalls).then(response => {
+                return response.map(r => r.data);
             });
         },
-        [constants.FETCH_LATEST_FOODS]({ commit, state }, { id, success, failure }) {
-            api.getLatestFoods().then(function (foods) {
-                commit(constants.FETCH_LATEST_FOODS_SUCCESS, { foods });
-                if (success) {
-                    success(foods);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_LATEST_FOODS]({ commit, state }) {
+            return api.getLatestFoods().then(response => {
+                commit(constants.FETCH_LATEST_FOODS_SUCCESS, { foods: response.data });
+                return response.data;
             });
         },
-        [constants.FETCH_MOST_USED_FOODS]({ commit, state }, { id, success, failure }) {
-            api.getMostUsedFoods().then(function (foods) {
-                commit(constants.FETCH_MOST_USED_FOODS_SUCCESS, { foods });
-                if (success) {
-                    success(foods);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_MOST_USED_FOODS]({ commit, state }) {
+            return api.getMostUsedFoods().then(response => {
+                commit(constants.FETCH_MOST_USED_FOODS_SUCCESS, { foods: response.data });
+                return response.data;
             });
         },
-        [constants.FETCH_FOOD]({ commit, state }, { id, success, failure }) {
-            api.getFood(id).then(function (food) {
-                if (success) {
-                    success(food);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_FOOD]({ commit, state }, { id }) {
+            return api.getFood(id).then(response => {
+                return response.data;
             });
         },
-        [constants.SAVE_FOOD]({ commit, state }, { food, success, failure }) {
-            api.saveFood(food).then(function (savedFood) {
-                if (success) {
-                    success(savedFood);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_FOOD]({ commit, state }, { food }) {
+            return api.saveFood(food).then(response => {
+                return response.data;
             });
         },
-        [constants.DELETE_FOOD]({ commit, state }, { food, success, failure }) {
-            api.deleteFood(food.id).then(function () {
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.DELETE_FOOD]({ commit, state }, { food }) {
+            return api.deleteFood(food.id).then(response => {
+                
             });
         },
         // Recipes
-        [constants.FETCH_RECIPES]({ commit, state }, { success, failure }) {
-            api.listRecipes().then(function (recipes) {
-                if (success) {
-                    success(recipes);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_RECIPES]({ commit, state }) {
+            return api.listRecipes().then(response => {
+                return response.data;
             });
         },
-        [constants.FETCH_RECIPE]({ commit, state }, { id, success, failure }) {
-            api.getRecipe(id).then(function (recipe) {
-                if (success) {
-                    success(recipe);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_RECIPE]({ commit, state }, { id }) {
+            return api.getRecipe(id).then(response => {
+                return response.data;
             });
         },
-        [constants.SAVE_RECIPE]({ commit, state }, { recipe, success, failure }) {
-            api.saveRecipe(recipe).then(function (savedRecipe) {
-                if (success) {
-                    success(savedRecipe);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_RECIPE]({ commit, state }, { recipe}) {
+            return api.saveRecipe(recipe).then(response => {
+                return response.data;
             });
         },
-        [constants.DELETE_RECIPE]({ commit, state }, { recipe, success, failure }) {
-            api.deleteRecipe(recipe.id).then(function () {
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.DELETE_RECIPE]({ commit, state }, { recipe }) {
+            return api.deleteRecipe(recipe.id).then(response => {
+
             });
         },
         // Nutrients
-        [constants.FETCH_NUTRIENTS]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_NUTRIENTS]({ commit, state }, { forceRefresh}) {
             if (state.nutrientsLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.nutrients);
-                }
-                return;
+                return Promise.resolve(state.nutrients);
             }
-            Promise.all([api.listNutrients(), api.getNutrientSettings()]).then(results => {
-                var nutrients = results[0];
-                var settings = results[1];
+
+            return Promise.all([api.listNutrients(), api.getNutrientSettings()]).then(responses => {
+                var nutrients = responses[0].data;
+                var settings = responses[1].data;
 
                 nutrients = applySettingsToNutrients(settings, nutrients);
 
                 commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients });
-                if (success) {
-                    success(nutrients);
-                }
-            }).catch(reason => {
-                if (failure) {
-                    failure();
-                }
+                return nutrients;
             });
         },
-        [constants.SAVE_NUTRIENT_SETTINGS]({ commit, state }, { settings, success, failure }) {
-            api.saveNutrientSettings(settings).then(function (savedSettings) {
-
+        [constants.SAVE_NUTRIENT_SETTINGS]({ commit, state }, { settings }) {
+            return api.saveNutrientSettings(settings).then(response => {
+                var savedSettings = response.data;
                 var nutrients = applySettingsToNutrients(savedSettings, state.nutrients);
 
                 commit(constants.FETCH_NUTRIENTS_SUCCESS, { nutrients })
-                if (success) {
-                    success(nutrients);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+                return nutrients;
             });
         },
         // Nutrition goals
-        [constants.FETCH_NUTRITION_GOALS]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_NUTRITION_GOALS]({ commit, state }, { forceRefresh }) {
             if (state.nutritionGoalsLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.nutritionGoals);
-                }
-                return;
+                return Promise.resolve(state.nutritionGoals);
             }
-            api.getNutritionGoals().then(function (goals) {
-                commit(constants.FETCH_NUTRITION_GOALS_SUCCESS, { goals })
-                if (success) {
-                    success(goals);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+            return api.getNutritionGoals().then(response => {
+                commit(constants.FETCH_NUTRITION_GOALS_SUCCESS, { goals: response.data })
+                return response.data;
             });
         },
-        [constants.FETCH_NUTRITION_GOAL]({ commit, state }, { id, success, failure }) {
-            api.getNutritionGoal(id).then(function (goal) {
-                if (success) {
-                    success(goal);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_NUTRITION_GOAL]({ commit, state }, { id }) {
+            return api.getNutritionGoal(id).then(response => {
+                return response.data;
             });
         },
-        [constants.FETCH_ACTIVE_NUTRITION_GOAL]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_ACTIVE_NUTRITION_GOAL]({ commit, state }, { forceRefresh }) {
             if (state.nutritionGoalLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.nutritionGoal);
-                }
-                return;
+                return Promise.resolve(state.nutritionGoal);
             }
-            api.getActiveNutritionGoal().then(function (goal) {
-                commit(constants.FETCH_ACTIVE_NUTRITION_GOAL_SUCCESS, { goal })
-                if (success) {
-                    success(goal);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+            return api.getActiveNutritionGoal().then(response => {
+                commit(constants.FETCH_ACTIVE_NUTRITION_GOAL_SUCCESS, { goal: response.data })
+                return response.data;
             });
         },
-        [constants.SAVE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
-            api.saveNutritionGoal(goal).then(function (savedGoal) {
-                commit(constants.FETCH_NUTRITION_GOAL_SUCCESS, { goal: savedGoal })
-                if (success) {
-                    success(savedGoal);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_NUTRITION_GOAL]({ commit, state }, { goal }) {
+            return api.saveNutritionGoal(goal).then(response => {
+                commit(constants.FETCH_NUTRITION_GOAL_SUCCESS, { goal: response.data })
+                return response.data;
             });
         },
-        [constants.ACTIVATE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
-            api.activateNutritionGoal(goal.id).then(() => {
+        [constants.ACTIVATE_NUTRITION_GOAL]({ commit, state }, { goal }) {
+            return api.activateNutritionGoal(goal.id).then(response => {
                 commit(constants.ACTIVATE_NUTRITION_GOAL_SUCCESS, { goal })
-                if (success) {
-                    success(goal);
-                }
-            }).fail((xhr)=> {
-                if (failure) {
-                    failure(xhr);
-                }
+                return goal;
             });
         },
-        [constants.DELETE_NUTRITION_GOAL]({ commit, state }, { goal, success, failure }) {
-            api.deleteNutritionGoal(goal.id).then(function () {
+        [constants.DELETE_NUTRITION_GOAL]({ commit, state }, { goal }) {
+            return api.deleteNutritionGoal(goal.id).then(response => {
                 commit(constants.DELETE_NUTRITION_GOAL_SUCCESS, { goal })
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+                return goal;
             });
         },
         // Meal rhythm
-        [constants.FETCH_MEAL_DEFINITIONS]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_MEAL_DEFINITIONS]({ commit, state }, { forceRefresh }) {
             if (state.mealDefinitionsLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.mealDefinitions);
-                }
-                return;
+                return Promise.resolve(state.mealDefinitions);
             }
-            api.getMealDefinitions().then(function (definitions) {
-                commit(constants.FETCH_MEAL_DEFINITIONS_SUCCESS, { definitions })
-                if (success) {
-                    success(definitions);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+            return api.getMealDefinitions().then(response => {
+                commit(constants.FETCH_MEAL_DEFINITIONS_SUCCESS, { definitions: response.data })
+                return response.data;
             });
         },
-        [constants.SAVE_MEAL_DEFINITIONS]({ commit, state }, { definitions, success, failure }) {
-            api.saveMealDefinitions(definitions).then(function (savedDefinitions) {
-                commit(constants.SAVE_MEAL_DEFINITIONS_SUCCESS, { definitions: savedDefinitions })
-                if (success) {
-                    success(savedDefinitions);
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_MEAL_DEFINITIONS]({ commit, state }, { definitions }) {
+            return api.saveMealDefinitions(definitions).then(response => {
+                commit(constants.SAVE_MEAL_DEFINITIONS_SUCCESS, { definitions: response.data })
+                return response.data;
             });
         }
-        /*
-        [constants.DELETE_MEAL_DEFINITION]({ commit, state }, { definition, success, failure }) {
-            api.deleteMealDefinition(definition).then(() => {
-                var index = state.definitions.findIndex(d => d.id == definition.id);
-                state.definitions.splice(index, 1);
-                if (success) {
-                    success();
-                }
-            }).fail(function () {
-                if (failure) {
-                    failure();
-                }
-            });
-        }*/
     },
     mutations: {
         [constants.NUTRITION_CLEAR](state) {

@@ -109,15 +109,13 @@ export default {
             //alert(JSON.stringify(routine));
            
             self.$store.dispatch(constants.SAVE_ROUTINE, {
-                routine,
-                success() {
-                    self.notifySuccess(self.$t('saveSuccessful'));
+                routine
+            }).then(_ => {
+                self.notifySuccess(self.$t('saveSuccessful'));
                     self.$router.replace({ name: 'routines' });
-                },
-                failure() {
-                    self.notifyError(self.$t('saveFailed'));
-                }
-            })
+            }).catch(_ => {
+                self.notifyError(self.$t('saveFailed'));
+            });
         },
         cancel() {
             this.$router.go(-1);
@@ -125,13 +123,11 @@ export default {
         deleteRoutine() {
             var self = this;
             self.$store.dispatch(constants.DELETE_ROUTINE, {
-                routine: { id: self.id },
-                success() {
-                    self.$router.push({ name: 'routines' });
-                },
-                failure() {
-                    self.notifyError(self.$t('deleteFailed'));
-                }
+                routine: { id: self.id }
+            }).then(_ => {
+                self.$router.push({ name: 'routines' });
+            }).catch(_ => {
+                self.notifyError(self.$t('deleteFailed'));
             });
         },
         populate(routine) {
@@ -139,59 +135,56 @@ export default {
             self.id = routine.id;
             self.name = routine.name;
             self.workouts = [];
-            self.$store.dispatch(constants.FETCH_EXERCISES, {
-                success(exercises) {
-                    self.exercises = exercises.map(e => {return {...e, label: e.name, value: e }});
-                    if (routine.workouts) {
-                        routine.workouts.forEach(w => {
-                            var workout = {
-                                id: w.id,
-                                name: w.name,
-                                frequency: w.frequency,
-                                groups: []
-                            };
+            self.$store.dispatch(constants.FETCH_EXERCISES, { }).then(exercises => {
+                self.exercises = exercises.map(e => {return {...e, label: e.name, value: e }});
+                if (routine.workouts) {
+                    routine.workouts.forEach(w => {
+                        var workout = {
+                            id: w.id,
+                            name: w.name,
+                            frequency: w.frequency,
+                            groups: []
+                        };
 
-                            var previousGroup = undefined;
-                            var previousExerciseId = undefined;
+                        var previousGroup = undefined;
+                        var previousExerciseId = undefined;
 
-                            w.exercises.forEach(e => {
-                                var group;
-                                if(e.exerciseId == previousExerciseId){
-                                    group = previousGroup;
-                                }
-                                else {
-                                    var exercise = self.exercises.find(e2 => e2.id == e.exerciseId);
-                                    group = {
-                                        exercise: exercise,
-                                        rows: [],
-                                        collapsed: true
-                                    };
-                                    workout.groups.push(group);
-                                }
+                        w.exercises.forEach(e => {
+                            var group;
+                            if(e.exerciseId == previousExerciseId){
+                                group = previousGroup;
+                            }
+                            else {
+                                var exercise = self.exercises.find(e2 => e2.id == e.exerciseId);
+                                group = {
+                                    exercise: exercise,
+                                    rows: [],
+                                    collapsed: true
+                                };
+                                workout.groups.push(group);
+                            }
 
-                                group.rows.push({
-                                    sets: e.sets,
-                                    reps: e.reps,
-                                    loadFrom: e.loadFrom,
-                                    loadTo: e.loadTo
-                                });
-
-                                previousGroup = group;
-                                previousExerciseId = e.exerciseId;
+                            group.rows.push({
+                                sets: e.sets,
+                                reps: e.reps,
+                                loadFrom: e.loadFrom,
+                                loadTo: e.loadTo
                             });
 
-                            self.workouts.push(workout);
+                            previousGroup = group;
+                            previousExerciseId = e.exerciseId;
                         });
-                    }
-                    else {
-                        self.workouts = [];
-                        self.addWorkout();
-                    }
-                    self.$store.commit(constants.LOADING_DONE);
-                },
-                failure() {
-                    self.notifyError(self.$t('fetchFailed'));
+
+                        self.workouts.push(workout);
+                    });
                 }
+                else {
+                    self.workouts = [];
+                    self.addWorkout();
+                }
+                self.$store.commit(constants.LOADING_DONE);
+            }).catch(_ => {
+                self.notifyError(self.$t('fetchFailed'));
             });
 
         },
@@ -216,13 +209,11 @@ export default {
         }
         else {
             self.$store.dispatch(constants.FETCH_ROUTINE, {
-                id,
-                success(routine) {
-                    self.populate(routine);
-                },
-                failure() {
-                    self.notifyError(self.$t('fetchFailed'));
-                }
+                id
+            }).then(routine => {
+                self.populate(routine);
+            }).catch(_ => {
+                self.notifyError(self.$t('fetchFailed'));
             });
         }
 

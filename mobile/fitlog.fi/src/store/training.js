@@ -49,26 +49,17 @@ export default {
     },
     actions: {
         // Diary
-        [constants.SELECT_WORKOUT_DIARY_DATE]({ commit, state }, { date, success, failure }) {
+        [constants.SELECT_WORKOUT_DIARY_DATE]({ commit, state }, { date }) {
             state.diaryDate = date;
         },
         // MuscleGroups 
-        [constants.FETCH_MUSCLEGROUPS]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_MUSCLEGROUPS]({ commit, state }, { forceRefresh}) {
             if (state.muscleGroupsLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.muscleGroups);
-                }
-                return;
+                return Promise.resolve(state.muscleGroups);
             }
-            api.listMuscleGroups().then(muscleGroups => {
-                commit(constants.FETCH_MUSCLEGROUPS_SUCCESS, { muscleGroups });
-                if (success) {
-                    success(muscleGroups);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            return api.listMuscleGroups().then(response => {
+                commit(constants.FETCH_MUSCLEGROUPS_SUCCESS, { muscleGroups: response.data });
+                return response.data;
             });
         },
         // Equipment
@@ -91,422 +82,221 @@ export default {
             });
         },
         // Workouts
-        [constants.SELECT_WORKOUT_DATE_RANGE]({ commit, state }, { start, end, success, failure }) {
+        [constants.SELECT_WORKOUT_DATE_RANGE]({ commit, state }, { start, end}) {
             commit(constants.SELECT_WORKOUT_DATE_RANGE_SUCCESS, { start, end });
-            if (success) {
-                success();
-            }
         },
-        [constants.FETCH_WORKOUTS]({ commit, state }, { start, end, force, success, failure }) {
+        [constants.FETCH_WORKOUTS]({ commit, state }, { start, end, force}) {
             if (state.workoutsStart && state.workoutsEnd) {
                 if (moment(start).isBefore(state.workoutsStart) || moment(end).isAfter(state.workoutsEnd) || force) {
                     start = moment.min(moment(start), moment(state.workoutsEnd));
                     end = moment.max(moment(end), moment(state.workoutsStart));
                 }
                 else {
-                    // within already loaded period
-                    if (success) {
-                        success(state.workouts);
-                    }
-                    return;
+                    return Promise.resolve(state.workouts);
                 }
             }
 
-            api.listWorkouts(start, end).then(workouts => {
-                commit(constants.FETCH_WORKOUTS_SUCCESS, { start, end, workouts })
-                if (success) {
-                    success(workouts);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            return api.listWorkouts(start, end).then(response => {
+                commit(constants.FETCH_WORKOUTS_SUCCESS, { start, end, workouts: response.data })
+                return response.data;
             });
         },
-        [constants.FETCH_WORKOUT]({ commit, state }, { id, success, failure }) {
-            api.getWorkout(id).then(workout => {
-                if (success) {
-                    success(workout);
-                }
-            }).fail((xhr) => {
-                if (failure) {
-                    failure(xhr);
-                }
+        [constants.FETCH_WORKOUT]({ commit, state }, { id }) {
+            return api.getWorkout(id).then(response => {
+                return response.data;
             });
         },
-        [constants.SAVE_WORKOUT]({ commit, state }, { workout, success, failure }) {
-            api.saveWorkout(workout).then(savedWorkout => {
+        [constants.SAVE_WORKOUT]({ commit, state }, { workout }) {
+            return api.saveWorkout(workout).then(response => {
+                var savedWorkout = response.data;
                 savedWorkout.time = new Date(savedWorkout.time);
                 commit(constants.SAVE_WORKOUT_SUCCESS, { id: workout.id, workout: savedWorkout })
-                if (success) {
-                    success(savedWorkout);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+                return savedWorkout;
             });
         },
-        [constants.DELETE_WORKOUT]({ commit, state }, { workout, success, failure }) {
-            api.deleteWorkout(workout.id).then(() => {
+        [constants.DELETE_WORKOUT]({ commit, state }, { workout }) {
+            return api.deleteWorkout(workout.id).then(response => {
                 commit(constants.DELETE_WORKOUT_SUCCESS, { workout })
-                if (success) {
-                    success();
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
             });
         },
         // Exercises
-        [constants.FETCH_EXERCISES]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_EXERCISES]({ commit, state }, { forceRefresh }) {
             if (state.exercisesLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.exercises);
-                }
-                return;
+                return Promise.resolve(state.exercises);
             }
-            api.listExercises().then((exercises) => {
-                commit(constants.FETCH_EXERCISES_SUCCESS, { exercises });
-                if (success) {
-                    success(exercises);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            return api.listExercises().then(response => {
+                commit(constants.FETCH_EXERCISES_SUCCESS, { exercises: response.data });
+                return response.data;
             });
         },
-        [constants.FETCH_LATEST_EXERCISES]({ commit, state }, { forceRefresh, success, failure }) {
+
+        [constants.FETCH_LATEST_EXERCISES]({ commit, state }, { forceRefresh}) {
             if (state.latestExercisesLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.latestExercises);
-                }
-                return;
+                return Promise.resolve(state.latestExercises);
             }
-            api.listLatestExercises().then((exercises) => {
-                commit(constants.FETCH_LATEST_EXERCISES_SUCCESS, { exercises });
-                if (success) {
-                    success(exercises);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            api.listLatestExercises().then(response => {
+                commit(constants.FETCH_LATEST_EXERCISES_SUCCESS, { exercises: response.data });
+                return response.data;
             });
         },
-        [constants.FETCH_MOST_USED_EXERCISES]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_MOST_USED_EXERCISES]({ commit, state }, { forceRefresh }) {
             if (state.mostUsedExercisesLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.mostUsedExercises);
-                }
-                return;
+                return Promise.resolve(state.mostUsedExercises);
             }
-            api.listMostUsedExercises().then((exercises) => {
-                commit(constants.FETCH_MOST_USED_EXERCISES_SUCCESS, { exercises });
-                if (success) {
-                    success(exercises);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            api.listMostUsedExercises().then(response => {
+                commit(constants.FETCH_MOST_USED_EXERCISES_SUCCESS, { exercises: response.data });
+                return response.data;
             });
         },
-        [constants.FETCH_EXERCISE]({ commit, state }, { id, success, failure }) {
-            api.getExercise(id).then((exercise) => {
-                if (success) {
-                    success(exercise);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_EXERCISE]({ commit, state }, { id }) {
+            return api.getExercise(id).then(response => {
+                return response.data;
             });
         },
-        [constants.SAVE_EXERCISE]({ commit, state }, { exercise, success, failure }) {
-            api.saveExercise(exercise).then(savedExercise => {
+        [constants.SAVE_EXERCISE]({ commit, state }, { exercise}) {
+            return api.saveExercise(exercise).then(response => {
+                var savedExercise = response.data;
                 commit(constants.SAVE_EXERCISE_SUCCESS, { id: savedExercise.id, exercise: savedExercise })
-                if (success) {
-                    success(savedExercise);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+                return savedExercise;
             });
         },
-        [constants.SAVE_1RM]({ commit, state }, { exerciseId, oneRepMax, success, failure }) {
-            api.save1RM(exerciseId, oneRepMax).then(() => {
-                commit(constants.SAVE_1RM_SUCCESS, {
-                    exerciseId,
-                    oneRepMax
-                })
-                if (success) {
-                    success();
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_1RM]({ commit, state }, { exerciseId, oneRepMax }) {
+            return api.save1RM(exerciseId, oneRepMax).then(response => {
+                commit(constants.SAVE_1RM_SUCCESS, { exerciseId, oneRepMax });
             });
         },
-        [constants.DELETE_EXERCISE]({ commit, state }, { exercise, success, failure }) {
-            api.deleteExercise(exercise.id).then(() => {
+        [constants.DELETE_EXERCISE]({ commit, state }, { exercise }) {
+            return api.deleteExercise(exercise.id).then(response => {
                 commit(constants.DELETE_EXERCISE_SUCCESS, { exercise })
-                if (success) {
-                    success();
-                }
-            }).fail(() =>{
-                if (failure) {
-                    failure();
-                }
             });
         },
         // Routines
-        [constants.FETCH_ROUTINES]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_ROUTINES]({ commit, state }, { forceRefresh }) {
             if (state.routinesLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.routines);
-                }
-                return;
+                return Promise.resolve(state.routines);
             }
-            api.listRoutines().then(routines => {
+            return api.listRoutines().then(response => {
+                var routines = response.data;
                 commit(constants.FETCH_ROUTINES_SUCCESS, { routines })
-                if (success) {
-                    success(routines);
-                }
                 var active = routines.find(r => r.active);
                 if (active) {
-                    api.getRoutine(active.id).then((routine) => {
-                        commit(constants.FETCH_ACTIVE_ROUTINE_SUCCESS, { routine });
+                    api.getRoutine(active.id).then(response2 => {
+                        commit(constants.FETCH_ACTIVE_ROUTINE_SUCCESS, { routine: response2.data });
                     });
                 }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+                return routines;
             });
         },
-        [constants.FETCH_ROUTINE]({ commit, state }, { id, success, failure }) {
-            api.getRoutine(id).then(routine => {
-                if (success) {
-                    success(routine);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_ROUTINE]({ commit, state }, { id }) {
+            return api.getRoutine(id).then(response => {
+                return response.data;
             });
         },
-        [constants.FETCH_ROUTINE_WORKOUT]({ commit, state }, { id, success, failure }) {
-            api.getRoutineWorkout(id).then(workout => {
-                if (success) {
-                    success(workout);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_ROUTINE_WORKOUT]({ commit, state }, { id }) {
+            return api.getRoutineWorkout(id).then(response => {
+                return response.data;
             });
         },
-        [constants.SAVE_ROUTINE]({ commit, state }, { routine, success, failure }) {
-            api.saveRoutine(routine).then(savedRoutine => {
-                commit(constants.SAVE_ROUTINE_SUCCESS, { id: routine.id, routine: savedRoutine })
-                if (success) {
-                    success(savedRoutine);
-                }
-            }).fail(() =>{
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_ROUTINE]({ commit, state }, { routine }) {
+            return api.saveRoutine(routine).then(response => {
+                commit(constants.SAVE_ROUTINE_SUCCESS, { id: routine.id, routine: response.data });
+                return response.data;
             });
         },
-        [constants.DELETE_ROUTINE]({ commit, state }, { routine, success, failure }) {
-            api.deleteRoutine(routine.id).then(() => {
+        [constants.DELETE_ROUTINE]({ commit, state }, { routine }) {
+            return api.deleteRoutine(routine.id).then(response => {
                 commit(constants.DELETE_ROUTINE_SUCCESS, { routine })
-                if (success) {
-                    success();
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
             });
         },
-        [constants.ACTIVATE_ROUTINE]({ commit, state }, { routine, success, failure }) {
-            api.activateRoutine(routine.id).then(() => {
-                api.getRoutine(routine.id).then(routineDetails => {
-                    commit(constants.ACTIVATE_ROUTINE_SUCCESS, { routine: routineDetails })
-                    if (success) {
-                        success();
-                    }
+        [constants.ACTIVATE_ROUTINE]({ commit, state }, { routine }) {
+            return api.activateRoutine(routine.id).then(response => {
+                api.getRoutine(routine.id).then(response2 => {
+                    commit(constants.ACTIVATE_ROUTINE_SUCCESS, { routine: response2.data });
                 });
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
             });
         },
         // Training goals
-        [constants.FETCH_TRAINING_GOALS]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_TRAINING_GOALS]({ commit, state }, { forceRefresh }) {
             if (state.trainingGoalsLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.trainingGoals);
-                }
-                return;
+                return Promise.resolve(state.trainingGoals);
             }
-            api.getTrainingGoals().then(goals => {
-                commit(constants.FETCH_TRAINING_GOALS_SUCCESS, { goals })
-                if (success) {
-                    success(goals);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            return api.getTrainingGoals().then(response => {
+                commit(constants.FETCH_TRAINING_GOALS_SUCCESS, { goals: response.data });
+                return response.data;
             });
         },
-        [constants.FETCH_TRAINING_GOAL]({ commit, state }, { id, success, failure }) {
-            api.getTrainingGoal(id).then(goal => {
-                if (success) {
-                    success(goal);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.FETCH_TRAINING_GOAL]({ commit, state }, { id }) {
+            return api.getTrainingGoal(id).then(response => {
+                return response.data;
             });
         },
-        [constants.FETCH_ACTIVE_TRAINING_GOAL]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_ACTIVE_TRAINING_GOAL]({ commit, state }, { forceRefresh }) {
             if (state.trainingGoalLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.trainingGoal);
-                }
-                return;
+                return Promise.resolve(state.trainingGoal);
             }
-            api.getActiveTrainingGoal().then(goal => {
-                commit(constants.FETCH_ACTIVE_TRAINING_GOAL_SUCCESS, { goal })
-                if (success) {
-                    success(goal);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            return api.getActiveTrainingGoal().then(response => {
+                commit(constants.FETCH_ACTIVE_TRAINING_GOAL_SUCCESS, { goal: response.data });
+                return response.data;
             });
         },
-        [constants.SAVE_TRAINING_GOAL]({ commit, state }, { goal, success, failure }) {
-            api.saveTrainingGoal(goal).then(savedGoal => {
-                commit(constants.FETCH_TRAINING_GOAL_SUCCESS, { goal: savedGoal })
-                if (success) {
-                    success(savedGoal);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_TRAINING_GOAL]({ commit, state }, { goal }) {
+            return api.saveTrainingGoal(goal).then(response => {
+                commit(constants.FETCH_TRAINING_GOAL_SUCCESS, { goal: response.data });
+                return response.data;
             });
         },
-        [constants.ACTIVATE_TRAINING_GOAL]({ commit, state }, { goal, success, failure }) {
-            api.activateTrainingGoal(goal.id).then(() => {
-                commit(constants.ACTIVATE_TRAINING_GOAL_SUCCESS, { goal })
-                if (success) {
-                    success(savedGoal);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.ACTIVATE_TRAINING_GOAL]({ commit, state }, { goal }) {
+            return api.activateTrainingGoal(goal.id).then(response => {
+                commit(constants.ACTIVATE_TRAINING_GOAL_SUCCESS, { goal });
+                return response.data;
             });
         },
-        [constants.DELETE_TRAINING_GOAL]({ commit, state }, { goal, success, failure }) {
-            api.deleteTrainingGoal(goal.id).then(() => {
-                commit(constants.DELETE_TRAINING_GOAL_SUCCESS, { goal })
-                if (success) {
-                    success();
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.DELETE_TRAINING_GOAL]({ commit, state }, { goal }) {
+            return api.deleteTrainingGoal(goal.id).then(response => {
+                commit(constants.DELETE_TRAINING_GOAL_SUCCESS, { goal });
             });
         },
 
         // Activities
-        [constants.FETCH_ACTIVITIES]({ commit, state }, { forceRefresh, success, failure }) {
+        [constants.FETCH_ACTIVITIES]({ commit, state }, { forceRefresh }) {
             if (state.activitiesLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.activities);
-                }
-                return;
+                return Promise.resolve(state.activities);
             }
-            api.listActivities().then(activities => {
-                commit(constants.FETCH_ACTIVITIES_SUCCESS, { activities });
-                if (success) {
-                    success(activities);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            return api.listActivities().then(response => {
+                commit(constants.FETCH_ACTIVITIES_SUCCESS, { activities: response.data });
+                return response.data;
             });
         },
-        [constants.SELECT_ENERGY_EXPENDITURE_DATE_RANGE]({ commit, state }, { start, end, success, failure }) {
+        [constants.SELECT_ENERGY_EXPENDITURE_DATE_RANGE]({ commit, state }, { start, end }) {
             commit(constants.SELECT_ENERGY_EXPENDITURE_DATE_RANGE_SUCCESS, { start, end });
-            if (success) {
-                success();
-            }
+            return Promise.resolve();
         },
-        [constants.FETCH_ENERGY_EXPENDITURES]({ commit, state }, { start, end, success, failure }) {
+        [constants.FETCH_ENERGY_EXPENDITURES]({ commit, state }, { start, end }) {
             if (state.energyExpendituresStart && state.energyExpendituresEnd) {
                 if (moment(start).isBefore(state.energyExpendituresStart) || moment(end).isAfter(state.energyExpendituresEnd)) {
                     start = moment.min(moment(start), moment(state.energyExpendituresEnd));
                     end = moment.max(moment(end), moment(state.energyExpendituresStart));
                 }
                 else {
-                    // within already loaded period
-                    if (success) {
-                        success(state.energyExpenditures);
-                    }
-                    return;
+                    return Promise.resolve(state.energyExpenditures);
                 }
             }
 
-            api.listEnergyExpenditures(start, end).then(energyExpenditures => {
-                commit(constants.FETCH_ENERGY_EXPENDITURES_SUCCESS, { start, end, energyExpenditures })
-                if (success) {
-                    success(energyExpenditures);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            return api.listEnergyExpenditures(start, end).then(response => {
+                commit(constants.FETCH_ENERGY_EXPENDITURES_SUCCESS, { start, end, energyExpenditures: response.data })
+                return response.data;
             });
         },
-        [constants.SAVE_ENERGY_EXPENDITURE]({ commit, state }, { energyExpenditure, success, failure }) {
-            api.saveEnergyExpenditure(energyExpenditure).then(savedEnergyExpenditure => {
-                commit(constants.SAVE_ENERGY_EXPENDITURE_SUCCESS, { energyExpenditure: savedEnergyExpenditure })
-                if (success) {
-                    success(savedEnergyExpenditure);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+        [constants.SAVE_ENERGY_EXPENDITURE]({ commit, state }, { energyExpenditure }) {
+            return api.saveEnergyExpenditure(energyExpenditure).then(response => {
+                commit(constants.SAVE_ENERGY_EXPENDITURE_SUCCESS, { energyExpenditure: response.data })
+                return response.data;
             });
         },
-        [constants.DELETE_ENERGY_EXPENDITURE]({ commit, state }, { energyExpenditure, success, failure }) {
-            api.deleteEnergyExpenditure(energyExpenditure.id).then(() => {
+        [constants.DELETE_ENERGY_EXPENDITURE]({ commit, state }, { energyExpenditure }) {
+            return api.deleteEnergyExpenditure(energyExpenditure.id).then(reponse => {
                 commit(constants.DELETE_ENERGY_EXPENDITURE_SUCCESS, { energyExpenditure })
-                if (success) {
-                    success(energyExpenditure);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+                return Promise.resolve(energyExpenditure);
             });
         }
     },

@@ -32,8 +32,8 @@ export default {
         },
         loadData(){
             var self = this;
-            api.getMeasurementHistory(self.measure.id, self.start, self.end).done(data => {
-
+            api.getMeasurementHistory(self.measure.id, self.start, self.end).then(response => {
+                var data = response.data;
                 if(data.length == 0){
                     self.data = undefined;
                     return;
@@ -102,9 +102,9 @@ export default {
                     }
                 };
                 //self.data = data.map(d =>{return  {  t: new Date(d.time), y: d.value}});
-            }).fail(() => {
+            }).catch(() => {
                 self.notifyError(self.$t('fetchFailed'));
-            }).always(() => {
+            }).finally(() => {
                 self.$store.commit(constants.LOADING_DONE);
             });
             
@@ -116,7 +116,8 @@ export default {
         self.end = new Date();
         self.start = moment(self.end).subtract(6,'month').toDate();
 
-        api.listMeasures().then((measures) => {
+        api.listMeasures().then(response => {
+            var measures = response.data;
             self.measures = measures.map(m => {return {...m, label: m.name, value: m }});
             var measureId = self.$route.params.measureId;
             self.measure = self.measures.find(m => m.id == measureId);

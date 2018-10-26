@@ -34,7 +34,8 @@ export default {
         },
         loadData(){
             var self = this;
-            api.getExerciseHistory(self.exercise.id, self.start, self.end).done(data => {
+            api.getExerciseHistory(self.exercise.id, self.start, self.end).then(response => {
+                var data = response.data;
                 if(data.length == 0){
                     self.data = undefined;
                     return;
@@ -152,9 +153,9 @@ export default {
                     }
                 };
                 //self.data = data.map(d =>{return  {  t: new Date(d.time), y: d.value}});
-            }).fail(() => {
+            }).catch(_ => {
                 self.notifyError(self.$t('fetchFailed'));
-            }).always(() => {
+            }).finally(() => {
                 self.$store.commit(constants.LOADING_DONE);
             });
         },
@@ -166,17 +167,14 @@ export default {
         var self = this;
         self.end = new Date();
         self.start = moment(self.end).subtract(6,'month').toDate();
-        self.$store.dispatch(constants.FETCH_EXERCISES, {
-            success(exercises){
-                self.exercises = exercises.map(e => {return {...e, label: e.name, value: e }});
-                var exerciseId = self.$route.params.exerciseId;
-                self.exercise = self.exercises.find(e => e.id == exerciseId);
-            
-                self.loadData();
-            },
-            failure(){
-              self.$store.commit(constants.LOADING_DONE);
-            }
+        self.$store.dispatch(constants.FETCH_EXERCISES, { }).then(exercises => {
+            self.exercises = exercises.map(e => {return {...e, label: e.name, value: e }});
+            var exerciseId = self.$route.params.exerciseId;
+            self.exercise = self.exercises.find(e => e.id == exerciseId);
+        
+            self.loadData();
+        }).catch(_ => {
+            self.$store.commit(constants.LOADING_DONE);
         });
     }
 }

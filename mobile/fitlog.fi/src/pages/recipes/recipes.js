@@ -21,13 +21,11 @@ methods: {
   deleteRecipe(recipe) {
     var self = this;
     self.$store.dispatch(constants.DELETE_RECIPE, {
-      recipe,
-      success() {
-        self.recipes.splice(self.recipes.findIndex(r => r.id == recipe.id), 1);
-      },
-      failure() {
-        self.notifyError(self.$t('deleteFailed'));
-      }
+      recipe
+    }).then(_ => {
+      self.recipes.splice(self.recipes.findIndex(r => r.id == recipe.id), 1);
+    }).catch(_ => {
+      self.notifyError(self.$t('deleteFailed'));
     });
   },
   clickRecipe(recipe){
@@ -62,14 +60,11 @@ methods: {
 },
   created () {
     var self = this;
-    self.$store.dispatch(constants.FETCH_RECIPES, {
-      success(recipes) {
-        self.recipes = recipes;
-        self.$store.commit(constants.LOADING_DONE);
-      },
-      failure() {
-        self.notifyError(self.$t('fetchFailed'));
-      }
+    self.$store.dispatch(constants.FETCH_RECIPES, { }).then(recipes => {
+      self.recipes = recipes;
+      self.$store.commit(constants.LOADING_DONE, { });
+    }).catch(_ => {
+      self.notifyError(self.$t('fetchFailed'));
     });
     
   },

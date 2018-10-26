@@ -153,13 +153,11 @@ export default {
             cookedWeight: self.cookedWeight
         };
         self.$store.dispatch(constants.SAVE_RECIPE, {
-            recipe,
-            success() {
-                self.$router.replace({ name: 'recipes' });
-            },
-            failure() {
-                self.notifyError(self.$t('saveFailed'));
-            }
+            recipe
+        }).then(_ => {
+            self.$router.replace({ name: 'recipes' });
+        }).catch(_ => {
+            self.notifyError(self.$t('saveFailed'));
         });
     },
     cancel() {
@@ -168,14 +166,12 @@ export default {
     deleteRecipe() {
         var self = this;
         self.$store.dispatch(constants.DELETE_RECIPE, {
-            recipe: { id: self.id },
-            success() {
-                self.$router.push({ name: 'recipes' });
-            },
-            failure() {
-                self.notifyError(self.$t('deleteFailed'));
-            }
-        });
+            recipe: { id: self.id }
+        }).then(_ => {
+            self.$router.push({ name: 'recipes' });
+        }).catch(_ => {
+            self.notifyError(self.$t('deleteFailed'));
+        }); 
     },
     groupIsExpanded(group) {
         return this.groupOpenStates[group] && true;
@@ -189,19 +185,17 @@ export default {
         if(recipe.ingredients){
             var foodIds = recipe.ingredients.map(i => { return i.foodId });
             self.$store.dispatch(constants.FETCH_FOODS, {
-                ids: foodIds,
-                success(foods) {
-                    self.ingredients = recipe.ingredients.map(i => {
-                        var food = foods.find(f => f.id == i.foodId);
-                        var portion = food.portions.find(p => p.id === i.portionId);
-                        return { food: food, quantity: i.quantity, portion: portion};
-                    });
-                    
-                    self.$store.commit(constants.LOADING_DONE);
-                },
-                failure() {
-                    self.notifyError(self.$t('fetchFailed'));
-                }
+                ids: foodIds
+            }).then(foods => {
+                self.ingredients = recipe.ingredients.map(i => {
+                    var food = foods.find(f => f.id == i.foodId);
+                    var portion = food.portions.find(p => p.id === i.portionId);
+                    return { food: food, quantity: i.quantity, portion: portion};
+                });
+                
+                self.$store.commit(constants.LOADING_DONE);
+            }).catch(_ => {
+                self.notifyError(self.$t('fetchFailed'));
             });
         }
         else{
@@ -220,38 +214,24 @@ export default {
     }
     else {
         self.$store.dispatch(constants.FETCH_RECIPE, {
-            id,
-            success(recipe) {
-                self.populate(recipe);
-            },
-            failure() {
-                self.notifyError(self.$t('fetchFailed'));
-            }
+            id
+        }).then(recipe => {
+            self.populate(recipe);
+        }).catch(_ => {
+            self.notifyError(self.$t('fetchFailed'));
         });
     }
 
-    self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-        success() { 
-            self.selectedGroup = self.nutrientGroups[0];
-        },
-        failure() { }
+    self.$store.dispatch(constants.FETCH_NUTRIENTS, { }).then(_ => {
+        self.selectedGroup = self.nutrientGroups[0];
     });
-    self.$store.dispatch(constants.FETCH_LATEST_FOODS, {
-        success() { },
-        failure() { }
-    });
-    self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, {
-        success() { },
-        failure() { }
-    });
-    self.$store.dispatch(constants.FETCH_MY_FOODS, {
-        success() { },
-        failure() { }
-    });
+    self.$store.dispatch(constants.FETCH_LATEST_FOODS, { });
+    self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, { });
+    self.$store.dispatch(constants.FETCH_MY_FOODS, { });
   },
   mounted(){
     if(!this.name){
         this.$refs.nameInput.focus();
     }
-    }
+}
 }

@@ -6,7 +6,7 @@
   <div slot="toolbar">
     <q-btn flat icon="help" @click="showHelp"></q-btn>
     <q-btn flat icon="save" @click="save" :disabled="!canSave"></q-btn>
-    <q-btn flat icon="fas fa-barcode"  @click="readBarcode"></q-btn>
+    <q-btn flat icon="fas fa-barcode" @click="readBarcode" v-if="isCordova"></q-btn>
   </div>
   <q-page class="q-pa-sm">
     <div class="row">

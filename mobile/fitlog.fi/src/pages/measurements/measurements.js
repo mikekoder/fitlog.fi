@@ -14,8 +14,8 @@ export default {
     methods: {
         loadMeasures() {
             var self = this;
-            api.listMeasures().then((measures) => {
-                self.measures = measures;
+            api.listMeasures().then(response => {
+                self.measures = response.data;
                 self.$store.commit(constants.LOADING_DONE);
             });
         },

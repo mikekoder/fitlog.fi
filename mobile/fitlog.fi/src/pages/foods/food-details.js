@@ -118,13 +118,11 @@ export default {
             }
 
             self.$store.dispatch(constants.SAVE_FOOD, {
-                food,
-                success() {
-                    self.$router.replace({ name: 'foods' });
-                },
-                failure() {
-                    self.notifyError(self.$t('saveFailed'));
-                }
+                food
+            }).then(_ => {
+                self.$router.replace({ name: 'foods' });
+            }).catch(_ => {
+                self.notifyError(self.$t('saveFailed'));
             });
         },
         cancel() {
@@ -133,13 +131,11 @@ export default {
         deleteFood() {
             var self = this;
             self.$store.dispatch(constants.DELETE_FOOD, {
-                food: { id: self.id },
-                success() {
-                    self.$router.push({ name: 'foods' });
-                },
-                failure() {
-                    self.notifyError(self.$t('deleteFailed'));
-                }
+                food: { id: self.id }
+            }).then(_ => {
+                self.$router.push({ name: 'foods' });
+            }).catch(_ => {
+                self.notifyError(self.$t('deleteFailed'));
             });
         },
         populate(food) {
@@ -152,32 +148,29 @@ export default {
             if (food.nutrientPortionId) {
                 self.nutrientPortion = self.portions.find(p => p.id === food.nutrientPortionId);
             }
-            self.$store.dispatch(constants.FETCH_NUTRIENTS, {
-                success() {
-                    for (var i in self.nutrientsGrouped) {
-                        var group = self.nutrientsGrouped[i];
-                        for (var j in group) {
-                            var nutrient = group[j];
-                            var value = food.nutrients ? food.nutrients.find(n => n.nutrientId == nutrient.id) : undefined;
-                            if (value) {
-                                if (self.nutrientPortion && self.nutrientPortion != defaultNutrientPortion) {
-                                    self.nutrients[nutrient.id] = value.portionAmount;
-                                }
-                                else {
-                                    self.nutrients[nutrient.id] = value.amount;
-                                }
+            self.$store.dispatch(constants.FETCH_NUTRIENTS, { }).then(_ => {
+                for (var i in self.nutrientsGrouped) {
+                    var group = self.nutrientsGrouped[i];
+                    for (var j in group) {
+                        var nutrient = group[j];
+                        var value = food.nutrients ? food.nutrients.find(n => n.nutrientId == nutrient.id) : undefined;
+                        if (value) {
+                            if (self.nutrientPortion && self.nutrientPortion != defaultNutrientPortion) {
+                                self.nutrients[nutrient.id] = value.portionAmount;
                             }
                             else {
-                                self.nutrients[nutrient.id] = undefined;
+                                self.nutrients[nutrient.id] = value.amount;
                             }
                         }
+                        else {
+                            self.nutrients[nutrient.id] = undefined;
+                        }
                     }
-                    self.selectedGroup = self.nutrientGroups[0];
-                    self.$store.commit(constants.LOADING_DONE);
-                },
-                failure() {
-                    self.notifyError(self.$t('fetchFailed'));
                 }
+                self.selectedGroup = self.nutrientGroups[0];
+                self.$store.commit(constants.LOADING_DONE);
+            }).catch(_ => {
+                self.notifyError(self.$t('fetchFailed'));
             });
         },
         showHelp(){
@@ -204,7 +197,8 @@ export default {
         },
         loadInfoByEan() {
             var self = this;
-            api.searchExternalFood(this.ean).then(food => {
+            api.searchExternalFood(this.ean).then(response => {
+                var food = response.data;
                 if(!self.name){
                     self.name = food.name;
                 }
@@ -230,13 +224,11 @@ export default {
         }
         else {
             self.$store.dispatch(constants.FETCH_FOOD, {
-                id,
-                success(food) {
-                    self.populate(food);
-                },
-                failure() {
-                    self.notifyError(self.$t('fetchFailed'));
-                }
+                id
+            }).then(_ => {
+                self.populate(food);
+            }).catch(_ => {
+                self.notifyError(self.$t('fetchFailed'));
             });
         }
 
