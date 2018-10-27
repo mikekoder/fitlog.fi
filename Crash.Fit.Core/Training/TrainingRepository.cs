@@ -24,7 +24,7 @@ namespace Crash.Fit.Training
         }
         public IEnumerable<Equipment> GetEquipment()
         {
-            var sql = @"SELECT * FROM Equipment";
+            var sql = @"SELECT * FROM Equipment WHERE Deleted IS NULL";
             using (var conn = CreateConnection())
             {
                 return conn.Query<Equipment>(sql).ToList();
@@ -34,39 +34,40 @@ namespace Crash.Fit.Training
         public IEnumerable<Exercise> SearchExercises(string[] nameTokens, Guid? muscleGroupId, Guid? equipmentId, Guid? userId)
         {
             var parameters = new DynamicParameters();
-            var sql = "";
+            var filter = "";
             if (nameTokens != null)
             {
                 for (int i = 0; i < nameTokens.Length; i++)
                 {
                     parameters.Add("p" + i, nameTokens[i]);
-                    sql += " AND Name LIKE CONCAT('%',@p" + i + ",'%')";
+                    filter += " AND Name LIKE CONCAT('%',@p" + i + ",'%')";
                 }
             }
             if (userId.HasValue)
             {
-                sql += " AND (UserId IS NULL OR UserId=@UserId)";
+                filter += " AND (UserId IS NULL OR UserId=@UserId)";
                 parameters.Add("UserId", userId.Value);
             }
             else
             {
-                sql += " AND UserId IS NULL";
+                filter += " AND UserId IS NULL";
             }
             if (muscleGroupId.HasValue)
             {
-                sql += " AND (ExerciseTarget.MuscleGroupId=@MuscleGroupId)";
+                filter += " AND (ExerciseTarget.MuscleGroupId=@MuscleGroupId)";
                 parameters.Add("MuscleGroupId", muscleGroupId.Value);
             }
             if (equipmentId.HasValue)
             {
-                sql += " AND (ExerciseEquipment.EquipmentId=@EquipmentId)";
+                filter += " AND (ExerciseEquipment.EquipmentId=@EquipmentId)";
                 parameters.Add("EquipmentId", equipmentId.Value);
             }
+            filter += " AND Deleted IS NULL";
 
-            sql = @"SELECT DISTINCT Exercise.* FROM Exercise
+            var sql = @"SELECT DISTINCT Exercise.* FROM Exercise
 JOIN ExerciseTarget ON ExerciseTarget.ExerciseId=Exercise.Id
 JOIN ExerciseEquipment ON ExerciseEquipment.ExerciseId=Exercise.Id
-WHERE " + sql.Substring(5) + " ORDER BY Name";
+WHERE " + filter.Substring(5) + " ORDER BY Name";
             using (var conn = CreateConnection())
             {
                 return conn.Query<Exercise>(sql, parameters);
