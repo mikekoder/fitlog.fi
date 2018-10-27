@@ -54,7 +54,7 @@ export default {
         client: this.client
       };
       
-      api.login(data).done(response => {
+      api.login(data).then(response => {
         self.$store.dispatch(constants.STORE_TOKENS, {
           client: response.data.client,
           refreshToken: response.data.refreshToken,
