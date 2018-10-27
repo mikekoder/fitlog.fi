@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="lHh Lpr lFf" :container="!isCordova" :class="{'boxed': !isCordova }" :style="layoutStyle" @resize="resize">
     <q-layout-header :reveal="true">
       <q-toolbar color="tertiary" glossy>
         <q-btn flat dense round @click="menuOpen = !menuOpen">
@@ -129,7 +129,8 @@ export default {
   name: 'LayoutPage',
   data () {
     return {
-      menuOpen: false
+      menuOpen: false,
+      layoutStyle: {}
     }
   },
   computed: {
@@ -150,10 +151,32 @@ export default {
       self.$store.dispatch(constants.LOGOUT, { }).then(_ => {
         self.$router.replace({name: 'login'});
       });
+    },
+    resize(){
+      console.log('resize');
+      if(this.isCordova){
+        this.layoutStyle = {};
+      } 
+      else { 
+        var height = window.innerHeight;
+        var width = window.innerWidth;
+        this.layoutStyle = {
+          height: height + 'px',
+          width: (width > 1200 ? 1200 : width) + 'px'
+        };
+      }
     }
+  },
+  mounted(){
+    this.resize();
   }
 }
 </script>
 
 <style>
+.boxed {
+  min-width: 300px; 
+  min-height: 500px; 
+  margin: auto;
+}
 </style>
