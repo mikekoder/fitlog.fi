@@ -160,6 +160,10 @@ namespace Crash.Fit.Web.Controllers
         [HttpPut("day-preset")]
         public IActionResult SetActivityPresetForDay([FromBody]ActivityPresetDayRequest request)
         {
+            if(request.ActivityPresetId == Guid.Empty || request.Date == DateTimeOffset.MinValue)
+            {
+                return BadRequest();
+            }
             var date = DateTimeUtils.ToLocal(request.Date);
             activityRepository.SetActivityPresetForDay(CurrentUserId, date.Date, request.ActivityPresetId);
             return Ok();
