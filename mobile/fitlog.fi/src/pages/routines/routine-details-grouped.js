@@ -2,11 +2,12 @@ import constants from '../../store/constants'
 import utils from '../../utils'
 import Vue from 'vue'
 import Help from './routine-help'
+import ExercisesMixin from '../../mixins/exercises'
 import PageMixin from '../../mixins/page'
 import ExercisePicker from '../../components/exercise-picker'
 
 export default {
-    mixins: [PageMixin],
+    mixins: [ExercisesMixin, PageMixin],
     components: {
         'routine-help': Help,
         'exercise-picker':ExercisePicker
@@ -42,7 +43,7 @@ export default {
         addWorkout(){
             var count = this.workouts.length;
             this.workouts.push({ name: 'Päivä ' + (count + 1), groups: [], frequency: 1 });
-            this.addGroup(this.workouts[count]);
+            //this.addGroup(this.workouts[count]);
         },
         deleteWorkout(index) {
             this.workouts.splice(index, 1);
@@ -51,6 +52,7 @@ export default {
             var group = {exercise: null, rows:[], collapsed: false};
             this.addRow(group);
             workout.groups.push(group);
+            this.selectExercise(group);
         },
         deleteGroup(workout,index){
             workout.groups.splice(index, 1);
