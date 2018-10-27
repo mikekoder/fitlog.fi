@@ -106,7 +106,7 @@ export default {
             return this.muscleGroup ? this.muscleGroup.name : this.$t('select');
         },
         equipments(){
-            return this.$store.state.training.equipment.sort((a,b) => a.name < b.name ? -1 : 1).map(e => {return {...e, label: e.name, value: e }});
+            return this.$store.state.training.equipments.sort((a,b) => a.name < b.name ? -1 : 1).map(e => {return {...e, label: e.name, value: e }});
         },
         equipmentText(){
             return this.equipment ? this.equipment.name : this.$t('select');
@@ -181,8 +181,11 @@ export default {
             this.cancel();
         },
         save () {
-            var self = this;
-            this.$emit('selected', self.exercise);
+            this.muscleGroup = undefined;
+            this.equipment = undefined;
+            this.searchText = '';
+            this.searchResults = [];
+            this.$emit('selected', this.exercise);
         },
     },
     mounted () {
