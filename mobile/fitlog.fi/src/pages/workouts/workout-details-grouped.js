@@ -3,11 +3,13 @@ import utils from '../../utils'
 import exercisesMixin from '../../mixins/exercises'
 import PageMixin from '../../mixins/page'
 import Help from './workout-help'
+import ExercisePicker from '../../components/exercise-picker'
 
 export default {
     mixins:[exercisesMixin, PageMixin],
     components: {
-        'workout-help': Help
+        'workout-help': Help,
+        'exercise-picker':ExercisePicker
     },
   data () {
     return {
@@ -17,7 +19,8 @@ export default {
         groups:[],
         exercises: [],
         energyExpenditure: undefined,
-        energySpecified: false
+        energySpecified: false,
+        selectedGroup: undefined
     }
   },
     computed: {
@@ -86,6 +89,7 @@ export default {
         var self = this;
         done(self.exercises.filter(e => e.name.indexOf(text) >= 0));
     },
+    /*
     exerciseSelected(group,exercise){
         if(exercise.id){
             group.exercise = exercise;
@@ -96,6 +100,7 @@ export default {
             group.exerciseName = exercise;
         }
     },
+    */
     save() {
         var self = this;
         var time = self.duration ? new Date(self.duration) : undefined;
@@ -186,6 +191,15 @@ export default {
         }).catch(_ => {
             self.notifyError(self.$t('fetchFailed'));
         });
+ 
+    },
+    selectExercise(group){
+        this.selectedGroup = group;
+        this.$refs.exercisePicker.show(this.selectedGroup);
+    },
+    exerciseSelected(exercise){
+        this.selectedGroup.exercise = exercise;
+        this.$refs.exercisePicker.hide();
     },
     showHelp(){
         this.$refs.help.open();

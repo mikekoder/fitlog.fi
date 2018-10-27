@@ -38,9 +38,12 @@
     <q-card v-for="(group, index) in groups" :key="index" class="q-ma-sm">
     <q-card-title class="card-title" :class="cardTitleBackground">
         <div class="row">
-            <div class="col-10">
-                <div>
-                    <q-select v-model="group.exercise" :options="exercises" :float-label="$t('exercise')" :display-value="group.exercise ? group.exercise.name : ''"/>
+            <div class="col-10 q-mt-md text-weight-medium" @click="selectExercise(group)">
+                <div v-if="group.exercise">
+                    {{ group.exercise.name }}
+                </div>
+                <div v-else>
+                    {{ $t('selectExercise') }}
                 </div>
             </div>
             <div class="col-2 group-actions">
@@ -101,6 +104,7 @@
     </div>
     <workout-help ref="help" />
   </q-page>
+  <exercise-picker ref="exercisePicker" @selected="exerciseSelected(arguments[0])" />
   </layout>
 </template>
 

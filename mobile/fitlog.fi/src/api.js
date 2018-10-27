@@ -244,9 +244,28 @@ export default {
         return axios.get(this.baseUrl + 'muscles/groups');
     },
 
+    // Equipment
+    listEquipments(){
+        return axios.get(this.baseUrl + 'exercises/equipment');
+    },
+
     // Exercises
     listExercises(){
         return axios.get(this.baseUrl + 'exercises/');
+    },
+    searchExercises(name, muscleGroupId, equipmentId){
+        var query = {
+            name,
+            muscleGroupId,
+            equipmentId
+        };
+        return axios.get(this.baseUrl + 'exercises/search', {params: query});
+    },
+    listLatestExercises(){
+        return axios.get(this.baseUrl + 'exercises/latest');
+    },
+    listMostUsedExercises(){
+        return axios.get(this.baseUrl + 'exercises/most-used');
     },
     getExercise(id){
         return axios.get(this.baseUrl + 'exercises/' + id);

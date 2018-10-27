@@ -23,6 +23,11 @@ export default {
     showProgress(exercise){
       this.$router.push({ name: 'exercise-progress', params: { exerciseId: exercise.id} });
     },
+    deleteExercise(exercise) {
+      this.$store.dispatch(constants.DELETE_EXERCISE, {
+          exercise
+      });
+    },
     clickExercise(exercise){
       var self = this;
       this.$q.actionSheet({

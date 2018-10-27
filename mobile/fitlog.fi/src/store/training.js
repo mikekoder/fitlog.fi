@@ -10,10 +10,16 @@ export default {
         muscleGroupsLoaded: false,
         muscleGroups: [],
 
+        equipmentsLoaded: false,
+        equipments: [],
+
 
         exercisesLoaded: false,
         exercises: [],
-
+        latestExercisesLoaded: false,
+        latestExercises: [],
+        mostUsedExercisesLoaded: false,
+        mostUsedExercises: [],
 
         routinesLoaded: false,
         routines: [],
@@ -53,6 +59,16 @@ export default {
             }
             return api.listMuscleGroups().then(response => {
                 commit(constants.FETCH_MUSCLEGROUPS_SUCCESS, { muscleGroups: response.data });
+                return response.data;
+            });
+        },
+        // Equipment
+        [constants.FETCH_EQUIPMENT]({ commit, state }, { forceRefresh }) {
+            if (state.equipmentsLoaded && !forceRefresh) {
+                return Promise.resolve(state.equipments);
+            }
+            return api.listEquipments().then(response => {
+                commit(constants.FETCH_EQUIPMENT_SUCCESS, { equipments: response.data });
                 return response.data;
             });
         },
@@ -101,6 +117,25 @@ export default {
             }
             return api.listExercises().then(response => {
                 commit(constants.FETCH_EXERCISES_SUCCESS, { exercises: response.data });
+                return response.data;
+            });
+        },
+
+        [constants.FETCH_LATEST_EXERCISES]({ commit, state }, { forceRefresh}) {
+            if (state.latestExercisesLoaded && !forceRefresh) {
+                return Promise.resolve(state.latestExercises);
+            }
+            api.listLatestExercises().then(response => {
+                commit(constants.FETCH_LATEST_EXERCISES_SUCCESS, { exercises: response.data });
+                return response.data;
+            });
+        },
+        [constants.FETCH_MOST_USED_EXERCISES]({ commit, state }, { forceRefresh }) {
+            if (state.mostUsedExercisesLoaded && !forceRefresh) {
+                return Promise.resolve(state.mostUsedExercises);
+            }
+            api.listMostUsedExercises().then(response => {
+                commit(constants.FETCH_MOST_USED_EXERCISES_SUCCESS, { exercises: response.data });
                 return response.data;
             });
         },
@@ -260,7 +295,6 @@ export default {
     // mutations
     mutations: {
         [constants.TRAINING_CLEAR](state) {
-            console.log('training.logout 1');
             state.diaryDate = new Date();
             state.muscleGroupsLoaded = false;
             state.muscleGroups = [];
@@ -287,15 +321,26 @@ export default {
             state.energyExpendituresEnd = undefined;
             state.energyExpendituresDisplayStart = undefined;
             state.energyExpendituresDisplayEnd = undefined;
-            console.log('training.logout 2');
         },
         [constants.FETCH_MUSCLEGROUPS_SUCCESS](state, { muscleGroups }) {
             state.muscleGroups = muscleGroups;
             state.muscleGroupsLoaded = true;
         },
+        [constants.FETCH_EQUIPMENT_SUCCESS](state, { equipments }) {
+            state.equipments = equipments;
+            state.equipmentsLoaded = true;
+        },
         [constants.FETCH_EXERCISES_SUCCESS](state, { exercises }) {
             state.exercises = exercises;
             state.exercisesLoaded = true;
+        },
+        [constants.FETCH_LATEST_EXERCISES_SUCCESS](state, { exercises }) {
+            state.latestExercises = exercises;
+            state.latestExercisesLoaded = true;
+        },
+        [constants.FETCH_MOST_USED_EXERCISES_SUCCESS](state, { exercises }) {
+            state.mostUsedExercises = exercises;
+            state.mostUsedExercisesLoaded = true;
         },
         [constants.FETCH_ROUTINES_SUCCESS](state, { routines }) {
             state.routines = routines;

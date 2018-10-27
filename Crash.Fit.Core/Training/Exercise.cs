@@ -16,9 +16,13 @@ namespace Crash.Fit.Training
     {
         public int UsageCount { get; set; }
         public decimal? OneRepMax { get; set; }
+        public DateTimeOffset? LatestUse { get; set; }
     }
     public class ExerciseDetails : ExerciseSummary
     {
         public Guid[] Targets { get; set; }
+        public Guid[] SecondaryTargets { get; set; }
+        public ExerciseImage[] Images { get; set; }
+        public Guid[] Equipments { get; set; }
     }
 }
