@@ -38,7 +38,7 @@
     <q-card v-for="(group, index) in groups" :key="index" class="q-ma-sm">
     <q-card-title class="card-title" :class="cardTitleBackground">
         <div class="row">
-            <div class="col-10" @click="selectExercise(group)">
+            <div class="col-10 q-mt-md text-weight-medium" @click="selectExercise(group)">
                 <div v-if="group.exercise">
                     {{ group.exercise.name }}
                 </div>

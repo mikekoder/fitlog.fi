@@ -21,6 +21,8 @@ namespace Crash.Fit.Training
     public class ExerciseDetails : ExerciseSummary
     {
         public Guid[] Targets { get; set; }
+        public Guid[] SecondaryTargets { get; set; }
         public ExerciseImage[] Images { get; set; }
+        public Guid[] Equipments { get; set; }
     }
 }

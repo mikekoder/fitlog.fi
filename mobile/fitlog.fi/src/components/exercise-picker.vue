@@ -1,20 +1,20 @@
 <template>
     <q-modal ref="modal">
-        <q-tabs v-model="tab" style="height: 82vh;" @select="changeTab" v-if="selectExercise">
+        <q-tabs v-model="tab" style="height: 70vh;" @select="changeTab" v-if="selectExercise">
             
             <q-tab slot="title" name="tab-1"  :label="$t('search')" />
             <q-tab slot="title" name="tab-2"  :label="$t('latest')" />
             <q-tab slot="title" name="tab-3" :label="$t('mostUsed')" />
             <q-tab slot="title" name="tab-4"  :label="$t('my')" />
            
-            <q-scroll-area style="height: 75vh;">
+            <q-scroll-area style="height: 65vh;">
             <q-tab-pane name="tab-1">
                 <div class="row">
                     <div class="col">
-                        <q-select v-model="muscleGroup" :float-label="$t('muscleGroup')" :options="muscleGroups" :display-value="muscleGroupText" @input="search" />
+                        <q-select v-model="muscleGroup" :float-label="$t('muscleGroup')" :options="muscleGroups" :display-value="muscleGroupText" @input="search" clearable />
                     </div>
                      <div class="col">
-                         <q-select v-model="equipment" :float-label="$t('equipment')" :options="equipments" :display-value="equipmentText" @input="search" />
+                         <q-select v-model="equipment" :float-label="$t('equipment')" :options="equipments" :display-value="equipmentText" @input="search" clearable />
                      </div>
                 </div>
                 
@@ -62,7 +62,7 @@
         </div>
         <div class="row q-ma-sm q-mt-lg">
             <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
-            <q-btn glossy color="primary" @click="save" :label="$t('save')" :disabled="!canSave"></q-btn>
+            <q-btn glossy color="primary" @click="save" :label="$t('select')" :disabled="!canSave"></q-btn>
         </div>
     </q-modal>
 </template>
@@ -100,13 +100,13 @@ export default {
             return this.$store.state.training.exercises.sort((a,b) => a.name < b.name ? -1 : 1);
         },
         muscleGroups(){
-            return this.$store.state.training.muscleGroups.sort((a,b) => a.name < b.name ? -1 : 1).map(g => {return {...g, label: g.name, value: g }});;
+            return this.$store.state.training.muscleGroups.sort((a,b) => a.name < b.name ? -1 : 1).map(g => {return {...g, label: g.name, value: g }});
         },
         muscleGroupText(){
             return this.muscleGroup ? this.muscleGroup.name : this.$t('select');
         },
         equipments(){
-            return this.$store.state.training.equipment.sort((a,b) => a.name < b.name ? -1 : 1).map(e => {return {...e, label: e.name, value: e }});;
+            return this.$store.state.training.equipment.sort((a,b) => a.name < b.name ? -1 : 1).map(e => {return {...e, label: e.name, value: e }});
         },
         equipmentText(){
             return this.equipment ? this.equipment.name : this.$t('select');
@@ -143,8 +143,8 @@ export default {
           var self = this;
           if(self.searchText.length >= 2 || self.muscleGroup || self.equipment){
             self.searching = true;
-            api.searchExercises(self.searchText, self.muscleGroup ? self.muscleGroup.id : undefined, self.equipment ? self.equipment.id : undefined).then(results => {
-                self.searchResults = results.map(e => { return { ...e, text: e.name, icon: e.userId ? 'fas fa-user' : '' }});
+            api.searchExercises(self.searchText, self.muscleGroup ? self.muscleGroup.id : undefined, self.equipment ? self.equipment.id : undefined).then(response => {
+                self.searchResults = response.data.map(e => { return { ...e, text: e.name, icon: e.userId ? 'fas fa-user' : '' }});
                 self.searching = false;
             });
           }
@@ -159,21 +159,14 @@ export default {
           this.load(exercise.id);
         },
         load(exerciseId){
-            var self = this;
-            self.$store.dispatch(constants.FETCH_EXERCISE, {
-                id: exerciseId,
-                success (exercise) {
-                    //self.searchText = food.manufacturer ? `${food.name} (${food.manufacturer})` : food.name;
-                    self.exercise = exercise;
-                    self.selectExercise = false;
-                },
-                failure () {
-                    self.notifyError(self.$t('fetchFailed'));
-                }
+            this.$store.dispatch(constants.FETCH_EXERCISE, { id: exerciseId}).then(exercise => {
+                this.exercise = exercise;
+                this.selectExercise = false;
             });
         },
         reselectExercise(){
             this.selectExercise = true;
+            this.search();
         },
         tabChanged(tab){
             this.tab = tab;
