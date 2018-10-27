@@ -7,15 +7,6 @@
       <q-btn flat icon="help" @click="showHelp"></q-btn>
       <q-btn flat icon="save" @click="save"></q-btn>
   </div>
-    <!--
-    <q-toolbar slot="footer">
-        <q-btn flat round dense icon="menu"/>
-        <q-toolbar-title>
-            Footer
-        </q-toolbar-title>
-        <q-btn flat icon="fas fa-plus" @click="addGroup" :label="$t('exercise')"></q-btn>
-    </q-toolbar>
-    -->
   <q-page class="q-pa-sm">
     <q-card>
         <q-card-main>

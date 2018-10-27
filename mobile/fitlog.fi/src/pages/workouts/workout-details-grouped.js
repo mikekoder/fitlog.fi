@@ -1,12 +1,12 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
-import exercisesMixin from '../../mixins/exercises'
+import ExercisesMixin from '../../mixins/exercises'
 import PageMixin from '../../mixins/page'
 import Help from './workout-help'
 import ExercisePicker from '../../components/exercise-picker'
 
 export default {
-    mixins:[exercisesMixin, PageMixin],
+    mixins:[ExercisesMixin, PageMixin],
     components: {
         'workout-help': Help,
         'exercise-picker':ExercisePicker
@@ -63,6 +63,7 @@ export default {
         }
         this.groups.push(group);
         this.addSet(group);
+        this.selectExercise(group);
     },
     copyGroup(group){
         this.groups.push({...group});
