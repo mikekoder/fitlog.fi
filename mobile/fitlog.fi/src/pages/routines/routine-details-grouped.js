@@ -3,11 +3,13 @@ import utils from '../../utils'
 import Vue from 'vue'
 import Help from './routine-help'
 import PageMixin from '../../mixins/page'
+import ExercisePicker from '../../components/exercise-picker'
 
 export default {
     mixins: [PageMixin],
     components: {
-        'routine-help': Help
+        'routine-help': Help,
+        'exercise-picker':ExercisePicker
     },
     data () {
         return {
@@ -17,6 +19,7 @@ export default {
             workouts: [{ name: 'Päivä 1', groups: [] }],
             exercises: [],
             selectedWorkout: undefined,
+            selectedGroup: undefined,
             frequencyPresets:[]
         }
     },
@@ -186,7 +189,14 @@ export default {
             }).catch(_ => {
                 self.notifyError(self.$t('fetchFailed'));
             });
-
+        },
+        selectExercise(group){
+            this.selectedGroup = group;
+            this.$refs.exercisePicker.show(this.selectedGroup);
+        },
+        exerciseSelected(exercise){
+            this.selectedGroup.exercise = exercise;
+            this.$refs.exercisePicker.hide();
         },
         showHelp(){
             this.$refs.help.open();

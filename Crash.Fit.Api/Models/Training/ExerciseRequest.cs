@@ -10,5 +10,7 @@ namespace Crash.Fit.Api.Models.Training
         public string Name { get; set; }
         public decimal? PercentageBW { get; set; }
         public Guid[] Targets { get; set; }
+        public Guid[] SecondaryTargets { get; set; }
+        public Guid[] Equipments { get; set; }
     }
 }

@@ -36,21 +36,20 @@
             <q-card v-for="(group, g_index) in workout.groups" :key="g_index" class="q-mx-sm q-mb-sm">
                 <q-card-title class="bg-grey-3">
                     <div class="row">
-                        <div class="col-10"><!--
-                            <div v-if="exercises.length > 20">
-                                
-                                <q-input color="amber" v-model="group.exerciseName" :float-label="$t('exercise')" >
-                                    <q-autocomplete @search="searchExercise" :min-characters="1" @selected="(exercise) => exerciseSelected(group,exercise)" />
-                                </q-input>
-                                
-                            </div>-->
-                            <div>
-                                <q-select v-model="group.exercise" :options="exercises" :float-label="$t('exercise')" :display-value="group.exercise ? group.exercise.name : ''"/>
+                        <div class="col-10 q-mt-md text-weight-medium" @click="selectExercise(group)">
+                            <div v-if="group.exercise">
+                                {{ group.exercise.name }}
+                            </div>
+                            <div v-else>
+                                {{ $t('selectExercise') }}
                             </div>
                         </div>
-                        <div class="col-2">
+                        <div class="col-2 group-actions">
                             <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
                                 <q-fab-action color="negative" @click="deleteGroup(workout, g_index)" icon="delete"></q-fab-action>
+                                <!--
+                                <q-fab-action color="secondary" @click="copyGroup(group)" icon="content_copy"></q-fab-action>
+                                -->
                             </q-fab>
                         </div>
                     </div>
@@ -106,6 +105,7 @@
     </q-tabs>
     <routine-help ref="help" />
   </q-page>
+  <exercise-picker ref="exercisePicker" @selected="exerciseSelected(arguments[0])" />
   </layout>
 </template>
 

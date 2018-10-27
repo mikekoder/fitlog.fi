@@ -27,7 +27,7 @@ namespace Crash.Fit.Web.Controllers
         [HttpGet("equipment")]
         public IActionResult ListEquipment()
         {
-            var equipment = trainingRepository.GetEquipment();
+            var equipment = trainingRepository.GetEquipment().OrderBy(e => e.Name);
 
             var response = AutoMapper.Mapper.Map<EquipmentResponse[]>(equipment);
             return Ok(response);
@@ -97,6 +97,10 @@ namespace Crash.Fit.Web.Controllers
         {
             var exercise = AutoMapper.Mapper.Map<ExerciseDetails>(request);
             exercise.UserId = CurrentUserId;
+            if (exercise.Targets != null && exercise.SecondaryTargets != null)
+            {
+                exercise.SecondaryTargets = exercise.SecondaryTargets.Except(exercise.Targets).ToArray();
+            }
             trainingRepository.CreateExercise(exercise);
 
             var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);
@@ -111,7 +115,12 @@ namespace Crash.Fit.Web.Controllers
             {
                 return Unauthorized();
             }
+
             AutoMapper.Mapper.Map(request, exercise);
+            if (exercise.Targets != null && exercise.SecondaryTargets != null)
+            {
+                exercise.SecondaryTargets = exercise.SecondaryTargets.Except(exercise.Targets).ToArray();
+            }
             trainingRepository.UpdateExercise(exercise);
 
             var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);

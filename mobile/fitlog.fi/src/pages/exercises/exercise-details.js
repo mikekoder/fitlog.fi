@@ -13,43 +13,44 @@ export default {
             id: null,
             name: null,
             percentageBW: null,
-            targets: []
+            targets: [],
+            secondaryTargets: [],
+            equipments: [],
+
+            muscleGroups: [],
+            equipmentOptions: []
         }
     },
     computed: {
-        muscleGroups() {
-            return this.$store.state.training.muscleGroups;
-        },
         canSave(){
             return this.name && true;
         }
     },
     methods: {
         save() {
-            var self = this;
-
             var exercise = {
-                id: self.id,
-                name: self.name,
-                percentageBW: self.percentageBW,
-                targets: self.targets
+                id: this.id,
+                name: this.name,
+                percentageBW: this.percentageBW,
+                targets: this.targets,
+                secondaryTargets: this.secondaryTargets,
+                equipments: this.equipments
             };
 
-            self.$store.dispatch(constants.SAVE_EXERCISE, {
+            this.$store.dispatch(constants.SAVE_EXERCISE, {
                 exercise
             }).then(_ => {
-                self.$router.replace({ name: 'exercises' });
+                this.$router.replace({ name: 'exercises' });
             }).catch(_ => {});
         },
         cancel() {
             this.$router.go(-1);
         },
         deleteExercise() {
-            var self = this;
-            self.$store.dispatch(constants.DELETE_EXERCISE, {
-                exercise: { id: self.id }
+            this.$store.dispatch(constants.DELETE_EXERCISE, {
+                exercise: { id: this.id }
             }).then(_ => {
-                self.$router.push({ name: 'exercises' });
+                this.$router.push({ name: 'exercises' });
             }).catch(_ => {
 
             });
@@ -59,26 +60,38 @@ export default {
         }
     },
     created() {
-        var self = this;
         var id = this.$route.params.id;
-        self.$store.dispatch(constants.FETCH_MUSCLEGROUPS, { }).then(muscleGroups => {
-            if (id == constants.NEW_ID) {
-                self.id = undefined;
-                self.name = undefined;
-                self.targets = [];
-                self.$store.commit(constants.LOADING_DONE);
-            }
-            else {
-                self.$store.dispatch(constants.FETCH_EXERCISE, {
-                    id
-                }).then(exercise => {
-                    self.id = exercise.id;
-                    self.name = exercise.name;
-                    self.percentageBW = exercise.percentageBW;
-                    self.targets = exercise.targets;
-                    self.$store.commit(constants.LOADING_DONE);
-                });
-            }
+        Promise.all([
+            this.$store.dispatch(constants.FETCH_MUSCLEGROUPS, { }),
+            this.$store.dispatch(constants.FETCH_EQUIPMENT, {})]).then(values => {
+                var muscleGroups = values[0];
+                var equipments = values[1];
+                this.muscleGroups = muscleGroups.map(mg => {return {...mg, label: mg.name, value: mg.id }});
+                this.equipmentOptions = equipments.map(e => {return {...e, label: e.name, value: e.id }});
+
+                if (id == constants.NEW_ID) {
+                    this.id = undefined;
+                    this.name = undefined;
+                    this.targets = [];
+                    this.secondaryTargets = [];
+                    this.equipments = [];
+
+                    this.$store.commit(constants.LOADING_DONE);
+                }
+                else {
+                    this.$store.dispatch(constants.FETCH_EXERCISE, {
+                        id
+                    }).then(exercise => {
+                        this.id = exercise.id;
+                        this.name = exercise.name;
+                        this.percentageBW = exercise.percentageBW;
+                        this.targets = exercise.targets || [];
+                        this.secondaryTargets = exercise.secondaryTargets || [];
+                        this.equipments = exercise.equipments || [];
+  
+                        this.$store.commit(constants.LOADING_DONE);
+                    });
+                }
         });
     },
     mounted(){

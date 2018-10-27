@@ -10,8 +10,8 @@ export default {
         muscleGroupsLoaded: false,
         muscleGroups: [],
 
-        equipmentLoaded: false,
-        equipment: [],
+        equipmentsLoaded: false,
+        equipments: [],
 
 
         exercisesLoaded: false,
@@ -63,22 +63,13 @@ export default {
             });
         },
         // Equipment
-        [constants.FETCH_EQUIPMENT]({ commit, state }, { forceRefresh, success, failure }) {
-            if (state.equipmentLoaded && !forceRefresh) {
-                if (success) {
-                    success(state.equipment);
-                }
-                return;
+        [constants.FETCH_EQUIPMENT]({ commit, state }, { forceRefresh }) {
+            if (state.equipmentsLoaded && !forceRefresh) {
+                return Promise.resolve(state.equipments);
             }
-            api.listEquipment().then(equipment => {
-                commit(constants.FETCH_EQUIPMENT_SUCCESS, { equipment });
-                if (success) {
-                    success(equipment);
-                }
-            }).fail(() => {
-                if (failure) {
-                    failure();
-                }
+            return api.listEquipments().then(response => {
+                commit(constants.FETCH_EQUIPMENT_SUCCESS, { equipments: response.data });
+                return response.data;
             });
         },
         // Workouts
@@ -304,7 +295,6 @@ export default {
     // mutations
     mutations: {
         [constants.TRAINING_CLEAR](state) {
-            console.log('training.logout 1');
             state.diaryDate = new Date();
             state.muscleGroupsLoaded = false;
             state.muscleGroups = [];
@@ -331,15 +321,14 @@ export default {
             state.energyExpendituresEnd = undefined;
             state.energyExpendituresDisplayStart = undefined;
             state.energyExpendituresDisplayEnd = undefined;
-            console.log('training.logout 2');
         },
         [constants.FETCH_MUSCLEGROUPS_SUCCESS](state, { muscleGroups }) {
             state.muscleGroups = muscleGroups;
             state.muscleGroupsLoaded = true;
         },
-        [constants.FETCH_EQUIPMENT_SUCCESS](state, { equipment }) {
-            state.equipment = equipment;
-            state.equipmentLoaded = true;
+        [constants.FETCH_EQUIPMENT_SUCCESS](state, { equipments }) {
+            state.equipments = equipments;
+            state.equipmentsLoaded = true;
         },
         [constants.FETCH_EXERCISES_SUCCESS](state, { exercises }) {
             state.exercises = exercises;

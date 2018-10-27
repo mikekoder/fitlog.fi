@@ -77,15 +77,21 @@ WHERE " + sql.Substring(5) + " ORDER BY Name";
             var filter = "UserId=@userId AND Deleted IS NULL";
             var sql = $@"
 SELECT Exercise.*,(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount, (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax FROM Exercise WHERE {filter};
-SELECT * FROM ExerciseTarget WHERE ExerciseId IN (SELECT Id FROM Exercise WHERE {filter})";
+SELECT * FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
+SELECT * FROM ExerciseTarget WHERE Type='Secondary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
+SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});";
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, new { userId, time = start1RM }))
             {
                 var exercises = multi.Read<ExerciseDetails>().ToList();
-                var targets = multi.Read<ExerciseTargetRaw>().ToList();
-                foreach(var exercise in exercises)
+                var primaryTargets = multi.Read<ExerciseTargetRaw>().ToList();
+                var secondaryTargets = multi.Read<ExerciseTargetRaw>().ToList();
+                var equipments = multi.Read<ExerciseEquipmentRaw>().ToList();
+                foreach (var exercise in exercises)
                 {
-                    exercise.Targets = targets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.Targets = primaryTargets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.SecondaryTargets = secondaryTargets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.Equipments = equipments.Where(e => e.ExerciseId == exercise.Id).Select(e => e.EquipmentId).ToArray();
                 }
                 return exercises;
             }
@@ -100,15 +106,21 @@ SELECT Exercise.*,
 (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id) AS LatestUse
 FROM Exercise WHERE {filter}
 ORDER BY LatestUse DESC;
-SELECT * FROM ExerciseTarget WHERE ExerciseId IN (SELECT Id FROM Exercise WHERE {filter})";
+SELECT * FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
+SELECT * FROM ExerciseTarget WHERE Type='Secondary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
+SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});";
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, new { userId, time = start1RM }))
             {
                 var exercises = multi.Read<ExerciseDetails>().ToList();
-                var targets = multi.Read<ExerciseTargetRaw>().ToList();
+                var primaryTargets = multi.Read<ExerciseTargetRaw>().ToList();
+                var secondaryTargets = multi.Read<ExerciseTargetRaw>().ToList();
+                var equipments = multi.Read<ExerciseEquipmentRaw>().ToList();
                 foreach (var exercise in exercises)
                 {
-                    exercise.Targets = targets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.Targets = primaryTargets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.SecondaryTargets = secondaryTargets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.Equipments = equipments.Where(e => e.ExerciseId == exercise.Id).Select(e => e.EquipmentId).ToArray();
                 }
                 return exercises;
             }
@@ -123,15 +135,21 @@ SELECT Exercise.*,
 (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id) AS LatestUse
 FROM Exercise WHERE {filter}
 ORDER BY UsageCount DESC;
-SELECT * FROM ExerciseTarget WHERE ExerciseId IN (SELECT Id FROM Exercise WHERE {filter})";
+SELECT * FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
+SELECT * FROM ExerciseTarget WHERE Type='Secondary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
+SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});";
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, new { userId, time = start1RM }))
             {
                 var exercises = multi.Read<ExerciseDetails>().ToList();
-                var targets = multi.Read<ExerciseTargetRaw>().ToList();
+                var primaryTargets = multi.Read<ExerciseTargetRaw>().ToList();
+                var secondaryTargets = multi.Read<ExerciseTargetRaw>().ToList();
+                var equipments = multi.Read<ExerciseEquipmentRaw>().ToList();
                 foreach (var exercise in exercises)
                 {
-                    exercise.Targets = targets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.Targets = primaryTargets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.SecondaryTargets = secondaryTargets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.Equipments = equipments.Where(e => e.ExerciseId == exercise.Id).Select(e => e.EquipmentId).ToArray();
                 }
                 return exercises;
             }
@@ -140,7 +158,9 @@ SELECT * FROM ExerciseTarget WHERE ExerciseId IN (SELECT Id FROM Exercise WHERE 
         {
             var sql = @"
 SELECT * FROM Exercise WHERE Id=@id;
-SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId=@id;
+SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId=@id;
+SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Secondary' AND ExerciseId=@id;
+SELECT EquipmentId FROM ExerciseEquipment WHERE ExerciseId=@id;
 SELECT * FROM ExerciseImage WHERE ExerciseId=@id;";
             using (var conn = CreateConnection())
                 using(var multi = conn.QueryMultiple(sql,new { id }))
@@ -149,6 +169,8 @@ SELECT * FROM ExerciseImage WHERE ExerciseId=@id;";
                 if(exercise != null)
                 {
                     exercise.Targets = multi.Read<Guid>().ToArray();
+                    exercise.SecondaryTargets = multi.Read<Guid>().ToArray();
+                    exercise.Equipments = multi.Read<Guid>().ToArray();
                     exercise.Images = multi.Read<ExerciseImage>().ToArray();
                 }
                 return exercise;
@@ -158,15 +180,21 @@ SELECT * FROM ExerciseImage WHERE ExerciseId=@id;";
         {
             var sql = @"
 SELECT * FROM Exercise WHERE Id IN @ids;
-SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
+SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN @ids;
+SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Secondary' AND ExerciseId IN @ids;
+SELECT * FROM ExerciseEquipment WHERE ExerciseId IN @ids;";
             using (var conn = CreateConnection())
             using (var multi = conn.QueryMultiple(sql, new { ids }))
             {
                 var exercises = multi.Read<ExerciseDetails>().ToList();
-                var targets = multi.Read<ExerciseTargetRaw>().ToList();
-                foreach(var exercise in exercises)
+                var primaryTargets = multi.Read<ExerciseTargetRaw>().ToList();
+                var secondaryTargets = multi.Read<ExerciseTargetRaw>().ToList();
+                var equipments = multi.Read<ExerciseEquipmentRaw>().ToList();
+                foreach (var exercise in exercises)
                 {
-                    exercise.Targets = targets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.Targets = primaryTargets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.SecondaryTargets = secondaryTargets.Where(t => t.ExerciseId == exercise.Id).Select(t => t.MuscleGroupId).ToArray();
+                    exercise.Equipments = equipments.Where(e => e.ExerciseId == exercise.Id).Select(e => e.EquipmentId).ToArray();
                 }
                 return exercises;
             }
@@ -183,7 +211,15 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                     conn.Execute("INSERT INTO Exercise(Id, UserId, Name,Created,PercentageBW) VALUES(@Id, @UserId, @Name,@Created,@PercentageBW)", exercise, tran);
                     if (exercise.Targets != null && exercise.Targets.Length > 0)
                     {
-                        conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId) VALUES(@ExerciseId,@MuscleGroupId)", exercise.Targets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
+                        conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId,Type) VALUES(@ExerciseId,@MuscleGroupId,'Primary')", exercise.Targets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
+                    }
+                    if (exercise.SecondaryTargets != null && exercise.SecondaryTargets.Length > 0)
+                    {
+                        conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId,Type) VALUES(@ExerciseId,@MuscleGroupId,'Secondary')", exercise.SecondaryTargets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
+                    }
+                    if(exercise.Equipments != null && exercise.Equipments.Length > 0)
+                    {
+                        conn.Execute("INSERT INTO ExerciseEquipment(ExerciseId,EquipmentId) VALUES(@ExerciseId,@EquipmentId)", exercise.Equipments.Select(e => new { ExerciseId = exercise.Id, EquipmentId = e }), tran);
                     }
                     tran.Commit();
                 }
@@ -202,10 +238,19 @@ SELECT MuscleGroupId FROM ExerciseTarget WHERE ExerciseId IN @ids;";
                 try
                 {
                     conn.Execute("DELETE FROM ExerciseTarget WHERE ExerciseId=@Id", new { exercise.Id }, tran);
+                    conn.Execute("DELETE FROM ExerciseEquipment WHERE ExerciseId=@Id", new { exercise.Id }, tran);
                     conn.Execute("UPDATE Exercise SET Name=@Name,PercentageBW=@PercentageBW WHERE Id=@Id", exercise, tran);
                     if (exercise.Targets != null && exercise.Targets.Length > 0)
                     {
-                        conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId) VALUES(@ExerciseId,@MuscleGroupId)", exercise.Targets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
+                        conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId,Type) VALUES(@ExerciseId,@MuscleGroupId,'Primary')", exercise.Targets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
+                    }
+                    if (exercise.SecondaryTargets != null && exercise.SecondaryTargets.Length > 0)
+                    {
+                        conn.Execute("INSERT INTO ExerciseTarget(ExerciseId,MuscleGroupId,Type) VALUES(@ExerciseId,@MuscleGroupId,'Secondary')", exercise.SecondaryTargets.Select(t => new { ExerciseId = exercise.Id, MuscleGroupId = t }), tran);
+                    }
+                    if (exercise.Equipments != null && exercise.Equipments.Length > 0)
+                    {
+                        conn.Execute("INSERT INTO ExerciseEquipment(ExerciseId,EquipmentId) VALUES(@ExerciseId,@EquipmentId)", exercise.Equipments.Select(e => new { ExerciseId = exercise.Id, EquipmentId = e }), tran);
                     }
                     tran.Commit();
                 }
@@ -769,6 +814,11 @@ WHERE ExerciseId=@exerciseId AND UserId=@userId AND Time >= @start AND Time <= @
         {
             public Guid ExerciseId { get; set; }
             public Guid MuscleGroupId { get; set; }
+        }
+        class ExerciseEquipmentRaw
+        {
+            public Guid ExerciseId { get; set; }
+            public Guid EquipmentId { get; set; }
         }
         class TrainingGoalExerciseRaw : TrainingGoalExercise
         {
