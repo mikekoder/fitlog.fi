@@ -54,7 +54,11 @@
           <q-item-side icon="fas fa-crosshairs" />
           <q-item-main :label="$t('nutritionGoals')" />
         </q-item>
-        
+        <q-item :to="{ name: 'meals' }">  
+          <q-item-side icon="fas fa-utensils" />
+          <q-item-main :label="$t('meals')" />
+        </q-item>
+
         <q-list-header>{{ $t('training') }}</q-list-header>
         <q-item :to="{ name: 'workouts' }">  
           <q-item-side icon="fas fa-heartbeat" />

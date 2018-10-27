@@ -65,6 +65,11 @@ export default [
         component: () => import('pages/nutrition-goals/nutrition-goal-details.vue')
       },
       {
+        path: '/meals',
+        name: 'meals',
+        component: () => import('pages/meals/meals.vue')
+      },
+      {
         path: '/workouts',
         name: 'workouts',
         component: () => import('pages/workouts/workouts.vue')
