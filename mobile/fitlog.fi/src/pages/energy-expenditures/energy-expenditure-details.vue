@@ -31,7 +31,7 @@
         <div v-else>
             <div class="row q-ma-sm">
                 <div class="col">
-                    <q-select v-model="activity" :options="activities" :float-label="$t('activity')" :display-value="activity ? activity.name : ''"/>
+                    <q-select v-model="activity" :options="activities" :filter="filter" :float-label="$t('activity')" :display-value="activity ? activity.name : ''"/>
                 </div>
             </div>
             <div class="rol q-ma-sm">

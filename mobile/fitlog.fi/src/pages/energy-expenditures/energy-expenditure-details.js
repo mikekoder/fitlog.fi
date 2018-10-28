@@ -84,6 +84,9 @@ export default {
                 energyKcal: self.energyKcal
             };
             this.$emit('save', expenditure);
+        },
+        filter(text, activity){
+            return activity.name.toLowerCase().indexOf(text.toLowerCase()) >= 0;
         }
     }
 }
