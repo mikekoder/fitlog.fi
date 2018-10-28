@@ -164,6 +164,7 @@
       margin-left: -100px;
       width: 100px;
       text-align: right;
+      padding-right: 5px;
   }
 
   th.time {
