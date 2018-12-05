@@ -188,14 +188,17 @@ GROUP BY R.FoodId;";
                     conn.Execute("INSERT INTO Food(Id,UserId,Name,Manufacturer,IsRecipe,FineliId,Created,CookedWeight,NutrientPortionId,Ean) VALUES(@Id,@UserId,@Name,@Manufacturer,@IsRecipe,@FineliId,@Created,@CookedWeight,@NutrientPortionId,@Ean)", food, tran);
                     conn.Execute("INSERT INTO FoodNutrient(FoodId,NutrientId,Amount,PortionAmount) VALUES(@FoodId,@NutrientId,@Amount,@PortionAmount)",
                         food.Nutrients.Select(n => new { FoodId = food.Id, n.NutrientId, n.Amount, n.PortionAmount }), tran);
-                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Amount,Weight) VALUES(@Id,@FoodId,@Name,@Amount,@Weight)", food.Portions.Select(p => new
+                    if (food.Portions != null)
                     {
-                        Id = p.Id == Guid.Empty ? Guid.NewGuid() : p.Id,
-                        FoodId = food.Id,
-                        p.Name,
-                        p.Amount,
-                        p.Weight
-                    }), tran);
+                        conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Amount,Weight) VALUES(@Id,@FoodId,@Name,@Amount,@Weight)", food.Portions.Select(p => new
+                        {
+                            Id = p.Id == Guid.Empty ? Guid.NewGuid() : p.Id,
+                            FoodId = food.Id,
+                            p.Name,
+                            p.Amount,
+                            p.Weight
+                        }), tran);
+                    }
                     if (food.Ingredients != null)
                     {
                         conn.Execute("INSERT INTO RecipeIngredient(Id,RecipeId,[Index],FoodId,Quantity,PortionId,Weight) VALUES(newid(),@RecipeId,@Index,@FoodId,@Quantity,@PortionId,@Weight)", food.Ingredients.Select((i, index) => new
@@ -871,7 +874,7 @@ WHEN NOT MATCHED THEN
             {
                 try
                 {
-                    return conn.Query<MealDefinition>(sql, new { userId });
+                    return conn.Query<MealDefinition>(sql, new { userId }).ToArray();
                 }
                 catch
                 {
@@ -889,7 +892,8 @@ WHERE FoodUsage.UserId=@userId
 ORDER BY FoodUsage.LatestUse DESC";
             using (var conn = CreateConnection())
             {
-                return conn.Query<FoodSearchResult>(sql, new { userId, count});
+                return conn.Query<FoodSearchResult>(sql, new { userId, count})
+                    .ToArray();
             }
         }
 
@@ -902,7 +906,8 @@ WHERE FoodUsage.UserId=@userId
 ORDER BY FoodUsage.UsageCount DESC";
             using (var conn = CreateConnection())
             {
-                return conn.Query<FoodSearchResult>(sql, new { userId, count });
+                return conn.Query<FoodSearchResult>(sql, new { userId, count })
+                    .ToArray();
             }
         }
         public IEnumerable<FoodSearchNutrientResult> SearchFoodsTopNutrients(int nutrientId, Guid userId, int count, bool descending = true)
@@ -915,7 +920,8 @@ WHERE Food.UserId=@userId OR Food.UserId IS NULL
 ORDER BY FoodNutrient.Amount{( descending ? " DESC" : "")}";
             using (var conn = CreateConnection())
             {
-                return conn.Query<FoodSearchNutrientResult>(sql, new { userId, nutrientId, count });
+                return conn.Query<FoodSearchNutrientResult>(sql, new { userId, nutrientId, count })
+                    .ToArray();
             }
         }
 
@@ -928,7 +934,8 @@ WHERE Food.Ean=@ean AND (Food.UserId=@userId OR Food.UserId IS NULL) ORDER BY Na
 
             using (var conn = CreateConnection())
             {
-                return conn.Query<FoodSearchResult>(sql, new { ean, userId });
+                return conn.Query<FoodSearchResult>(sql, new { ean, userId })
+                    .ToArray();
             }
         }
 
@@ -942,11 +949,12 @@ WHERE M.UserId=@userId AND M.Time >= @start AND M.Time <= @end";
             using (var conn = CreateConnection())
             {
                 var mealNutrients = conn.Query<MealNutrientRaw>(sql, new { userId, start, end });
-                return mealNutrients.GroupBy(d => d.Time.Date).Select(g => new DayNutrient
+                return mealNutrients.GroupBy(d => d.Time.Date).Select(dayGroup => new DayNutrient
                 {
-                    Date = g.Key,
-                    Nutrients = g.ToDictionary(d => d.NutrientId, d => d.Amount)
-                }).ToArray();
+                    Date = dayGroup.Key,
+                    Nutrients = dayGroup.GroupBy(d => d.NutrientId)
+                        .ToDictionary(d => d.Key, d => d.Sum(n => n.Amount))
+                }).OrderBy(n => n.Date).ToArray();
             }
         }
 

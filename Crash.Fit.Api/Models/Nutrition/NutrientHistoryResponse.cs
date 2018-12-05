@@ -8,5 +8,6 @@ namespace Crash.Fit.Api.Models.Nutrition
     {
         public DateTimeOffset Date { get; set; }
         public Dictionary<int, decimal> Nutrients { get; set; }
+        public decimal? EnergyExpenditure { get; set; }
     }
 }

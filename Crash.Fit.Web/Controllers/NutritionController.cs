@@ -9,6 +9,8 @@ using Crash.Fit.Api.Models.Nutrition;
 using Microsoft.Extensions.Logging;
 using Crash.Fit.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Crash.Fit.Activities;
+using Crash.Fit.Measurements;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -17,9 +19,14 @@ namespace Crash.Fit.Web.Controllers
     public class NutritionController : ApiControllerBase
     {
         private readonly INutritionRepository nutritionRepository;
-        public NutritionController(INutritionRepository nutritionRepository, ILogRepository logger) : base(logger)
+        private readonly IActivityRepository activityRepository;
+        private readonly IMeasurementRepository measurementRepository;
+
+        public NutritionController(INutritionRepository nutritionRepository, IActivityRepository activityRepository, IMeasurementRepository measurementRepository, ILogRepository logger) : base(logger)
         {
             this.nutritionRepository = nutritionRepository;
+            this.activityRepository = activityRepository;
+            this.measurementRepository = measurementRepository;
         }
         [HttpGet("nutrients")]
         [AllowAnonymous]
@@ -155,17 +162,76 @@ namespace Crash.Fit.Web.Controllers
         [HttpGet("nutrients/history")]
         public IActionResult GetNutrientHistory(DateTimeOffset start, DateTimeOffset end)
         {
-            var measures = nutritionRepository.GetDailyNutrients(CurrentUserId, start, end);
+            var nutrients = nutritionRepository.GetDailyNutrients(CurrentUserId, start, end);
+            var activityPresets = activityRepository.GetActivityPresets(CurrentUserId);
+            var measurements = measurementRepository.GetMeasurementHistory(Constants.Measurements.RmrId, CurrentUserId, DateTimeOffset.MinValue, end);
+            var energyExpenditures = activityRepository.GetEnergyExpenditures(CurrentUserId, start, end);
+            var days = activityRepository.GetActivityPresetsForDays(CurrentUserId, start, end);
 
-            var response = AutoMapper.Mapper.Map<NutrientHistoryResponse[]>(measures);
+            var response = AutoMapper.Mapper.Map<NutrientHistoryResponse[]>(nutrients);
 
             foreach(var day in response)
             {
                 NutritionUtils.AppendComputedNutrients(day.Nutrients);
+                var energyExpenditure = 0m;
+                var rmr = measurements
+                    .Where(m => m.MeasureId == Constants.Measurements.RmrId && m.Time <= day.Date)
+                    .OrderByDescending(m => m.Time)
+                    .FirstOrDefault()?.Value;
+
+                if (rmr.HasValue)
+                {
+                    energyExpenditure += rmr.Value;
+                    ActivityPreset preset = null;
+                    if (days.TryGetValue(day.Date, out Guid presetId))
+                    {
+                        preset = activityPresets.FirstOrDefault(p => p.Id == presetId);
+                    }
+                    else
+                    {
+                        switch (day.Date.DayOfWeek)
+                        {
+                            case DayOfWeek.Monday:
+                                preset = activityPresets.FirstOrDefault(p => p.Monday);
+                                break;
+                            case DayOfWeek.Tuesday:
+                                preset = activityPresets.FirstOrDefault(p => p.Tuesday);
+                                break;
+                            case DayOfWeek.Wednesday:
+                                preset = activityPresets.FirstOrDefault(p => p.Wednesday);
+                                break;
+                            case DayOfWeek.Thursday:
+                                preset = activityPresets.FirstOrDefault(p => p.Thursday);
+                                break;
+                            case DayOfWeek.Friday:
+                                preset = activityPresets.FirstOrDefault(p => p.Friday);
+                                break;
+                            case DayOfWeek.Saturday:
+                                preset = activityPresets.FirstOrDefault(p => p.Saturday);
+                                break;
+                            case DayOfWeek.Sunday:
+                                preset = activityPresets.FirstOrDefault(p => p.Sunday);
+                                break;
+                        }
+                    }
+                    if (preset != null)
+                    {
+                        energyExpenditure += (preset.Factor - 1) * rmr.Value;
+                    }
+                }
+                foreach(var expenditure in energyExpenditures.Where(e => e.Time.Date == day.Date.Date))
+                {
+                    energyExpenditure += expenditure.EnergyKcal;
+                }
+
+                day.EnergyExpenditure = energyExpenditure;
+                day.Nutrients[Constants.Nutrition.EnergyDifferenceId] = day.Nutrients[Constants.Nutrition.EnergyKcalId] - energyExpenditure;
             }
 
             return Ok(response);
         }
+
+
 
         /*
         [HttpGet]
