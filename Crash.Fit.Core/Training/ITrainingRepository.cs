@@ -9,12 +9,12 @@ namespace Crash.Fit.Training
     {
         IEnumerable<MuscleGroup> GetMuscleGroups();
         IEnumerable<Equipment> GetEquipment();
-        IEnumerable<Exercise> SearchExercises(string[] nameTokens, Guid? muscleGroupId, Guid? equipmentId, Guid? userId);
+        IEnumerable<ExerciseDetails> SearchExercises(string[] nameTokens, Guid? muscleGroupId, Guid? equipmentId, Guid? userId, DateTimeOffset start1rm);
         IEnumerable<ExerciseDetails> SearchUserExercises(Guid userId, DateTimeOffset start1RM);
         IEnumerable<ExerciseDetails> ListLatestExercises(Guid userId, DateTimeOffset start1RM);
         IEnumerable<ExerciseDetails> ListMostUsedExercises(Guid userId, DateTimeOffset start1RM);
-        ExerciseDetails GetExercise(Guid id);
-        IEnumerable<ExerciseDetails> GetExercises(IEnumerable<Guid> ids);
+        ExerciseDetails GetExercise(Guid id, Guid userId, DateTimeOffset start1RM);
+        IEnumerable<ExerciseDetails> GetExercises(IEnumerable<Guid> ids, Guid userId, DateTimeOffset start1RM);
         void CreateExercise(ExerciseDetails exercise);
         void UpdateExercise(ExerciseDetails exercise);
         void DeleteExercise(Exercise exercise);
@@ -46,5 +46,6 @@ namespace Crash.Fit.Training
         IEnumerable<OneRepMax> GetOneRepMaxHistory(Guid exerciseId, Guid userId, DateTimeOffset start, DateTimeOffset end);
         IEnumerable<ExerciseVolume> GetExerciseVolumeHistory(Guid exerciseId, Guid userId, DateTimeOffset start, DateTimeOffset end);
         ExerciseImageDetails GetExerciseImage(Guid id, Guid imageId);
+        void TransferExerciseData(Guid userId, Guid fromExerciseId, Guid toExerciseId, bool transferWorkouts = true, bool transferRoutines = true, bool transfer1rm = true);
     }
 }

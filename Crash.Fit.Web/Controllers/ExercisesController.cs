@@ -19,7 +19,7 @@ namespace Crash.Fit.Web.Controllers
     {
         private readonly ITrainingRepository trainingRepository;
         private readonly IMeasurementRepository measurementRepository;
-        public ExercisesController(ITrainingRepository trainingRepository,IMeasurementRepository measurementRepository, ILogRepository logger) : base(logger)
+        public ExercisesController(ITrainingRepository trainingRepository, IMeasurementRepository measurementRepository, ILogRepository logger) : base(logger)
         {
             this.trainingRepository = trainingRepository;
             this.measurementRepository = measurementRepository;
@@ -43,9 +43,27 @@ namespace Crash.Fit.Web.Controllers
         [HttpGet("search")]
         public IActionResult Search(string name, Guid? muscleGroupId, Guid? equipmentId)
         {
-            var exercises = trainingRepository.SearchExercises(name?.Split(' '), muscleGroupId, equipmentId, CurrentUserId).OrderBy(e => e.Name);
+            var exercises = trainingRepository.SearchExercises(name?.Split(' '), muscleGroupId, equipmentId, CurrentUserId, DateTimeOffset.Now.AddMonths(-1))
+                .OrderBy(e => e.Name);
 
-            var response = AutoMapper.Mapper.Map<ExerciseResponse[]>(exercises);
+            var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse[]>(exercises);
+            return Ok(response);
+        }
+        // TODO: can be deleted when all clients are updated
+        [HttpGet("list/{ids}")]
+        public IActionResult List_Old([ModelBinder(typeof(CommaSeparatedValueBinder<Guid>))]Guid[] ids)
+        {
+            var exercises = trainingRepository.GetExercises(ids.Distinct(), CurrentUserId, DateTimeOffset.Now.AddMonths(-1)).OrderBy(e => e.Name);
+
+            var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse[]>(exercises);
+            return Ok(response);
+        }
+        [HttpGet("list")]
+        public IActionResult List([ModelBinder(typeof(CommaSeparatedValueBinder<Guid>))]Guid[] ids)
+        {
+            var exercises = trainingRepository.GetExercises(ids.Distinct(), CurrentUserId, DateTimeOffset.Now.AddMonths(-1)).OrderBy(e => e.Name);
+
+            var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse[]>(exercises);
             return Ok(response);
         }
         [HttpGet("latest")]
@@ -67,14 +85,14 @@ namespace Crash.Fit.Web.Controllers
         [HttpGet("{id}")]
         public IActionResult Details(Guid id)
         {
-            var exercise = trainingRepository.GetExercise(id);
-            if(exercise == null || (exercise.UserId.HasValue && exercise.UserId != CurrentUserId))
+            var exercise = trainingRepository.GetExercise(id, CurrentUserId, DateTimeOffset.Now.AddMonths(-1));
+            if (exercise == null || (exercise.UserId.HasValue && exercise.UserId != CurrentUserId))
             {
                 return NotFound();
             }
 
             var response = AutoMapper.Mapper.Map<ExerciseDetailsResponse>(exercise);
-            foreach(var image in response.Images)
+            foreach (var image in response.Images)
             {
                 image.Url = Url.Action("Image", "Exercises", new { id, imageId = image.Id }, Request.Scheme);
             }
@@ -84,7 +102,7 @@ namespace Crash.Fit.Web.Controllers
         [AllowAnonymous]
         public IActionResult Image(Guid id, Guid imageId)
         {
-            var image = trainingRepository.GetExerciseImage(id,imageId);
+            var image = trainingRepository.GetExerciseImage(id, imageId);
             if (image == null)
             {
                 return NotFound();
@@ -110,7 +128,7 @@ namespace Crash.Fit.Web.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(Guid id, [FromBody]ExerciseRequest request)
         {
-            var exercise = trainingRepository.GetExercise(id);
+            var exercise = trainingRepository.GetExercise(id, CurrentUserId, DateTimeOffset.MinValue);
             if (exercise.UserId != CurrentUserId)
             {
                 return Unauthorized();
@@ -130,7 +148,7 @@ namespace Crash.Fit.Web.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
-            var exercise = trainingRepository.GetExercise(id);
+            var exercise = trainingRepository.GetExercise(id, CurrentUserId, DateTimeOffset.MinValue);
             if (exercise.UserId != CurrentUserId)
             {
                 return Unauthorized();
@@ -143,12 +161,12 @@ namespace Crash.Fit.Web.Controllers
         [HttpPut("{id}/onerepmax")]
         public IActionResult Update1RM(Guid id, [FromBody]decimal max)
         {
-            var exercise = trainingRepository.GetExercise(id);
+            var exercise = trainingRepository.GetExercise(id, CurrentUserId, DateTimeOffset.MinValue);
             if (exercise.UserId != CurrentUserId)
             {
                 return Unauthorized();
             }
-            
+
             var oneRepMap = new OneRepMax
             {
                 ExerciseId = id,
@@ -170,7 +188,7 @@ namespace Crash.Fit.Web.Controllers
                 oneRepMap.MaxInclBW = oneRepMap.MaxBW;
             }
 
-            trainingRepository.SaveOneRepMaxs(new[] {oneRepMap});
+            trainingRepository.SaveOneRepMaxs(new[] { oneRepMap });
 
             return Ok();
         }
@@ -180,10 +198,10 @@ namespace Crash.Fit.Web.Controllers
             var oneRepMaxHistory = trainingRepository.GetOneRepMaxHistory(exerciseId, CurrentUserId, start, end);
             var volumeHistory = trainingRepository.GetExerciseVolumeHistory(exerciseId, CurrentUserId, start, end);
             var response = AutoMapper.Mapper.Map<List<ExerciseHistoryResponse>>(oneRepMaxHistory);
-            foreach(var volume in volumeHistory)
+            foreach (var volume in volumeHistory)
             {
                 var match = response.FirstOrDefault(h => h.Time == volume.Time);
-                if(match != null)
+                if (match != null)
                 {
                     match.TotalVolume = volume.TotalVolume;
                 }
@@ -198,6 +216,28 @@ namespace Crash.Fit.Web.Controllers
                 }
             }
             return Ok(response.OrderBy(r => r.Time).ToArray());
+        }
+
+        [HttpPost("transfer")]
+        public IActionResult TransferData([FromBody]TransferExerciseRequest request)
+        {
+            var fromExercise = trainingRepository.GetExercise(request.FromExerciseId, CurrentUserId, DateTimeOffset.MinValue);
+            var toExercise = trainingRepository.GetExercise(request.ToExerciseId, CurrentUserId, DateTimeOffset.MinValue);
+            if(fromExercise == null || toExercise == null)
+            {
+                return BadRequest();
+            }
+            if(fromExercise.UserId.HasValue && fromExercise.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+            if (toExercise.UserId.HasValue && toExercise.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+
+            trainingRepository.TransferExerciseData(CurrentUserId, request.FromExerciseId, request.ToExerciseId, request.TransferWorkouts, request.TransferRoutines, request.Transfer1RM);
+            return Ok();
         }
     }
 }

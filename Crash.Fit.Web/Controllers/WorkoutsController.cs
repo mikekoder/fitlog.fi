@@ -51,7 +51,7 @@ namespace Crash.Fit.Web.Controllers
         {
             CleanSets(request);
 
-            var exercises = CreateExercises(request.Sets);
+            var exercises = CreateExercises(request.Sets).ToList();
             var workout = AutoMapper.Mapper.Map<WorkoutDetails>(request);
             workout.UserId = CurrentUserId;
             var userWeight = measurementRepository.GetUserWeight(CurrentUserId);
@@ -107,7 +107,7 @@ namespace Crash.Fit.Web.Controllers
             {
                 return Unauthorized();
             }
-            var exercises = CreateExercises(request.Sets);
+            var exercises = CreateExercises(request.Sets).ToList();
             AutoMapper.Mapper.Map(request, workout);
             var userWeight = measurementRepository.GetUserWeight(CurrentUserId);
             var maxs = Calculate1RMs(workout, exercises, userWeight);
@@ -214,6 +214,7 @@ namespace Crash.Fit.Web.Controllers
         {
             var exerciseIds = sets.Where(s => s.ExerciseId.HasValue).Select(s => s.ExerciseId.Value);
             var exercises = new List<Exercise>();
+            exercises.AddRange(trainingRepository.GetExercises(sets.Where(s => s.ExerciseId.HasValue).Select(s => s.ExerciseId.Value), CurrentUserId, DateTimeOffset.Now.AddMonths(-1)));
             exercises.AddRange(trainingRepository.SearchUserExercises(CurrentUserId, DateTimeOffset.MinValue));
             foreach (var set in sets.Where(s => s.ExerciseId == null && !string.IsNullOrWhiteSpace(s.ExerciseName)))
             {
@@ -236,12 +237,17 @@ namespace Crash.Fit.Web.Controllers
             }
             return exercises;
         }
-        private IEnumerable<OneRepMax> Calculate1RMs(WorkoutDetails workout, IEnumerable<Exercise> exercises, decimal? userWeight)
+        private IEnumerable<OneRepMax> Calculate1RMs(WorkoutDetails workout, List<Exercise> exercises, decimal? userWeight)
         {
             var maxs = new List<OneRepMax>();
             foreach (var set in workout.Sets.Where(s => s.Reps > 0 && s.Reps <= 10 && s.Weights > 0))
             {
                 var exercise = exercises.FirstOrDefault(e => e.Id == set.ExerciseId);
+                if(exercise == null)
+                {
+                    exercise = trainingRepository.GetExercise(set.ExerciseId, CurrentUserId, DateTimeOffset.MinValue);
+                    exercises.Add(exercise);
+                }
                 maxs.Add(new OneRepMax
                 {
                     UserId = CurrentUserId,
