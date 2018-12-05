@@ -21,12 +21,14 @@ namespace Crash.Fit.Web
             public static readonly int FatSaturatedId = 80;
             public static readonly int SugarId = 44;
             public static readonly int FiberId = 69;
+            public static readonly int EnergyDifferenceId = 64;
             public static readonly int[] ComputedNutrientIds = new[]
             {
                 EnergyDistributionId,
                 ProteinEnergyId,
                 CarbEnergyId,
-                FatEnergyId
+                FatEnergyId,
+                EnergyDifferenceId
             };
         }
         public static class Training
