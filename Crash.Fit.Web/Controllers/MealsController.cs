@@ -324,9 +324,17 @@ namespace Crash.Fit.Web.Controllers
                 row.FoodName = food.Name;
                 if (row.PortionId.HasValue)
                 {
-                    var portion = food.Portions.Single(p => p.Id == row.PortionId);
-                    row.Weight = row.Quantity * portion.Weight;
-                    row.PortionName = portion.Name;
+                    var portion = food.Portions.SingleOrDefault(p => p.Id == row.PortionId);
+                    if (portion != null)
+                    {
+                        row.Weight = row.Quantity * portion.Weight;
+                        row.PortionName = portion.Name;
+                    }
+                    else
+                    {
+                        // user has selected portion, but it's not related to selected food
+                        row.Weight = row.Quantity;
+                    }
                 }
                 else
                 {
