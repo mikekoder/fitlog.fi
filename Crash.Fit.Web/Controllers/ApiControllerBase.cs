@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Crash.Fit.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Primitives;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -45,10 +46,22 @@ namespace Crash.Fit.Web.Controllers
                 var query = context.HttpContext.Request.QueryString.Value;
                 var body = GetRequestBody(context.HttpContext.Request);
                 var userId = CurrentUserId;
-
-                Logger.LogException(CurrentUserId, method, path + query, body, context.Exception);
+                context.HttpContext.Request.Headers.TryGetValue("ClientVersion", out StringValues clientVersion);
+                Logger.LogException(CurrentUserId, method, path + query, body, context.Exception, clientVersion.FirstOrDefault());
             }
             base.OnActionExecuted(context);
+        }
+        protected void LogClientVersion()
+        {
+            if(Request.Headers.TryGetValue("ClientVersion", out StringValues clientVersion))
+            {
+                Logger.LogClientVersion(CurrentUserId, clientVersion.FirstOrDefault());
+            }
+            else
+            {
+                Logger.LogClientVersion(CurrentUserId, "older");
+
+            }
         }
         private string GetRequestBody(HttpRequest request)
         {

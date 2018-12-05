@@ -6,6 +6,7 @@ $.ajaxSetup({
     beforeSend(xhr) {
         var token = storage.getItem("access_token");
         xhr.setRequestHeader('Authorization', 'bearer ' + token);
+        xhr.setRequestHeader('ClientVersion', 'web');
     }
 });
 
