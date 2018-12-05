@@ -33,6 +33,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Crash.Fit.Api.Models.Activities;
 using Crash.Fit.Activities;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace Crash.Fit.Web
 {
@@ -126,7 +129,23 @@ namespace Crash.Fit.Web
                 //options.Cookies.ApplicationCookie.CookieHttpOnly = false;
             });
 
-            services.AddCors();
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("ApiCorsPolicy"));
+            });
+
+            var corsPolicy = new CorsPolicyBuilder()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin()
+                .AllowCredentials()
+                .Build();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("ApiCorsPolicy", corsPolicy);
+            });
+
             services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
             services.AddMvc();
             
@@ -383,7 +402,7 @@ namespace Crash.Fit.Web
 
             app.UseStaticFiles();
 
-            app.UseCors(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseCors("ApiCorsPolicy");
 
             app.UseAuthentication();
 
