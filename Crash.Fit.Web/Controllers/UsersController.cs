@@ -584,7 +584,7 @@ namespace Crash.Fit.Web.Controllers
                 issuer: _configuration.GetSection("Authentication:Jwt:SiteUrl").Value,
                 audience: _configuration.GetSection("Authentication:Jwt:SiteUrl").Value,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(10),
+                expires: DateTime.UtcNow.AddMinutes(120),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("Authentication:Jwt:Key").Value)), SecurityAlgorithms.HmacSha256)
             );
         }
