@@ -16,6 +16,7 @@ namespace Crash.Fit.Api.Models.Measurements
             public Guid? MeasureId { get; set; }
             public string MeasureName { get; set; }
             public decimal Value { get; set; }
+            public string Unit { get; set; }
         }
     }
 }

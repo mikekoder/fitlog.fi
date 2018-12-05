@@ -92,7 +92,8 @@ namespace Crash.Fit.Web.Controllers
                     var newMeasure = new Measure
                     {
                         UserId = CurrentUserId,
-                        Name = char.ToUpper(measurement.MeasureName[0]) + measurement.MeasureName.Substring(1).ToLower()
+                        Name = char.ToUpper(measurement.MeasureName[0]) + measurement.MeasureName.Substring(1).ToLower(),
+                        Unit = measurement.Unit
                     };
                     measurementRepository.CreateMeasure(newMeasure);
                     measures.Add(newMeasure);

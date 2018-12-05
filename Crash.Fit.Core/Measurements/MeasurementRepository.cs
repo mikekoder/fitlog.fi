@@ -38,7 +38,7 @@ ORDER BY Name";
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Measure(Id,UserId,Name) VALUES(@Id,@UserId,@Name)", measure, tran);
+                    conn.Execute("INSERT INTO Measure(Id,UserId,Name,Unit) VALUES(@Id,@UserId,@Name,@Unit)", measure, tran);
                     tran.Commit();
                     return true;
                 }
