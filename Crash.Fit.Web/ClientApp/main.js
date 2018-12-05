@@ -128,7 +128,7 @@ $("body").on("collapsed.pushMenu", function(){
     window.sidebarExpanded = false;
 });
 $(window).resize(() => {
-    if (window.sidebarExpanded) {
+    if (window.sidebarExpanded && window.matchMedia('(max-width: 900px)').matches) {
         setTimeout(() => {
             $('body').addClass('sidebar-open').removeClass('sidebar-collapse');
         }, 10);
