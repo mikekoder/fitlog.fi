@@ -90,6 +90,8 @@ namespace Crash.Fit.Web.Controllers
             result.HasPassword = hasPassword;
             result.Username = user.UserName;
 
+            LogClientVersion();
+
             return Ok(result);
         }
         [HttpPut("me")]
@@ -500,7 +502,6 @@ namespace Crash.Fit.Web.Controllers
             {
                 return Unauthorized();
             }
-
             return TokenResult(userId.Value);
         }
         [HttpGet("token-login")]
