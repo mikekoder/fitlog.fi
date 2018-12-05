@@ -212,10 +212,13 @@ namespace Crash.Fit.Web.Controllers
                 food.NutrientPortionId = nutrientPortion.Id;
 
                 var portionWeight = nutrientPortion.Weight;
-                foreach (var nutrientAmount in food.Nutrients)
+                if (food.Nutrients != null)
                 {
-                    nutrientAmount.PortionAmount = nutrientAmount.Amount;
-                    nutrientAmount.Amount = nutrientAmount.Amount * (100m / portionWeight);
+                    foreach (var nutrientAmount in food.Nutrients)
+                    {
+                        nutrientAmount.PortionAmount = nutrientAmount.Amount;
+                        nutrientAmount.Amount = nutrientAmount.Amount * (100m / portionWeight);
+                    }
                 }
             }
         }
