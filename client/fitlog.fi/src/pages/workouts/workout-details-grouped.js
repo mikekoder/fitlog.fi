@@ -3,112 +3,116 @@ import utils from '../../utils'
 import ExercisesMixin from '../../mixins/exercises'
 import PageMixin from '../../mixins/page'
 import Help from './workout-help'
+import WorkoutComment from './workout-comment'
 import ExercisePicker from '../../components/exercise-picker.vue'
 import api from '../../api'
 
 export default {
     mixins:[ExercisesMixin, PageMixin],
     components: {
-        'workout-help': Help,
-        'exercise-picker':ExercisePicker
+      'workout-help': Help,
+      'exercise-picker':ExercisePicker,
+      'workout-comment': WorkoutComment
     },
   data () {
     return {
-        id: null,
-        time: undefined,
-        duration: undefined,
-        groups:[],
-        energyExpenditure: undefined,
-        energySpecified: false,
-        selectedGroup: undefined
+      id: null,
+      time: undefined,
+      duration: undefined,
+      comment: null,
+      groups:[],
+      energyExpenditure: undefined,
+      energySpecified: false,
+      selectedGroup: undefined
     }
   },
     computed: {
-        canSave(){
-            return this.time && this.groups.length > 0 && this.groups.find(g => g.exercise);
-        },
-        totalMinutes() {
-            var time = this.duration ? new Date(this.duration) : undefined;
-            if (time) {
-                return time.getHours() * 60 + time.getMinutes();
-            }
-            return null;
-        },
-        weight() {
-            if (this.$profile) {
-                return this.$profile.weight;
-            }
-            return null;
-        },
-        energyExpenditureEstimate() {
-            if (this.totalMinutes && this.weight) {
-                return constants.WORKOUT_ENERGY_EXPENDITURE * this.totalMinutes * this.weight;
-            }
-            return null;
+      canSave(){
+        return this.time && this.groups.length > 0 && this.groups.find(g => g.exercise);
+      },
+      totalMinutes() {
+        var time = this.duration ? new Date(this.duration) : undefined;
+        if (time) {
+            return time.getHours() * 60 + time.getMinutes();
         }
+        return null;
+      },
+      weight() {
+        if (this.$profile) {
+          return this.$profile.weight;
+        }
+        return null;
+      },
+      energyExpenditureEstimate() {
+        if (this.totalMinutes && this.weight) {
+          return constants.WORKOUT_ENERGY_EXPENDITURE * this.totalMinutes * this.weight;
+        }
+        return null;
+      }
     },
     watch: {
-        energyExpenditureEstimate() {
-            if (!this.energySpecified || !this.energyExpenditure ) {
-                this.energyExpenditure = this.formatDecimal(this.energyExpenditureEstimate);
-            }
+      energyExpenditureEstimate() {
+        if (!this.energySpecified || !this.energyExpenditure ) {
+          this.energyExpenditure = this.formatDecimal(this.energyExpenditureEstimate);
         }
+      }
     },
   methods: {
     addGroup(){
-        var group = {
-            exercise: undefined,
-            sets: [],
-            collapsed: false
-        }
-        this.groups.push(group);
-        this.addSet(group);
-        this.selectExercise(group);
+      var group = {
+        exercise: undefined,
+        sets: [],
+        collapsed: false
+      }
+      this.groups.push(group);
+      this.addSet(group);
+      this.selectExercise(group);
     },
     copyGroup(group){
-        this.groups.push({...group});
+      this.groups.push({...group});
     },
     deleteGroup(index){
-        this.groups.splice(index, 1);
+      this.groups.splice(index, 1);
     },
     addSet(group) {
-        var set = { 
-            reps: undefined,
-            weights: undefined
-        };
-        group.sets.push(set);
+      var set = { 
+        reps: undefined,
+        weights: undefined
+      };
+      group.sets.push(set);
     },
     deleteSet(group, index){
         group.sets.splice(index, 1);
     },
     copySet(group, set){
-        group.sets.push({...set});
+      group.sets.push({...set});
     },
     searchExercise(text, done){
-        done(this.exercises.filter(e => e.name.indexOf(text) >= 0));
+      done(this.exercises.filter(e => e.name.indexOf(text) >= 0));
     },
     save() {
-        var time = this.duration ? new Date(this.duration) : undefined;
+        var duration = this.duration ? new Date(this.duration) : undefined;
         var workout = {
-            id: this.id,
-            time: this.time,
-            hours: time ? time.getHours() : undefined,
-            minutes: time ? time.getMinutes() : undefined,
-            sets: [],
-            energyExpenditure: this.energySpecified ? this.energyExpenditure : undefined
+          id: this.id,
+          time: this.time,
+          hours: duration ? duration.getHours() : undefined,
+          minutes: duration ? duration.getMinutes() : undefined,
+          comment: this.comment,
+          sets: [],
+          energyExpenditure: this.energySpecified ? this.energyExpenditure : undefined
         };
         this.groups.forEach(g => {
-            g.sets.forEach(s => {
-                workout.sets.push({ exerciseId: g.exercise ? g.exercise.id : g.exerciseId, exerciseName: g.exercise ? g.exercise.name : g.exerciseName, reps: utils.parseFloat(s.reps), weights: utils.parseFloat(s.weights) })
-            });
+          g.sets.forEach(s => {
+            workout.sets.push({ exerciseId: g.exercise ? g.exercise.id : g.exerciseId, exerciseName: g.exercise ? g.exercise.name : g.exerciseName, reps: utils.parseFloat(s.reps), weights: utils.parseFloat(s.weights) })
+          });
         });
         this.$store.dispatch(constants.SAVE_WORKOUT, {
-            workout
+          workout
         }).then(savedWorkout => {
-            this.id = savedWorkout.id;
-            this.notifySuccess(this.$t('saveSuccessful'));
+          this.id = savedWorkout.id;
+          this.notifySuccess(this.$t('saveSuccessful'));
         }).catch(_ => {
-            this.notifyError(this.$t('saveFailed'));
+          this.notifyError(this.$t('saveFailed'));
         });
     },
     cancel() {
@@ -128,6 +132,7 @@ export default {
         this.id = workout.id;
         this.time = workout.time;
         this.duration = '01.01.2000 ' + (workout.hours || 0) + ':' + (workout.minutes || 0);
+        this.comment = workout.comment;
         this.groups = [];
         var exerciseIds = workout.sets.map(s => s.exerciseId);
         api.getExercises(exerciseIds).then(response => {
@@ -187,8 +192,14 @@ export default {
     },
     showHelp(){
         this.$refs.help.open();
+    },
+    showComment(){
+      this.$refs.comment.open(this.comment);
+    },
+    commentOk(comment){
+      this.comment = comment;
     }
-},
+  },
   created () {
     var id = this.$route.params.id;
     var routineId = this.$route.query[constants.ROUTINE_PARAM];

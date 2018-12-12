@@ -79,13 +79,34 @@
     </q-card>
     </q-pull-to-refresh>
     <template v-for="(workout,index) in workouts">
-      <q-card :key="index" class="q-mt-sm" @click.native="clickWorkout(workout)">
+      <q-card :key="index" class="q-mt-sm">
         <q-card-title :class="cardTitleBackground">
-          {{ formatDateTime(workout.time) }}
+          <div class="row">
+            <div class="col-10" @click="clickWorkout(workout)">{{ formatDateTime(workout.time) }}</div>
+            <div class="col-2" @click="toggleDetails(workout)">
+              <q-icon name="short_text" class="float-right on-left" style="font-size: larger;" v-if="workoutToggles[workout.id]" />
+              <q-icon name="format_line_spacing" class="float-right on-left" style="font-size: larger;" v-else />
+            </div>
+          </div>
         </q-card-title>
         <q-card-separator />
         <q-card-main>
-          <span v-for="exercise in workout.exercises" class="q-pa-sm">{{ exercise }}</span>
+          <div v-if="workoutToggles[workout.id]">
+            <div class="row" v-for="set in workout.sets">
+              <div class="col-10">{{ set.exerciseName }}</div>
+              <div class="col-2">{{ set.reps }} x {{ set.weights }}</div>
+            </div>
+            <div class="row q-mt-md">
+              <div class="col">{{ workout.comment }}</div>
+            </div>
+          </div>
+          <div class="row" v-else>
+            <div class="col">
+              <q-chip dense square v-for="(exercise, e_index) in workout.exercises" :class="{'q-ml-sm':e_index > 0}">
+                {{ exercise }}
+              </q-chip>
+            </div>
+          </div>
         </q-card-main>
       </q-card>
       </template>
@@ -100,5 +121,8 @@
 <style lang="stylus">
 #workout-options .q-btn-dropdown-arrow {
   display:none;
+}
+.q-card-container {
+  padding: 12px;
 }
 </style>

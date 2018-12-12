@@ -11,6 +11,7 @@ namespace Crash.Fit.Training
         public Guid UserId { get; set; }
         public DateTimeOffset Time { get; set; }
         public TimeSpan? Duration { get; set; }
+        public string Comment { get; set; }
     }
     public class WorkoutSummary : Workout
     {

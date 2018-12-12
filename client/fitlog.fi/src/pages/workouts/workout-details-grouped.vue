@@ -5,6 +5,7 @@
 
   <div slot="toolbar">
       <q-btn flat icon="help" @click="showHelp"></q-btn>
+      <q-btn flat icon="comment" @click="showComment"></q-btn>
       <q-btn flat icon="save" @click="save"></q-btn>
   </div>
   <q-page class="q-pa-sm">
@@ -94,6 +95,7 @@
         <q-btn glossy color="primary" icon="fas fa-plus" @click="addGroup" :label="$t('exercise')"></q-btn>
     </div>
     <workout-help ref="help" />
+    <workout-comment ref="comment" @ok="commentOk" />
   </q-page>
   <exercise-picker ref="exercisePicker" @selected="exerciseSelected(arguments[0])" />
   </layout>

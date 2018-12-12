@@ -13,5 +13,6 @@ namespace Crash.Fit.Api.Models.Training
         public int? Hours { get; set; }
         public int? Minutes { get; set; }
         public string Name { get; set; }
+        public string Comment { get; set; }
     }
 }

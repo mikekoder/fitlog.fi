@@ -554,7 +554,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
             {
                 try
                 {
-                    conn.Execute("INSERT INTO Workout(Id, UserId, Time, Duration) VALUES(@Id, @UserId, @Time, @Duration)", workout, tran);
+                    conn.Execute("INSERT INTO Workout(Id, UserId, Time, Duration, Comment) VALUES(@Id, @UserId, @Time, @Duration, @Comment)", workout, tran);
                     if (workout.Sets != null)
                     {
                         conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,WeightsBW,Load,LoadBW) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@WeightsBW,@Load,@LoadBW)", workout.Sets.Select((s, i) => new
@@ -597,7 +597,7 @@ WHERE WorkoutId=@id ORDER BY [Index];";
                 {
                     conn.Execute("DELETE FROM WorkoutSet WHERE WorkoutId=@Id", new { workout.Id }, tran);
 
-                    conn.Execute("UPDATE Workout SET Time=@Time, Duration=@Duration WHERE Id=@Id", workout, tran);
+                    conn.Execute("UPDATE Workout SET Time=@Time, Duration=@Duration, Comment=@Comment WHERE Id=@Id", workout, tran);
                     conn.Execute("INSERT INTO WorkoutSet(Id,WorkoutId,[Index],ExerciseId,Reps,Weights,WeightsBW,Load,LoadBW) VALUES(@Id,@WorkoutId,@Index,@ExerciseId,@Reps,@Weights,@WeightsBW,@Load,@LoadBW)", workout.Sets.Select((s, i) => new
                     {
                         s.Id,
