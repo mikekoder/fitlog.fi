@@ -2,12 +2,19 @@
 import storage from './storage'
 import axios from 'axios'
 import { version } from '../package.json'
+import { Platform } from 'quasar'
 
 axios.interceptors.request.use(function (config) {
     var token = storage.getItem("access_token");
     config.headers = { Authorization: `Bearer ${token}`};
-    try{
-      config.headers.ClientVersion = version;
+    try {
+      if(Platform.is.desktop){
+        config.headers.ClientVersion = version + ' (web)';
+      }
+      else {
+        config.headers.ClientVersion = version;
+      }
+      
     }
     catch{}
     return config;
