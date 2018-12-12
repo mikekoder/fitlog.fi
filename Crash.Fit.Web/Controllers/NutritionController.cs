@@ -175,7 +175,7 @@ namespace Crash.Fit.Web.Controllers
                 NutritionUtils.AppendComputedNutrients(day.Nutrients);
                 var energyExpenditure = 0m;
                 var rmr = measurements
-                    .Where(m => m.MeasureId == Constants.Measurements.RmrId && m.Time <= day.Date)
+                    .Where(m => m.MeasureId == Constants.Measurements.RmrId && m.Time.Date <= day.Date)
                     .OrderByDescending(m => m.Time)
                     .FirstOrDefault()?.Value;
 
