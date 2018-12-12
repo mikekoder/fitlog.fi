@@ -46,6 +46,7 @@ module.exports = function (ctx) {
         'QCardSeparator',
         'QCardTitle',
         'QCheckbox',
+        'QChip',
         'QDatetime',
         'QFab',
         'QFabAction',
