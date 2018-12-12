@@ -90,7 +90,7 @@
           </div>
         </q-card-title>
         <q-card-separator />
-        <q-card-main>
+        <q-card-main @click.native="clickWorkout(workout)">
           <div v-if="workoutToggles[workout.id]">
             <div class="row" v-for="set in workout.sets">
               <div class="col-10">{{ set.exerciseName }}</div>
