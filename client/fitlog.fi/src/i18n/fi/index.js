@@ -37,6 +37,7 @@
     characters: 'merkkiä',
     chooseDateInterval: 'Valitse aikaväli',
     chooseNutrient: 'Valitse ravintoaine',
+    comment: 'Kommentti',
     completed: 'Suoritettu',
     confirmCopy: 'Vahvista kopiointi',
     confirmDeletion: 'Vahvista poisto',
