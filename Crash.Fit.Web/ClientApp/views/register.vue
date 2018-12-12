@@ -29,10 +29,10 @@
             <div class="social-auth-links text-center">
                 <p>- {{ $t("or") }} -</p>
                 <a class="btn btn-block btn-social btn-facebook btn-flat" @click="loginFacebook">
-                  <i class="fa fa-facebook"></i> {{ $t("useFacebook") }}
+                  <i class="fab fa-facebook"></i> {{ $t("useFacebook") }}
                 </a>
                 <a class="btn btn-block btn-social btn-google btn-flat" @click="loginGoogle">
-                  <i class="fa fa-google-plus"></i> {{ $t("useGoogle") }}
+                  <i class="fab fa-google-plus"></i> {{ $t("useGoogle") }}
                 </a>
             </div>
             <router-link :to="{ name: 'login' }" class="text-center">{{ $t("login") }}</router-link>

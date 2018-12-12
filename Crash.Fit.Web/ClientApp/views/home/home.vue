@@ -85,7 +85,7 @@
                             <div class="box-body">
                                 <template v-if="!editNutrients">
                                     <div class="row">
-                                        <div class="col-xs-12"><button class="btn btn-sm pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button></div>
+                                        <div class="col-xs-12"><button class="btn btn-sm pull-right" @click="editSettings" v-if="!editNutrients"><i class="fas fa-cogs"></i></button></div>
                                     </div>
                                     <div class="row day-nutrients">
                                         <div class="col-xs-2" v-for="nutrient in visibleNutrients">
@@ -207,7 +207,17 @@
             </div>
             <div v-if="!isLoggedIn">
                 <p>{{ $t('homeDescription') }}</p>
-                Voit testata palvelua tunnuksilla <strong>testi@fitlog.fi</strong> / <strong>testi123</strong>
+                <p>
+                    Voit testata palvelua tunnuksilla <strong>testi@fitlog.fi</strong> / <strong>testi123</strong>
+                </p>
+                <p>
+                    Saatavana myös Android-sovelluksena<br />
+                        <a href='https://play.google.com/store/apps/details?id=fi.fitlog&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                        <img alt='Get it on Google Play' width='240' src='https://play.google.com/intl/en_us/badges/images/generic/fi_badge_web_generic.png'/></a>                                     
+                </p>
+                <p>
+                     Sekä mobiiliystävällisenä selainversiona <a href="https://m.fitlog.fi">https://m.fitlog.fi</a>
+                </p>
             </div>
         </section>
         <section v-if="showEditMealRow">

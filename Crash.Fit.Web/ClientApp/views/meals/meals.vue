@@ -31,7 +31,7 @@
                             <button class="btn btn-default" :class="{ active: selectedGroup === group.id }" @click="selectGroup(group.id)">{{ $t(group.id) }}</button>
                         </template>
                         <!--
-                        <button class="btn pull-right" @click="editSettings" v-if="!editNutrients"><i class="fa fa-gear"></i></button>
+                        <button class="btn pull-right" @click="editSettings" v-if="!editNutrients"><i class="fas fa-cogs"></i></button>
                         <button class="btn pull-right" @click="saveSettings" v-if="editNutrients">{{ $t('save') }}</button>
                         -->
                     </div>

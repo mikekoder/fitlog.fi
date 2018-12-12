@@ -8,20 +8,20 @@
                 <a><i class="fa fa-user"></i> <span>{{ $t("profile") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'activity-levels'}" v-if="isLoggedIn">
-                <a><i class="fa fa-tachometer"></i> <span>{{ $t("activityLevels") }}</span></a>
+                <a><i class="fa fa-tachometer-alt"></i> <span>{{ $t("activityLevels") }}</span></a>
             </router-link>
             <li class="header">{{ $t("nutrition") }}</li>
             <router-link tag="li" :to="{ name: 'meals'}" v-if="isLoggedIn">
-                <a><i class="fa fa-cutlery"></i> <span>{{ $t("meals") }}</span></a>
+                <a><i class="fa fa-utensils"></i> <span>{{ $t("meals") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'meal-details', params: { id: constants.NEW_ID } }" exact v-if="!isLoggedIn">
-                <a><i class="fa fa-cutlery"></i> <span>{{ $t("mealCalculator") }}</span></a>
+                <a><i class="fa fa-utensils"></i> <span>{{ $t("mealCalculator") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'mealrhythm'}" v-if="isLoggedIn">
-                <a><i class="fa fa-clock-o"></i> <span>{{ $t("mealRhythm") }}</span></a>
+                <a><i class="fas fa-clock"></i> <span>{{ $t("mealRhythm") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'foods'}" v-if="isLoggedIn">
-                <a><i class="fa fa-apple"></i> <span>{{ $t("foods") }}</span></a>
+                <a><i class="fa fa-cookie-bite"></i> <span>{{ $t("foods") }}</span></a>
             </router-link>
             <router-link tag="li" :to="{ name: 'recipes'}" v-if="isLoggedIn">
                 <a><i class="fa fa-book"></i> <span>{{ $t("recipes") }}</span></a>
@@ -72,12 +72,28 @@
               </a>
             </router-link>
                 -->
-            <li class="header">{{ $t("follow") }}</li>
+            <li class="header">{{ $t("onMobile") }}</li>
             <li>
-                <a href="https://www.facebook.com/fitlog.fi/"><i class="fa fa-facebook"></i><span>fitlog.fi</span></a>
+                <a href="https://play.google.com/store/apps/details?id=fi.fitlog">
+                    <i class="fab fa-google-play"> </i>
+                    <span> fitlog.fi {{ $t('forAndroid') }}</span>
+                </a>
             </li>
             <li>
-                <a href="https://www.instagram.com/fitlog.fi/"><i class="fa fa-instagram"></i><span>fitlog.fi</span></a>
+                <a href="https://m.fitlog.fi">
+                    <i class="fa fa-globe"></i>
+                    <span>m.fitlog.fi</span>
+                </a>
+            </li>
+            
+            <li class="header">{{ $t("follow") }}</li>
+            <li>
+                <a href="https://www.facebook.com/fitlog.fi/"><i class="fab fa-facebook"> </i> 
+                <span>fitlog.fi</span></a>
+            </li>
+            <li>
+                <a href="https://www.instagram.com/fitlog.fi/"><i class="fab fa-instagram"> </i> 
+                <span>fitlog.fi</span></a>
             </li>
             
         </ul>
