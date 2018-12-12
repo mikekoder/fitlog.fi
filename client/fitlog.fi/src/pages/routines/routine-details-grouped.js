@@ -136,7 +136,7 @@ export default {
             this.name = routine.name;
             this.workouts = [];
             var exerciseIds;
-            if(routine.workouts){
+            if(routine.workouts && routine.workouts.length > 0){
               exerciseIds = routine.workouts.map(w => w.exercises.map(e => e.exerciseId)).reduce((a,b) => a.concat(b));
             }
             else {
@@ -144,7 +144,7 @@ export default {
             }
             api.getExercises(exerciseIds).then(response => {
               var exercises = response.data;
-              if (routine.workouts) {
+              if (routine.workouts && routine.workouts.length > 0) {
                   routine.workouts.forEach(w => {
                       var workout = {
                           id: w.id,
