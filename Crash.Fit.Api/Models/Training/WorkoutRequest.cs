@@ -19,7 +19,7 @@ namespace Crash.Fit.Api.Models.Training
     {
         public Guid? ExerciseId { get; set; }
         public string ExerciseName { get; set; }
-        public int Reps { get; set; }
+        public decimal Reps { get; set; }
         public decimal Weights { get; set; }
     }
 }

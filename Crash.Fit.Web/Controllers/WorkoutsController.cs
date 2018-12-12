@@ -180,7 +180,7 @@ namespace Crash.Fit.Web.Controllers
             CreateExercises(new[] { request });
             set.ExerciseId = request.ExerciseId.Value;
             set.ExerciseName = request.ExerciseName;
-            set.Reps = request.Reps;
+            set.Reps = (int)request.Reps;
             set.Weights = request.Weights;
             trainingRepository.UpdateWorkout(workout);
             return Ok();
