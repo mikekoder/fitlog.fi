@@ -135,33 +135,35 @@ export default {
                 pal: this.pal
             };
             self.$store.dispatch(constants.SAVE_PROFILE, {
-                profile,
+              profile,
             }).then(_ => {
-                self.notifySuccess(self.$t('saveSuccessful'));
+              self.notifySuccess(self.$t('saveSuccessful'));
             }).catch(_ => {
-                self.notifyError(self.$t('saveFailed'));
+              self.notifyError(self.$t('saveFailed'));
             });
         },
         updateLogin() {
-            var self = this;
-            var login = {
-                username: self.username,
-                oldPassword: self.oldPassword,
-                newPassword: self.newPassword
-            };
+          var self = this;
+          var login = {
+            username: self.username,
+            oldPassword: self.oldPassword,
+            newPassword: self.newPassword
+          };
 
-            self.$store.dispatch(constants.UPDATE_LOGIN, { login });
+          self.$store.dispatch(constants.UPDATE_LOGIN, { login });
         },
         connectFacebook() {
-            window.location = api.baseUrl + 'users/external-login/?provider=Facebook&client=web&add=true&returnUrl=/#/profiili';
+          window.location = api.baseUrl + 'users/external-login/?provider=Facebook&client=web&add=true&returnUrl=/#/profiili';
         },
         connectGoogle() {
-            window.location = api.baseUrl + 'users/external-login/?provider=Google&client=web&add=true&returnUrl=/#/profiili';
+          window.location = api.baseUrl + 'users/external-login/?provider=Google&client=web&add=true&returnUrl=/#/profiili';
         },
         deleteProfile() {
-            var self = this;
-
-            self.$store.dispatch(constants.DELETE_PROFILE, { });
+          this.$store.dispatch(constants.DELETE_PROFILE, { }).then(_ => {
+            this.$store.dispatch(constants.LOGOUT, { }).then(_ => {
+              this.$router.replace({name: 'login'});
+            });
+          });
         }
     },
     created() {

@@ -67,6 +67,11 @@ export default
             return api.updateLogin(login).then(response => {
 
             });
+        },
+        [constants.DELETE_PROFILE]({ commit, state }, { }) {
+          return api.deleteProfile().then(response => {
+
+          });
         }
     },
     mutations: {
