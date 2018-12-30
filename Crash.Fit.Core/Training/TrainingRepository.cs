@@ -67,8 +67,10 @@ namespace Crash.Fit.Training
             filter = filter.Substring(5);
             var sql = $@"
 SELECT DISTINCT Exercise.*,
-  (SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount, 
-  (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax 
+  (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
+  (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise 
 LEFT JOIN ExerciseTarget ON ExerciseTarget.ExerciseId=Exercise.Id
 LEFT JOIN ExerciseEquipment ON ExerciseEquipment.ExerciseId=Exercise.Id
@@ -84,7 +86,12 @@ WHERE {filter};";
         {
             var filter = "UserId=@userId AND Deleted IS NULL";
             var sql = $@"
-SELECT Exercise.*,(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount, (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax FROM Exercise WHERE {filter};
+SELECT Exercise.*,
+  (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
+  (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
+FROM Exercise WHERE {filter};
 SELECT * FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
 SELECT * FROM ExerciseTarget WHERE Type='Secondary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
 SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});";
@@ -109,9 +116,10 @@ SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHE
             var filter = "(UserId=@userId OR UserId IS NULL) AND Deleted IS NULL";
             var sql = $@"
 SELECT Exercise.*,
-(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount, 
-(SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-(SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id) AS LatestUse
+  (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
+  (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise WHERE {filter}
 ORDER BY LatestUse DESC;
 SELECT * FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
@@ -138,9 +146,10 @@ SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHE
             var filter = "(UserId=@userId OR UserId IS NULL) AND Deleted IS NULL";
             var sql = $@"
 SELECT Exercise.*,
-(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount, 
-(SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-(SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id) AS LatestUse
+  (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
+  (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise WHERE {filter}
 ORDER BY UsageCount DESC;
 SELECT * FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
@@ -166,9 +175,10 @@ SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHE
         {
             var sql = @"
 SELECT Exercise.*,
-(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount, 
-(SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-(SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id) AS LatestUse
+  (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
+  (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise WHERE Id=@id;
 SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId=@id;
 SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Secondary' AND ExerciseId=@id;
@@ -192,9 +202,10 @@ SELECT * FROM ExerciseImage WHERE ExerciseId=@id;";
         {
             var sql = @"
 SELECT Exercise.*,
-(SELECT COUNT(*) FROM WorkoutSet WHERE ExerciseId=Exercise.Id) AS UsageCount, 
-(SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-(SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id) AS LatestUse
+  (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
+  (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise WHERE Id IN @ids;
 SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN @ids;
 SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Secondary' AND ExerciseId IN @ids;

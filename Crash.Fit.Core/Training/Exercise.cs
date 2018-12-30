@@ -17,6 +17,7 @@ namespace Crash.Fit.Training
         public int UsageCount { get; set; }
         public decimal? OneRepMax { get; set; }
         public DateTimeOffset? LatestUse { get; set; }
+        public decimal? LatestWeights { get; set; }
     }
     public class ExerciseDetails : ExerciseSummary
     {
