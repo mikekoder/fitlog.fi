@@ -1,5 +1,6 @@
 <template>
     <q-modal ref="exercisePickerModal" maximized>
+      <q-modal-layout view="LHh lpR fff" :container="isDesktop" :class="{'boxed': isDesktop }">  
         <q-tabs v-model="tab" style="height: 70vh;" @select="changeTab" v-if="selectExercise">
             
             <q-tab slot="title" name="tab-1" :label="$t('search')" />
@@ -67,12 +68,17 @@
                   <img :src="image.url" class="exercise-image" />
               </div>
           </div>
+          <div class="row q-ma-sm">   
+            <div class="col"><q-input readonly :value="exercise.oneRepMap || '-'" :float-label="$t('1rm')" /></div>  
+            <div class="col"><q-input readonly :value="exercise.latestWeights || '-'" :float-label="$t('latestWeights')" /></div>  
+          </div>
         </template>
 
         <div class="row q-ma-sm q-mt-lg">
             <q-btn glossy @click="cancel" :label="$t('cancel')" class="q-mr-sm"></q-btn>
             <q-btn glossy color="primary" @click="save" :label="$t('select')" :disabled="!canSave"></q-btn>
         </div>
+      </q-modal-layout>
     </q-modal>
 </template>
 
@@ -218,5 +224,10 @@ button{margin-bottom: 10px;}
 .exercise-image{
     width:100%;
     height: 100%;
+}
+.boxed {
+  width: 600px; 
+  min-height: 500px; 
+  margin: auto;
 }
 </style>
