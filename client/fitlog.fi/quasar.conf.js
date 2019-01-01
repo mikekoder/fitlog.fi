@@ -40,6 +40,7 @@ module.exports = function (ctx) {
       components: [
         'QBtn',
         'QBtnDropdown',
+        'QBtnGroup',
         'QCard',
         'QCardActions',
         'QCardMain',

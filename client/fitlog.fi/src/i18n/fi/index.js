@@ -145,7 +145,7 @@
     july: 'Heinäkuu',
     june: 'Kesäkuu',
     latest: 'Viimeisimmät',
-    latestWeights: 'Edelliset painot',
+    latestWeights: 'Viim. painot',
     least: 'Vähiten',
     lightActivity: 'Kevyt aktiivisuus',
     lightActivityAbbr: 'Kevyt',
