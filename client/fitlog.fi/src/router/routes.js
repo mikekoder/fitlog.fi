@@ -168,6 +168,11 @@ export default [
         path: '/nutrition-chart',
         name: 'nutrition-chart',
         component: () => import('pages/chart/nutrition-chart.vue')
+      },
+      {
+        path: '/food-comparison',
+        name: 'food-comparison',
+        component: () => import('pages/foods/food-comparison.vue')
       }
     ]
   },

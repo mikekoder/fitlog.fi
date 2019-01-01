@@ -62,7 +62,10 @@
           <q-item-side icon="fas fa-chart-line" />
           <q-item-main :label="$t('nutritionChart')" />
         </q-item>
-
+        <q-item :to="{ name: 'food-comparison' }">  
+          <q-item-side icon="fas fa-balance-scale" />
+          <q-item-main :label="$t('foodComparison')" />
+        </q-item>
         <q-list-header>{{ $t('training') }}</q-list-header>
         <q-item :to="{ name: 'workouts' }">  
           <q-item-side icon="fas fa-heartbeat" />
@@ -86,7 +89,7 @@
         </q-item>
         <q-list-header>{{ $t('measurements') }}</q-list-header>
         <q-item item :to="{ name: 'measurements' }">  
-          <q-item-side icon="fas fa-balance-scale" />
+          <q-item-side icon="fas fa-weight" />
           <q-item-main :label="$t('measurements')" />
         </q-item>
 
