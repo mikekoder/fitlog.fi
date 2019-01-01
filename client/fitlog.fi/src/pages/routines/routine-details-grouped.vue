@@ -33,26 +33,24 @@
                 </div>
                 
             </div>
-            <q-card v-for="(group, g_index) in workout.groups" :key="g_index" class="q-mx-sm q-mb-sm">
-                <q-card-title class="bg-grey-3">
-                    <div class="row">
-                        <div class="col-10 q-mt-md text-weight-medium" @click="selectExercise(group)">
-                            <div v-if="group.exercise">
-                                {{ group.exercise.name }}
-                            </div>
-                            <div v-else>
-                                {{ $t('selectExercise') }}
-                            </div>
-                        </div>
-                        <div class="col-2 group-actions">
-                            <q-fab size="sm" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
-                                <q-fab-action color="negative" @click="deleteGroup(workout, g_index)" icon="delete"></q-fab-action>
-                                <!--
-                                <q-fab-action color="secondary" @click="copyGroup(group)" icon="content_copy"></q-fab-action>
-                                -->
-                            </q-fab>
-                        </div>
-                    </div>
+            <q-card v-for="(group, g_index) in workout.groups" :key="g_index" class="q-ma-sm">
+                <q-card-title :class="cardTitleBackground">
+                  <div v-if="group.exercise" @click="selectExercise(group)">
+                      {{ group.exercise.name }}
+                  </div>
+                  <div v-else @click="selectExercise(group)">
+                      {{ $t('selectExercise') }}
+                  </div>
+                  <q-fab slot="right" flat color="primary" icon="more_vert" active-icon="more_horiz" direction="left">
+                    <q-fab-action color="negative" @click="deleteGroup(workout, g_index)" icon="delete"></q-fab-action>
+                    <!--
+                    <q-fab-action color="secondary" @click="copyGroup(group)" icon="content_copy"></q-fab-action>
+                    -->
+                    <q-fab-action color="primary" @click="selectExercise(group)" icon="fitness_center"></q-fab-action>
+                  </q-fab>
+                  <div slot="subtitle" style="width:100%;" v-if="group.exercise" @click="selectExercise(group)">
+                    &nbsp;
+                  </div>
                 </q-card-title>
                 <q-card-separator />
                 <q-card-main>
@@ -92,14 +90,11 @@
                 </q-card-actions>
             </q-card>
             <div class="row q-ma-sm">
-                <div class="col">
-                    <q-btn size="md" glossy color="primary" icon="fas fa-plus" @click="addGroup(workout)" :label="$t('exercise')"></q-btn>
-                </div>
-                <div class="col">
-                    
-                </div>
-                
-
+              <div class="col">
+                <q-btn size="md" glossy color="primary" icon="fas fa-plus" @click="addGroup(workout)" :label="$t('exercise')"></q-btn>
+              </div>
+              <div class="col">
+              </div>
             </div>  
           </q-tab-pane>
     </q-tabs>
@@ -114,9 +109,15 @@
 
 <style lang="stylus" scoped>
 .q-card-primary{
-    padding-top:0px;
+    padding-top:2px;
+    padding-bottom: 0px;
 }
+
 .q-card-actions {
     padding: 0px;
+}
+.btn-add-set{
+  margin-top: 8px;
+  margin-right: 12px;
 }
 </style>
