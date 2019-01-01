@@ -5,6 +5,9 @@
                 <div class="col">{{ $t('help.workout.actionsMenu') }} (<q-icon name="more_vert" />)</div>
             </div>
             <div class="row">
+                <div class="col"><q-icon name="fitness_center" /> {{ $t('selectExercise')}}</div>
+            </div>
+            <div class="row">
                 <div class="col"><q-icon name="content_copy" /> {{ $t('copy') }} {{ $t('exercise')}} / {{ $t('set')}}</div>
             </div>
             <div class="row">

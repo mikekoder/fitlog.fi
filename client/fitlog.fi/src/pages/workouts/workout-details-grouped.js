@@ -6,6 +6,7 @@ import Help from './workout-help'
 import WorkoutComment from './workout-comment'
 import ExercisePicker from '../../components/exercise-picker.vue'
 import api from '../../api'
+import Vue from 'vue';
 
 export default {
     mixins:[ExercisesMixin, PageMixin],
@@ -137,8 +138,7 @@ export default {
         var exerciseIds = workout.sets.map(s => s.exerciseId);
         api.getExercises(exerciseIds).then(response => {
             var exercises = response.data;
-            this.groups = [];
-            if(workout.sets){
+            if(workout.sets && workout.sets.length > 0){
 
                 var previousGroup = undefined;
                 var previousExerciseId = undefined;
@@ -174,21 +174,20 @@ export default {
                 });
             }
             else {
-                this.addGroup();
+              //this.addGroup();
             }
             this.$store.commit(constants.LOADING_DONE);
         }).catch(_ => {
             this.notifyError(this.$t('fetchFailed'));
         });
- 
     },
     selectExercise(group){
-        this.selectedGroup = group;
-        this.$refs.exercisePicker.show(this.selectedGroup.exercise);
+      this.selectedGroup = group;
+      this.$refs.exercisePicker.show(this.selectedGroup.exercise);
     },
     exerciseSelected(exercise){
-        this.selectedGroup.exercise = exercise;
-        this.$refs.exercisePicker.hide();
+      this.selectedGroup.exercise = exercise;
+      this.$refs.exercisePicker.hide();
     },
     showHelp(){
         this.$refs.help.open();
@@ -233,7 +232,6 @@ export default {
         }
         else {
             this.populate(workout);
-            this.addGroup();
         }  
     }
     else {
