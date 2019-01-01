@@ -69,7 +69,7 @@ namespace Crash.Fit.Training
 SELECT DISTINCT Exercise.*,
   (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
   (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=Workout.Id WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
   (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise 
 LEFT JOIN ExerciseTarget ON ExerciseTarget.ExerciseId=Exercise.Id
@@ -89,7 +89,7 @@ WHERE {filter};";
 SELECT Exercise.*,
   (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
   (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=Workout.Id WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
   (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise WHERE {filter};
 SELECT * FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN (SELECT Id FROM Exercise WHERE {filter});
@@ -118,7 +118,7 @@ SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHE
 SELECT Exercise.*,
   (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
   (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=Workout.Id WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
   (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise WHERE {filter}
 ORDER BY LatestUse DESC;
@@ -148,7 +148,7 @@ SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHE
 SELECT Exercise.*,
   (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
   (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=Workout.Id WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
   (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise WHERE {filter}
 ORDER BY UsageCount DESC;
@@ -177,7 +177,7 @@ SELECT * FROM ExerciseEquipment WHERE ExerciseId IN (SELECT Id FROM Exercise WHE
 SELECT Exercise.*,
   (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
   (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=Workout.Id WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
   (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise WHERE Id=@id;
 SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId=@id;
@@ -204,7 +204,7 @@ SELECT * FROM ExerciseImage WHERE ExerciseId=@id;";
 SELECT Exercise.*,
   (SELECT COUNT(WorkoutSet.Id) FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS UsageCount, 
   (SELECT MAX (Max) FROM OneRepMax WHERE ExerciseId=Exercise.Id AND Time >= @time AND UserId=@userId) AS OneRepMax,
-  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
+  (SELECT MAX (Time) FROM Workout JOIN WorkoutSet ON WorkoutSet.WorkoutId=Workout.Id WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId) AS LatestUse,
   (SELECT TOP 1 Weights FROM WorkoutSet JOIN Workout ON Workout.Id=WorkoutSet.WorkoutId WHERE WorkoutSet.ExerciseId=Exercise.Id AND Workout.UserId=@userId ORDER BY Time DESC,Weights DESC) AS LatestWeights
 FROM Exercise WHERE Id IN @ids;
 SELECT MuscleGroupId FROM ExerciseTarget WHERE Type='Primary' AND ExerciseId IN @ids;
