@@ -32,41 +32,39 @@ export default {
       this.$router.push({ name: 'food-details', params: { id: constants.NEW_ID } });
     },
     search(text){
-      var self = this;
       if(text.length >= 2){
         api.searchFoods(text).then(response => {
-          self.searchResults = response.data;
+          this.searchResults = response.data;
         });
       }
       else {
-        self.searchResults = [];
+        this.searchResults = [];
       }
     },
     searchTopNutrients(){
-      var self = this;
-      self.topResults = [];
-      if(self.topDirection == 'most'){
-        api.searchFoodsMostNutrients(self.topNutrient.id).then(response => {
-          self.topResults = response.data;
+      this.topResults = [];
+      if(this.topDirection == 'most'){
+        api.searchFoodsMostNutrients(this.topNutrient.id).then(response => {
+          this.topResults = response.data;
         });
       }
       else{
-        api.searchFoodsLeastNutrients(self.topNutrient.id).then(response => {
-          self.topResults = response.data;
+        api.searchFoodsLeastNutrients(this.topNutrient.id).then(response => {
+          this.topResults = response.data;
         });
       }
     }
   },
   created () {
-    var self = this;
-    self.topDirections = [
-      { label: self.$t('most'),  value: 'most' }, 
-      { label:self.$t('least'), value:'least' } ];
-    self.topDirection = self.topDirections[0].value;
-    self.$store.dispatch(constants.FETCH_MY_FOODS, { }).then(_ => {
-      self.$store.commit(constants.LOADING_DONE, { });
+    this.topDirections = [
+      { label: this.$t('most'),  value: 'most' }, 
+      { label: this.$t('least'), value:'least' } 
+    ];
+    this.topDirection = this.topDirections[0].value;
+    this.$store.dispatch(constants.FETCH_MY_FOODS, { }).then(_ => {
+      this.$store.commit(constants.LOADING_DONE, { });
     }).catch(_ => {
-      self.$store.commit(constants.LOADING_DONE, { });
+      this.$store.commit(constants.LOADING_DONE, { });
     });
     
   },

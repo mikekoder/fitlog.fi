@@ -47,7 +47,6 @@ export default {
   },
   methods: {
     login(){
-      var self = this;
       var data = {
         username: this.username,
         password: this.password,
@@ -55,14 +54,14 @@ export default {
       };
       
       api.login(data).then(response => {
-        self.$store.dispatch(constants.STORE_TOKENS, {
+        this.$store.dispatch(constants.STORE_TOKENS, {
           client: response.data.client,
           refreshToken: response.data.refreshToken,
           accessToken: response.data.accessToken
         }).then(_ => {
-          self.$router.replace({name: 'home'});
+          this.$router.replace({name: 'home'});
         }).catch(_ => {
-          self.notifyError(self.$t('failed'));
+          this.notifyError(this.$t('failed'));
         });
       }).fail(xhr => {
 
@@ -75,7 +74,6 @@ export default {
       this.socialLogin('Google');
     },
     socialLogin(provider){
-      var self = this;
       if(this.isCordova){
         if(provider == 'Google'){
           window.plugins.googleplus.login(
@@ -85,13 +83,13 @@ export default {
             function (obj) {
               if(obj.idToken){
                 api.loginWithToken('Google', obj.idToken).then(response => {
-                  self.finishLogin(response.data.refreshToken, response.data.accessToken);
+                  this.finishLogin(response.data.refreshToken, response.data.accessToken);
                 }).fail(xhr => {
                 });
               }
             },
             function (msg) {
-              self.notifyError('error: ' + msg);
+              this.notifyError('error: ' + msg);
             }
           );
         }
@@ -105,7 +103,7 @@ export default {
 
               ref.close();
               if(refreshToken && accessToken){
-                self.finishLogin(refreshToken, accessToken);
+                this.finishLogin(refreshToken, accessToken);
               }
             }
           });
@@ -116,41 +114,36 @@ export default {
       }
     },
     finishLogin(refreshToken, accessToken){
-      var self = this;
       if(refreshToken && accessToken){
-        self.$store.dispatch(constants.STORE_TOKENS, {
+        this.$store.dispatch(constants.STORE_TOKENS, {
           refreshToken,
           accessToken
         }).then(_ => {
-          self.$router.replace({name: 'home'});
+          this.$router.replace({name: 'home'});
         }).catch(_ => {
-          self.notifyError(self.$t('failed'));
+          this.notifyError(this.$t('failed'));
         });
       }
     },
     checkLoggedIn(){
-      var self = this;
-      if(self.isLoggedIn){
-        self.$router.replace({name: 'home'});
+      if(this.isLoggedIn){
+        this.$router.replace({name: 'home'});
       }
       else{
         setTimeout(() => {
-          self.checkLoggedIn();
+          this.checkLoggedIn();
         }, 100);
       }
     }
   },
   created () {
-    var self = this;
-    self.$store.commit(constants.LOADING_DONE);
-    var refreshToken = self.$route.params.refreshToken;
-    var accessToken = self.$route.params.accessToken;
+    this.$store.commit(constants.LOADING_DONE);
+    var refreshToken = this.$route.params.refreshToken;
+    var accessToken = this.$route.params.accessToken;
     if(refreshToken && accessToken){
-      self.finishLogin(refreshToken, accessToken);
+      this.finishLogin(refreshToken, accessToken);
     }
-
-    self.checkLoggedIn();
-
+    this.checkLoggedIn();
   },
   beforeDestroy () {
   }

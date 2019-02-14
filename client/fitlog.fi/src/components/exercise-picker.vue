@@ -154,19 +154,18 @@
             */
         },
         search(){
-          var self = this;
-          if(self.searchText.length >= 2 || self.muscleGroup || self.equipment){
-            self.searching = true;
-            api.searchExercises(self.searchText, self.muscleGroup ? self.muscleGroup.id : undefined, self.equipment ? self.equipment.id : undefined).then(response => {
-                self.searchResults = response.data;
-                self.searching = false;
+          if(this.searchText.length >= 2 || this.muscleGroup || this.equipment){
+            this.searching = true;
+            api.searchExercises(this.searchText, this.muscleGroup ? this.muscleGroup.id : undefined, this.equipment ? this.equipment.id : undefined).then(response => {
+              this.searchResults = response.data;
+              this.searching = false;
             });
           }
           else {
-              self.searchResults = [];
+            this.searchResults = [];
           }
-          if(self.exercise && self.searchText.length < self.exercise.name.length){
-              self.exercise = undefined;
+          if(this.exercise && this.searchText.length < this.exercise.name.length){
+            this.exercise = undefined;
           }
         },
         /*
@@ -175,36 +174,36 @@
         },
         */
         load(exerciseId){
-            this.$store.dispatch(constants.FETCH_EXERCISE, { id: exerciseId}).then(exercise => {
-                this.exercise = exercise;
-                this.selectExercise = false;
-                if(this.skipConfirm){
-                  this.save();
-                }
-            });
+          this.$store.dispatch(constants.FETCH_EXERCISE, { id: exerciseId}).then(exercise => {
+            this.exercise = exercise;
+            this.selectExercise = false;
+            if(this.skipConfirm){
+              this.save();
+            }
+          });
         },
         reselectExercise(){
-            this.selectExercise = true;
-            this.search();
+          this.selectExercise = true;
+          this.search();
         },
         tabChanged(tab){
-            this.tab = tab;
+          this.tab = tab;
         },
         cancel () {
-            this.searchText = '';
-            this.searchResults = [];
-            this.exercise = undefined;
-            this.$refs.exercisePickerModal.hide();
+          this.searchText = '';
+          this.searchResults = [];
+          this.exercise = undefined;
+          this.$refs.exercisePickerModal.hide();
         },
         hide(){
-            this.cancel();
+          this.cancel();
         },
         save () {
-            this.muscleGroup = undefined;
-            this.equipment = undefined;
-            this.searchText = '';
-            this.searchResults = [];
-            this.$emit('selected', this.exercise);
+          this.muscleGroup = undefined;
+          this.equipment = undefined;
+          this.searchText = '';
+          this.searchResults = [];
+          this.$emit('selected', this.exercise);
         },
     },
     created () {

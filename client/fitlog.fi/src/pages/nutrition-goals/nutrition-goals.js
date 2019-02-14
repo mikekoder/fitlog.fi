@@ -20,66 +20,61 @@ export default {
             this.$router.push({ name: 'nutrition-goal-details', params: { id: constants.NEW_ID } });
         },
         activate(goal){
-            var self = this;
             this.$store.dispatch(constants.ACTIVATE_NUTRITION_GOAL, {
                 goal
             }).then(_ => {
-                self.notifySuccess(self.$t('saveSuccessful'));
+              this.notifySuccess(this.$t('saveSuccessful'));
             }).catch(_ => {
-                self.notifyError(self.$t('saveFailed'));
+              this.notifyError(this.$t('saveFailed'));
             });
         },
         deleteGoal(goal) {
-            var self = this;
-            this.$store.dispatch(constants.DELETE_NUTRITION_GOAL, {
-                goal
-            }).catch(_ => {
-                self.notifyError(this.$t('deleteFailed'));
-            });
+          this.$store.dispatch(constants.DELETE_NUTRITION_GOAL, {
+            goal
+          }).catch(_ => {
+            this.notifyError(this.$t('deleteFailed'));
+          });
         },
         clickGoal(goal){
-            var self = this;
-            this.$q.actionSheet({
-              title: goal.name,
-              grid: true,
-              actions: [
-                {
-                  label: self.$t('edit'),
-                  icon: 'fas fa-edit',
-                  handler: () => {
-                    self.showGoal(goal);
-                  }
-                },
-                {
-                    label: self.$t('activate'),
-                    icon: 'fas fa-check',
-                    handler: () => {
-                      self.activate(goal);
-                    }
-                },
-                {
-                  label: self.$t('delete'),
-                  icon: 'fas fa-trash',
-                  handler: () => {
-                    self.deleteGoal(goal);
-                  }
+          this.$q.actionSheet({
+            title: goal.name,
+            grid: true,
+            actions: [
+              {
+                label: this.$t('edit'),
+                icon: 'fas fa-edit',
+                handler: () => {
+                  this.showGoal(goal);
                 }
-              ],
-              dismiss: {
-                  label: self.$t('cancel'),
-                  handler: () => {
-                      
-                  }
+              },
+              {
+                label: this.$t('activate'),
+                icon: 'fas fa-check',
+                handler: () => {
+                  this.activate(goal);
+                }
+              },
+              {
+                label: this.$t('delete'),
+                icon: 'fas fa-trash',
+                handler: () => {
+                  this.deleteGoal(goal);
+                }
               }
-            });
-          }
+            ],
+            dismiss: {
+              label: this.$t('cancel'),
+              handler: () => {
+                  
+              }
+            }
+          });
+        }
     },
     created() {
-        var self = this;
-       
-        self.$store.dispatch(constants.FETCH_NUTRITION_GOALS, { }).then(goals => {
-            self.goals = goals;
-            self.$store.commit(constants.LOADING_DONE, { });
+      this.$store.dispatch(constants.FETCH_NUTRITION_GOALS, { }).then(goals => {
+        this.goals = goals;
+        this.$store.commit(constants.LOADING_DONE, { });
         });
     }
 }

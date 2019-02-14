@@ -7,20 +7,19 @@ export default {
         }
     },
     created() {
-        var self = this;
         var delay = 100;
         var loader = () => {
-            if(self.isLoggedIn){
-                self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, { }).then(mealDefinitions => {
-                    if (self.$mealDefinitionsLoaded) {
-                        self.$mealDefinitionsLoaded(mealDefinitions);
-                    }
-                });
+            if(this.isLoggedIn){
+              this.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, { }).then(mealDefinitions => {
+                if (this.$mealDefinitionsLoaded) {
+                  this.$mealDefinitionsLoaded(mealDefinitions);
+                }
+              });
             }
             else {
                 setTimeout(() => {
-                    delay = delay * 2;
-                    loader();
+                  delay = delay * 2;
+                  loader();
                 }, delay);
             }
         };

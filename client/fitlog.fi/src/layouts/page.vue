@@ -154,9 +154,8 @@ export default {
   },
   methods: {
     logout(){
-      var self = this;
-      self.$store.dispatch(constants.LOGOUT, { }).then(_ => {
-        self.$router.replace({name: 'login'});
+      this.$store.dispatch(constants.LOGOUT, { }).then(_ => {
+        this.$router.replace({name: 'login'});
       });
     },
     resize(){

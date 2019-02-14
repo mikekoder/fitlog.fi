@@ -109,7 +109,7 @@ export default {
       }).then(_ => {
         this.$store.commit(constants.LOADING_DONE);
       });
-      this.$store.dispatch(constants.FETCH_WORKOUTS, { start: self.start, end: self.end });
+      this.$store.dispatch(constants.FETCH_WORKOUTS, { start: this.start, end: this.end });
     },
     selectGroup(group) {
       this.selectedGroup = group;

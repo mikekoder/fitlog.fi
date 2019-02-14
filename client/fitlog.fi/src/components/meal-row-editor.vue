@@ -121,125 +121,119 @@ export default {
         QTabs,QTab,QTabPane,QField,QInput,QScrollArea,QSearch,QAutocomplete,QSelect,QBtn,QModal,QList,QItem
     },
     methods: {
-        show(row){
-            var self = this;
-            self.tab = 'tab-1';
-            self.id = row.id;
-            self.mealDefinitionId = row.mealDefinitionId;
-            self.mealId = row.mealId;
-            self.quantity = row.quantity;
-            var foodId = row.food ? row.food.id : row.foodId;
-            var portionId = row.portion ? row.portion.id : row.portionId;
+      show(row){
+        this.tab = 'tab-1';
+        this.id = row.id;
+        this.mealDefinitionId = row.mealDefinitionId;
+        this.mealId = row.mealId;
+        this.quantity = row.quantity;
+        var foodId = row.food ? row.food.id : row.foodId;
+        var portionId = row.portion ? row.portion.id : row.portionId;
+    
+        if(foodId){
+          this.load(foodId, portionId, true);
+        }
         
-            if(foodId){
-                self.load(foodId, portionId, true);
-            }
-            
-            self.$refs.modal.show();
-        },
-        changeTab(tab){
-            if(tab == 'tab-1' && this.food){
-                if(this.searchText != this.food.name){
-                    this.searchText = this.food.name;
-                    this.search();
-                }
-                
-            }
-        },
+        this.$refs.modal.show();
+      },
+      changeTab(tab){
+        if(tab == 'tab-1' && this.food){
+          if(this.searchText != this.food.name){
+            this.searchText = this.food.name;
+            this.search();
+          }
+        }
+      },
         search(text){
-          var self = this;
-          if(self.searchText.length >= 2){
-            self.searching = true;
-            api.searchFoods(self.searchText).then(response => {
-                self.searchResults = response.data.map(f => { return { ...f, text: f.manufacturer ? `${f.name} (${f.manufacturer})` : f.name, icon: f.userId ? 'fas fa-user' : '' }});
-                self.searching = false;
+          if(this.searchText.length >= 2){
+            this.searching = true;
+            api.searchFoods(this.searchText).then(response => {
+              this.searchResults = response.data.map(f => { return { ...f, text: f.manufacturer ? `${f.name} (${f.manufacturer})` : f.name, icon: f.userId ? 'fas fa-user' : '' }});
+              this.searching = false;
             });
           }
           else {
-              self.searchResults = [];
+            this.searchResults = [];
           }
-          if(self.food && self.searchText.length < self.food.name.length){
-              self.food = undefined;
-              self.portions = [];
-              self.portion = undefined;
+          if(this.food && this.searchText.length < this.food.name.length){
+            this.food = undefined;
+            this.portions = [];
+            this.portion = undefined;
           }
         },
         foodSelected(food){
           this.load(food.id, undefined, false);
         },
         load(foodId, portionId, portionSelected){
-            var self = this;
-            self.$store.dispatch(constants.FETCH_FOOD, {id: foodId}).then(food => {
-                //self.searchText = food.manufacturer ? `${food.name} (${food.manufacturer})` : food.name;
-                self.food = food;
-                self.selectFood = false;
-                var portions = food.portions.map(p => {return {...p, label: p.name, value: p }});
-                portions.splice(0,0,{ label: 'g', value: undefined});
-                self.portions = portions;
-                if(portionId){
-                    self.portion = self.portions.find(p => p.id == portionId);
-                }
-                else if(self.food.mostUsedPortionId && !portionSelected) {
-                    self.portion = self.portions.find(p => p.id == self.food.mostUsedPortionId);
-                }
-                else {
-                    self.portion = self.portions[0];         
-                }
-            });
+          this.$store.dispatch(constants.FETCH_FOOD, {id: foodId}).then(food => {
+            //this.searchText = food.manufacturer ? `${food.name} (${food.manufacturer})` : food.name;
+            this.food = food;
+            this.selectFood = false;
+            var portions = food.portions.map(p => {return {...p, label: p.name, value: p }});
+            portions.splice(0,0,{ label: 'g', value: undefined});
+            this.portions = portions;
+            if(portionId){
+              this.portion = this.portions.find(p => p.id == portionId);
+            }
+            else if(this.food.mostUsedPortionId && !portionSelected) {
+              this.portion = this.portions.find(p => p.id == this.food.mostUsedPortionId);
+            }
+            else {
+              this.portion = this.portions[0];         
+            }
+          });
         },
         reselectFood(){
-            this.selectFood = true;
+          this.selectFood = true;
         },
         tabChanged(tab){
-            this.tab = tab;
+          this.tab = tab;
         },
         cancel () {
-            this.searchText = '';
-            this.searchResults = [];
-            this.food = undefined;
-            this.quantity = undefined;
-            this.portion = undefined;
-            this.selectFood = true;
-            this.$refs.modal.hide();
+          this.searchText = '';
+          this.searchResults = [];
+          this.food = undefined;
+          this.quantity = undefined;
+          this.portion = undefined;
+          this.selectFood = true;
+          this.$refs.modal.hide();
         },
         hide(){
-            this.cancel();
+          this.cancel();
         },
         save () {
-            var self = this;
-            var row = {
-                id: self.id,
-                mealDefinitionId: self.mealDefinitionId,
-                mealId: self.mealId,
-                food: self.food,
-                foodId: self.food.id,
-                foodName: self.food.name,
-                quantity: self.quantity,
-                portion: self.portion,
-                portionId: self.portion ? self.portion.id : undefined,
-                portionName: self.portion ? self.portion.name : undefined
-            };
-            this.$emit('save', row);
+          var row = {
+            id: this.id,
+            mealDefinitionId: this.mealDefinitionId,
+            mealId: this.mealId,
+            food: this.food,
+            foodId: this.food.id,
+            foodName: this.food.name,
+            quantity: this.quantity,
+            portion: this.portion,
+            portionId: this.portion ? this.portion.id : undefined,
+            portionName: this.portion ? this.portion.name : undefined
+          };
+          this.$emit('save', row);
         },
         readBarcode(){
-            var self = this;
-            try {
-                cordova.plugins.barcodeScanner.scan(
-                    result => {
-                        if(!result.canceled){
-                            self.searchText = result.text;
-                            self.search(result.text);
-                            self.tab = 'tab-1';
-                        }
-                    },
-                    error => {
-                        self.notifyError(error);
-                    }
-                );
-            }
-            catch(err){
-                self.notifyError(err.message);
-            }
+          try {
+            cordova.plugins.barcodeScanner.scan(
+              result => {
+                if(!result.canceled){
+                  this.searchText = result.text;
+                  this.search(result.text);
+                  this.tab = 'tab-1';
+                }
+              },
+              error => {
+                this.notifyError(error);
+              }
+            );
+          }
+          catch(err){
+            this.notifyError(err.message);
+          }
         }
     },
     mounted () {

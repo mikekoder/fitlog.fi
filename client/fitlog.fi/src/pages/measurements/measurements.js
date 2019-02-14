@@ -13,17 +13,15 @@ export default {
     },
     methods: {
         loadMeasures() {
-            var self = this;
-            api.listMeasures().then(response => {
-                self.measures = response.data;
-                self.$store.commit(constants.LOADING_DONE);
-            });
+          api.listMeasures().then(response => {
+            this.measures = response.data;
+            this.$store.commit(constants.LOADING_DONE);
+          });
         },
         createMeasurements() {
             this.$router.push({ name: 'measurement-details' });
         },
         saveMeasurements(measurements) {
-            var self = this;
             
         },
         cancelMeasurements() {

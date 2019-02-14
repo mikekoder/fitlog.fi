@@ -5,7 +5,7 @@
 
   <div slot="toolbar">
       <q-btn flat icon="help" @click="showHelp"></q-btn>
-      <q-btn flat icon="comment" @click="showComment"></q-btn>
+      <q-btn flat icon="comment" :color="comment ? 'secondary': 'default'" @click="showComment"></q-btn>
       <q-btn flat icon="save" @click="save"></q-btn>
   </div>
   <q-page class="q-pa-sm">
@@ -19,7 +19,7 @@
               <q-datetime v-model="duration" type="time" :format="$t('timeFormat')" :monday-first="true" :no-clear="true" :ok-label="$t('OK')" :cancel-label="$t('cancel')" :day-names="localDayNamesAbbr" :month-names="localMonthNames" :float-label="$t('duration')" format24h />
             </div>
             <div class="col-3 q-pl-sm">
-              <q-input v-model="energyExpenditure" type="number" :float-label="$t('expenditure')" suffix="kcal" @blur="energySpecified=(energyExpenditure && true)" />
+              <q-input v-model="energyExpenditure" type="number" :float-label="$t('expenditure') + ' (kcal)'" @blur="energySpecified=(energyExpenditure && true)" />
             </div>
         </div>
       </q-card-main>

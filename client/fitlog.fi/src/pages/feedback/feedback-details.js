@@ -18,25 +18,24 @@ export default {
     },
     methods: {
       save() {
-        var self = this;
         var feedback = {
-            id: self.id,
-            type: self.type,
-            title: self.title,
-            description: self.description
+          id: this.id,
+          type: this.type,
+          title: this.title,
+          description: this.description
         };
-        self.$store.dispatch(constants.SAVE_FEEDBACK, {
-            feedback
+        this.$store.dispatch(constants.SAVE_FEEDBACK, {
+          feedback
         }).then(_ => {
-          self.notifySuccess(self.$t('saveSuccessful'));
-              if(feedback.type === 'Bug'){
-                self.$router.replace({ name: 'bugs' });
-              }
-              else if(feedback.type === 'Improvement'){
-                self.$router.replace({ name: 'improvements' });
-              }
+          this.notifySuccess(this.$t('saveSuccessful'));
+            if(feedback.type === 'Bug'){
+              this.$router.replace({ name: 'bugs' });
+            }
+            else if(feedback.type === 'Improvement'){
+              this.$router.replace({ name: 'improvements' });
+            }
         }).catch(_ => {
-          self.notifyError(self.$t('saveFailed'));
+          this.notifyError(this.$t('saveFailed'));
         });
       },
       cancel() {

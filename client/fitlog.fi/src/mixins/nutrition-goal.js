@@ -7,20 +7,19 @@ export default {
         }
     },
     created() {
-        var self = this;
-        var delay = 100;
-        var loader = () => {
-            if(self.isLoggedIn){
-                self.$store.dispatch(constants.FETCH_ACTIVE_NUTRITION_GOAL, { });
-            }
-            else {
-                setTimeout(() => {
-                    delay = delay * 2;
-                    loader();
-                }, delay);
-            }
-        };
+      var delay = 100;
+      var loader = () => {
+        if(this.isLoggedIn){
+          this.$store.dispatch(constants.FETCH_ACTIVE_NUTRITION_GOAL, { });
+        }
+        else {
+          setTimeout(() => {
+            delay = delay * 2;
+            loader();
+          }, delay);
+        }
+      };
 
-        loader();
+      loader();
     }
 }

@@ -19,38 +19,36 @@ methods: {
     this.$router.push({ name: 'recipe-details', params: { id: constants.NEW_ID } });
   },
   deleteRecipe(recipe) {
-    var self = this;
-    self.$store.dispatch(constants.DELETE_RECIPE, {
+    this.$store.dispatch(constants.DELETE_RECIPE, {
       recipe
     }).then(_ => {
-      self.recipes.splice(self.recipes.findIndex(r => r.id == recipe.id), 1);
+      this.recipes.splice(this.recipes.findIndex(r => r.id == recipe.id), 1);
     }).catch(_ => {
-      self.notifyError(self.$t('deleteFailed'));
+      this.notifyError(this.$t('deleteFailed'));
     });
   },
   clickRecipe(recipe){
-    var self = this;
     this.$q.actionSheet({
       title: recipe.name,
       grid: true,
       actions: [
         {
-          label: self.$t('edit'),
+          label: this.$t('edit'),
           icon: 'fas fa-edit',
           handler: () => {
-            self.showRecipe(recipe);
+            this.showRecipe(recipe);
           }
         },
         {
-          label: self.$t('delete'),
+          label: this.$t('delete'),
           icon: 'fas fa-trash',
           handler: () => {
-            self.deleteRecipe(recipe);
+            this.deleteRecipe(recipe);
           }
         }
       ],
       dismiss: {
-          label: self.$t('cancel'),
+          label: this.$t('cancel'),
           handler: () => {
               
           }
@@ -59,12 +57,11 @@ methods: {
   }
 },
   created () {
-    var self = this;
-    self.$store.dispatch(constants.FETCH_RECIPES, { }).then(recipes => {
-      self.recipes = recipes;
-      self.$store.commit(constants.LOADING_DONE, { });
+    this.$store.dispatch(constants.FETCH_RECIPES, { }).then(recipes => {
+      this.recipes = recipes;
+      this.$store.commit(constants.LOADING_DONE, { });
     }).catch(_ => {
-      self.notifyError(self.$t('fetchFailed'));
+      this.notifyError(this.$t('fetchFailed'));
     });
     
   },

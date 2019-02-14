@@ -18,24 +18,22 @@ export default {
 
   methods: {
     refreshTokens() {
-      var self = this;
-      self.$store.dispatch(constants.REFRESH_TOKEN, { }).then(() => {
-        if(!self.isLoggedIn){
-          self.$store.dispatch(constants.FETCH_PROFILE, { });
+      this.$store.dispatch(constants.REFRESH_TOKEN, { }).then(() => {
+        if(!this.isLoggedIn){
+          this.$store.dispatch(constants.FETCH_PROFILE, { });
         }
       }).catch(reason => {
-        if(self.$route.name != 'login' && self.$route.name != 'register'){
-          self.$router.push({name: 'login'});
+        if(this.$route.name != 'login' && this.$route.name != 'register'){
+          this.$router.push({name: 'login'});
         }
       });
     }
   },
   created(){
-      var self = this;
-      self.refreshTokens();
-      setInterval(() => {
-          self.refreshTokens();
-      }, 300000); 
+    this.refreshTokens();
+    setInterval(() => {
+      this.refreshTokens();
+    }, 300000); 
   },
   beforeRouteUpdate(to, from, next) {
     this.$store.commit(constants.LOADING);

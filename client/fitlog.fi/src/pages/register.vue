@@ -50,24 +50,23 @@ export default {
   },
   methods: {
     register(){
-      var self = this;
       var data = {
           email: this.email,
           password: this.password,
           password2: this.password2
       };
       api.register(data).then(response => {
-          self.$store.dispatch(constants.STORE_TOKENS, {
+          this.$store.dispatch(constants.STORE_TOKENS, {
               client: response.data.client,
               refreshToken: response.data.refreshToken,
               accessToken: response.data.accessToken
           }).catch(_ => {
-            self.notifyError(self.$t('failed'));
+            this.notifyError(this.$t('failed'));
           });
       }).then(_ => {
-          self.$router.replace({ name: 'meals' });
+          this.$router.replace({ name: 'meals' });
       }).catch(_ => {
-          self.notifyError(self.$t('failed'));
+          this.notifyError(this.$t('failed'));
       });
     },
     fbLogin(){
@@ -77,15 +76,14 @@ export default {
       this.socialLogin('Google');
     },
     socialLogin(provider){
-      var self = this;
-      if(self.$q.platform.is.cordova){
+      if(this.$q.platform.is.cordova){
         var ref = cordova.InAppBrowser.open(config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile', '_blank', 'location=no');
         ref.addEventListener('loadstop', function(event){
           if(event.url.includes('login-success')){
             var parts = event.url.split('/');
-            self.refreshToken = parts[parts.length - 2];
-            self.accessToken = parts[parts.length - 1];
-            self.url = event.url;
+            this.refreshToken = parts[parts.length - 2];
+            this.accessToken = parts[parts.length - 1];
+            this.url = event.url;
             ref.close();
           }
         });
@@ -96,8 +94,7 @@ export default {
     }
   },
   created () {
-    var self = this;
-    self.$store.commit(constants.LOADING_DONE);
+    this.$store.commit(constants.LOADING_DONE);
   },
   beforeDestroy () {
   }

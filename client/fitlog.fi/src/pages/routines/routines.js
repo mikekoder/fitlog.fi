@@ -26,51 +26,48 @@ methods: {
         this.$router.push({name: 'routine-details',params:{id:routine.id}});
     },
     activate(routine){
-        var self = this;
-        this.$store.dispatch(constants.ACTIVATE_ROUTINE, {
-            routine
-        }).catch(_ => {
-            self.notifyError(self.$t('activationFailed'));
-        });
+      this.$store.dispatch(constants.ACTIVATE_ROUTINE, {
+        routine
+      }).catch(_ => {
+        this.notifyError(this.$t('activationFailed'));
+      });
     },
     deleteRoutine(routine) {
-        var self = this;
         this.$store.dispatch(constants.DELETE_ROUTINE, {
             routine
         }).catch(_ => {
-            self.notifyError(self.$t('deleteFailed'));
+          this.notifyError(this.$t('deleteFailed'));
         });
     },
     clickRoutine(routine){
-        var self = this;
         this.$q.actionSheet({
           title: routine.name,
           grid: true,
           actions: [
             {
-              label: self.$t('edit'),
+              label: this.$t('edit'),
               icon: 'fas fa-edit',
               handler: () => {
-                self.showRoutine(routine);
+                this.showRoutine(routine);
               }
             },
             {
-                label: self.$t('activate'),
-                icon: 'fas fa-check',
-                handler: () => {
-                  self.activate(routine);
-                }
+              label: this.$t('activate'),
+              icon: 'fas fa-check',
+              handler: () => {
+                this.activate(routine);
+              }
             },
             {
-              label: self.$t('delete'),
+              label: this.$t('delete'),
               icon: 'fas fa-trash',
               handler: () => {
-                self.deleteRoutine(routine);
+                this.deleteRoutine(routine);
               }
             }
           ],
           dismiss: {
-              label: self.$t('cancel'),
+              label: this.$t('cancel'),
               handler: () => {
                   
               }
@@ -79,11 +76,9 @@ methods: {
       }
 },
 created() {
-
-    var self = this;
-    this.$store.dispatch(constants.FETCH_EXERCISES, { forceRefresh: true });
-    this.$store.dispatch(constants.FETCH_ROUTINES, { }).then(_ => {
-        self.$store.commit(constants.LOADING_DONE, { });
-    });
+  this.$store.dispatch(constants.FETCH_EXERCISES, { forceRefresh: true });
+  this.$store.dispatch(constants.FETCH_ROUTINES, { }).then(_ => {
+    this.$store.commit(constants.LOADING_DONE, { });
+  });
 }
 }

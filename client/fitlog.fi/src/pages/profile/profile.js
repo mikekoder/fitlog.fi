@@ -123,8 +123,7 @@ export default {
             }
         },
         save() {
-            var self = this;
-            //self.$ga.event('profile', 'save');
+            //this.$ga.event('profile', 'save');
             var profile = {
                 //doB: new Date(this.year, this.month.number - 1, this.day,12),
                 doB: this.dob,
@@ -134,23 +133,22 @@ export default {
                 rmr: this.rmr,
                 pal: this.pal
             };
-            self.$store.dispatch(constants.SAVE_PROFILE, {
+            this.$store.dispatch(constants.SAVE_PROFILE, {
               profile,
             }).then(_ => {
-              self.notifySuccess(self.$t('saveSuccessful'));
+              this.notifySuccess(this.$t('saveSuccessful'));
             }).catch(_ => {
-              self.notifyError(self.$t('saveFailed'));
+              this.notifyError(this.$t('saveFailed'));
             });
         },
         updateLogin() {
-          var self = this;
           var login = {
-            username: self.username,
-            oldPassword: self.oldPassword,
-            newPassword: self.newPassword
+            username: this.username,
+            oldPassword: this.oldPassword,
+            newPassword: this.newPassword
           };
 
-          self.$store.dispatch(constants.UPDATE_LOGIN, { login });
+          this.$store.dispatch(constants.UPDATE_LOGIN, { login });
         },
         connectFacebook() {
           window.location = api.baseUrl + 'users/external-login/?provider=Facebook&client=web&add=true&returnUrl=/#/profiili';
@@ -167,47 +165,46 @@ export default {
         }
     },
     created() {
-        var self = this;
-        self.genders = [
-            { label: '', value: '' },
-            { label: self.$t('male'), value: 'male' },
-            { label: self.$t('female'), value: 'female' },
-        ]
+      this.genders = [
+        { label: '', value: '' },
+        { label: this.$t('male'), value: 'male' },
+        { label: this.$t('female'), value: 'female' },
+      ]
         this.$store.dispatch(constants.FETCH_PROFILE, { }).then(_ => {
-            var profile = self.$store.state.profile.profile;
-            if (profile) {
-                
-                if (profile.doB) {
-                    self.dob = new Date(profile.doB);
-                    /*
-                    self.day = profile.doB.getDate();
-                    self.month = self.months.find(m => m.number == profile.doB.getMonth() + 1);
-                    self.year = profile.doB.getFullYear();
-                    */
-                }
-                
-                
-                self.gender = profile.gender;
-                self.height = profile.height;
-                self.weight = profile.weight;
-                if (profile.rmr) {
-                    self.rmr = profile.rmr;
-                    self.rmrSpecified = true;
-                }
-                if (profile.pal) {
-                    self.pal = self.pals.find(p => p.value == profile.pal);
-                }
+          var profile = this.$store.state.profile.profile;
+          if (profile) {
+              
+              if (profile.doB) {
+                this.dob = new Date(profile.doB);
+                  /*
+                  this.day = profile.doB.getDate();
+                  this.month = this.months.find(m => m.number == profile.doB.getMonth() + 1);
+                  this.year = profile.doB.getFullYear();
+                  */
+              }
+              
+              
+              this.gender = profile.gender;
+              this.height = profile.height;
+              this.weight = profile.weight;
+              if (profile.rmr) {
+                this.rmr = profile.rmr;
+                this.rmrSpecified = true;
+              }
+              if (profile.pal) {
+                this.pal = this.pals.find(p => p.value == profile.pal);
+              }
 
-                self.hasPassword = profile.hasPassword;
-                if (profile.hasPassword) {
-                    // don't show generated username
-                    self.username = profile.username;
-                }
-                self.hasFacebook = profile.logins.includes('Facebook');
-                self.hasGoogle = profile.logins.includes('Google');
-            }
+              this.hasPassword = profile.hasPassword;
+              if (profile.hasPassword) {
+                  // don't show generated username
+                  this.username = profile.username;
+              }
+              this.hasFacebook = profile.logins.includes('Facebook');
+              this.hasGoogle = profile.logins.includes('Google');
+          }
 
-            self.$store.commit(constants.LOADING_DONE);
+          this.$store.commit(constants.LOADING_DONE);
         });
     }
 }

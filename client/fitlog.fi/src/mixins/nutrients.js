@@ -2,29 +2,28 @@
 
 export default {
     computed: {
-        $nutrients() {
-            return this.$store.state.nutrition.nutrients;
-        }
+      $nutrients() {
+        return this.$store.state.nutrition.nutrients;
+      }
     },
     created() {
-        var self = this;
-        var delay = 100;
-        var loader = () => {
-            if(self.isLoggedIn){
-                self.$store.dispatch(constants.FETCH_NUTRIENTS, { }).then(nutrients => {
-                    if (self.$nutrientsLoaded) {
-                        self.$nutrientsLoaded(nutrients);
-                    }
-                });
+      var delay = 100;
+      var loader = () => {
+        if(this.isLoggedIn){
+          this.$store.dispatch(constants.FETCH_NUTRIENTS, { }).then(nutrients => {
+            if (this.$nutrientsLoaded) {
+              this.$nutrientsLoaded(nutrients);
             }
-            else {
-                setTimeout(() => {
-                    delay = delay * 2;
-                    loader();
-                }, delay);
-            }
-        };
+          });
+        }
+        else {
+            setTimeout(() => {
+              delay = delay * 2;
+              loader();
+            }, delay);
+        }
+      };
 
-        loader();
+      loader();
     }
 }

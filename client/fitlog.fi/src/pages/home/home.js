@@ -44,44 +44,42 @@ export default {
     },
     dateText() {
         if (moment().isSame(this.selectedDate, 'd')) {
-            return this.$t('today');
+          return this.$t('today');
         }
         else if (moment().subtract(1,'day').isSame(this.selectedDate, 'd')) {
-            return this.$t('yesterday');
+          return this.$t('yesterday');
         }
         return this.formatDate(this.selectedDate);
     },
     visibleNutrients() {
-          return this.$store.state.nutrition.nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1,n2) => n1.homeOrder - n2.homeOrder);
-      },
+      return this.$store.state.nutrition.nutrients.filter(n => n.homeOrder || n.homeOrder === 0).sort((n1,n2) => n1.homeOrder - n2.homeOrder);
+    },
     mealDay() {
-        var date = moment(this.selectedDate).startOf('day');     
-        return this.$store.state.nutrition.mealDays.find(d => moment(d.date).isSame(date, 'day'));
+      var date = moment(this.selectedDate).startOf('day');     
+      return this.$store.state.nutrition.mealDays.find(d => moment(d.date).isSame(date, 'day'));
     },
     meals() {
-      var self = this;
-      var start = moment(self.selectedDate).startOf('day');
-      var end = moment(self.selectedDate).endOf('day');
-      var defs = self.$store.state.nutrition.mealDefinitions;
-      var meals = self.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(start, end));
+      var start = moment(this.selectedDate).startOf('day');
+      var end = moment(this.selectedDate).endOf('day');
+      var defs = this.$store.state.nutrition.mealDefinitions;
+      var meals = this.$store.state.nutrition.meals.filter(m => moment(m.time).isBetween(start, end));
       var result = defs.map(d => { return { definition: d, meal: meals.find(m => m.definitionId == d.id) } });
       meals.filter(m => !m.definitionId).forEach(m => {
-          var index = result.findIndex(r => r.definition && r.definition.startHour && r.definition.startHour > m.time.getHours());
-          if (index == -1) {
-              result.push({ meal: m });
-          }
-          else
-              result.splice(index, 0, { meal: m });
-          }
+        var index = result.findIndex(r => r.definition && r.definition.startHour && r.definition.startHour > m.time.getHours());
+        if (index == -1) {
+          result.push({ meal: m });
+        }
+        else
+          result.splice(index, 0, { meal: m });
+        }
       );
       return result;
     },
     workouts() {
-        var self = this;
-        return this.$store.state.training.workouts.filter(w => moment(w.time).isSame(self.selectedDate, 'day'));
+      return this.$store.state.training.workouts.filter(w => moment(w.time).isSame(this.selectedDate, 'day'));
     },
     nutritionGoal() {
-        return this.$store.state.nutrition.activeNutritionGoal;
+      return this.$store.state.nutrition.activeNutritionGoal;
     },
     dayNutrients() {
         var day = this.$store.state.nutrition.mealDays.find(d => moment(d.date).isSame(this.selectedDate, 'day'));
@@ -137,13 +135,12 @@ export default {
         return null;
     },
     energyExpenditure() {
-        var self = this;
-        var expenditures = this.$store.state.training.energyExpenditures.filter(e => moment(e.time).isSame(self.selectedDate, 'day'));
-        var sum = 0;
-        expenditures.forEach(e => {
-            sum += e.energyKcal;
-        });
-        return sum;
+      var expenditures = this.$store.state.training.energyExpenditures.filter(e => moment(e.time).isSame(this.selectedDate, 'day'));
+      var sum = 0;
+      expenditures.forEach(e => {
+          sum += e.energyKcal;
+      });
+      return sum;
     },
     totalEnergy() {
         return this.eatenEnergy - this.rmr - this.activityLevelEnergy - this.energyExpenditure;
@@ -181,14 +178,13 @@ export default {
     },
     activityPreset: {
         get() {
-            var self = this;
-            var dayPreset = self.$store.state.activities.activityPresetDays.find(p => moment(p.date).isSame(self.selectedDate, 'day'));
-            if (dayPreset) {
-                return self.$activityPresets.find(p => p.id == dayPreset.activityPresetId);
-            }
+          var dayPreset = this.$store.state.activities.activityPresetDays.find(p => moment(p.date).isSame(this.selectedDate, 'day'));
+          if (dayPreset) {
+            return this.$activityPresets.find(p => p.id == dayPreset.activityPresetId);
+          }
         },
         set(value) {
-            this.changeActivityPreset(value);
+          this.changeActivityPreset(value);
         }
     }
   },
@@ -225,31 +221,30 @@ export default {
         }
     },
     fetchData(refreshCallback) {
-      var self = this;
-      var start = moment(self.selectedDate).startOf('day');
-      var end = moment(self.selectedDate).endOf('day');
+      var start = moment(this.selectedDate).startOf('day');
+      var end = moment(this.selectedDate).endOf('day');
       var force = refreshCallback && true;
-      self.$store.dispatch(constants.FETCH_MEALS, {
+      this.$store.dispatch(constants.FETCH_MEALS, {
         start,
         end,
         force
       }).then(meals => {
-        self.$store.commit(constants.LOADING_DONE);
-        self.updateComputedValues();
+        this.$store.commit(constants.LOADING_DONE);
+        this.updateComputedValues();
         if(refreshCallback){
           refreshCallback();
         }
       });
-      self.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
-      self.$store.dispatch(constants.FETCH_ENERGY_EXPENDITURES, { start: start, end: end });
-      self.$store.dispatch(constants.FETCH_ACTIVITY_PRESET_DAYS, {
+      this.$store.dispatch(constants.FETCH_WORKOUTS, { start: start, end: end });
+      this.$store.dispatch(constants.FETCH_ENERGY_EXPENDITURES, { start: start, end: end });
+      this.$store.dispatch(constants.FETCH_ACTIVITY_PRESET_DAYS, {
         start: start,
         end: end
     }).then(presets => {
-        var preset = presets.find(p => moment(p.date).isSame(self.selectedDate, 'day'));
+        var preset = presets.find(p => moment(p.date).isSame(this.selectedDate, 'day'));
         if (!preset) {
-            preset = self.getActivityPreset();
-            self.changeActivityPreset(preset);
+          preset = this.getActivityPreset();
+          this.changeActivityPreset(preset);
         }
     });
     },
@@ -284,43 +279,42 @@ export default {
       this.$refs.editRow.show(this.selectedRow);
     },
     clickRow(mealDef, row){
-      var self = this;
       this.$q.actionSheet({
         title: `${row.foodName} ${ row.quantity } ${ row.portionName || 'g' }`,
         grid: true,
         actions: [
           {
-            label: self.$t('edit'),
+            label: this.$t('edit'),
             icon: 'fas fa-edit',
             handler: () => {
-              self.editRow(row);
+              this.editRow(row);
             }
           },
           {
-            label: self.$t('copy'),
+            label: this.$t('copy'),
             icon: 'fas fa-copy',
             handler: () => {
-              self.copyRow(row);
+              this.copyRow(row);
             }
           },
           {
-            label: self.$t('delete'),
+            label: this.$t('delete'),
             icon: 'fas fa-trash',
             handler: () => {
-              self.deleteRow(mealDef, row);
+              this.deleteRow(mealDef, row);
             }
           }
         ],
         dismiss: {
-            // label is used only for iOS theme
-            label: 'Cancel',
-        
-            // tell what to do when Action Sheet
-            // is dismised (doesn't trigger when
-            // any of the actions above are clicked/tapped)
-            handler: function() {
-            }
+          // label is used only for iOS theme
+          label: 'Cancel',
+      
+          // tell what to do when Action Sheet
+          // is dismised (doesn't trigger when
+          // any of the actions above are clicked/tapped)
+          handler: function() {
           }
+        }
       }).catch(() => {
       });
     },
@@ -329,32 +323,31 @@ export default {
             return;
         }
 
-        var self = this;
-        var mealName =this.mealName(mealDef);
+        var mealName = this.mealName(mealDef);
         this.$q.actionSheet({
           title: mealName,
           grid: true,
           actions: [
             {
-              label: self.$t('copy'),
+              label: this.$t('copy'),
               icon: 'fas fa-copy',
               handler: () => {
-                self.copyMeal(mealDef.meal);
+                this.copyMeal(mealDef.meal);
               }
             },
             {
-              label: self.$t('delete'),
+              label: this.$t('delete'),
               icon: 'fas fa-trash',
               handler: () => {
-                self.deleteMeal(mealDef.meal);
+                this.deleteMeal(mealDef.meal);
               }
             }
           ],
           dismiss: {
-              label: self.$t('cancel'),
-              handler: () => {
-                  
-              }
+            label: this.$t('cancel'),
+            handler: () => {
+              
+            }
           }
         }).catch(() => {
         });
@@ -375,10 +368,9 @@ export default {
       });
     },
     pasteMeal(mealDef) {
-        var self = this;
-        var meal = self.$store.state.clipboard.data;
-        self.appendRows(mealDef, meal.rows);
-        self.$store.dispatch(constants.CLIPBOARD_CLEAR, { }).then(_ => {
+        var meal = this.$store.state.clipboard.data;
+        this.appendRows(mealDef, meal.rows);
+        this.$store.dispatch(constants.CLIPBOARD_CLEAR, { }).then(_ => {
 
         }).catch(_ => {
 
@@ -386,8 +378,8 @@ export default {
     },
     copyRow(row) {
         this.$store.dispatch(constants.CLIPBOARD_COPY, {
-            type: constants.MEAL_ROWS,
-            data: [row]
+          type: constants.MEAL_ROWS,
+          data: [row]
         }).then(_ => {
 
         }).catch(_ => {
@@ -395,48 +387,44 @@ export default {
         });
     },
     pasteRows(mealDef) {
-        var self = this;
-        var rows = self.$store.state.clipboard.data;
-        self.appendRows(mealDef, rows);
-        self.$store.dispatch(constants.CLIPBOARD_CLEAR, { });
+      var rows = this.$store.state.clipboard.data;
+      this.appendRows(mealDef, rows);
+      this.$store.dispatch(constants.CLIPBOARD_CLEAR, { });
     },
     appendRows(mealDef, rows) {
-        var self = this;
-        var meal = {
-            id: mealDef.meal ? mealDef.meal.id : undefined,
-            date: self.selectedDate,
-            definitionId: mealDef.definition.id,
-            rows : mealDef.meal && mealDef.meal.rows ? mealDef.meal.rows.map(r => { return { foodId: r.foodId, quantity: r.quantity, portionId: r.portionId }}) : []
-        }
-        rows.forEach(r => {
-            meal.rows.push({ foodId: r.foodId, quantity: utils.parseFloat(r.quantity), portionId: r.portionId });
-        });
-        self.$store.dispatch(constants.SAVE_MEAL, {
-            meal
-        });
+      var meal = {
+        id: mealDef.meal ? mealDef.meal.id : undefined,
+        date: this.selectedDate,
+        definitionId: mealDef.definition.id,
+        rows : mealDef.meal && mealDef.meal.rows ? mealDef.meal.rows.map(r => { return { foodId: r.foodId, quantity: r.quantity, portionId: r.portionId }}) : []
+      }
+      rows.forEach(r => {
+        meal.rows.push({ foodId: r.foodId, quantity: utils.parseFloat(r.quantity), portionId: r.portionId });
+      });
+      this.$store.dispatch(constants.SAVE_MEAL, {
+        meal
+      });
     },
     deleteRow(mealdef, row){
-        var self = this;
-        this.$store.dispatch(constants.DELETE_MEAL_ROW, {
-            row
-        }).then(_ => {
-            if(mealdef.meal.rows.length == 0){
-                mealdef.meal = undefined;
-            }
-            self.updateComputedValues();
-        });
-        return true;
+      this.$store.dispatch(constants.DELETE_MEAL_ROW, {
+        row
+      }).then(_ => {
+        if(mealdef.meal.rows.length == 0){
+            mealdef.meal = undefined;
+        }
+        this.updateComputedValues();
+      });
+      return true;
     },
     saveRow(row){
-        var self = this;
-        row.date = this.selectedDate;
-        this.$store.dispatch(constants.SAVE_MEAL_ROW, {
-            row
-        }).then(_ => {
-            self.updateComputedValues();
-        });
-        this.selectedRow = {};
-        this.$refs.editRow.hide();
+      row.date = this.selectedDate;
+      this.$store.dispatch(constants.SAVE_MEAL_ROW, {
+        row
+      }).then(_ => {
+        this.updateComputedValues();
+      });
+      this.selectedRow = {};
+      this.$refs.editRow.hide();
     },
     showMealSettings(){
       this.$refs.mealSettings.show();
@@ -445,54 +433,53 @@ export default {
       return utils.nutrientGoal(this.$nutritionGoal, this.workouts, nutrientId, this.selectedDate, meal);
     },
     init(done){
-        var self = this;
-        if(self.isLoggedIn){
-            self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, { }).then(_ => {
-                self.fetchData(done);
+        if(this.isLoggedIn){
+          this.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, { }).then(_ => {
+            this.fetchData(done);
             }).catch(reason => {
-                self.$store.commit(constants.LOADING_DONE, { });
+              this.$store.commit(constants.LOADING_DONE, { });
             });
-            self.$store.dispatch(constants.FETCH_LATEST_FOODS, { });
-            self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, { });
-            self.$store.dispatch(constants.FETCH_MY_FOODS, { });
+            this.$store.dispatch(constants.FETCH_LATEST_FOODS, { });
+            this.$store.dispatch(constants.FETCH_MOST_USED_FOODS, { });
+            this.$store.dispatch(constants.FETCH_MY_FOODS, { });
         }
         else {
             setTimeout(() => {
-                self.init();
+              this.init();
             } , 100);
         }
     },
     updateComputedValues() {
-        this.$nextTick(() => {
-            this.eatenEnergy = this.dayNutrients ? this.dayNutrients[this.energyId] ? this.dayNutrients[this.energyId] : 0 : 0;
-        });
+      this.$nextTick(() => {
+        this.eatenEnergy = this.dayNutrients ? this.dayNutrients[this.energyId] ? this.dayNutrients[this.energyId] : 0 : 0;
+      });
     },
     getActivityPreset() {
-        var preset;
-        switch (this.selectedDate.getDay()) {
-            case 0:
-                preset = this.$activityPresets.find(p => p.sunday == true);
-                break;
-            case 1:
-                preset = this.$activityPresets.find(p => p.monday == true);
-                break;
-            case 2:
-                preset = this.$activityPresets.find(p => p.tuesday == true);
-                break;
-            case 3:
-                preset = this.$activityPresets.find(p => p.wednesday == true);
-                break;
-            case 4:
-                preset = this.$activityPresets.find(p => p.thursday == true);
-                break;
-            case 5:
-                preset = this.$activityPresets.find(p => p.friday == true);
-                break;
-            case 6:
-                preset = this.$activityPresets.find(p => p.saturday == true);
-                break;
-        }
-        return preset;
+      var preset;
+      switch (this.selectedDate.getDay()) {
+          case 0:
+            preset = this.$activityPresets.find(p => p.sunday == true);
+            break;
+          case 1:
+            preset = this.$activityPresets.find(p => p.monday == true);
+            break;
+          case 2:
+            preset = this.$activityPresets.find(p => p.tuesday == true);
+            break;
+          case 3:
+            preset = this.$activityPresets.find(p => p.wednesday == true);
+            break;
+          case 4:
+            preset = this.$activityPresets.find(p => p.thursday == true);
+            break;
+          case 5:
+            preset = this.$activityPresets.find(p => p.friday == true);
+            break;
+          case 6:
+            preset = this.$activityPresets.find(p => p.saturday == true);
+            break;
+      }
+      return preset;
     },
     showHelp(){
         this.$refs.help.open();

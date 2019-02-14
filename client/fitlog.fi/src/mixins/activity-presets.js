@@ -7,22 +7,20 @@ export default {
         }
     },
     created() {
-
-        var self = this;
         var delay = 100;
         var loader = () => {
-            if(self.isLoggedIn){
-                self.$store.dispatch(constants.FETCH_ACTIVITY_PRESETS, { }).then(presets => {
-                    if (self.$activityPresetsLoaded) {
-                        self.$activityPresetsLoaded(presets);
-                    }
-                });
+            if(this.isLoggedIn){
+              this.$store.dispatch(constants.FETCH_ACTIVITY_PRESETS, { }).then(presets => {
+                if (this.$activityPresetsLoaded) {
+                  this.$activityPresetsLoaded(presets);
+                }
+              });
             }
             else {
-                setTimeout(() => {
-                    delay = delay * 2;
-                    loader();
-                }, delay);
+              setTimeout(() => {
+                delay = delay * 2;
+                loader();
+              }, delay);
             }
         };
 

@@ -20,22 +20,21 @@ export default {
     components: {},
     methods: {
       loadItems(){
-        var self = this;
-        self.type = self.$route.meta.type;
-        if(self.type === 'Bug'){
-          self.$store.dispatch(constants.FETCH_BUGS, { }).then(bugs => {
-            self.items = bugs;
-            self.$store.commit(constants.LOADING_DONE, { });
+        this.type = this.$route.meta.type;
+        if(this.type === 'Bug'){
+          this.$store.dispatch(constants.FETCH_BUGS, { }).then(bugs => {
+            this.items = bugs;
+            this.$store.commit(constants.LOADING_DONE, { });
         }).catch(_ => {
-            self.notifyError(self.$t('fetchFailed'));
+          this.notifyError(this.$t('fetchFailed'));
         });
         }
-        else if(self.type === 'Improvement'){
-          self.$store.dispatch(constants.FETCH_IMPROVEMENTS, { }).then(improvements => {
-            self.items = improvements;
-            self.$store.commit(constants.LOADING_DONE, { });
+        else if(this.type === 'Improvement'){
+          this.$store.dispatch(constants.FETCH_IMPROVEMENTS, { }).then(improvements => {
+            this.items = improvements;
+            this.$store.commit(constants.LOADING_DONE, { });
         }).catch(_ => {
-            self.notifyError(self.$t('fetchFailed'));
+          this.notifyError(this.$t('fetchFailed'));
         });
         }
       },
@@ -51,22 +50,20 @@ export default {
           return this.votes.includes(feedbackId);
       },
       vote(feedback) {
-          var self = this;
-          self.$store.dispatch(constants.SAVE_VOTE, {
-            feedbackId: feedback.id
-          }).then(_ => {
-            feedback.score++;
+        this.$store.dispatch(constants.SAVE_VOTE, {
+          feedbackId: feedback.id
+        }).then(_ => {
+          feedback.score++;
         }).catch(_ => {
-            self.notifyError(self.$t('saveFailed'));
+          this.notifyError(this.$t('saveFailed'));
         });
       }
     },
     created() {
-        var self = this;
-        self.$store.dispatch(constants.FETCH_VOTES, { }).catch(_ => {
-            self.notifyError(self.$t('fetchFailed'));
+      this.$store.dispatch(constants.FETCH_VOTES, { }).catch(_ => {
+        this.notifyError(this.$t('fetchFailed'));
         });
-        self.loadItems();
+        this.loadItems();
     },
     watch: {
       $route(){

@@ -38,38 +38,36 @@ export default {
             return this.$store.state.nutrition.nutrientsGrouped;
         },
         recipeNutrients() {
-            var self = this;
-            var nutrients = {};
-            for (var i in this.ingredients) {
-                var row = this.ingredients[i];
-                if(!row.food || !row.quantity){
-                    continue;
-                }
-                var weight = self.weight(row.quantity, row.portion);
-                for (var j in row.food.nutrients) {
-                    var foodNutrient = row.food.nutrients[j];
-                    if (nutrients[foodNutrient.nutrientId]) {
-                        nutrients[foodNutrient.nutrientId] += (weight * foodNutrient.amount / 100);
-                    }
-                    else {
-                        nutrients[foodNutrient.nutrientId] = (weight * foodNutrient.amount / 100);
-                    }
-                }
+          var nutrients = {};
+          for (var i in this.ingredients) {
+            var row = this.ingredients[i];
+            if(!row.food || !row.quantity){
+              continue;
             }
-            return nutrients;
+            var weight = this.weight(row.quantity, row.portion);
+            for (var j in row.food.nutrients) {
+              var foodNutrient = row.food.nutrients[j];
+              if (nutrients[foodNutrient.nutrientId]) {
+                nutrients[foodNutrient.nutrientId] += (weight * foodNutrient.amount / 100);
+              }
+              else {
+                nutrients[foodNutrient.nutrientId] = (weight * foodNutrient.amount / 100);
+              }
+            }
+          }
+          return nutrients;
         },
         recipeWeight() {
-            var self = this;
-            var weight = 0;
-            for (var i in this.ingredients) {
-                var row = this.ingredients[i];
-                if (!row.food || !row.quantity) {
-                    continue;
-                }
-                var ingredientWeight = self.weight(row.quantity, row.portion);
-                weight += ingredientWeight;
+          var weight = 0;
+          for (var i in this.ingredients) {
+            var row = this.ingredients[i];
+            if (!row.food || !row.quantity) {
+              continue;
             }
-            return weight;
+            var ingredientWeight = this.weight(row.quantity, row.portion);
+            weight += ingredientWeight;
+          }
+          return weight;
         },
         weightChange() {
             return (this.cookedWeight - this.recipeWeight) / this.recipeWeight * 100;
@@ -83,155 +81,151 @@ export default {
     },
   methods: {
     toggleGroup(group) {
-        if (this.selectedGroup == group) {
-            this.selectedGroup = undefined;
-        }
-        else {
-            this.selectedGroup = group;
-        }
+      if (this.selectedGroup == group) {
+        this.selectedGroup = undefined;
+      }
+      else {
+        this.selectedGroup = group;
+      }
     },
     addIngredient() {
-        var row = { 
-            food: undefined, 
-            quantity: undefined, 
-            portion: undefined
-        };
-       this.selectedRow = undefined;
+      var row = { 
+        food: undefined, 
+        quantity: undefined, 
+        portion: undefined
+      };
+      this.selectedRow = undefined;
       this.$refs.editRow.show(row);
     },
     editIngredient(row){
-        this.selectedRow = row;
-        this.$refs.editRow.show(row);
+      this.selectedRow = row;
+      this.$refs.editRow.show(row);
     },
     saveIngredient(row){
-        this.$refs.editRow.hide();
+      this.$refs.editRow.hide();
 
-        var weight = this.weight(row.quantity, row.portion);
-        row.nutrients = {};
-        for(var i in row.food.nutrients){
-            row.nutrients[row.food.nutrients[i].nutrientId] = row.food.nutrients[i].amount * weight / 100;
-        }
-        if(this.selectedRow){
-            var index = this.ingredients.indexOf(this.selectedRow);
-            this.ingredients.splice(index, 1, row);
-        }
-        else {
-            this.ingredients.push(row);
-        }
-        this.selectedRow = undefined;
+      var weight = this.weight(row.quantity, row.portion);
+      row.nutrients = {};
+      for(var i in row.food.nutrients){
+          row.nutrients[row.food.nutrients[i].nutrientId] = row.food.nutrients[i].amount * weight / 100;
+      }
+      if(this.selectedRow){
+          var index = this.ingredients.indexOf(this.selectedRow);
+          this.ingredients.splice(index, 1, row);
+      }
+      else {
+          this.ingredients.push(row);
+      }
+      this.selectedRow = undefined;
         
     },
     deleteIngredient(index){
-        this.ingredients.splice(index, 1);
+      this.ingredients.splice(index, 1);
     },
     addPortion(){
-        this.portions.push({ name: null, weight: null, number: null});
+      this.portions.push({ name: null, weight: null, number: null});
     },
     removePortion(index) {
-        this.portions.splice(index, 1);
+      this.portions.splice(index, 1);
     },
     weight(quantity, portion) {
-        if (!quantity) {
-            return '';
-        }
-        if (typeof (quantity) !== 'number') {
-            quantity = parseFloat(quantity.replace(',', '.'));
-        }
-        
-        if (portion) {
-            return quantity * portion.weight;
-        }
-        return quantity;
+      if (!quantity) {
+        return '';
+      }
+      if (typeof (quantity) !== 'number') {
+        quantity = parseFloat(quantity.replace(',', '.'));
+      }
+      
+      if (portion) {
+        return quantity * portion.weight;
+      }
+      return quantity;
     },
     save() {
-        var self = this;
-        var recipe = {
-            id: self.id,
-            name: self.name,
-            ingredients: self.ingredients.map(i => { return { foodId: i.food ? i.food.id : undefined, quantity: utils.parseFloat(i.quantity), portionId: i.portion ? i.portion.id : undefined } }),
-            portions: self.portions ? self.portions.map(p => { return { id: p.id, name: p.name, amount: utils.parseFloat(p.amount), weight: utils.parseFloat(p.weight) } }) : [],
-            cookedWeight: self.cookedWeight
-        };
-        self.$store.dispatch(constants.SAVE_RECIPE, {
-            recipe
-        }).then(_ => {
-            self.$router.replace({ name: 'recipes' });
-        }).catch(_ => {
-            self.notifyError(self.$t('saveFailed'));
-        });
+      var recipe = {
+        id: this.id,
+        name: this.name,
+        ingredients: this.ingredients.map(i => { return { foodId: i.food ? i.food.id : undefined, quantity: utils.parseFloat(i.quantity), portionId: i.portion ? i.portion.id : undefined } }),
+        portions: this.portions ? this.portions.map(p => { return { id: p.id, name: p.name, amount: utils.parseFloat(p.amount), weight: utils.parseFloat(p.weight) } }) : [],
+        cookedWeight: this.cookedWeight
+      };
+      this.$store.dispatch(constants.SAVE_RECIPE, {
+          recipe
+      }).then(_ => {
+        this.$router.replace({ name: 'recipes' });
+      }).catch(_ => {
+        this.notifyError(this.$t('saveFailed'));
+      });
     },
     cancel() {
         this.$router.go(-1);
     },
     deleteRecipe() {
-        var self = this;
-        self.$store.dispatch(constants.DELETE_RECIPE, {
-            recipe: { id: self.id }
-        }).then(_ => {
-            self.$router.push({ name: 'recipes' });
-        }).catch(_ => {
-            self.notifyError(self.$t('deleteFailed'));
-        }); 
+      this.$store.dispatch(constants.DELETE_RECIPE, {
+        recipe: { id: this.id }
+      }).then(_ => {
+        this.$router.push({ name: 'recipes' });
+      }).catch(_ => {
+        this.notifyError(this.$t('deleteFailed'));
+      }); 
     },
     groupIsExpanded(group) {
-        return this.groupOpenStates[group] && true;
+      return this.groupOpenStates[group] && true;
     },
     populate(recipe) {
-        var self = this;
-        self.id = recipe.id;
-        self.name = recipe.name;
-        self.cookedWeight = recipe.cookedWeight;
-        self.portions = recipe.portions || [];
-        if(recipe.ingredients){
-            var foodIds = recipe.ingredients.map(i => { return i.foodId });
-            self.$store.dispatch(constants.FETCH_FOODS, {
-                ids: foodIds
-            }).then(foods => {
-                self.ingredients = recipe.ingredients.map(i => {
-                    var food = foods.find(f => f.id == i.foodId);
-                    var portion = food.portions.find(p => p.id === i.portionId);
-                    return { food: food, quantity: i.quantity, portion: portion};
-                });
-                
-                self.$store.commit(constants.LOADING_DONE);
-            }).catch(_ => {
-                self.notifyError(self.$t('fetchFailed'));
-            });
-        }
-        else{
-            self.$store.commit(constants.LOADING_DONE);
-        }
+      this.id = recipe.id;
+      this.name = recipe.name;
+      this.cookedWeight = recipe.cookedWeight;
+      this.portions = recipe.portions || [];
+      if(recipe.ingredients){
+        var foodIds = recipe.ingredients.map(i => { return i.foodId });
+        this.$store.dispatch(constants.FETCH_FOODS, {
+          ids: foodIds
+        }).then(foods => {
+          this.ingredients = recipe.ingredients.map(i => {
+            var food = foods.find(f => f.id == i.foodId);
+            var portion = food.portions.find(p => p.id === i.portionId);
+            return { food: food, quantity: i.quantity, portion: portion};
+          });
+            
+          this.$store.commit(constants.LOADING_DONE);
+        }).catch(_ => {
+          this.notifyError(this.$t('fetchFailed'));
+        });
+      }
+      else{
+        this.$store.commit(constants.LOADING_DONE);
+      }
     },
     showHelp(){
-        this.$refs.help.open();
+      this.$refs.help.open();
     }
 },
   created () {
-    var self = this;
-    var id = self.$route.params.id;
+    var id = this.$route.params.id;
     if (id == constants.NEW_ID) {
-        self.populate({ id: undefined, name: undefined });
+      this.populate({ id: undefined, name: undefined });
     }
     else {
-        self.$store.dispatch(constants.FETCH_RECIPE, {
-            id
-        }).then(recipe => {
-            self.populate(recipe);
-        }).catch(_ => {
-            self.notifyError(self.$t('fetchFailed'));
-        });
+      this.$store.dispatch(constants.FETCH_RECIPE, {
+        id
+      }).then(recipe => {
+        this.populate(recipe);
+      }).catch(_ => {
+        this.notifyError(this.$t('fetchFailed'));
+      });
     }
 
-    self.$store.dispatch(constants.FETCH_NUTRIENTS, { }).then(_ => {
-        self.selectedGroup = self.nutrientGroups[0];
+    this.$store.dispatch(constants.FETCH_NUTRIENTS, { }).then(_ => {
+      this.selectedGroup = this.nutrientGroups[0];
     });
-    self.$store.dispatch(constants.FETCH_LATEST_FOODS, { });
-    self.$store.dispatch(constants.FETCH_MOST_USED_FOODS, { });
-    self.$store.dispatch(constants.FETCH_MY_FOODS, { });
+    this.$store.dispatch(constants.FETCH_LATEST_FOODS, { });
+    this.$store.dispatch(constants.FETCH_MOST_USED_FOODS, { });
+    this.$store.dispatch(constants.FETCH_MY_FOODS, { });
   },
   mounted(){
     if(!this.name){
-        this.$refs.nameInput.focus();
+      this.$refs.nameInput.focus();
     }
 }
 }

@@ -20,28 +20,26 @@ export default {
         this.definitions.splice(index, 1);
     },
     save() {
-        var self = this;
-        var defs = self.definitions.filter(d => d.name && d.start && d.end).map(d => { return { id: d.id, name: d.name, start: self.formatTime(d.start), end: self.formatTime(d.end) } });
-        defs.push({ id: self.othersId, name: self.othersName });
-        self.$store.dispatch(constants.SAVE_MEAL_DEFINITIONS, {
-            definitions: defs
-        }).then(_ => {
-            self.notifySuccess(self.$t('saveSuccessful'));
-        }).catch(_ => {
-            self.notifyError(self.$t('saveFailed'));
-        });
-    }
+      var defs = this.definitions.filter(d => d.name && d.start && d.end).map(d => { return { id: d.id, name: d.name, start: this.formatTime(d.start), end: this.formatTime(d.end) } });
+      defs.push({ id: this.othersId, name: this.othersName });
+      this.$store.dispatch(constants.SAVE_MEAL_DEFINITIONS, {
+        definitions: defs
+      }).then(_ => {
+        this.notifySuccess(this.$t('saveSuccessful'));
+      }).catch(_ => {
+        this.notifyError(this.$t('saveFailed'));
+      });
+  }
   },
   mounted(){
-    var self = this;
-    self.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {}).then(definitions => {
-        self.definitions = definitions.filter(d => d.startHour).map(d => { return { id: d.id, name: d.name, start: '01.01.2000 ' + d.startHour + ':' + d.startMinute, end: '01.01.2000 ' + d.endHour + ':' + d.endMinute } });
-        var other = definitions.find(d => !d.startHour);
-        if (other) {
-            self.othersId = other.id;
-            self.othersName = other.name;
-        }
-        self.$store.commit(constants.LOADING_DONE);
+    this.$store.dispatch(constants.FETCH_MEAL_DEFINITIONS, {}).then(definitions => {
+      this.definitions = definitions.filter(d => d.startHour).map(d => { return { id: d.id, name: d.name, start: '01.01.2000 ' + d.startHour + ':' + d.startMinute, end: '01.01.2000 ' + d.endHour + ':' + d.endMinute } });
+      var other = definitions.find(d => !d.startHour);
+      if (other) {
+        this.othersId = other.id;
+        this.othersName = other.name;
+      }
+      this.$store.commit(constants.LOADING_DONE);
     });
   },
   beforeRouteUpdate(to) {

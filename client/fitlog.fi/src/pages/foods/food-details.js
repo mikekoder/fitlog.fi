@@ -153,14 +153,14 @@ export default {
                         var value = food.nutrients ? food.nutrients.find(n => n.nutrientId == nutrient.id) : undefined;
                         if (value) {
                             if (this.nutrientPortion && this.nutrientPortion != defaultNutrientPortion) {
-                                this.nutrients[nutrient.id] = value.portionAmount;
+                                this.$set(this.nutrients, nutrient.id, value.portionAmount);
                             }
                             else {
-                                this.nutrients[nutrient.id] = value.amount;
+                              this.$set(this.nutrients, nutrient.id, value.amount);
                             }
                         }
                         else {
-                            this.nutrients[nutrient.id] = undefined;
+                          this.$set(this.nutrients, nutrient.id, undefined);
                         }
                     }
                 }
@@ -202,7 +202,7 @@ export default {
                 }
                 food.nutrients.forEach(n => {
                     if(!this.nutrients[n.nutrientId]){
-                        this.nutrients[n.nutrientId] = n.amount;
+                      this.$set(this.nutrients, n.nutrientId, n.amount);
                     }
                 });
                 this.notifySuccess(this.$t('informationUpdated'));

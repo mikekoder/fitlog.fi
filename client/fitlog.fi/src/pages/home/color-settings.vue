@@ -28,31 +28,30 @@ export default {
     },
     methods: {
         show(){  
-            var selectedNutrients = [];
-            this.visibleNutrients.forEach(n => { selectedNutrients.push(n.id); });
-            for (var i = selectedNutrients.length; i < 6; i++) {
-                selectedNutrients.push(undefined);
-            }
-            this.selectedNutrients = selectedNutrients;
-            this.$refs.modal.show();
+          var selectedNutrients = [];
+          this.visibleNutrients.forEach(n => { selectedNutrients.push(n.id); });
+          for (var i = selectedNutrients.length; i < 6; i++) {
+            selectedNutrients.push(undefined);
+          }
+          this.selectedNutrients = selectedNutrients;
+          this.$refs.modal.show();
         },
         cancel () {
             this.$refs.modal.hide();
         },
         save () {
-            var self = this;
-            var settings = {
-                proteinColor: self.proteinColor,
-                carbColor: self.carbColor,
-                fatColor: self.fatColor
-            };
-            self.$store.dispatch(constants.SAVE_NUTRIENT_COLOR_SETTINGS, {
-                settings
-            }).then(_ => {
-                self.$refs.modal.hide();
-            }).catch(_ => {
+          var settings = {
+            proteinColor: this.proteinColor,
+            carbColor: this.carbColor,
+            fatColor: this.fatColor
+          };
+          this.$store.dispatch(constants.SAVE_NUTRIENT_COLOR_SETTINGS, {
+            settings
+          }).then(_ => {
+            this.$refs.modal.hide();
+          }).catch(_ => {
 
-            });
+          });
             
         }
     }

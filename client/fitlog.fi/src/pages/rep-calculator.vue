@@ -158,8 +158,7 @@ export default {
             }
   },
   created () {
-      var self = this;
-      self.$store.commit(constants.LOADING_DONE);
+    this.$store.commit(constants.LOADING_DONE);
   },
   mounted(){
 

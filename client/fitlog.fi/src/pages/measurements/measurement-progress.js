@@ -25,17 +25,15 @@ export default {
     },
     methods: {
         showMonths(months){
-            var self = this;
-            self.end = new Date();
-            self.start = moment(self.end).subtract(months, 'months').toDate();
-            self.loadData();
+          this.end = new Date();
+          this.start = moment(this.end).subtract(months, 'months').toDate();
+          this.loadData();
         },
         loadData(){
-            var self = this;
-            api.getMeasurementHistory(self.measure.id, self.start, self.end).then(response => {
+            api.getMeasurementHistory(this.measure.id, this.start, this.end).then(response => {
                 var data = response.data;
                 if(data.length == 0){
-                    self.data = undefined;
+                  this.data = undefined;
                     return;
                 }
                 this.tableData = data;
@@ -45,85 +43,84 @@ export default {
                 var start = moment(data[0].time).startOf('day');
                 var end = moment(data[data.length-1].time).endOf('day');
 
-                self.data = {
-                    labels,
-                    datasets: [  
-                      {
-                        ...graph.datasets[0],
-                        type: 'line',
-                        data: values
+                this.data = {
+                  labels,
+                  datasets: [  
+                    {
+                      ...graph.datasets[0],
+                      type: 'line',
+                      data: values
 
-                      }
-                    ]
-                };
-
-                self.options = {
-                    maintainAspectRatio: false,
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        xAxes:[
-                            {
-                                type: 'time',
-                                time: {
-                                    unit: 'day',
-                                    displayFormats: {
-                                        day: 'DD.MM.YYYY',
-                                        hour: 'HH:mm'
-                                    },
-                                    min: start,
-                                    max: end
-                                }
-                            }
-                        ],
-                        yAxes: [{
-                            /*
-                            scaleLabel:{
-                                display: true,
-                                labelString: self.formatUnit(self.measure.unit),
-                            },*/
-                            fill: false,
-                            ticks: {
-                                //max: 5,
-                                min: 0,
-                                //max: max,
-                                //stepSize: step 
-                            }
-                        }]
-                    },
-                    tooltips:{
-                        callbacks:{
-                            title: function(tooltipItem, data) {
-                                var time = data.labels[tooltipItem[0].index];
-                                return self.formatDateTime(time);
-                            }
-                        }
                     }
+                  ]
                 };
-                //self.data = data.map(d =>{return  {  t: new Date(d.time), y: d.value}});
+
+                this.options = {
+                  maintainAspectRatio: false,
+                  legend: {
+                      display: false
+                  },
+                  scales: {
+                    xAxes:[
+                      {
+                        type: 'time',
+                        time: {
+                          unit: 'day',
+                          displayFormats: {
+                            day: 'DD.MM.YYYY',
+                            hour: 'HH:mm'
+                          },
+                          min: start,
+                          max: end
+                        }
+                      }
+                    ],
+                    yAxes: [{
+                      /*
+                      scaleLabel:{
+                        display: true,
+                        labelString: this.formatUnit(this.measure.unit),
+                      },*/
+                      fill: false,
+                      ticks: {
+                        //max: 5,
+                        min: 0,
+                        //max: max,
+                        //stepSize: step 
+                      }
+                    }]
+                  },
+                  tooltips:{
+                    callbacks:{
+                      title: function(tooltipItem, data) {
+                        var time = data.labels[tooltipItem[0].index];
+                        return this.formatDateTime(time);
+                      }
+                    }
+                  }
+                };
+                //this.data = data.map(d =>{return  {  t: new Date(d.time), y: d.value}});
             }).catch(() => {
-                self.notifyError(self.$t('fetchFailed'));
+              this.notifyError(this.$t('fetchFailed'));
             }).finally(() => {
-                self.$store.commit(constants.LOADING_DONE);
+              this.$store.commit(constants.LOADING_DONE);
             });
             
             
         }
     },
     created() {
-        var self = this;
-        self.end = new Date();
-        self.start = moment(self.end).subtract(6,'month').toDate();
+      this.end = new Date();
+      this.start = moment(this.end).subtract(6,'month').toDate();
 
-        api.listMeasures().then(response => {
-            var measures = response.data;
-            self.measures = measures.map(m => {return {...m, label: m.name, value: m }});
-            var measureId = self.$route.params.measureId;
-            self.measure = self.measures.find(m => m.id == measureId);
-            
-            self.loadData();
-        });
+      api.listMeasures().then(response => {
+        var measures = response.data;
+        this.measures = measures.map(m => {return {...m, label: m.name, value: m }});
+        var measureId = this.$route.params.measureId;
+        this.measure = this.measures.find(m => m.id == measureId);
+        
+        this.loadData();
+      });
         
     }
 }

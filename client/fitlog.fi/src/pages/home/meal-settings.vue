@@ -70,14 +70,13 @@
         this.$refs.modal.hide();
       },
       save () {
-        var self = this;
         var settings = {
-          nutrients: self.selectedNutrients
+          nutrients: this.selectedNutrients
         };
-        self.$store.dispatch(constants.SAVE_MEAL_DIARY_SETTINGS, {
+        this.$store.dispatch(constants.SAVE_MEAL_DIARY_SETTINGS, {
           settings
         }).then(_ => {
-          self.$refs.modal.hide();
+          this.$refs.modal.hide();
         });
       }
     },
