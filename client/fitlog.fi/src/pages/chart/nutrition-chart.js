@@ -7,6 +7,7 @@ import graph from '../../graph'
 import PageMixin from '../../mixins/page'
 
 export default {
+  settingsKey: 'NutritionChart',
     mixins: [PageMixin],
     components: {
         GraphBar,
@@ -20,10 +21,9 @@ export default {
         options: undefined,
 
         history: [],
-        expenditureId: 'expenditure',
         selectedNutrients: [
           constants.ENERGY_ID,
-          'expenditure',
+          constants.ENERGY_EXPENDITURE_ID,
           undefined,
           undefined
         ],
@@ -64,7 +64,7 @@ export default {
               return false;
             }
             var data;
-            if(n === this.expenditureId){
+            if(n === constants.ENERGY_EXPENDITURE_ID){
               data = this.history.map(h => h.energyExpenditure);
             }
             else {
@@ -145,45 +145,52 @@ export default {
             }
           };
         
-
+          var settingsData = {
+            nutrients: this.selectedNutrients
+          };
+          api.updateSettings(this.$options.settingsKey, settingsData);
         },
         showHelp(){
           this.$refs.help.open();
         }
     },
-    created() {
+    async created() {
       this.end = moment().endOf('day').toDate();
       this.start = moment(this.end).subtract(6,'month').startOf('day').toDate();
 
-      this.$store.dispatch(constants.FETCH_NUTRIENTS,{}).then(nutrients => {
-        var nutrientOptions = [
-          {
-            label: '',
-            value: undefined
-          },
-          {
-            label: `${this.$t('energyExpenditure')} (${this.formatUnit('KCAL')})`,
-            value: this.expenditureId,
-            axisLabel: this.formatUnit('KCAL')
-          }
-        ];
-        this.$store.state.nutrition.nutrientGroups.forEach(g => {
+      var nutrients = await this.$store.dispatch(constants.FETCH_NUTRIENTS,{});
+      var settingsResponse = await api.getSettings(this.$options.settingsKey);
+      if(settingsResponse.status == 200){
+        var settings = settingsResponse.data;
+        this.selectedNutrients = settings.nutrients;
+      }
+
+      var nutrientOptions = [
+        {
+          label: '',
+          value: undefined
+        },
+        {
+          label: `${this.$t('energyExpenditure')} (${this.formatUnit('KCAL')})`,
+          value: constants.ENERGY_EXPENDITURE_ID,
+          axisLabel: this.formatUnit('KCAL')
+        }
+      ];
+      this.$store.state.nutrition.nutrientGroups.forEach(g => {
+        nutrientOptions.push({
+          label: g.name,
+          value: 'group-' + g.id,
+          disable: true
+        });
+        nutrients.filter(n => n.fineliGroup == g.id).sort((n1, n2) => n1.name < n2.name ? -1 : 1).forEach(n => {
           nutrientOptions.push({
-            label: g.name,
-            value: 'group-' + g.id,
-            disable: true
-          });
-          nutrients.filter(n => n.fineliGroup == g.id).sort((n1, n2) => n1.name < n2.name ? -1 : 1).forEach(n => {
-            nutrientOptions.push({
-              label: `${n.name} (${this.formatUnit(n.unit)})`,
-              value: n.id,
-              axisLabel: this.formatUnit(n.unit)
-            });
+            label: `${n.name} (${this.formatUnit(n.unit)})`,
+            value: n.id,
+            axisLabel: this.formatUnit(n.unit)
           });
         });
-        this.nutrients = nutrientOptions;
-        this.loadData();
       });
-        
+      this.nutrients = nutrientOptions;
+      this.loadData();
     }
 }

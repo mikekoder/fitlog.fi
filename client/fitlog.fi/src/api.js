@@ -472,4 +472,10 @@ export default {
         }
         return axios.get(this.baseUrl + 'activities/day-presets', {params:query});
     },
+    getSettings(key){
+      return axios.get(this.baseUrl + 'settings/' + key);
+    },
+    updateSettings(key, data){
+      return axios.put(this.baseUrl + 'settings', { key, data: JSON.stringify(data)});
+    }
 };
