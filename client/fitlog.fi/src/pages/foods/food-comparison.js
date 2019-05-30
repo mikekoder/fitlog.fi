@@ -33,7 +33,7 @@ export default {
     },
     visibleNutrients(){
       if(this.selectedGroup){
-        return this.nutrientsGrouped[this.selectedGroup].filter(n => !n.hideSummary);
+        return this.nutrientsGrouped[this.selectedGroup].filter(n => !n.hideSummary).sort((n1,n2) => n1.defaultOrder - n2.defaultOrder);
       }
       return [];
     }

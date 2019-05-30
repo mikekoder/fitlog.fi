@@ -13,8 +13,8 @@
       <div class="col">
         <q-btn-group>
           <template v-for="group in nutrientGroups">
-            <q-btn glossy color="primary" :label="$t(group.id)" @click="selectGroup(group.id)" v-if="group.id == selectedGroup" />
-            <q-btn glossy :label="$t(group.id)" @click="selectGroup(group.id)" v-else />
+            <q-btn glossy size="xs" class="q-pa-sm" color="primary" :label="$t(group.id)" @click="selectGroup(group.id)" v-if="group.id == selectedGroup" />
+            <q-btn glossy size="xs" class="q-pa-sm" :label="$t(group.id)" @click="selectGroup(group.id)" v-else />
           </template>
         </q-btn-group>
       </div>
@@ -28,25 +28,20 @@
               <thead>
                   <tr>
                     <th></th>
-                    <template v-for="nutrient in visibleNutrients">
-                      <th class="nutrient"><div><div>{{ nutrient.name }}</div></div></th>
-                    </template>
-                    <th></th>
-                  </tr>
-                  <tr>
-                    <th class="time freeze"></th>
-                    <template v-for="nutrient in visibleNutrients">
-                        <th class="unit">{{ formatUnit(nutrient.unit) }}</th>
+                    <template v-for="food in foods">
+                      <th class="nutrient"><div><div>{{ food.name }}<span v-if="food.manufacturer" class="text-weight-light">({{ food.manufacturer }})</span></div></div></th>
                     </template>
                     <th></th>
                   </tr>
               </thead>
               <tbody>
-                <tr v-for="food in foods">
-                  <td class="freeze text-weight-bold" :title="food.name">
-                    <small>{{ food.name }}<span v-if="food.manufacturer" class="text-weight-light">({{ food.manufacturer }})</span></small>
+                <tr v-for="nutrient in visibleNutrients">
+                  <td class="freeze text-weight-bold" :title="nutrient.name">
+                    <small>{{ nutrient.shortName }} 
+                      <q-tooltip>{{ nutrient.name }}</q-tooltip>
+                    </small>
                   </td>
-                  <template v-for="nutrient in visibleNutrients">
+                  <template v-for="food in foods">
                     <td class="nutrient">
                       <div class="chart" v-if="nutrient.id === energyDistributionId">
                         <energy-distribution-bar :protein="food.nutrients[proteinId]" :carb="food.nutrients[carbId]" :fat="food.nutrients[fatId]"></energy-distribution-bar>
@@ -57,7 +52,7 @@
                       </div>
                     </td>
                   </template>
-                  <td></td>
+                  <td>{{ formatUnit(nutrient.unit) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -98,13 +93,13 @@
   .inner {
     overflow-x: auto;
     overflow-y: visible;
-    margin-left: 150px;
+    margin-left: 70px;
   }
 
   .freeze {
     position: absolute;
-    margin-left: -150px;
-    width: 150px;
+    margin-left: -70px;
+    width: 70px;
     padding-right: 5px;
     white-space: nowrap;
     overflow: hidden;
@@ -113,7 +108,7 @@
   th.time {
     top: 112px;
     border-width: 0px;
-    width: 150px;
+    width: 70px;
   }
 
 
@@ -135,7 +130,7 @@
   }
 
   th.nutrient:nth-child(2) > div {
-    transform: translate(45px, 30px) rotate(-45deg);
+    transform: translate(49px, 30px) rotate(-45deg);
     width: 60px;
   }
 

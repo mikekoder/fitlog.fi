@@ -56,8 +56,8 @@
     <div class="row q-my-lg">
       <q-btn-group>
         <template v-for="group in groups">
-          <q-btn glossy color="primary" :label="$t(group.id)" @click="selectGroup(group.id)" v-if="group.id == selectedGroup" />
-          <q-btn glossy :label="$t(group.id)" @click="selectGroup(group.id)" v-else />
+          <q-btn glossy size="xs" class="q-pa-sm" color="primary" :label="$t(group.id)" @click="selectGroup(group.id)" v-if="group.id == selectedGroup" />
+          <q-btn glossy size="xs" class="q-pa-sm" :label="$t(group.id)" @click="selectGroup(group.id)" v-else />
         </template>
         
       </q-btn-group>
@@ -142,7 +142,7 @@
   .inner {
       overflow-x: auto;
       overflow-y: visible;
-      margin-left: 100px;
+      margin-left: 80px;
   }
     /*
     #meal-list {
