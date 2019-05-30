@@ -179,6 +179,10 @@ namespace Crash.Fit.Web
             {
                 return new ActivityRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
+            services.AddTransient<ISettingsRepository>(s =>
+            {
+                return new SettingsRepository(Configuration.GetConnectionString("Crash.Fit"));
+            });
             services.AddSingleton<IConfigurationRoot>(Configuration);
             AutoMapper.Mapper.Initialize(m => {
 
