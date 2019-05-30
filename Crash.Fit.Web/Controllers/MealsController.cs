@@ -28,7 +28,7 @@ namespace Crash.Fit.Web.Controllers
 
             var response = AutoMapper.Mapper.Map<MealDetailsResponse[]>(meals.OrderByDescending(m => m.Time));
 
-            foreach(var meal in response)
+            foreach (var meal in response)
             {
                 meal.Nutrients = AppendComputedNutrients(meal.Nutrients);
             }
@@ -55,7 +55,7 @@ namespace Crash.Fit.Web.Controllers
             AdjustTime(meal);
             meal = MergeBySameDefinition(meal);
             CalculateNutrients(meal);
-            if(meal.Id == Guid.Empty)
+            if (meal.Id == Guid.Empty)
             {
                 nutritionRepository.CreateMeal(meal);
             }
@@ -63,7 +63,7 @@ namespace Crash.Fit.Web.Controllers
             {
                 nutritionRepository.UpdateMeal(meal);
             }
-   
+
             var result = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
             return Ok(result);
         }
@@ -72,7 +72,7 @@ namespace Crash.Fit.Web.Controllers
         public IActionResult Update(Guid id, [FromBody]MealRequest request)
         {
             var meal = nutritionRepository.GetMeal(id);
-            if(meal.UserId != CurrentUserId)
+            if (meal.UserId != CurrentUserId)
             {
                 return Unauthorized();
             }
@@ -105,7 +105,7 @@ namespace Crash.Fit.Web.Controllers
         public IActionResult Restore(Guid id)
         {
             var meal = nutritionRepository.GetMeal(id);
-            if(meal == null)
+            if (meal == null)
             {
                 return NotFound();
             }
@@ -129,7 +129,7 @@ namespace Crash.Fit.Web.Controllers
         public IActionResult UpdateDefinitions([FromBody] MealDefinitionRequest[] request)
         {
             var definitions = new List<MealDefinition>();
-            foreach(var model in request)
+            foreach (var model in request)
             {
                 var startParts = (model.Start ?? "").Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
                 var endParts = (model.End ?? "").Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
@@ -138,7 +138,7 @@ namespace Crash.Fit.Web.Controllers
                     Id = model.Id ?? Guid.Empty,
                     UserId = CurrentUserId,
                     Name = model.Name,
-                    Start = startParts.Length > 0 ? new TimeSpan(int.Parse(startParts[0]), startParts.Length > 1 ? int.Parse(startParts[1]) : 0,0) : null as TimeSpan?,
+                    Start = startParts.Length > 0 ? new TimeSpan(int.Parse(startParts[0]), startParts.Length > 1 ? int.Parse(startParts[1]) : 0, 0) : null as TimeSpan?,
                     End = endParts.Length > 0 ? new TimeSpan(int.Parse(endParts[0]), endParts.Length > 1 ? int.Parse(endParts[1]) : 0, 0) : null as TimeSpan?
                     /*
                     StartHour = startParts.Length > 0 ? int.Parse(startParts[0]) : null as int?,
@@ -169,13 +169,13 @@ namespace Crash.Fit.Web.Controllers
             }
             else if (request.MealDefinitionId.HasValue)
             {
-                meal = nutritionRepository.SearchMeals(CurrentUserId,dayStart,dayEnd).FirstOrDefault(m => m.DefinitionId == request.MealDefinitionId);
+                meal = nutritionRepository.SearchMeals(CurrentUserId, dayStart, dayEnd).FirstOrDefault(m => m.DefinitionId == request.MealDefinitionId);
             }
             else
             {
                 return BadRequest();
             }
-            if(meal == null)
+            if (meal == null)
             {
                 if (request.MealId.HasValue)
                 {
@@ -184,7 +184,7 @@ namespace Crash.Fit.Web.Controllers
                 else if (request.MealDefinitionId.HasValue)
                 {
                     var def = nutritionRepository.GetMealDefinitions(CurrentUserId).Single(d => d.Id == request.MealDefinitionId.Value);
-                    if(def == null)
+                    if (def == null)
                     {
                         return BadRequest();
                     }
@@ -226,7 +226,7 @@ namespace Crash.Fit.Web.Controllers
                 return BadRequest();
             }
             var meal = nutritionRepository.GetMeal(request.MealId.Value);
-            if(meal == null)
+            if (meal == null)
             {
                 return NotFound();
             }
@@ -236,7 +236,7 @@ namespace Crash.Fit.Web.Controllers
             }
 
             var row = meal.Rows.FirstOrDefault(r => r.Id == id);
-            if(row == null)
+            if (row == null)
             {
                 return NotFound();
             }
@@ -264,7 +264,7 @@ namespace Crash.Fit.Web.Controllers
                 return Unauthorized();
             }
             var row = meal.Rows.FirstOrDefault(r => r.Id == id);
-            if(row == null)
+            if (row == null)
             {
                 return NotFound();
             }
@@ -277,6 +277,62 @@ namespace Crash.Fit.Web.Controllers
             {
                 nutritionRepository.DeleteMealRow(row);
             }
+            return Ok();
+        }
+        [HttpPost("favourite")]
+        public IActionResult Favourite([FromBody]FavouriteMealRequest request)
+        {
+            var meal = nutritionRepository.GetMeal(request.MealId);
+            if(meal == null)
+            {
+                return NotFound();
+            }
+            if (meal.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+
+            var favourite = new FavouriteMeal
+            {
+                UserId = CurrentUserId,
+                MealId = meal.Id,
+                Name = request.Name
+            };
+
+            nutritionRepository.CreateFavouriteMeal(favourite);
+
+            return Ok();
+        }
+
+        [HttpGet("favourites")]
+        public IActionResult GetFavourites()
+        {
+            var favourites = nutritionRepository.GetFavouriteMeals(CurrentUserId);
+            var meals = nutritionRepository.GetMeals(favourites.Select(f => f.MealId));
+            var result = AutoMapper.Mapper.Map<FavouriteMealResponse[]>(favourites);
+            foreach(var fav in result)
+            {
+                var meal = meals.FirstOrDefault(m => m.Id == fav.MealId);
+                fav.Meal = AutoMapper.Mapper.Map<MealDetailsResponse>(meal);
+            }
+            return Ok(result);
+        }
+
+        [HttpDelete("favourites/{id}")]
+        public IActionResult DeleteFavourite(Guid id)
+        {
+            var favourite = nutritionRepository.GetFavouriteMeal(id);
+            if (favourite == null)
+            {
+                return NotFound();
+            }
+            if (favourite.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+
+            nutritionRepository.DeleteFavouriteMeal(id);
+
             return Ok();
         }
         private void AdjustTime(MealDetails meal)

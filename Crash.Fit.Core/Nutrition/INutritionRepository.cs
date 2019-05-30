@@ -50,5 +50,10 @@ namespace Crash.Fit.Nutrition
         void SaveHomeNutrients(Guid userId, int[] nutrientIds);
         IEnumerable<FoodSearchResult> SearchMostUsedFoods(Guid userId, int count);
         IEnumerable<DayNutrient> GetDailyNutrients(Guid userId, DateTimeOffset start, DateTimeOffset end);
+        void CreateFavouriteMeal(FavouriteMeal favourite);
+        IEnumerable<FavouriteMeal> GetFavouriteMeals(Guid userId);
+        IEnumerable<MealDetails> GetMeals(IEnumerable<Guid> ids);
+        FavouriteMeal GetFavouriteMeal(Guid id);
+        void DeleteFavouriteMeal(Guid id);
     }
 }

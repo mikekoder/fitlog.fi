@@ -957,7 +957,81 @@ WHERE M.UserId=@userId AND M.Time >= @start AND M.Time <= @end";
                 }).OrderBy(n => n.Date).ToArray();
             }
         }
+        public void CreateFavouriteMeal(FavouriteMeal favourite)
+        {
+            favourite.Id = Guid.NewGuid();
+            using (var conn = CreateConnection())
+            {
+                try
+                {
+                    conn.Execute("INSERT INTO FavouriteMeal(Id,UserId,MealId,Name) VALUES(@Id,@UserId,@MealId,@Name)", favourite);
+                }
+                catch
+                {
+                    favourite.Id = Guid.Empty;
+                    throw;
+                }
+                
+            }
+        }
+        public IEnumerable<FavouriteMeal> GetFavouriteMeals(Guid userId)
+        {
+            using (var conn = CreateConnection())
+            {
+                return conn.Query<FavouriteMeal>("SELECT * FROM FavouriteMeal WHERE UserId=@userId", new
+                {
+                    userId
+                }).ToArray();
+            }
+        }
+        public IEnumerable<MealDetails> GetMeals(IEnumerable<Guid> ids)
+        {
+            var sql = @"
+SELECT * FROM Meal WHERE Id IN @ids;
+SELECT * FROM MealNutrient WHERE MealId IN @ids;
+SELECT MR.*, F.Name AS FoodName, FP.Name AS PortionName FROM MealRow MR 
+    JOIN Food F ON F.Id=MR.FoodId 
+    LEFT JOIN FoodPortion FP ON FP.Id=MR.PortionId
+    WHERE MR.MealId IN @ids ORDER BY [Index];
+SELECT * FROM MealRowNutrient WHERE MealId IN @ids;";
+            var parameters = new { ids };
+            using (var conn = CreateConnection())
+            using (var multi = conn.QueryMultiple(sql, parameters))
+            {
+                var meals = multi.Read<MealDetails>().ToArray();
+                var mealNutrients = multi.Read<MealNutrientRaw>().ToArray();
+                var mealRows = multi.Read<MealRow>().ToArray();
+                var rowNutrients = multi.Read<MealRowNutrientRaw>().ToArray();
 
+                foreach (var meal in meals)
+                {
+                    meal.Nutrients = mealNutrients.Where(n => n.MealId == meal.Id).ToDictionary(n => n.NutrientId, n => n.Amount);
+                    meal.Rows = mealRows.Where(r => r.MealId == meal.Id).ToArray();
+                    foreach (var row in meal.Rows)
+                    {
+                        row.Nutrients = rowNutrients.Where(r => r.MealRowId == row.Id).ToDictionary(n => n.NutrientId, n => n.Amount);
+                    }
+                }
+                return meals;
+            }
+        }
+        public FavouriteMeal GetFavouriteMeal(Guid id)
+        {
+            using (var conn = CreateConnection())
+            {
+                return conn.QuerySingleOrDefault<FavouriteMeal>("SELECT * FROM FavouriteMeal WHERE Id=@id", new
+                {
+                    id
+                });
+            }
+        }
+        public void DeleteFavouriteMeal(Guid id)
+        {
+            using (var conn = CreateConnection())
+            {
+                conn.Execute("DELETE FROM FAvouriteMeal WHERE Id=@id", new { id });
+            }
+        }
         private class PortionRaw : Portion
         {
             public Guid FoodId { get; set; }
