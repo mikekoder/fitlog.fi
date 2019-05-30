@@ -1,4 +1,6 @@
 ﻿import moment from 'moment'
+import constants from './store/constants'
+
 export default {
     parseFloat(value) {
         if (typeof (value) === 'number') {
@@ -94,5 +96,24 @@ export default {
         }
 
         return { min: undefined, max: undefined };
+    },
+    calculateEnergyDistribution(nutrients){
+      var energy = nutrients[constants.ENERGY_ID];
+      var protein = nutrients[constants.PROTEIN_ID];
+      var carbs = nutrients[constants.CARB_ID];
+      var fat = nutrients[constants.FAT_ID];
+      var calculatedEnergy = 4 * protein + 4 * carbs + 9 * fat;
+
+      if (energy || calculatedEnergy) {
+          if (protein) {
+            nutrients[constants.PROTEIN_ENERGY_ID] = (4 * protein) / (calculatedEnergy || energy) * 100;
+          }
+          if (carbs) {
+            nutrients[constants.CARB_ENERGY_ID] = (4 * carbs) / (calculatedEnergy || energy) * 100;
+          }
+          if (fat) {
+            nutrients[constants.FAT_ENERGY_ID] = (9 * fat) / (calculatedEnergy || energy) * 100;
+          }
+      }
     }
 }

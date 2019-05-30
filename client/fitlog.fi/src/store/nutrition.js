@@ -1,6 +1,7 @@
 ﻿import api from '../api'
 import constants from './constants'
 import moment from 'moment'
+import utils from '../utils';
 
 export default {
     state: {
@@ -195,7 +196,7 @@ export default {
             });
         },
         // Nutrients
-        [constants.FETCH_NUTRIENTS]({ commit, state }, { forceRefresh}) {
+        [constants.FETCH_NUTRIENTS]({ commit, state }, { forceRefresh }) {
             if (state.nutrientsLoaded && !forceRefresh) {
                 return Promise.resolve(state.nutrients);
             }
@@ -538,24 +539,7 @@ export default {
         if (!item || !item.nutrients) {
             return;
         }
-        var energy = item.nutrients[constants.ENERGY_ID];
-        var protein = item.nutrients[constants.PROTEIN_ID];
-        var carbs = item.nutrients[constants.CARB_ID];
-        var fat = item.nutrients[constants.FAT_ID];
-
-        var calculatedEnergy = 4 * protein + 4 * carbs + 9 * fat;
-
-        if (energy || calculatedEnergy) {
-            if (protein) {
-                item.nutrients[constants.PROTEIN_ENERGY_ID] = (4 * protein) / (calculatedEnergy || energy) * 100;
-            }
-            if (carbs) {
-                item.nutrients[constants.CARB_ENERGY_ID] = (4 * carbs) / (calculatedEnergy || energy) * 100;
-            }
-            if (fat) {
-                item.nutrients[constants.FAT_ENERGY_ID] = (9 * fat) / (calculatedEnergy || energy) * 100;
-            }
-        }
+        utils.calculateEnergyDistribution(item.nutrients);
     }
     function updateMealRow(row, state) {
         var meal = state.meals.find(m => m.id == row.mealId);

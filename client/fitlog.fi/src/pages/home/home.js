@@ -98,6 +98,7 @@ export default {
               result[i] += m.meal.nutrients[i];
           }
       });
+      utils.calculateEnergyDistribution(result);
       return result;
     },
     nutrientGroups() {
