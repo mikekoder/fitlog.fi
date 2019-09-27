@@ -254,7 +254,7 @@ export default {
       this.fetchWorkouts();
     }
     else {
-      this.showDays(7);
+      this.showDays(30);
     }
       
   }
