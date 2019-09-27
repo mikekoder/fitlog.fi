@@ -232,7 +232,7 @@ export default {
         if (end) {
             query.end = end.toISOString();
         }
-        return axios.get(this.baseUrl + 'workouts', query);
+        return axios.get(this.baseUrl + 'workouts', {params:query});
     },
     getWorkout(id){
         return axios.get(this.baseUrl + 'workouts/' + id);
