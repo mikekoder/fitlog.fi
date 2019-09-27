@@ -173,6 +173,15 @@ namespace Crash.Fit.Web.Controllers
             var food = nutritionRepository.GetFood(id);
             if (food.UserId != CurrentUserId)
             {
+                if (!food.UserId.HasValue && FoodHasChanges(food, request))
+                {
+                    request.Name += " (oma)";
+                    foreach(var portion in request.Portions)
+                    {
+                        portion.Id = Guid.Empty;
+                    }
+                    return Create(request);
+                }
                 return Unauthorized();
             }
             CheckNutrientPortion(request);
@@ -318,6 +327,49 @@ namespace Crash.Fit.Web.Controllers
             }
 
             return null;
+        }
+        private bool FoodHasChanges(FoodDetails food, FoodRequest request)
+        {
+            if(food.Ean != request.Ean)
+            {
+                return true;
+            }
+            if (food.Manufacturer != request.Manufacturer)
+            {
+                return true;
+            }
+            if (food.Name != request.Name)
+            {
+                return true;
+            }
+            if (food.Nutrients != null)
+            {
+                foreach (var nutrient in food.Nutrients)
+                {
+                    var nutrient2 = request.Nutrients.FirstOrDefault(n => n.NutrientId == nutrient.NutrientId);
+                    if (nutrient2 == null || nutrient2.Amount != nutrient.Amount)
+                    {
+                        return true;
+                    }
+                }
+            }
+            if (food.Portions != null)
+            {
+                if(food.Portions.Length != (request.Portions?.Length ?? 0))
+                {
+                    return true;
+                }
+                foreach (var portion in food.Portions)
+                {
+                    var portion2 = request.Portions.FirstOrDefault(p => p.Id == portion.Id);
+                    if (portion2 == null || portion2.Name != portion.Name || portion2.Weight != portion.Weight)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
