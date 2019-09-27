@@ -36,6 +36,9 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Crash.Fit.Settings;
 using FluentEmail.Mailgun;
 using FluentEmail.Core.Interfaces;
 
@@ -74,23 +77,17 @@ namespace Crash.Fit.Web
             {
                 o.ClientId = Configuration["Authentication:Google:ClientId"];
                 o.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                o.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
+                o.ClaimActions.Clear();
+                o.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+                o.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+                o.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_name");
+                o.ClaimActions.MapJsonKey(ClaimTypes.Surname, "family_name");
+                o.ClaimActions.MapJsonKey("urn:google:profile", "link");
+                o.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
             }).AddJwtBearer(o => 
             {
-                /*
-                  app.UseJwtBearerAuthentication(new JwtBearerOptions
-                {
-                    AutomaticAuthenticate = true,
-                    AutomaticChallenge = true,
-                    TokenValidationParameters = new TokenValidationParameters
-                    {
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("Authentication:Jwt:Key").Value)),
-                        ValidAudience = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value,
-                        ValidateIssuerSigningKey = true,
-                        ValidateLifetime = true,
-                        ValidIssuer = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value
-                    }
-                });
-            */
+
                 o.Audience = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value;
                 //o.Authority = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value;
                 o.ClaimsIssuer = Configuration.GetSection("Authentication:Jwt:SiteUrl").Value;
@@ -185,8 +182,10 @@ namespace Crash.Fit.Web
             {
                 return new SettingsRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
+
             var sender = new MailgunSender(Configuration.GetSection("MailGun:Domain").Value, Configuration.GetSection("MailGun:ApiKey").Value, MailGunRegion.EU);
             services.AddSingleton<ISender>(sender);
+
             services.AddSingleton<IConfigurationRoot>(Configuration);
             AutoMapper.Mapper.Initialize(m => {
 
@@ -384,8 +383,6 @@ namespace Crash.Fit.Web
                 });
                 m.CreateMap<ActivityPresetRequest, ActivityPreset>();
             });
-
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
