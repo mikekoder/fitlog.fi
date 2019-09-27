@@ -160,7 +160,7 @@ GROUP BY R.FoodId;";
         public IEnumerable<FoodSummary> SearchRecipes(Guid userId)
         {
             var sql = @"
-SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=1 AND Deleted IS NULL;
+SELECT * FROM Food WHERE UserId=@userId AND IsRecipe=1 AND Deleted IS NULL ORDER BY Name;
 SELECT R.FoodId, COUNT(*) AS [Count] FROM MealRow R JOIN Meal M ON M.Id=R.MealId
 WHERE M.UserId=@userId AND M.Deleted IS NULL
 GROUP BY R.FoodId;";
