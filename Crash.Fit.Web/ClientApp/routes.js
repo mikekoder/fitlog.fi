@@ -28,6 +28,8 @@ import Profile from './views/profile/profile.vue'
 import Login from './views/login.vue'
 import LoginSuccess from './views/login-success.vue'
 import Register from './views/register.vue'
+import ResetPassword from './views/reset-password.vue'
+import ChangePassword from './views/change-password.vue'
 
 import Measurements from './views/measurements/measurements.vue'
 
@@ -194,7 +196,7 @@ export default [
                 name: 'privacy-security',
                 component: PrivacySecurity,
                 meta: { anon: true }
-            },
+            }
         ]
     },
     {
@@ -215,7 +217,18 @@ export default [
         component: Register,
         meta: { anon: true }
     },
-    
+    {
+        path: '/salasana-unohtunut',
+        name: 'reset-password',
+        component: ResetPassword,
+        meta: { anon: true }
+    },
+    {
+        path: '/vaihda-salasana/:userId/:token',
+        name: 'change-password',
+        component: ChangePassword,
+        meta: { anon: true }
+    },
     {
         path: '*',
         name: 'notfound',

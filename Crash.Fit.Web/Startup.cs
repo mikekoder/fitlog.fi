@@ -36,6 +36,8 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using FluentEmail.Mailgun;
+using FluentEmail.Core.Interfaces;
 
 namespace Crash.Fit.Web
 {
@@ -183,6 +185,8 @@ namespace Crash.Fit.Web
             {
                 return new SettingsRepository(Configuration.GetConnectionString("Crash.Fit"));
             });
+            var sender = new MailgunSender(Configuration.GetSection("MailGun:Domain").Value, Configuration.GetSection("MailGun:ApiKey").Value, MailGunRegion.EU);
+            services.AddSingleton<ISender>(sender);
             services.AddSingleton<IConfigurationRoot>(Configuration);
             AutoMapper.Mapper.Initialize(m => {
 

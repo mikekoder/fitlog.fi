@@ -26,7 +26,16 @@
                     <i class="fab fa-google-plus"></i> {{ $t("useGoogle") }}
                 </a>
             </div>
-            <router-link :to="{ name: 'register' }" class="text-center">{{ $t("register") }}</router-link>
+            <div class="row">
+                <div class="col-xs-12">
+                    <router-link :to="{ name: 'reset-password' }" class="text-center">{{ $t("forgotPassword") }}</router-link>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <router-link :to="{ name: 'register' }" class="text-center">{{ $t("register") }}</router-link>
+                </div>
+            </div>
         </div>
     </div>
 </template>

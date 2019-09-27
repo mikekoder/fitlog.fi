@@ -30,6 +30,17 @@ export default {
             data: JSON.stringify(login)
         });
     },
+    requestPasswordReset(username) {
+        return $.get(this.baseUrl + 'users/password-reset/?username=' + username);
+    },
+    changePassword(data) {
+        return $.ajax({
+            url: this.baseUrl + 'users/password-reset',
+            type: 'POST',
+            contentType: 'text/json',
+            data: JSON.stringify(data)
+        });
+    },
     getProfile(){
         return $.get(this.baseUrl + 'users/me/');
     },

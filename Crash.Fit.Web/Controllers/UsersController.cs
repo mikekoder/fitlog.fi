@@ -25,6 +25,9 @@ using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Crash.Fit.Measurements;
 using Crash.Fit.Training;
+using FluentEmail.Core.Interfaces;
+using FluentEmail.Core;
+using System.Web;
 
 namespace Crash.Fit.Web.Controllers
 {
@@ -38,8 +41,9 @@ namespace Crash.Fit.Web.Controllers
         private readonly INutritionRepository _nutritionRepository;
         private readonly RoleManager<Role> _roleManager;
         private readonly IMeasurementRepository _measurementRepository;
+        private readonly ISender _emailSender;
 
-        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager, IProfileRepository profileRepository, IMeasurementRepository measurementRepository, ILogRepository logger, IConfigurationRoot configuration, INutritionRepository nutritionRepository, RoleManager<Role> roleManager) : base(logger)
+        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager, IProfileRepository profileRepository, IMeasurementRepository measurementRepository, ILogRepository logger, IConfigurationRoot configuration, INutritionRepository nutritionRepository, RoleManager<Role> roleManager, ISender emailSender) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -48,6 +52,7 @@ namespace Crash.Fit.Web.Controllers
             _nutritionRepository = nutritionRepository;
             _roleManager = roleManager;
             _measurementRepository = measurementRepository;
+            _emailSender = emailSender;
             /*
             var roles = new[]
             {
@@ -514,6 +519,45 @@ namespace Crash.Fit.Web.Controllers
             }
             return NotFound();
         }
+        [HttpGet("password-reset")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RequestPasswordReset(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+       
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var email = Email
+                .From("info@fitlog.fi", "fitlog.fi")
+                .To(user.Email)
+                .Subject("Salasanan nollaus")
+                .Body($@"Hei,
+<p>
+Salasanan pääset nollaamaan <a href=""https://fitlog.fi/#/vaihda-salasana/{user.Id}/{HttpUtility.UrlEncode(token)}"">tästä linkistä</a>.
+</p>", isHtml: true);
+
+            var response = await _emailSender.SendAsync(email);
+            if (response.Successful)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("password-reset")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            var result = await _userManager.ResetPasswordAsync(user, request.Token, request.Password);
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+
         private async Task<IActionResult> LoginWithGoogleToken(string idToken)
         {
             string userId;
