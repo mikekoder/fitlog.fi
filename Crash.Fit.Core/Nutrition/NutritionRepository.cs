@@ -190,7 +190,7 @@ GROUP BY R.FoodId;";
                         food.Nutrients.Select(n => new { FoodId = food.Id, n.NutrientId, n.Amount, n.PortionAmount }), tran);
                     if (food.Portions != null)
                     {
-                        conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Amount,Weight) VALUES(@Id,@FoodId,@Name,@Amount,@Weight)", food.Portions.Select(p => new
+                        conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Amount,Weight) VALUES(@Id,@FoodId,@Name,@Amount,@Weight)", food.Portions.Where(p => p.Name != null).Select(p => new
                         {
                             Id = p.Id == Guid.Empty ? Guid.NewGuid() : p.Id,
                             FoodId = food.Id,
@@ -239,7 +239,7 @@ GROUP BY R.FoodId;";
                         n.Amount,
                         n.PortionAmount
                     }), tran);
-                    conn.Execute("UPDATE FoodPortion SET Name=@Name,Weight=@Weight,Amount=@Amount WHERE Id=@Id AND FoodId=@FoodId", food.Portions.Where(p => p.Id != Guid.Empty).Select(p => new
+                    conn.Execute("UPDATE FoodPortion SET Name=@Name,Weight=@Weight,Amount=@Amount WHERE Id=@Id AND FoodId=@FoodId", food.Portions.Where(p => p.Id != Guid.Empty && p.Name != null).Select(p => new
                     {
                         p.Id,
                         FoodId = food.Id,
@@ -247,7 +247,7 @@ GROUP BY R.FoodId;";
                         p.Weight,
                         p.Amount
                     }), tran);
-                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Weight,Amount) VALUES(@Id,@FoodId,@Name,@Weight,@Amount)", food.Portions.Where(p => p.Id == Guid.Empty).Select(p => new
+                    conn.Execute("INSERT INTO FoodPortion(Id,FoodId,Name,Weight,Amount) VALUES(@Id,@FoodId,@Name,@Weight,@Amount)", food.Portions.Where(p => p.Id == Guid.Empty && p.Name != null).Select(p => new
                     {
                         Id = Guid.NewGuid() ,
                         FoodId = food.Id,
