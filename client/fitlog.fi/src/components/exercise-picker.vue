@@ -69,7 +69,7 @@
               </div>
           </div>
           <div class="row q-ma-sm" v-if="exercise">   
-            <div class="col"><q-input readonly :value="exercise.oneRepMap || '-'" :float-label="$t('1rm')" /></div>  
+            <div class="col"><q-input readonly :value="exercise.oneRepMax || '-'" :float-label="$t('1rm')" /></div>  
             <div class="col"><q-input readonly :value="exercise.latestWeights || '-'" :float-label="$t('latestWeights')" /></div>  
           </div>
         </template>
