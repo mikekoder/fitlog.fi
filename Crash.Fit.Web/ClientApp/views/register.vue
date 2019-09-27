@@ -1,7 +1,7 @@
 ﻿<template>
     <div class="register-box">
         <div class="register-logo">
-            <a href="/"><b>Crash</b>FIT</a>
+            <a href="/"><b>fitlog</b>.fi</a>
         </div>
         <div class="register-box-body">
                 <div class="form-group has-feedback">
