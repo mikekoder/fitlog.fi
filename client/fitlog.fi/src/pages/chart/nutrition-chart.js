@@ -160,9 +160,8 @@ export default {
 
       var nutrients = await this.$store.dispatch(constants.FETCH_NUTRIENTS,{});
       var settingsResponse = await api.getSettings(this.$options.settingsKey);
-      if(settingsResponse.status == 200){
-        var settings = settingsResponse.data;
-        this.selectedNutrients = settings.nutrients;
+      if(settingsResponse.status == 200 && settingsResponse.data && settingsResponse.data.nutrients){
+        this.selectedNutrients = settingsResponse.data.nutrients;
       }
 
       var nutrientOptions = [
