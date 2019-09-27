@@ -64,6 +64,7 @@ namespace Crash.Fit.Web.Controllers
                         {
                             new FoodSearchResult
                             {
+                                Id = newFood.Id,
                                 Created = newFood.Created,
                                 Ean = newFood.Ean,
                                 Manufacturer = newFood.Manufacturer,
