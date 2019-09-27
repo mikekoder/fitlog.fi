@@ -277,7 +277,7 @@ namespace Crash.Fit.Web.Controllers
                 var max = maxs.FirstOrDefault(m => m.ExerciseId == set.ExerciseId);
                 if(max != null)
                 {
-                    if (set.Weights > 0)
+                    if (set.Weights > 0 && max.Max > 0)
                     {
                         set.Load = set.Weights / max.Max * 100;
                     }
