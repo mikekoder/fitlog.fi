@@ -12,7 +12,7 @@ namespace Crash.Fit.External.KRuoka
 {
     public class KRuokaClient : IStoreClient
     {
-        private readonly string baseUrl = "https://www.k-ruoka.fi/kr-api";
+        private readonly string baseUrl = "https://www.k-ruoka.fi/kr-api/v2";
         private readonly string storeId = "N106";
         public async Task<ExternalFood> FindFood(string ean)
         {
@@ -57,7 +57,7 @@ namespace Crash.Fit.External.KRuoka
             {
                 while (true)
                 {
-                    var response = await client.PostAsync($"{baseUrl}/product-search/{text}?storeId={storeId}&offset={products.Count}", new StringContent(""));
+                    var response = await client.PostAsync($"{baseUrl}/product-search/{text}?storeId={storeId}&offset=0&limit=30&clientUpdatedPSD2=1", new StringContent(""));
                     var json = await response.Content.ReadAsStringAsync();
                     var result = JsonConvert.DeserializeObject<ProductSearchResult>(json);
                     products.AddRange(result.Result);

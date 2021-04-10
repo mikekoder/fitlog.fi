@@ -11,11 +11,11 @@ namespace Crash.Fit.External.KRuoka
         public string Ean { get; set; }
         [JsonProperty("brand")]
         public string Brand { get; set; }
-        [JsonProperty("name.finnish")]
+        [JsonProperty("localizedName.finnish")]
         public string Name { get; set; }
-        [JsonProperty("nutritionalDetails.nutritionalContent.energyKJ.amount")]
+        [JsonProperty("nutritionalDetails.nutritionalContent.energyKj")]
         public decimal? Kj { get; set; }
-        [JsonProperty("nutritionalDetails.nutritionalContent.energyKC.amount")]
+        [JsonProperty("nutritionalDetails.nutritionalContent.energyKcal")]
         public decimal? Kcal { get; set; }
         [JsonProperty("nutritionalDetails.nutritionalContent.protein.amount")]
         public decimal? Protein { get; set; }
