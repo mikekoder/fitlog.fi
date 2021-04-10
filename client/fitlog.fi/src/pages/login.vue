@@ -22,6 +22,11 @@
       <q-btn glossy color="primary" @click="fbLogin" icon="fas fa-facebook-official">Facebook</q-btn>
       <q-btn glossy color="primary" @click="googleLogin" icon="fas fa-google-plus-official">Google</q-btn>
     </div>
+    <div class="row">
+      <div class="col">
+        {{ info }}
+      </div>
+    </div>
   </q-page>
   </layout>
 </template>
@@ -41,6 +46,7 @@ export default {
       accessToken: undefined,
       username: '',
       password: '',
+      info: ''
     }
   },
   computed: {
@@ -74,28 +80,29 @@ export default {
       this.socialLogin('Google');
     },
     socialLogin(provider){
-      if(this.isCordova){
+      if(this.$q.platform.is.cordova){
         if(provider == 'Google'){
           window.plugins.googleplus.login(
             {
               'webClientId': config.googleWebClientId
             },
-            function (obj) {
+            (obj) => {
               if(obj.idToken){
                 api.loginWithToken('Google', obj.idToken).then(response => {
                   this.finishLogin(response.data.refreshToken, response.data.accessToken);
                 }).fail(xhr => {
+                  this.changeInfo(xhr);
                 });
               }
             },
-            function (msg) {
-              this.notifyError('error: ' + msg);
+            (msg) => {
+              this.changeInfo(msg);
             }
           );
         }
         else {
           var ref = cordova.InAppBrowser.open(config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile', '_blank', 'location=no');
-          ref.addEventListener('loadstop', function(event){
+          ref.addEventListener('loadstop', (event) => {
             if(event.url.includes('login-success')){
               var parts = event.url.split('/');
               var refreshToken = parts[parts.length - 2];
@@ -109,8 +116,8 @@ export default {
           });
         }
       }
-      else {
-        window.location = config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile&returnUrl='+ encodeURIComponent(window.location.href);
+      else{
+        window.location = config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile&returnUrl='+ window.location;
       }
     },
     finishLogin(refreshToken, accessToken){
@@ -124,6 +131,9 @@ export default {
           this.notifyError(this.$t('failed'));
         });
       }
+    },
+    changeInfo(data){
+      //this.info = JSON.stringify(data);
     },
     checkLoggedIn(){
       if(this.isLoggedIn){

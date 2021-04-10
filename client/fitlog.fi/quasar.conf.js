@@ -82,6 +82,7 @@ module.exports = function (ctx) {
         'QToggle',
         'QToolbar',
         'QToolbarTitle',
+        'QTooltip',
         'QWindowResizeObservable'
       ],
       directives: [

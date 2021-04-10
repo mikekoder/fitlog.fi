@@ -78,6 +78,11 @@
                         <q-btn glossy @click="connectGoogle" :disabled="hasGoogle" :label="$t('connectGoogle')"></q-btn>
                     </div>
                 </div>
+                <div class="row q-ma-sm">
+                    <div class="col">
+                        {{ info }}
+                    </div>
+                </div>
           </q-tab-pane>
           <q-tab-pane name="tab-3">
             <div class="row q-ma-sm">

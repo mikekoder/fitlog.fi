@@ -1,5 +1,6 @@
 import constants from '../../store/constants'
 import utils from '../../utils'
+import config from '../../config'
 import api from '../../api'
 import moment from 'moment'
 import PageMixin from '../../mixins/page'
@@ -37,7 +38,8 @@ export default {
             passwordError: null,
             password2Error: null,
 
-            deleteStarted: false
+            deleteStarted: false,
+            info: ''
         }
     },
     computed: {
@@ -151,10 +153,57 @@ export default {
           this.$store.dispatch(constants.UPDATE_LOGIN, { login });
         },
         connectFacebook() {
-          window.location = api.baseUrl + 'users/external-login/?provider=Facebook&client=web&add=true&returnUrl=/#/profiili';
+            this.socialLogin('Facebook');
         },
         connectGoogle() {
-          window.location = api.baseUrl + 'users/external-login/?provider=Google&client=web&add=true&returnUrl=/#/profiili';
+            this.socialLogin('Google');
+        },
+        socialLogin(provider){
+            if(this.$q.platform.is.cordova){
+              if(provider == 'Google'){
+                window.plugins.googleplus.login(
+                  {
+                    'webClientId': config.googleWebClientId
+                  },
+                  (obj) => {
+                    if(obj.idToken){
+                      api.loginWithToken('Google', obj.idToken).then(response => {
+                        this.finishLogin(response.data.refreshToken, response.data.accessToken);
+                      }).fail(xhr => {
+                        this.changeInfo(xhr);
+                      });
+                    }
+                  },
+                  (msg) => {
+                    this.changeInfo(msg);
+                  }
+                );
+              }
+              else {
+                var ref = cordova.InAppBrowser.open(config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile', '_blank', 'location=no');
+                ref.addEventListener('loadstop', (event) => {
+                  if(event.url.includes('login-success')){
+                    var parts = event.url.split('/');
+                    var refreshToken = parts[parts.length - 2];
+                    var accessToken = parts[parts.length - 1];
+      
+                    ref.close();
+                    if(refreshToken && accessToken){
+                      this.finishLogin(refreshToken, accessToken);
+                    }
+                  }
+                });
+              }
+            }
+            else{
+              window.location = config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile&returnUrl='+ window.location;
+            }
+        },
+        finishLogin(refreshToken, accessToken){
+            this.getProfile();
+        },
+        changeInfo(data){
+          //this.info = JSON.stringify(data);
         },
         deleteProfile() {
           this.$store.dispatch(constants.DELETE_PROFILE, { }).then(_ => {
@@ -162,6 +211,44 @@ export default {
               this.$router.replace({name: 'login'});
             });
           });
+        },
+        getProfile(){
+            this.$store.dispatch(constants.FETCH_PROFILE, { }).then(_ => {
+                var profile = this.$store.state.profile.profile;
+                if (profile) {
+                    
+                    if (profile.doB) {
+                      this.dob = new Date(profile.doB);
+                        /*
+                        this.day = profile.doB.getDate();
+                        this.month = this.months.find(m => m.number == profile.doB.getMonth() + 1);
+                        this.year = profile.doB.getFullYear();
+                        */
+                    }
+                    
+                    
+                    this.gender = profile.gender;
+                    this.height = profile.height;
+                    this.weight = profile.weight;
+                    if (profile.rmr) {
+                      this.rmr = profile.rmr;
+                      this.rmrSpecified = true;
+                    }
+                    if (profile.pal) {
+                      this.pal = this.pals.find(p => p.value == profile.pal);
+                    }
+      
+                    this.hasPassword = profile.hasPassword;
+                    if (profile.hasPassword) {
+                        // don't show generated username
+                        this.username = profile.username;
+                    }
+                    this.hasFacebook = profile.logins.includes('Facebook');
+                    this.hasGoogle = profile.logins.includes('Google');
+                }
+      
+                this.$store.commit(constants.LOADING_DONE);
+              });
         }
     },
     created() {
@@ -169,42 +256,8 @@ export default {
         { label: '', value: '' },
         { label: this.$t('male'), value: 'male' },
         { label: this.$t('female'), value: 'female' },
-      ]
-        this.$store.dispatch(constants.FETCH_PROFILE, { }).then(_ => {
-          var profile = this.$store.state.profile.profile;
-          if (profile) {
-              
-              if (profile.doB) {
-                this.dob = new Date(profile.doB);
-                  /*
-                  this.day = profile.doB.getDate();
-                  this.month = this.months.find(m => m.number == profile.doB.getMonth() + 1);
-                  this.year = profile.doB.getFullYear();
-                  */
-              }
-              
-              
-              this.gender = profile.gender;
-              this.height = profile.height;
-              this.weight = profile.weight;
-              if (profile.rmr) {
-                this.rmr = profile.rmr;
-                this.rmrSpecified = true;
-              }
-              if (profile.pal) {
-                this.pal = this.pals.find(p => p.value == profile.pal);
-              }
-
-              this.hasPassword = profile.hasPassword;
-              if (profile.hasPassword) {
-                  // don't show generated username
-                  this.username = profile.username;
-              }
-              this.hasFacebook = profile.logins.includes('Facebook');
-              this.hasGoogle = profile.logins.includes('Google');
-          }
-
-          this.$store.commit(constants.LOADING_DONE);
-        });
+      ];
+      this.getProfile();
+        
     }
 }

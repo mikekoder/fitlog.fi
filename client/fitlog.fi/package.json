@@ -1,10 +1,10 @@
 {
   "name": "fitlog.fi",
-  "version": "1.1.0",
+  "version": "1.1.15",
   "description": "fitlog.fi",
   "productName": "fitlog.fi",
   "cordovaId": "fi.fitlog",
-  "author": "Mika Kolari <mika.j.kolari@gmail.com>",
+  "author": "Mike Koder <mkoderfi@gmail.com>",
   "private": true,
   "scripts": {
     "test": "echo \"No test specified\" && exit 0"
