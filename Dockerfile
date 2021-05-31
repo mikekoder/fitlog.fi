@@ -25,7 +25,7 @@ WORKDIR "/src/client/fitlog.fi/."
 RUN npm install
 RUN cp fi.js node_modules/quasar-framework/i18n
 RUN quasar build
-RUN rm -r /src/Fitlog/wwwroot/*
+RUN rm -rf /src/Fitlog/wwwroot/*
 RUN cp -r dist/spa-mat /src/Fitlog/wwwroot
 WORKDIR "/src/."
 RUN dotnet publish "Fitlog/Fitlog.csproj" -c Release -o /app/publish
