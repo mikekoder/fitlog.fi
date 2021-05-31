@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31320.298
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitlog", "Fitlog\Fitlog.csproj", "{7DFBCF42-FEA2-4241-A54B-9EB14BF74515}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitlog.Core", "Fitlog.Core\Fitlog.Core.csproj", "{A52C46E5-2F69-4770-AD09-2D6994F6F6ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitlog.Migration", "Fitlog.Migration\Fitlog.Migration.csproj", "{CBCC1158-FE9F-4E8F-844C-BD8FC0101D4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitlog.Api", "Fitlog.Api\Fitlog.Api.csproj", "{B798B823-77F5-4F3A-A390-87CA8C85E69E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7DFBCF42-FEA2-4241-A54B-9EB14BF74515}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DFBCF42-FEA2-4241-A54B-9EB14BF74515}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DFBCF42-FEA2-4241-A54B-9EB14BF74515}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DFBCF42-FEA2-4241-A54B-9EB14BF74515}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A52C46E5-2F69-4770-AD09-2D6994F6F6ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A52C46E5-2F69-4770-AD09-2D6994F6F6ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A52C46E5-2F69-4770-AD09-2D6994F6F6ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A52C46E5-2F69-4770-AD09-2D6994F6F6ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBCC1158-FE9F-4E8F-844C-BD8FC0101D4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBCC1158-FE9F-4E8F-844C-BD8FC0101D4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBCC1158-FE9F-4E8F-844C-BD8FC0101D4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBCC1158-FE9F-4E8F-844C-BD8FC0101D4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B798B823-77F5-4F3A-A390-87CA8C85E69E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B798B823-77F5-4F3A-A390-87CA8C85E69E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B798B823-77F5-4F3A-A390-87CA8C85E69E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B798B823-77F5-4F3A-A390-87CA8C85E69E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE071995-B2EA-486E-BAEE-BE3F6CD07E68}
+	EndGlobalSection
+EndGlobal

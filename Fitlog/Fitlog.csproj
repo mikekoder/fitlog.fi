@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>fc01b6ca-14d6-4eed-9d2a-bf89b67047f7</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="FluentEmail.Mailgun" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Cors" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fitlog.Api\Fitlog.Api.csproj" />
+    <ProjectReference Include="..\Fitlog.Core\Fitlog.Core.csproj" />
+  </ItemGroup>
+
+  <!--
+  <ItemGroup>
+    <ClientFiles Include="..\client\fitlog.fi\dist\spa-mat\**\*.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Wwwroot Include="wwwroot\**\*.*" />
+  </ItemGroup>
+  <Target Name="Build client" BeforeTargets="ComputeFilesToPublish">
+    <Exec Command="npm install" WorkingDirectory="..\client\fitlog.fi"></Exec>
+    <Exec Command="quasar build" WorkingDirectory="..\client\fitlog.fi"></Exec>
+    <Delete Files="@(Wwwroot)" />
+    <Copy SourceFiles="@(ClientFiles)" DestinationFiles="@(ClientFiles->'wwwroot\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>   
+   -->
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Fitlog.Api.Models.Nutrition
+{
+    public class AddMealRowRequest
+    {
+        public DateTimeOffset Date { get; set; }
+        public Guid? MealDefinitionId { get; set; }
+        public Guid? MealId { get; set; }
+        public Guid FoodId { get; set; }
+        public decimal Quantity { get; set; }
+        public Guid? PortionId { get; set; }
+    }
+}

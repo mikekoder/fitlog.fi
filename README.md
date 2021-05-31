@@ -10,9 +10,8 @@ Backend
 - SQL Server
 - Dapper
 
-Web
-- Vue.js
-- Bootstrap
+Frontend
+- Quasar Framework
 
 Mobile
 - Quasar Framework

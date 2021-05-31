@@ -1,0 +1,129 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Fitlog.Training;
+using Fitlog.Api.Models.Training;
+using Fitlog.Logging;
+using AutoMapper;
+
+namespace Fitlog.Web.Controllers
+{
+    [Produces("application/json")]
+    [Route("api/[controller]")]
+    public class RoutinesController : ApiControllerBase
+    {
+        private readonly ITrainingRepository trainingRepository;
+        public RoutinesController(ITrainingRepository trainingRepository, ILogRepository logger, IMapper mapper) : base(logger, mapper)
+        {
+            this.trainingRepository = trainingRepository;
+        }
+
+        [HttpGet("")]
+        public IActionResult List()
+        {
+            var routines = trainingRepository.SearchRoutines(CurrentUserId);
+
+            var response = Mapper.Map<RoutineResponse[]>(routines);
+            return Ok(response);
+        }
+        [HttpGet("{id}")]
+        public IActionResult Details(Guid id)
+        {
+            var routine = trainingRepository.GetRoutine(id);
+            if(routine == null || routine.UserId != CurrentUserId)
+            {
+                return NotFound();
+            }
+
+            var response = Mapper.Map<RoutineDetailsResponse>(routine);
+            return Ok(response);
+        }
+        [HttpPost("")]
+        public IActionResult Create([FromBody]RoutineRequest request)
+        {
+            CreateExercises(request.Workouts.SelectMany(w => w.Exercises));
+            var routine = Mapper.Map<RoutineDetails>(request);
+            routine.UserId = CurrentUserId;
+            if (!trainingRepository.SearchRoutines(CurrentUserId).Any())
+            {
+                routine.Active = true;
+            }
+            trainingRepository.CreateRoutine(routine);
+
+            var response = Mapper.Map<RoutineDetailsResponse>(routine);
+            return Ok(response);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(Guid id, [FromBody]RoutineRequest request)
+        {
+            var routine = trainingRepository.GetRoutine(id);
+            if (routine.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+            CreateExercises(request.Workouts.SelectMany(w => w.Exercises));
+            Mapper.Map(request, routine);
+            trainingRepository.UpdateRoutine(routine);
+
+            var response = Mapper.Map<RoutineDetailsResponse>(routine);
+            return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(Guid id)
+        {
+            var routine = trainingRepository.GetRoutine(id);
+            if (routine.UserId != CurrentUserId)
+            {
+                return Unauthorized();
+            }
+            trainingRepository.DeleteRoutine(routine);
+
+            return Ok();
+        }
+        [HttpPost("{id}/activate")]
+        public IActionResult Activate(Guid id)
+        {
+            var routine = trainingRepository.GetRoutine(id);
+            if (routine == null || routine.UserId != CurrentUserId)
+            {
+                return NotFound();
+            }
+            trainingRepository.ActivateRoutine(CurrentUserId, id);
+            return Ok();
+        }
+        private void CreateExercises(IEnumerable<RoutineExerciseRequest> sets)
+        {
+            if (!sets.Any(s => s.ExerciseId == null))
+            {
+                return;
+            }
+
+            var exercises = new List<Exercise>();
+            exercises.AddRange(trainingRepository.SearchUserExercises(CurrentUserId, DateTimeOffset.Now));
+            foreach (var set in sets.Where(s => s.ExerciseId == null && !string.IsNullOrWhiteSpace(s.ExerciseName)))
+            {
+                var exercise = exercises.FirstOrDefault(e => e.Name.Equals(set.ExerciseName, StringComparison.CurrentCultureIgnoreCase));
+                if(exercise != null)
+                {
+                    set.ExerciseId = exercise.Id;
+                }
+                else
+                {
+                    var newExercise = new ExerciseDetails
+                    {
+                        UserId = CurrentUserId,
+                        Name = char.ToUpper(set.ExerciseName[0]) + set.ExerciseName[1..].ToLower()
+                    };
+                    trainingRepository.CreateExercise(newExercise);
+                    exercises.Add(newExercise);
+                    set.ExerciseId = newExercise.Id;
+                }
+            }
+        }
+    }
+}
