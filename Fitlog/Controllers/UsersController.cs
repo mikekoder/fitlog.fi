@@ -494,6 +494,10 @@ namespace Fitlog.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {
+                if (!returnUrl.EndsWith("/#/login"))
+                {
+                    returnUrl = $"{returnUrl.TrimEnd('/')}/#/login";
+                }
                 return Redirect($"{returnUrl.TrimEnd('/')}/{refreshToken}/{accessToken}");
             }
 
