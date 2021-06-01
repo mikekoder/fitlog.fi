@@ -1,14 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace Fitlog.Web
 {
     public static class DateTimeUtils
     {
-        public static TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time");
-
+        public static TimeZoneInfo TimeZone;
+        static DateTimeUtils()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                TimeZone = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Helsinki");
+            }
+            else
+            {
+                TimeZone = TimeZoneInfo.Local;
+            }
+        }
         public static TimeSpan GetTimeZoneOffset(DateTime time)
         {
             return TimeZone.GetUtcOffset(time);
