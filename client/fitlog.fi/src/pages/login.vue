@@ -117,7 +117,7 @@ export default {
         }
       }
       else{
-        window.location = config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile&returnUrl='+ window.location;
+        window.location = config.apiBaseUrl + 'users/external-login?provider='+ provider +'&client=mobile&returnUrl='+ window.location.href;
       }
     },
     finishLogin(refreshToken, accessToken){
