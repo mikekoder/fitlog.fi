@@ -23,7 +23,7 @@ export default {
           this.$store.dispatch(constants.FETCH_PROFILE, { });
         }
       }).catch(reason => {
-        if(this.$route.name != 'login' && this.$route.name != 'register'){
+        if(this.$route.name != 'login' && this.$route.name != 'register' && this.$route.name != 'gdpr'){
           this.$router.push({name: 'login'});
         }
       });

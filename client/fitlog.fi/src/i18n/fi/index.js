@@ -231,7 +231,7 @@
     preset: 'Asetus',
     primaryMuscleGroups: 'Päälihasryhmät',
     privacy: 'GDPR yms.',
-    privaryInfo: 'Ulkoisten palveluiden (Facebook, Google) kautta kirjautuessa fitlog.fi tallentaa näistä palveluista kirjautumiseen vaaditut tiedot (kirjautumisavain ja sähköpostiosoite). Kaikki muut tallennetut tiedot ovat palvelun kautta itse syötettyjä. Voit poistaa tiedot profiilisivun "Poista tili" -toiminnolla.',
+    privacyInfo: '<p>Ulkoisten palveluiden (Facebook, Google) kautta kirjautuessa fitlog.fi tallentaa näistä palveluista kirjautumiseen vaaditut tiedot (kirjautumisavain ja sähköpostiosoite). Kaikki muut tallennetut tiedot ovat palvelun kautta itse syötettyjä.</p><p>Voit poistaa tiedot profiilisivun "Poista tili" -toiminnolla.</p>',
     profile: 'Profiili',
     progress: 'Kehitys',
     protein: 'Proteiini',
