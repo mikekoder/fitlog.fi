@@ -25,6 +25,10 @@
           <q-item-side icon="fas fa-sign-in-alt" />
           <q-item-main :label="$t('login')" />
         </q-item>
+        <q-item :to="{ name: 'gdpr' }">  
+          <q-item-side icon="fas fa-shield-alt" />
+          <q-item-main :label="$t('privacy')" />
+        </q-item>
       </q-list>
 
       <q-list no-border link inset-delimiter v-if="isLoggedIn">
@@ -101,6 +105,10 @@
         <q-item @click.native="logout">
           <q-item-side icon="fas fa-sign-out-alt" />
           <q-item-main :label="$t('logout')" />
+        </q-item>
+        <q-item :to="{ name: 'gdpr' }">  
+          <q-item-side icon="fas fa-shield-alt" />
+          <q-item-main :label="$t('privacy')" />
         </q-item>
 
         <q-list-header>{{ $t('getInvolved') }}</q-list-header>
