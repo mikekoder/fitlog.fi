@@ -173,6 +173,11 @@ export default [
         path: '/food-comparison',
         name: 'food-comparison',
         component: () => import('pages/foods/food-comparison.vue')
+      },
+      {
+        path: '/gdpr',
+        name: 'gdpr',
+        component: () => import('pages/gdpr.vue')
       }
     ]
   },
