@@ -113,7 +113,17 @@ namespace Fitlog.Web
             });
             // Recipes
             CreateMap<FoodSummary, RecipeSummaryResponse>();
-            CreateMap<FoodDetails, RecipeDetailsResponse>();
+            CreateMap<FoodDetails, RecipeDetailsResponse>().AfterMap((source, target) => 
+            {
+                if (source.IsRecipe && target.Portions != null)
+                {
+                    var recipeWeight = source.CookedWeight ?? target.Ingredients.Sum(i => i.Weight);
+                    foreach (var portion in target.Portions)
+                    {
+                        portion.Amount = Math.Round(recipeWeight / portion.Weight);
+                    }
+                }
+            });
             CreateMap<RecipeIngredient, RecipeIngredientModel>();
             CreateMap<RecipeRequest, FoodDetails>();
             CreateMap<RecipeIngredientModel, RecipeIngredient>();
