@@ -313,7 +313,7 @@ SELECT * FROM MealRowNutrient WHERE MealId=@id;";
         }
         public IEnumerable<MealDetails> SearchMeals(Guid userId, DateTimeOffset start, DateTimeOffset end)
         {
-            var filter = "UserId=@userId AND Time >= @start AND Time <= @end AND Deleted IS NULL";
+            var filter = $"UserId='{userId}' AND Time >= '{FormatDate(start)}' AND Time <= '{FormatDate(end)}' AND Deleted IS NULL";
             var sql = $@"
 SELECT * FROM Meal WHERE {filter};
 SELECT * FROM MealNutrient WHERE MealId IN (SELECT Id FROM Meal WHERE {filter});
@@ -322,9 +322,8 @@ SELECT MR.*, F.Name AS FoodName, FP.Name AS PortionName FROM MealRow MR
     LEFT JOIN FoodPortion FP ON FP.Id=MR.PortionId
     WHERE MR.MealId IN(SELECT Id FROM Meal WHERE {filter}) ORDER BY [Index];
 SELECT  * FROM MealRowNutrient WHERE MealId IN(SELECT Id FROM Meal WHERE {filter});";
-            var parameters = new { userId, start, end };
             using var conn = CreateConnection();
-            using var multi = conn.QueryMultiple(sql, parameters);
+            using var multi = conn.QueryMultiple(sql);
             var meals = multi.Read<MealDetails>().ToList();
             var mealNutrients = multi.Read<MealNutrientRaw>();
             var rows = multi.Read<MealRow>().ToList();
@@ -944,6 +943,11 @@ SELECT * FROM MealRowNutrient WHERE MealId IN @ids;";
         {
             using var conn = CreateConnection();
             conn.Execute("DELETE FROM FAvouriteMeal WHERE Id=@id", new { id });
+        }
+
+        private string FormatDate(DateTimeOffset dateTime)
+        {
+            return dateTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
         }
         private class PortionRaw : Portion
         {
